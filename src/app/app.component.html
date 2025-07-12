@@ -1,0 +1,31 @@
+<!-- <app-categoryform></app-categoryform> -->
+<!-- jai shree ram  -->
+<!-- jai shree krishna jsk -->
+@if (showmanagebar=='manage') {
+  <div>
+    <app-managefoodnavbar ></app-managefoodnavbar>
+  </div>
+}
+<!-- <app-home [invoiceid]="invoiceid" (valueChanged)="updateValue($event)"></app-home> -->
+@if (showmanagebar=='home') {
+  <div> <app-home [invoiceid]="invoiceid" [TokenNumber]="TokenNumber" (valueChanged)="updateValue($event)"  ></app-home> </div>
+}
+@if (showmanagebar=='dashboard') {
+  <div> <app-dashboard></app-dashboard></div>
+}
+@if (showmanagebar=='orders') {
+  <div> <app-orders (showTables)="receiveNotification($event )"  (pickUpOrder)="pickUpOrders($event)"></app-orders></div>
+}
+@if (showmanagebar=='customers') {
+  <div> <app-customers></app-customers></div>
+}
+@if (showmanagebar=='runningorder') {
+  <div > <app-runningorders  (notifyManage3)="gohomeinvoiceid($event)"></app-runningorders></div>
+}
+@if (showmanagebar=='tables') {
+  <div> <app-tables [pickupOrder]="pickup" (notifyManage2)="receiveNotification2($event)" (clearPickupOrder)="clearPickupOrders($event)"></app-tables></div>
+}
+
+<app-navbar (notifyManage)="receiveNotification($event )" ></app-navbar>
+
+

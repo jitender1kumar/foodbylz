@@ -1,0 +1,254 @@
+<h4 class="titleh4">Company Management</h4>
+<button class="bt1n btnbox" id="show" (click)="shows()">+Add Company Profile</button>
+
+@if (show) {
+  <div class="comman">
+    <div class="row box">
+      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" class="col lbl2">
+        <button class="close" (click)="close()">Close</button>
+        <div class="row lbl">
+          <h6>Insert Company Profile</h6>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="name" id="name"> Name :</label></div>
+          <div class="col"><input class="lbl" type="text" formControlName="name" ngModel
+          id="nametxt" /></div>
+          <div class="col">
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="tilte" id="tilte"> tilte :</label></div>
+          <div class="col"><input class="lbl" type="text" formControlName="tilte" ngModel
+          id="tiltetxt" /></div>
+          <div class="col">
+          </div>
+        </div><div class="form-group row">
+        <div class="col"><label class="lbl" for="GSTNumber" id="GSTNumber"> GSTNumber :</label></div>
+        <div class="col"><input class="lbl" type="text" formControlName="GSTNumber" ngModel
+        id="GSTNumbertxt" /></div>
+        <div class="col">
+        </div>
+      </div><div class="form-group row">
+      <div class="col"><label class="lbl" for="turnover" id="turnover"> turnover :</label></div>
+      <div class="col"><input class="lbl" type="text" formControlName="turnover" ngModel
+      id="turnovertxt" /></div>
+      <div class="col">
+      </div>
+    </div><div class="form-group row">
+    <div class="col"><label class="lbl" for="address" id="address"> address :</label></div>
+    <div class="col"><input class="lbl" type="text" formControlName="address" ngModel
+    id="addresstxt" /></div>
+    <div class="col">
+    </div>
+  </div><div class="form-group row">
+  <div class="col"><label class="lbl" for="mobilenumber" id="mobilenumber"> mobilenumber :</label></div>
+  <div class="col"><input class="lbl" type="text" formControlName="mobilenumber" ngModel
+  id="mobilenumbertxt" /></div>
+  <div class="col">
+  </div>
+</div><div class="form-group row">
+<div class="col"><label class="lbl" for="mobilenumber2" id="mobilenumber2"> mobilenumber2 :</label></div>
+<div class="col"><input class="lbl" type="text" formControlName="mobilenumber2" ngModel
+id="mobilenumber2txt" /></div>
+<div class="col">
+</div>
+</div>
+<div class="form-group row">
+  <div class="col"><label class="lbl" for="customercarenumber" id="customercarenumber"> customercarenumber :</label></div>
+  <div class="col"><input class="lbl" type="text" formControlName="customercarenumber" ngModel
+  id="customercarenumbertxt" /></div>
+  <div class="col">
+  </div>
+</div><div class="form-group row">
+<div class="col"><label class="lbl" for="maplocation1" id="maplocation1"> maplocation1 :</label></div>
+<div class="col"><input class="lbl" type="text" formControlName="maplocation1" ngModel
+id="maplocation1txt" /></div>
+<div class="col">
+</div>
+</div><div class="form-group row">
+<div class="col"><label class="lbl" for="maplocation2" id="maplocation2"> maplocation2 :</label></div>
+<div class="col"><input class="lbl" type="text" formControlName="maplocation2" ngModel
+id="maplocation2txt" /></div>
+<div class="col">
+</div>
+</div>
+<div class="form-group row">
+  <div class="col"><label class="lbl" for="telephonenumber" id="telephonenumber"> telephonenumber :</label></div>
+  <div class="col"><input class="lbl" type="text" formControlName="telephonenumber" ngModel
+  id="telephonenumbertxt" /></div>
+  <div class="col">
+  </div>
+</div>
+<div class="form-group row">
+  <div class="col"><label class="lbl" for="companyId" id="companyId"> companyId :</label></div>
+  <div class="col"><input class="lbl" type="text" formControlName="companyId" ngModel
+  id="companyIdtxt" /></div>
+  <div class="col">
+  </div>
+</div>
+<div class="form-group row">
+  <div class="col"><label class="lbl" for="companyphoto" id="companyphoto"> companyphoto :</label></div>
+  <div class="col"><input class="lbl" type="text" formControlName="companyphoto" ngModel
+  id="companyphototxt" /></div>
+  <div class="col">
+  </div>
+</div>
+<div class="form-group row">
+  <div class="col"><label class="lbl" for="websitelink" id="websitelink"> websitelink :</label></div>
+  <div class="col"><input class="lbl" type="text" formControlName="websitelink" ngModel
+  id="websitelinktxt" /></div>
+  <div class="col">
+  </div>
+</div>
+<div class="form-group row">
+  <div class="col"><label class="lbl" for="logo" id="logo"> logo :</label></div>
+  <div class="col"><input class="lbl" type="text" formControlName="logo" ngModel
+  id="logotxt" /></div>
+  <div class="col">
+  </div>
+</div>
+<p>{{args}}</p>
+<div class="row">
+  <div class="col"><button style="border: solid black; padding: 10px;" [disabled]="myAddForm.invalid "
+  class="bt1n" type="submit">+</button>
+</div>
+</div>
+</form>
+</div>
+</div>
+}
+
+@if (showEdit) {
+  <div class=" comman">
+    <div class="row box">
+      <form [formGroup]="myEditForm" (ngSubmit)="onFormEdit()" class="col lbl2">
+        <button class="close" (click)="close()">Close</button>
+        <div class="row">
+          <div class="col">
+            <h2><b>Edit</b></h2>
+          </div>
+        </div>
+        <p>{{args}}</p>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="name" id="name"> Name :</label></div>
+          <div class="col"><input class="lbl" type="text" formControlName="name" value="{{popdata2.name}}"
+          id="nametxt" /></div>
+          <div class="col">
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="tilte" id="tilte"> tilte :</label></div>
+          <div class="col"><input class="lbl" type="text" formControlName="tilte" value="{{popdata2.tilte}}"
+          id="tiltetxt" /></div>
+          <div class="col">
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="desc" id="desc"> Description :</label></div>
+          <div class="col"><input class="lbl" type="text" formControlName="desc" value="{{popdata2.desc}}"
+          id="desctxt" /></div>
+          <div class="col">
+          </div>
+        </div><div class="form-group row">
+        <div class="col"><label class="lbl" for="GSTNumber" id="GSTNumber"> GSTNumber :</label></div>
+        <div class="col"><input class="lbl" type="text" formControlName="GSTNumber" value="{{popdata2.GSTNumber}}"
+        id="GSTNumbertxt" /></div>
+        <div class="col">
+        </div>
+      </div><div class="form-group row">
+      <div class="col"><label class="lbl" for="turnover" id="turnover"> turnover :</label></div>
+      <div class="col"><input class="lbl" type="text" formControlName="turnover" value="{{popdata2.turnover}}"
+      id="turnovertxt" /></div>
+      <div class="col">
+      </div>
+    </div><div class="form-group row">
+    <div class="col"><label class="lbl" for="address" id="address"> address :</label></div>
+    <div class="col"><input class="lbl" type="text" formControlName="address" value="{{popdata2.address}}"
+    id="addresstxt" /></div>
+    <div class="col">
+    </div>
+  </div><div class="form-group row">
+  <div class="col"><label class="lbl" for="mobilenumber" id="mobilenumber"> mobilenumber :</label></div>
+  <div class="col"><input class="lbl" type="text" formControlName="mobilenumber" value="{{popdata2.mobilenumber}}"
+  id="mobilenumbertxt" /></div>
+  <div class="col">
+  </div>
+</div><div class="form-group row">
+<div class="col"><label class="lbl" for="mobilenumber2" id="mobilenumber2"> mobilenumber2 :</label></div>
+<div class="col"><input class="lbl" type="text" formControlName="mobilenumber2" value="{{popdata2.mobilenumber2}}"
+id="mobilenumber2txt" /></div>
+<div class="col">
+</div>
+</div>
+<div class="form-group row">
+  <div class="col"><label class="lbl" for="customercarenumber" id="customercarenumber"> customercarenumber :</label></div>
+  <div class="col"><input class="lbl" type="text" formControlName="customercarenumber" value="{{popdata2.customercarenumber}}"
+  id="customercarenumbertxt" /></div>
+  <div class="col">
+  </div>
+</div><div class="form-group row">
+<div class="col"><label class="lbl" for="maplocation1" id="maplocation1"> maplocation1 :</label></div>
+<div class="col"><input class="lbl" type="text" formControlName="maplocation1" value="{{popdata2.maplocation1}}"
+id="maplocation1txt" /></div>
+<div class="col">
+</div>
+</div><div class="form-group row">
+<div class="col"><label class="lbl" for="maplocation2" id="maplocation2"> maplocation2 :</label></div>
+<div class="col"><input class="lbl" type="text" formControlName="maplocation2" value="{{popdata2.maplocation2}}"
+id="maplocation2txt" /></div>
+<div class="col">
+</div>
+</div>
+<div class="form-group row">
+  <div class="col"><label class="lbl" for="telephonenumber" id="telephonenumber"> telephonenumber :</label></div>
+  <div class="col"><input class="lbl" type="text" formControlName="telephonenumber" value="{{popdata2.telephonenumber}}"
+  id="telephonenumbertxt" /></div>
+  <div class="col">
+  </div>
+</div>
+<div class="form-group row">
+  <div class="col"><label class="lbl" for="companyId" id="companyId"> companyId :</label></div>
+  <div class="col"><input class="lbl" type="text" formControlName="companyId" value="{{popdata2.companyId}}"
+  id="companyIdtxt" /></div>
+  <div class="col">
+  </div>
+</div>
+<div class="form-group row">
+  <div class="col"><label class="lbl" for="companyphoto" id="companyphoto"> companyphoto :</label></div>
+  <div class="col"><input class="lbl" type="text" formControlName="companyphoto" value="{{popdata2.companyphoto}}"
+  id="companyphototxt" /></div>
+  <div class="col">
+  </div>
+</div>
+<div class="form-group row">
+  <div class="col"><label class="lbl" for="websitelink" id="websitelink"> websitelink :</label></div>
+  <div class="col"><input class="lbl" type="text" formControlName="websitelink" value="{{popdata2.websitelink}}"
+  id="websitelinktxt" /></div>
+  <div class="col">
+  </div>
+</div>
+<div class="form-group row">
+  <div class="col"><label class="lbl" for="logo" id="logo"> logo :</label></div>
+  <div class="col"><input class="lbl" type="text" formControlName="logo" value="{{popdata2.logo}}"
+  id="logotxt" /></div>
+  <div class="col">
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <button class="bt1n" style=" margin: 3px;" id="baseb"
+    [disabled]="myEditForm.invalid">Update</button>
+  </div>
+</div>
+</form>
+</div>
+</div>
+}
+
+<ag-grid-angular class="box ag-theme-quartz" style="height:500px;" [rowData]="companyprofiledata" [columnDefs]="colDefs"
+  [pagination]="pagination" [paginationPageSize]="paginationPageSize"
+  [paginationPageSizeSelector]="paginationPageSizeSelector" (cellClicked)="onCellClick($event)" />
+  <div>
+    <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()"
+    [style]="display" [tabname]="tablename" [data]="valueid" [modal]="modal"></app-popupmodel>
+  </div>

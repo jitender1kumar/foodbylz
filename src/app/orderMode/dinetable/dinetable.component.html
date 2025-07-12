@@ -1,0 +1,46 @@
+
+
+<div class="comman" >
+  <div class="row box">
+
+    <form (ngSubmit)="onFormDineSubmit()"[formGroup]="myAddDineForm"  class="col lbl2" >
+      <button  class="close" (click)="close()">Close</button>
+      <div class="form-group row" >
+        <div class="col"><label class="lbl" for="dinedata" id="dinedata" >Select Dinning Table :</label></div>
+        <div class="col">
+          <select class="lbl" formControlName="table_id" (change)="sendNotification2()">
+            @for (d of dinedata; track d) {
+              <option  class="lbl" value="{{d._id}}" >{{d.name}}</option>
+            }
+          </select>
+        </div>
+
+      </div>
+      <div class="form-group row" >
+        <!-- <div class="col"><p>Select All</p><input type="checkbox" [checked]="statusselectall" value="Select All" (click)="selectall($event)"/></div> -->
+        <div class="col"> <b>Available: </b>
+        <div class="row">
+          <div class="col" *ngFor="let d of IChairdata index as i"  >
+            @if (!d.status) {
+              <div>
+                {{d.name}} <input type="checkbox" checked  disabled  value="{{i}}"/>Booked
+              </div>
+            } @else {
+              {{d.name}} <input type="checkbox" checked    value="{{i}}"/>Available
+            }
+
+          </div>
+        </div>
+
+        <!-- (click)="getid($event)" -->
+      </div>
+    </div>
+
+
+    <div class="col">
+      <input type="submit" value="Proceed" (click)="proceed()">
+    </div>
+  </form>
+
+</div>
+</div>

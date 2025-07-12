@@ -1,0 +1,31 @@
+                                                                                
+<app-display-orders-in-box [ordercount]="ordercount" [totaldiscountamount]="totaldiscountamount" [totalpendingamount]="totalpendingamount" [totalorderamount]="totalorderamount"></app-display-orders-in-box>
+<div class="order-list-container">
+    <!-- Top Section -->
+    <div class="order-list-header">
+        <h2>Order List</h2>
+        <div class="sales-tabs-container">
+            <input type="text" class="search-bar" (keyup)="findorders()" [(ngModel)]="searchdata" placeholder="Search orders..." />
+            <div class="tabs-group">
+                <button class="tab " (click)="loadtoday()">Today</button>
+                <button class="tab"  (click)="loadyesterday()">Yesterday</button>
+                <button class="tab" (click)="loadweek()">This Week(7days)</button>
+                <button class="tab" (click)="loadmonth()">This Month</button>
+               | From: <input class="tab" type="date" (click)="validate()" (change)="fromdate()" max="{{currentDateTime}}" [(ngModel)]="from_date" id="f">| To:
+                <input class="tab" type="date" (change)="todate()" (click)="validateto()"  [(ngModel)]="to_date" id="t">
+            </div>
+        </div>
+    </div>
+    <div>
+<app-order-diplay-in-pop-up [customers]="customersRecord" [EditOrderInvoice]="EditOrder" [EditOrderItems]="EditOrderItems" [showPopUp]="showPopUp" [closePopUp]="closePopUp" (closePopUpByChild)="closePopUpByChild($event)"></app-order-diplay-in-pop-up>
+    </div>
+<ag-grid-angular class=" ag-theme-quartz agtable"
+style="height:500px;width: 95%;margin: auto;" 
+[rowData]="ordersdata"
+    [columnDefs]="colDefs" 
+[pagination]="pagination"
+[paginationPageSize]="paginationPageSize"
+[paginationPageSizeSelector]="paginationPageSizeSelector"
+(cellClicked)="onCellClick($event)"
+    />                
+</div>

@@ -1,0 +1,138 @@
+
+<h4 class="titleh4">Map Product Price Management</h4>
+<button class="bt1n btnbox" id="show" (click)="shows()">+Add Product Price</button>
+@if (loading$ | async) {
+  <div>Loading...</div>
+}
+@if (error$ | async; as error) {
+  <div style="color:red">{{ error }}</div>
+}
+@if (show) {
+  <div class="comman" >
+    <div class="row box">
+      <!-- left col -->
+      <form (ngSubmit)="onFormSubmit()"[formGroup]="myAddForm"  class="col lbl2" >
+        <button  class="close" (click)="close()">Close</button>
+        <div class="row lbl"><h4>Add Products Price</h4></div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="SelectProductId" id="SelectProductId" >Select Product :</label></div>
+          <div class="col">
+            <select formControlName="SelectProductId" class="lbl" (change)="loadProducts2()" >
+              <!-- <option  *ngIf="prodata" [selected]="prodata[0]._id" >{{prodata[0].Productname}}</option>    -->
+              <option class="lbl" *ngFor="let d of Productnamedata$ | async as i"  value="{{d._id}}" >{{d.Productname}}</option>
+            </select>
+            <!-- <div><button   value="{{prodata[0]._id}}"></button></div> -->
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="selectcategoryID" id="selectcategoryID" >Select Category Name :</label></div>
+          <div class="col">
+            <select id="selectcategoryID"  formControlName="selectcategoryID"  class="lbl">
+              <option disabled class="lbl">Select Category Name</option>
+              <option disabled class="lbl" *ngFor="let d of categorynamedata$ | async index as i" [selected]="d._id===prodata[0].selectcategoryID" value="{{d._id}}" >{{d.name}}</option>
+            </select>
+          </div></div>
+          <div class="form-group row">
+            <div class="col"><label class="lbl" for="selectQtypeID" id="selectQtypeID" >Select Quntity Type Name :</label></div>
+            <div class="col">
+              <!-- (change)="loadbasetype2()" -->
+              <select  id="selectQtypeID"  formControlName="selectQtypeID"  class="lbl" >
+                <option disabled class="lbl">Select Quntity Type Name </option>
+                <option disabled class="lbl" *ngFor="let d of Qtypenamedata$ | async index as i" [selected]="d._id===prodata[0].selectQtypeID" value="{{d._id}}" >{{d.name}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col"><label class="lbl" for="selectSubQuantityTypeID" id="selectSubQuantityTypeID" >Select  Sub Quantity Type:</label></div>
+            <div class="col">
+              <select id="selectSubQuantityTypeID"  formControlName="selectSubQuantityTypeID"  class="lbl">
+                <option disabled class="lbl">Select  Sub Quantity Type Name</option>
+                <option class="lbl" *ngFor="let d of subQuantityTypeByIdData$ | async index as i" [selected]="d._id===prodata[0].selectSubQuantityTypeID" value="{{d._id}}" >{{d.name}}</option>
+              </select>
+              <!-- <div  > {{dd.selectSubQuantityTypeID}}</div> -->
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col"><label class="lbl" for="ProductPrice" id="ProductPrice" >Product Price :</label></div>
+            <div class="col"><input class="lbl" type="number"  min="0" max="100000" formControlName="ProductPrice"  id="ProductPricetxt"/></div>
+          </div>
+          <p>{{args}}</p>
+          <div class="row">
+            <div class="col"><button class="bt1n" [disabled]="myAddForm.invalid"  type="submit">Add Product Price</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+<!-- right col -->
+@if (showEdit) {
+  <div class=" comman">
+    <div class="row box">
+      <form  [formGroup]="myEditForm" (ngSubmit)="onFormUpdateSubmit()" class="col lbl2" >
+        <button  class="close" (click)="close()">Close</button>
+        <div class="col"><h2 ><b>Edit</b></h2></div>
+        <p>{{args}}</p>
+        <div class="form-group row" >
+          <div class="col"><label class="lbl" for="SelectProductId" id="SelectProductId" >Select Product :</label></div>
+          <div class="col" >
+            <select id="SelectProductId"  formControlName="SelectProductId"  class="lbl">
+              <option disabled class="lbl">Select Product Name</option>
+              <option disabled class="lbl" *ngFor="let d of Productnamedata$ | async index as i" [selected]="d._id===popdata2.SelectProductId" value="{{d._id}}" >{{d.Productname}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="categoryname" id="categoryname" >Select Category Name :</label></div>
+          <div class="col">
+            <select id="selectcategoryID"  formControlName="selectcategoryID"  class="lbl">
+              <option disabled class="lbl">Select Category Name</option>
+              <option disabled class="lbl" *ngFor="let d of categorynamedata$ | async index as i" [selected]="d._id===popdata2.selectcategoryID" value="{{d._id}}" >{{d.name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="categoryname" id="categoryname" >Select Quntity Type Name :</label></div>
+          <div class="col">
+            <!-- (change)="loadbasetype2()" -->
+            <select  id="selectQtypeID"  formControlName="selectQtypeID"  class="lbl" >
+              <option disabled class="lbl">Select Quntity Type Name </option>
+              <option disabled class="lbl" *ngFor="let d of Qtypenamedata$ | async index as i" [selected]="d._id===popdata2.selectQtypeID" value="{{d._id}}" >{{d.name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="categoryname" id="categoryname" >Select  Sub Quantity Type:</label></div>
+          <div class="col">
+            <select id="selectSubQuantityTypeID"  formControlName="selectSubQuantityTypeID"  class="lbl">
+              <option class="lbl">Select  Sub Quantity Type Name</option>
+              <option class="lbl" *ngFor="let d of subQuantityTypeByIdData$ | async index as i" [selected]="d._id===popdata2.selectSubQuantityTypeID" value="{{d._id}}" >{{d.name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="ProductPrice" id="ProductPrice" >Product Price :</label></div>
+          <div class="col"><input style="width: 114px; margin: 3px;" type="number"  min="0" max="100000" formControlName="ProductPrice"></div>
+        </div>
+        <div class="form-group row">
+          <div class="col">
+            <button class="bt1n" style=" margin: 3px;" id="b{{popdata2._id}}" >Update</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<ag-grid-angular class="box ag-theme-quartz"
+  style="height:500px;"
+  [rowData]="productPriceRecord"
+  [columnDefs]="colDefs"
+  [pagination]="pagination"
+  [paginationPageSize]="paginationPageSize"
+  [paginationPageSizeSelector]="paginationPageSizeSelector"
+  (cellClicked)="onCellClick($event)"
+  />
+<div >
+  <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()" [style]="display" [tabname]="tablename" [data]="valueid" [modal]="modal"></app-popupmodel>
+</div>

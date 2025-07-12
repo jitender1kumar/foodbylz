@@ -1,0 +1,67 @@
+
+<div ><h4 class="titleh4">Raw Materials Quantity Type Management</h4>
+<button class="bt1n btnbox" id="show" (click)="shows()">+Add Quantity Type</button></div>
+@if (show) {
+  <div class="comman" >
+    <div class="row box">
+      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" #f="ngForm" class="col lbl2" >
+        <button  class="close" (click)="close()">Close</button>
+        <div class="row lbl"><h4>Insert Raw Materials Quantity Type(ml, kg, ltr )</h4></div>
+        <div class="row form-group">
+          <div class="col"> <label class="lbl" for="name" id="name" > Name :</label></div>
+          <div class="col"><input class="lbl" type="text"  id="nametxt" formControlName="name"/></div>
+        </div>
+        <div class="row form-group">
+          <div class="col">  <label class="lbl" for="description" id="description" > Description :</label></div>
+          <div class="col">  <input class="lbl" type="text"  id="descriptiontxt" formControlName="description"/></div>
+        </div>
+        <p>{{args}}</p>
+        <div class="mt-2">
+          <button class="bt1n" type="submit" [disabled]="myAddForm.invalid ">Add </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+<!-- right col -->
+@if (showEdit) {
+  <div class=" comman">
+    <div class="row box">
+      <form [formGroup]="myEditForm" (ngSubmit)="onEditForm()" #f="ngForm" class="col lbl2">
+        <button  class="close" (click)="close()">Close</button>
+        <div class="row form-group">
+          <div class="col"><h2 ><b>Edit Raw Materials Quantity Type(ml, kg, ltr )</b></h2></div>
+        </div>
+        <p>{{args}}</p>
+        <div class="row form-group">
+          <div class="col"><label class="lbl" for="name" id="name" > Name :</label></div>
+          <div class="col"> <input style="width: 114px; margin: 3px;" type="text" formControlName="name"></div>
+        </div>
+        <div class="row form-group">
+          <div class="col"><label class="lbl" for="description" id="description" > Name :</label></div>
+          <div class="col"><input style="width: 250px; margin: 3px;" type="text" formControlName="description"></div>
+        </div>
+        <div class="row form-group">
+          <div class="col"> <button class="bt1n" style=" margin: 3px;" id="b{{popdata2._id}}" [disabled]="myEditForm.invalid " >Update</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+}
+
+
+
+
+<ag-grid-angular class="box ag-theme-quartz"
+  style="height:500px;"
+  [rowData]="inventoryQuantityTypeData$|async"
+  [columnDefs]="colDefs"
+  [pagination]="pagination"
+  [paginationPageSize]="paginationPageSize"
+  [paginationPageSizeSelector]="paginationPageSizeSelector"
+  (cellClicked)="onCellClick($event)"
+  />
+  <div >
+    <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()" [style]="display" [tabname]="tablename" [data]="valueid" [modal]="modal"></app-popupmodel>
+  </div>

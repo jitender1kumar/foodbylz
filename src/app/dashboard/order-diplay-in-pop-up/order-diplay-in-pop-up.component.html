@@ -1,0 +1,69 @@
+@if(showPopUp){
+  <div class=" comman">
+  
+   <!-- Header -->
+<div class="flex justify-between bg-white items-center  from-white to-wheat-800 text-black font-semibold py-4 px-6 rounded shadow mb-0">
+  <h2 class="text-xl font-bold">Invoice Details</h2>
+  <div class="space-x-2">
+    <button class="bg-cyan-500 text-white px-4 py-2 rounded shadow" (click)="print()">Print</button>
+    <button *ngIf="customers?.Name" class="bg-orange-800 text-white px-4 py-2 rounded shadow" >{{ customers.Name }}</button>
+    <button class="bg-red-500 text-white px-4 py-2 rounded shadow" (click)="close()">Close</button>
+  </div>
+</div>
+
+<!-- Customer Name -->
+<!-- <div *ngIf="customers?.Name" class="bg-gradient-to-r from-blue-600 to-green-600 text-white font-semibold py-2 px-4 rounded mb-4 shadow">
+  
+</div> -->
+
+<!-- Order Items -->
+<div *ngIf="EditOrderItems?.length" class="space-y-4">
+  <div *ngFor="let item of EditOrderItems" class="bg-white rounded-lg shadow p-4 border border-gray-200">
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-gray-700">
+      <div><strong>Invoice ID:</strong> {{ item.Invoiceid }}</div>
+      <div><strong>Product:</strong> {{ item.Productname }}</div>
+      <div><strong>Quantity:</strong> {{ item.Quantity }}</div>
+      <div><strong>Type:</strong> {{ item.SubQuantityTypeName }}</div>
+      <div><strong>Date:</strong> {{ item.createdAt }}</div>
+      <div><strong>Item Amount:</strong> ₹{{ item.itemamount }}</div>
+      <div><strong>Total:</strong> ₹{{ item.totalquantityamount }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Invoice Summary -->
+<div *ngIf="EditOrderInvoice" class="bg-white rounded-lg shadow p-4 mt-6 border border-gray-200">
+  <h3 class="text-lg font-bold mb-2">Invoice Summary</h3>
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-gray-800">
+    <div><strong>Table:</strong> {{ EditOrderInvoice.tablename }}</div>
+    <div><strong>Total Items:</strong> ₹{{ EditOrderInvoice.TotalItemsAmount }}</div>
+    <div><strong>Tax:</strong> ₹{{ EditOrderInvoice.TotalTaxAmount }}</div>
+    <div><strong>Total Value:</strong> ₹{{ EditOrderInvoice.Totalvaue }}</div>
+    <div><strong>Grand Total:</strong> ₹{{ EditOrderInvoice.grandtotal }}</div>
+    <div><strong>Discount:</strong> {{ EditOrderInvoice.Discountperstage }}% (₹{{ EditOrderInvoice.Discountvalue }})</div>
+    <div><strong>Paid:</strong> ₹{{ EditOrderInvoice.PaidAmount }}</div>
+    <div><strong>Pending:</strong> ₹{{ EditOrderInvoice.PendingAmount }}</div>
+    <div><strong>Created At:</strong> {{ EditOrderInvoice.createdAt }}</div>
+  </div>
+</div>
+
+<!-- Payment Form -->
+<div class="mt-6">
+  <ng-container *ngIf="EditOrderInvoice.PendingAmount !== 0; else notPendingAmount">
+    <form [formGroup]="myEditForm" (ngSubmit)="onFormEdit()" class="bg-gray-100 p-4 rounded shadow space-y-4">
+      <label class="block text-sm font-medium text-gray-700">
+        Pay Pending Amount:
+        <input type="number" placeholder="{{EditOrderInvoice.PendingAmount}}" min="0" max="{{EditOrderInvoice.PendingAmount}}" formControlName="PendingAmount" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+      </label>
+      <button type="submit" [disabled]="myEditForm.invalid" class="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700">
+        Update
+      </button>
+    </form>
+  </ng-container>
+  <ng-template #notPendingAmount>
+    <h4 class="text-green-600 font-semibold mt-4">No Pending Amount</h4>
+  </ng-template>
+</div>
+
+    </div>
+}

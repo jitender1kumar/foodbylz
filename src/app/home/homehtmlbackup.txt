@@ -1,0 +1,369 @@
+<h4 class="titleh4"> Billing Orders</h4>
+<table>
+
+    <tr>
+        <!-- left pan -->
+        <td style="float: left;max-width: 300px;border-right: solid  rgb(223, 205, 205) 0.2rem ;padding-right: 50px;">
+            <ul>
+                <li>
+                    <h5>Categories</h5>
+                </li>
+                <li *ngFor="let dd of categorynamedata$|async">
+                    <button style="background-color: rgb(255, 255, 254);width: 100%;" class=" bt1n  "
+                        (click)="getproductbycategory(dd._id)">{{dd.name}}</button>
+                </li>
+            </ul>
+        </td>
+        <!-- center pan -->
+        <td style="width: 800px;top: 0px auto;padding-left: 50px; ">
+            <div class="">
+                <h3>Welocme to Food Restaurant</h3>
+                <h6>Food Billing App</h6>
+                <div class="row" style="width:100%">
+                    <div class="col col-md-8">
+                        <div class="row">
+                            <div *ngIf="productpriceallname2; else elseTemplate">
+                                <div class="col lbl2  col"  style="float: left;"  *ngFor="let d of productpriceallname2 index as i ">
+                                    <button class="plusminus menuitems col" style="height: auto;width:100%" (click)="increment(d._id)">
+                                    <div >
+                                        <h6>{{d.ProductName}}</h6>
+                                    </div>
+                                   <b>+</b>
+                                    </button>
+                                </div>
+                            </div>
+                            <ng-template #elseTemplate>
+                                <div class=" lbl2  col"  *ngFor="let d of productpriceallname index as i ">
+                                    <button class="plusminus menuitems"  (click)="increment(d._id)">
+                                    <div >
+                                        <h6>{{d.ProductName}}</h6>
+                                        <!-- <p>{{d.categoryName}}</p>
+                                        <pre>{{d.SubQuantityTypeName}}</pre>
+                                        <p><b>{{d.ProductPrice}}</b></p> -->
+                                        <!-- <button class="plusminus" (click)="decrement(d._id)"><b>-</b></button> -->
+                                        <!-- <div><p *ngIf="d.quntityvalue!=0"><b>Items: {{d.quntityvalue}}</b></p></div>
+                     -->
+                                    </div>
+                                   <b>+</b>
+                                    </button>
+                                </div>
+                            </ng-template>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </td>
+
+        <!-- right pan -->
+        <td class="fooditems" style="width: 700px; padding-right: 20px;top: 0px;padding: 15px;border-radius: 2%;">
+            <table class="orderqitms">
+
+
+                <!-- order mode button -->
+                <!-- Main table start -->
+
+              
+                <tr>
+                    <td style="width: 20px;" style="width:100%;" colspan="4">
+                        <pre style="color:  rgb(22, 9, 9); font-size:16px;">Mode({{ordermode}}) Invoice Number: ({{chardata}})</pre>
+                    
+                        
+                    </td>
+                    
+
+                </tr>
+            </table>
+            <table class="col fooditems" style="font-weight: 500;font-size: 13px;"
+                *ngFor="let d of RunningItems_ index as i">
+
+                <tr *ngIf="i==0" class="col ">
+                    <td style="width: 20px;"></td>
+                    <td style="width: 20px;"></td>
+                    <td style="width: 60px;">Name</td>
+                    <td style="width: 60px;">Type</td>
+                    <td style="width: 20px;">Qty.</td>
+                    <td style="width: 40px;">Price</td>
+                    <td style="width: 30px;"> Itm Tot.</td>
+                </tr>
+                <tr *ngIf="i==0" class="col ">
+                    <td style="width: 20px;"> <button class="plusminus" style="background-color: transparent;"
+                            (click)="increment2(d._idPP ,d.SubQuantityTypeName,d.quntityvalue,d.ProductPrice)"><b>+</b></button>
+                    </td>
+                    <td style="width: 20px;"> <button class="plusminus" style="background-color: transparent;"
+                            (click)="decrement2(d._idPP ,d.SubQuantityTypeName,d.qvalue,d.ProductPrice)"><b>-</b></button></td>
+                    <td style="width: 60px;"><b style="font-size: 11px;">{{d.ProductName}}, </b></td>
+                    <td style="width: 60px;"><b style="font-size: 11px;">{{d.SubQuantityTypeName}}, </b></td>
+                    <td style="width: 20px;">
+                        <p style="font-size: 11px;">{{d.quntityvalue}}</p>
+                    </td>
+                    <td style="width: 40px;">
+                        <p style="font-size: 11px;">{{d.ProductPrice}}</p>
+                    </td>
+                    <td style="width: 30px;">
+                        <p style="font-size: 11px;">{{(+d.ProductPrice)*(d.quntityvalue)}},</p>
+                    </td>
+                </tr>
+
+                <tr *ngIf="i!=0">
+                    <td style="width: 20px;"> <button class="plusminus" style="background-color: transparent;"
+                            (click)="increment2(d._idPP ,d.SubQuantityTypeName,d.quntityvalue,d.ProductPrice)"><b>+</b></button>
+                    </td>
+                    <td style="width: 20px;"> <button class="plusminus" style="background-color: transparent;"
+                            (click)="decrement2(d._idPP ,d.SubQuantityTypeName,d.qvalue,d.ProductPrice)"><b>-</b></button></td>
+                    <td style="width: 60px;"><b style="font-size: 11px;">{{d.ProductName}}, </b></td>
+                    <td style="width: 60px;"><b style="font-size: 11px;">{{d.SubQuantityTypeName}}, </b></td>
+                    <td style="width: 20px;">
+                        <p style="font-size: 11px;">{{d.quntityvalue}}</p>
+                    </td>
+                    <td style="width: 40px;">
+                        <p style="font-size: 11px;">{{d.ProductPrice}}</p>
+                    </td>
+                    <td style="width: 30px;">
+                        <p style="font-size: 11px;">{{(+d.ProductPrice)*(d.quntityvalue)}},</p>
+                    </td>
+                </tr>
+
+
+                <!-- <div *ngIf="ordermode.length>0">  <div class="col" *ngFor="let dd of chardata index as i"> {{i+1}}). {{chardata[i][0].name}} </div></div> -->
+
+            </table>
+            
+            <table class="col fooditems" style="font-weight: 500;font-size: 13px;">
+                <tr>
+                    <td style="width:100%" >
+                        <!-- <div class="row fontsize" style="font-size:small;font-weight: 500;"> -->
+                        <!-- FoodName: Quntity: -->
+
+                        <!-- <pre> X <b>(Items: ) = </b> </pre> -->
+                        <!-- </div>
+                            <div class="row fontsize" style="font-size:small;"> 
+                              
+                              </div>
+                        
+                  </div> -->
+
+                        <table style="width:100%" class="col fooditems"
+                            *ngIf="RunningItems_.length>0">
+                            <!-- <pre >Item Total Amount: {{itemtotalamount}}</pre> -->
+                            <tr>
+                                <td>Total Amount: </td>
+                                <td>{{totalamount}}</td>
+                            </tr>
+                            <tr>
+                                <td>Tax Name: </td>
+                                <td> {{taxname}}</td>
+                                <td>Total Tax: </td>
+                                <td> {{totaltax}}</td>
+                            </tr>
+                            <tr>
+                                <td><b>Grand Total Amount</b> </td>
+                                <td> {{itemtotalamount}}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <form [formGroup]="myDiscountForm" (ngSubmit)="discountChange()">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td colspan="1">
+                                                    Discount By %:
+                                                </td>
+                                                <td colspan="1">
+                                                    <input type="radio" name="discount" formControlName="discount"
+                                                        value="%" ngModel>
+                                                </td>
+                                                <td colspan="1">
+                                                    Discount By Rupees:
+                                                </td>
+                                                <td colspan="1">
+                                                    <input type="radio" name="discount" formControlName="discount"
+                                                        value="Rupees" ngModel>
+                                                </td>
+                                            </tr>
+                                           
+                                            <tr>
+                                                <td>Discount: </td>
+                                                <td><input type="number" name="discountvalue"
+                                                        formControlName="numberInput" required style="width: 70px;"
+                                                        placeholder=" Amount"></td>
+                                                        <td colspan="2"> <button class="bt1n" type="submit">Apply</button> </td>
+                                            </tr>
+                                            
+                                        </table>
+                                    </form>
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td colspan="2">Settle Amount:</td>
+                                <td colspan="2">{{discountvalue}}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Discount Percent:</td>
+                                <td colspan="2">{{percent}}%</td>
+                            </tr>
+
+                            <tr>
+                                <td><button class="bt1n btnbox" style="color:black" (click)="placeOrder()">Satle</button></td>
+                                <!-- <td><button class="bt1n" (click)="genrateOrder()">Save</button></td> -->
+                                <!-- <td><button class="bt1n">Hold</button></td> -->
+                                <td><button  style="color:black" class="bt1n btnbox" (click)="KOT()">KOT</button></td>
+                                <!-- <td><button class="bt1n">Satle</button></td> -->
+                            </tr>
+
+                        </table>
+                    </td>
+
+
+
+
+                    <!-- Main table end -->
+
+
+                </tr>
+            </table>
+</table>
+<div class=" comman" style="position: fixed;" *ngIf="showplaceorderPopup">
+    <div class="row box" style="max-width: 60%;">
+        <button class="close" (click)="close2()">Close</button>
+        <div class="col">
+
+            <!-- FoodName: Quntity: -->
+            <pre> <h3>Invoice</h3></pre>
+            <table style="border: solid aqua 0.1rem; margin: auto 20% ">
+                <tr style=" border: solid aqua 0.1rem; ">
+                    <th> Name</th>
+                    <th> Type</th>
+                    <th>Price</th>
+                    <th> Quantity</th>
+                    <th> Item Quantiy Price</th>
+                </tr>
+                <!-- <th>Tax</th></tr> -->
+                <tr *ngFor="let d of RunningItems_ index as i">
+                    <td> {{d.ProductName}} </td>
+                    <td>{{d.SubQuantityTypeName}} </td>
+                    <td>{{d.ProductPrice}}</td>
+                    <td>{{d.quntityvalue}}</td>
+                    <td> {{(+d.ProductPrice)*(d.quntityvalue)}}</td>
+                    <!-- <td>
+                <table *ngFor="let t of taxnamedata">
+                    <tr>
+                        <th>{{t.name}}</th>
+                    </tr>
+                    <tr>
+                        <td> <b *ngIf="t.Status"> <b>
+                            {{t.perscentRate}}% = </b>
+                            {{ ((+d.ProductPrice)*(d.quntityvalue))*t.perscentRate/100}}, </b></td>
+                    </tr>
+                   
+                        </table>
+            </td> -->
+                </tr>
+                <tr>
+                    <td>Total Itmes Amount</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{totalamount}}</td>
+                </tr>
+                <tr>
+                    <td>Total tax</td>
+                    <td>
+                        <table *ngFor="let t of taxnamedata">
+                            <span *ngIf="t.Status">{{t.name}}
+                                <p *ngIf="t.Status">{{t.perscentRate}}% =
+                                    {{ ((+totalamount))*t.perscentRate/100}}
+                            </span>
+                        </table>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td>{{totaltax}}</td>
+                </tr>
+                <tr>
+                    <td>Total Amount</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{itemtotalamount}}</td>
+                </tr>
+                <tr>
+                    <td>Discount Percent</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{percent}}%</td>
+                </tr>
+                <tr>
+                    <td>Grand Total</td>
+
+                    <td>{{discountvalue}}</td>
+                </tr>
+                <tr>
+                    <td><b>Pay Mode</b></td>
+
+                    <td><select (change)="getpaybyid()" [(ngModel)]="paybyId">
+                        <option *ngFor="let dd of paybydata" [value]="dd._id" >
+{{dd.Paybyname}}  
+                        </option>
+                    </select></td>
+                </tr>
+                <tr>
+                    <td>
+                        Paid Amount
+                    </td>
+                    <td>
+                        <input type="number" [(ngModel)]="paidamount" placeholder="Paid Amount" />
+                        </td>
+                </tr>
+            </table>
+            <!-- <div>
+        <app-ordermodebutton  (notifyDine)="receiveNotification($event )" (notifyPacking)="receivePacking($event )" (notifyOnlineDelivery)="receiveOnlineDelivery($event )"></app-ordermodebutton>
+   </div> -->
+            <button (click)="genrateOrder()">Satle</button>
+            <!-- Amount: {{d.totaltaxvalue+((+d.ProductPrice)*(d.quntityvalue))}}
+<hr/> -->
+
+
+
+
+            <!-- <div class="row" style="margin:auto 10px;">
+        <pre><b> TotalAmount: </b> {{itemtotalamount}}
+             <b> Discount Precent: </b> {{percent}}%
+             <b> Grand Total</b> {{discountvalue}}    
+             <button class="lbl2">Dinning Table</button>
+             <button class="lbl2">Pack Order</button>
+             <button class="lbl2">Delivery</button>
+  <!-- <button (click)="genrateOrder()">Genrate Order</button> -->
+            <!-- </pre>
+</div> --> -->
+
+        </div>
+    </div>
+</div>
+<div class=" comman" style="position: fixed;" *ngIf="showtype">
+
+    <div class="row box" style="max-width: 40%;">
+        <button class="close" (click)="close()">Close</button>
+        <div class="row" style="margin-top: 20px;margin-bottom: 20px;margin: auto;">
+            <div class="col">
+                <h6>Quantity</h6>
+                <!-- <form (ngSubmit)="onQuntitySubmit()"[formGroup]="myQuantityForm" class="col lbl2" > -->
+
+                <form #myForm="ngForm" (ngSubmit)="onSubmit(myForm)">
+
+                    <div class="row" *ngFor="let dd of ppalsoavailable">
+                        <!-- <b>{{dd.SubQuantityType}}  </b>  Price: {{dd.price}} -->
+                        <pre><span  name="SubQuantityType" id="{{dd.SubQuantityTypeID}}" > {{dd.SubQuantityTypeName}} </span></pre>
+                        <pre><span  id="{{dd.price}}" >{{dd.price}}  </span></pre>
+                        <input type="radio" name="option" value="{{dd.SubQuantityTypeName}}" ngModel>
+
+                    </div>
+                    <button type="submit">Add Item</button>
+                </form>
+                <!-- </form> -->
+            </div>
+        </div>
+    </div>
+</div>

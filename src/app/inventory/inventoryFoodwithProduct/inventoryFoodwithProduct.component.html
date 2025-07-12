@@ -1,0 +1,174 @@
+<!-- name:
+description:
+quantitytypeID:
+quantitytypename:
+quantitytypevalue: -->
+
+
+<div >
+  <h4 class="titleh4">Raw Materials Assocciate With Product Management</h4>
+  <button class="bt1n btnbox" id="show" (click)="shows()">+Add Assocciate Raw Materials</button>
+</div>
+
+
+@if (show) {
+  <div class="comman" >
+    <div class="row box">
+      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" #f="ngForm" class="col lbl2" >
+        <button  class="close" (click)="close()">Close</button>
+        <div class="row lbl"><h6>Assocciate food material with product (like Onion, Tomato, Salt etc with chilly potato )</h6></div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="ProductId" id="ProductId">Select Product :</label>
+        </div>
+        <div class="col">
+          <select class="lbl" formControlName="ProductId" (change)="getProductPriceAndSubQuantityTypeDetails()">
+            @for (d of Products$|async; track d) {
+              <option class="lbl" value="{{d._id}}">{{d.Productname}}</option>
+            }
+          </select>
+        </div>
+      </div>
+      @if (_InventoryFoodwithProduct2List.length!=0) {
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="SubQuantityTypeID" id="SubQuantityTypeID">Select Quantiy type :</label>
+        </div>
+        <div class="col">
+          <select class="lbl" formControlName="SubQuantityTypeID" (change)="showubelement()" >
+            @for (d of _InventoryFoodwithProduct2List; track d) {
+              <option class="lbl" value="{{d.SubQuantityTypeID}}">{{d.SubQuantityTypeName}}</option>
+            }
+          </select>
+        </div>
+      </div>
+    }
+    @if (showubelements) {
+      <div class="row form-group">
+        <div class="col">
+          <select class="lbl" formControlName="inventoryfoodmain_id" (change)="getQuantityTypeName()">
+            @for (d of InventoryMainFooddata$|async; track d) {
+              <option class="lbl" value="{{d._id}}">{{d.name}}</option>
+            }
+          </select>
+        </div>
+        <div class="col">  <input class="lbl" type="number" placeholder="Enter Quantiy"  id="quantitytypevalue" formControlName="quantitytypevalue"/></div>
+        <div class="col">  <label class="lbl"  id="quantitytypename" formControlName="quantitytypename">{{quantitytypename}}</label></div>
+        <div class="col"><input class="lbl" type="button"  id="nametxt" value="Add Material" (click)="addMaterial()" /></div>
+      </div>
+    }
+    @if (_GoodscollectionMergename_List.length!=0) {
+      <div class="form-group row">
+        <div class="col"><label class="lbl" for="ProductId" id="ProductId">Materials: </label>
+        @for (d of _GoodscollectionMergename_List; track d) {
+          <div  style="height: 50px;width:auto;float: left;"  class="tag" >{{d.Name}}<a style="height: 50px;width:50px;float: left;top: 0px;" (click)="deleterawitems(d.IventoryFoodMainId)" >X</a></div>
+        }
+      </div>
+    </div>
+  }
+  <p>{{args}}</p>
+  <div class="mt-2">
+    <button class="bt1n" type="submit" >Add </button>
+  </div>
+</form>
+</div>
+</div>
+}
+<!-- right col -->
+@if (showEdit) {
+  <div class=" comman">
+    <div class="row box">
+      <form [formGroup]="myEditForm" (ngSubmit)="onEditForm()" #f="ngForm" class="col lbl2">
+        <button  class="close" (click)="close()">Close</button>
+        <div class="row lbl"><h6>Assocciate food material with product (like Onion, Tomato, Salt etc with chilly potato )</h6></div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="ProductId" id="ProductId">Select Product :</label>
+        </div>
+        <div class="col">
+          <select class="lbl" formControlName="ProductId" (change)="getProductPriceAndSubQuantityTypeDetails()">
+            @for (d of Products$|async; track d) {
+              <option class="lbl" value="{{d._id}}" disabled [selected]="popdata2.ProductId===d._id">{{d.Productname}}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="form-group row" >
+        <div class="col"><label class="lbl" for="SubQuantityTypeID" id="SubQuantityTypeID">Select Quantiy type :</label>
+      </div>
+      <div class="col">
+        <select class="lbl" formControlName="SubQuantityTypeID" (change)="showubelement()" >
+          @for (d of _InventoryFoodwithProduct2List; track d) {
+            <option class="lbl" disabled value="{{d.SubQuantityTypeID}}" [selected]="popdata2.SubQuantityTypeID===d.SubQuantityTypeID">{{d.SubQuantityTypeName}}</option>
+          }
+        </select>
+      </div>
+    </div>
+    <div class="row form-group">
+      <div class="col">
+        <select class="lbl" formControlName="inventoryfoodmain_id" (change)="getQuantityTypeNameforedit()">
+          @for (d of InventoryMainFooddata$|async; track d) {
+            <option class="lbl" value="{{d._id}}" >{{d.name}}</option>
+          }
+        </select>
+      </div>
+      <div class="col">  <input class="lbl" type="number" placeholder="Enter Quantiy"  id="quantitytypevalue" formControlName="quantitytypevalue"/></div>
+      <div class="col">  <label class="lbl"  id="quantitytypename" formControlName="quantitytypename">{{quantitytypename}}</label></div>
+      <div class="col"><input class="lbl" type="button"  id="nametxt" value="Add Material" (click)="addMaterialforEdit()" /></div>
+    </div>
+    @if (_GoodscollectionMergename_List.length!=0) {
+      <div class="form-group row">
+        <div class="col"><label class="lbl" for="ProductId" id="ProductId">Materials: </label>
+        @for (d of _GoodscollectionMergename_List; track d) {
+          <div style="height: 50px;width:auto;float: left"  class="tag" >{{d.Name}}<a style="height: 20px;width:20px;float: right;top: 0px;" (click)="deleterawitems(d.IventoryFoodMainId)" >X</a></div>
+        }
+      </div>
+    </div>
+  }
+  <!-- <div class="row form-group">
+  <div class="col"> <label class="lbl" for="name" id="name" > Name :</label></div>
+  <div class="col"><input class="lbl" type="text"  id="nametxt" formControlName="name"/></div>
+</div>
+<div class="row form-group">
+  <div class="col">  <label class="lbl" for="description" id="description" > Description :</label></div>
+  <div class="col">  <input class="lbl" type="text"  id="descriptiontxt" formControlName="description"/></div>
+</div>
+<div class="form-group row">
+  <div class="col"><label class="lbl" for="quantitytypeID" id="quantitytypeID">Select Quntity Type :</label>
+</div>
+<div class="col">
+  <select class="lbl" formControlName="quantitytypeID" (change)="getQuantityTypeName()">
+    <option class="lbl" *ngFor="let d of Inventoryfoodquntitytype" value="{{d._id}}">{{d.name}}</option>
+  </select>
+</div>
+</div>   -->
+<!-- <div class="form-group row" *ngIf="quantitytypename!=''"  style="visibility: hidden;">
+<div class="col">  <label class="lbl" for="quantitytypename" id="quantitytypename" > quantitytypename :</label></div>
+<div class="col">  <input class="lbl" type="text"  id="quantitytypenametxt" ngModel="{{quantitytypename}}" formControlName="quantitytypename"/></div>
+</div>   -->
+<!-- <div class="form-group row" *ngIf="quantitytypename!=''">
+<div class="col">  <label class="lbl" for="description" id="quantitytypevalue" > quantitytypevalue :</label></div>
+<div class="col">  <input class="lbl" type="number"  id="descriptiontxt" formControlName="quantitytypevalue"/></div>
+</div>   -->
+<p>{{args}}</p>
+<div class="row form-group">
+  <div class="col"> <button class="bt1n" style=" margin: 3px;" id="b{{popdata2._id}}" [disabled]="myEditForm.invalid " >Update</button>
+</div>
+</div>
+</form>
+</div>
+</div>
+}
+
+
+
+
+<ag-grid-angular class="box ag-theme-quartz"
+  style="height:500px;width: 100%;"
+  [rowData]="fooddata$|async"
+  [columnDefs]="colDefs"
+  [pagination]="pagination"
+  [paginationPageSize]="paginationPageSize"
+  [paginationPageSizeSelector]="paginationPageSizeSelector"
+  (cellClicked)="onCellClick($event)"
+  />
+  <div >
+    <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()" [style]="display" [tabname]="tablename" [data]="valueid" [modal]="modal"></app-popupmodel>
+  </div>

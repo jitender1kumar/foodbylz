@@ -1,0 +1,70 @@
+<h4 class="titleh4"> Containter Type Management</h4>
+@if (loading$ | async) {
+  <div>Loading...</div>
+}
+@if (error$ | async; as error) {
+  <div style="color:red">{{ error }}</div>
+}
+<button class="bt1n btnbox" id="show" (click)="shows()">+Add Container Type</button>
+
+@if (show) {
+  <div class="comman" >
+    <div class="row box">
+      <form (ngSubmit)="onFormSubmit()" [formGroup]="myAddForm"  class="col lbl2">
+        <button  class="close" (click)="close()">Close</button>
+        <div class="row lbl"><h4>Insert Quantity Type (Like Plate, Bowl, Glass)</h4></div>
+        <div class="form-group row" >
+          <div class="col"><label class="lbl" for="quantitytypename" id="quantitytypename" >QuantityType Name :</label></div>
+          <div class="col"><input class="lbl" minlength="0" maxlength="200" type="text"  formControlName="name"  id="quantitytypenametxt"/></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="quantitydesc" id="quantitydesc" >QuantityType Description :</label></div>
+          <div class="col"><input class="lbl" minlength="0" maxlength="200" type="text"  formControlName="Desc" id="quantitydesctxt"/></div>
+        </div>
+        <p>{{args}}</p>
+        <div class="form-group row">
+          <div class="col"><div class="col"><button class="bt1n" type="submit"[disabled]="myAddForm.invalid">Add Category</button></div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+}
+<!-- right col -->
+@if (showEdit) {
+  <div class=" comman">
+    <div class="row box">
+      <form   [formGroup]="myEditForm" (ngSubmit)="onFormUpdateSubmit()"  class="col lbl2">
+        <button  class="close" (click)="close()">Close</button>
+        <div class="row ">
+          <div class="col"><h2 ><b>Edit</b></h2></div></div>
+          <p>{{args}}</p>
+          <div class="row form-group">
+            <div class="col"><label class="lbl" for="qtypename2" id="qtypename2" >Name :</label></div>
+            <div class="col"> <input style="width: 114px; margin: 3px;" minlength="0" maxlength="200" name="qtypename2" type="text"  formControlName="name" >
+            </div></div>
+            <div class="row form-group">
+              <div class="col"><label class="lbl" for="qtypedesc2" id="qtypedesc2" >Name :</label></div>
+              <div class="col"> <input style="width: 250px; margin: 3px;" minlength="0" maxlength="200" name="qtypedesc2" type="text" formControlName="Desc">
+              </div></div>
+              <div class="row form-group">
+                <div class="col"><button class="bt1n" [disabled]="myEditForm.invalid"style=" margin: 3px;" id="qtypeupdate{{popdata2._id}}">Update</button>
+              </div></div>
+            </form>
+          </div>
+        </div>
+      }
+
+      <ag-grid-angular class="box ag-theme-quartz"
+        style="height:500px;"
+        [rowData]="Qtypenamedata$|async"
+        [columnDefs]="colDefs"
+        [pagination]="pagination"
+        [paginationPageSize]="paginationPageSize"
+        [paginationPageSizeSelector]="paginationPageSizeSelector"
+        (cellClicked)="onCellClick($event)"
+        />
+
+        <div >
+          <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()" [style]="display" [tabname]="tablename" [data]="valueid" [modal]="modal"></app-popupmodel>
+        </div>

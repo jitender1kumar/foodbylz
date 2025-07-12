@@ -1,0 +1,19 @@
+<h2>Running Orders</h2>
+<div class="container">
+  <div class="row">
+    @for (runningorder_ of runningorder ; track runningorder_) {
+      <div class="col">
+        <h3>Invoice No. {{runningorder_.createdAt}}</h3>
+        <p>Token Number{{runningorder_.tokennumber}}</p>
+        <p><Button (click)="gotohome(runningorder_.createdAt,runningorder_.tokennumber)">go</Button>
+        <Button (click)="cancel(runningorder_.createdAt)">Cancel</Button>
+      </p>
+      <!-- <div class="col" *ngFor="let runningorderdetails of runningorder_.Chairsrunningorder index as i">
+      <p style="position: relative;float: left;size: small;font-weight:500 ;">
+        {{runningorderdetails.namqe}},
+      </p>
+    </div> -->
+  </div>
+}
+</div>
+</div>

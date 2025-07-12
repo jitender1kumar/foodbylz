@@ -1,0 +1,1320 @@
+
+@import "tailwindcss";
+
+ .row .col
+{
+    margin: 1%
+}
+
+.lbl{
+    padding: 10px;
+    
+    font-size: large;
+    color: rgb(65, 49, 49);
+    font-weight: 600; 
+}
+.lbl2
+{
+    border: solid rgb(212, 207, 216) 1px;
+}
+.comman
+{
+     /* Hidden by default */
+  position: absolute; /* Stay in place */
+  z-index: 5; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(23, 110, 45, 0.849); /* Black w/ opacity */
+  
+ 
+}
+.box
+{
+  position: relative;
+  padding-top: 0px;
+  padding-bottom: 0px;
+    border-radius: 0.5rem;
+    margin: auto;
+    width: auto;
+    width: auto 70%;
+    background-color: #eff3fa;
+}
+.comman * {
+  margin: 2px 0;       /* Reduces top and bottom margin */
+  line-height: 1.2;    /* Tightens text spacing */
+}
+
+  .fooditems
+  {
+    background-color: #98eaf8;
+  }
+  .titleh4
+  {
+    padding: 15px;
+    color: rgb(24, 4, 4);
+   font-size: medium;
+  }
+.btnbox
+{
+  padding: 10px;
+  background-color: white;
+}
+
+.close {
+    position: initial;
+    top: 15px;
+    right: 35px;
+    color: #df4c4c;
+    font-size: 20px;
+    font-weight: 600;
+    background-color: rgb(243, 233, 199);
+  }
+ 
+  .close:hover{
+    color: #df4c4c;
+    font-weight: 650;
+   
+  }
+.box2
+{
+  width:100%;
+  padding: 10px;
+  border: solid blanchedalmond 0.1rem;
+}
+  .content {
+    
+    top:0px;
+    right: 0px;;
+    overflow: auto;
+    z-index:9999;
+    font-size: larger;
+  }
+  body
+{
+    background-color: rgb(242, 250, 250);
+}
+.bt1n
+{
+  margin-top: 5px;
+  margin-left: 10px;
+  border-radius: 0.2rem;
+  text-align: center;
+  width: auto;
+  color: rgb(223, 205, 205);
+  border: solid rgb(223, 205, 205) 0.2rem;
+  /* padding: 10px; */
+  /* background-color: rgb(104, 104, 243); */
+ 
+}
+
+
+/* anas ki css */
+/* Color Variables */
+:root {
+  --blue-main: #0366C8;
+  --blue-2: #0253A4;
+  --blue-3: #023E7D;
+  --blue-4: #002855;
+  --grey-1: #33415C;
+  --grey-2: #5C677D;
+  --grey-3: #7C8597;
+  --grey-4: #979DAC;
+  --dark-blue-3: #001233;
+  --dark-blue-2: #010E26;
+  --dark-blue-1: #00050D;
+  --light-grey-1: #C6C6C6;
+  --light-grey-2: #D1D1D1;
+  --light-grey-3: #DBDBDB;
+  --light-grey-4: #E6E6E6;
+  --white: #ffffff;
+  --red: #CC1F4A;
+  --green: #0A8647;
+  --yellow: #DA8C17;
+  --purple: #A17BD0;
+  --l-purple-20: #ECE5F6;
+  --l-purple-10: #F6F2FA;
+  --l-green-20: #CEE7DA;
+  --l-green-10: #E5F0EA;
+  --l-yellow-20: #F8E8D1;
+  --l-yellow-10: #FFF7E5;
+  --l-blue-20: #CDE0F4;
+  --l-blue-10: #E6F0FA;
+  --l-orange-10: #FFF0E6;
+  --l-red-10: #F7E6EA;
+}
+
+/* Basic Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #F9FAFB; /* Updated to white */
+  color: var(--grey-1);
+  padding-top: 80px;
+  font-size: 14px;
+}
+
+/* Header Styling */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Center content vertically */
+  padding: 20px;
+  background-color: var(--white);
+  border-bottom: 1px solid var(--light-grey-4);
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.08); /* Shadow with specified properties */
+  position: fixed;
+  width: 100%;
+  top: 0;
+}
+
+.logo img {
+  height: 32px; /* Set the desired height */
+  width: auto; /* Maintain aspect ratio */
+}
+
+.support {
+  font-size: 14px;
+  color: var(--grey-3);
+}
+
+.support span {
+  font-weight: bold;
+  color: var(--dark-blue-1);
+}
+
+/* Main Styling */
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 80px);
+}
+
+.login-container {
+  width: 562px;
+  text-align: left; /* Aligning content to the left */
+}
+
+.login-container h2 {
+  margin-bottom: 12px;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--dark-blue-1);
+}
+
+.login-container p {
+  margin-bottom: 32px;
+  font-size: 14px;
+  color: var(--grey-3);
+}
+
+.login-container .user-input {
+  font-weight: bold;
+  color: var(--blue-main);
+}
+
+.login-container .change-link {
+  color: var(--blue-main);
+  text-decoration: none;
+  margin-left: 5px; /* Adds space between text and link */
+}
+
+.login-container .change-link:hover {
+  text-decoration: underline; /* Underline on hover */
+}
+
+a {
+  text-decoration: none;
+  color: var(--blue-main);
+  margin-left: 8px;
+}
+
+/* Form Styling */
+form {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 32px;
+}
+
+form label {
+  display: block; /* Ensure label is visible */
+  margin-bottom: 8px; /* Optional: adds some space below the label */
+  font-size: 13px; /* Optional: sets a font size for the label */
+  color: var(--dark-blue-1); /* Optional: sets the color for better visibility */
+}
+
+form input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid var(--light-grey-4);
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--grey-1);
+}
+
+form input::placeholder {
+  color: var(--grey-4);
+}
+
+form .forgot-password {
+  color: var(--blue-main);
+  text-decoration: none;
+  margin-bottom: 32px; /* Space below the link */
+}
+
+form .forgot-password:hover {
+  text-decoration: underline; /* Underline on hover */
+}
+
+form button {
+  width: fit-content;
+  padding: 12px 32px; /* 12px top/bottom, 32px left/right */
+  background-color: var(--blue-main);
+  color: var(--white);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+form button:hover {
+  background-color: var(--blue-2);
+}
+
+/* Additional styling for the button container */
+.button-container {
+  display: flex;
+  justify-content: space-between; /* Space buttons apart */
+  margin-top: 32px; /* Space above the buttons */
+}
+
+.button-container button {
+  padding: 12px 32px; /* Same padding for both buttons */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.button-container button:hover {
+  background-color: var(--blue-2);
+  color: var(--white);
+}
+
+.contact-support {
+  display: block; /* Make link block-level for better spacing */
+  color: var(--blue-main);
+}
+
+.contact-support:hover {
+  text-decoration: underline; /* Underline on hover */
+}
+
+
+/* Secondary Button Style */
+.secondary-button {
+  background-color: var(--l-blue-10); /* Button color */
+  color: var(--blue-main); /* Label color */
+  border: none; /* Remove default border */
+  border-radius: 5px; /* Rounded corners */
+  padding: 10px 20px; /* Padding for the button */
+  cursor: pointer; /* Change cursor on hover */
+  font-size: 16px; /* Font size */
+  transition: background-color 0.3s; /* Transition for hover effect */
+}
+
+/* Hover effect for secondary button */
+.secondary-button:hover {
+  background-color: #D0E4F1; /* Change background color on hover */
+}
+
+
+/* Navigation Bar Styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--white); /* Adjust to match your design */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow effect */
+  height: 80px;
+  padding: 0px 20px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+.navbar-left .logo {
+  height: 40px; /* Adjust the logo size */
+}
+
+.navbar-center .nav-items {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  height: 80px; /* Set the nav items to fill 100% of the parent's height */
+  align-items: center; /* Ensure that the child elements are centered vertically */
+}
+
+.navbar-center .nav-items li {
+  margin: 0 12px;
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer; /* Makes the entire li clickable */
+}
+
+/* Active state applied to the <li> tag */
+.navbar-center .nav-items li.active {
+  background-color: var(--l-blue-10); /* Background for the active state */
+  border-bottom: 2px solid var(--blue-main); /* Bottom border with 2px thickness */
+}
+
+/* Links styling */
+.navbar-center .nav-items li a {
+  display: flex;
+  flex-direction: column; /* Stack icon and text vertically */
+  align-items: center;    /* Center the icon and text */
+  text-decoration: none;
+  color: var(--grey-3);
+  font-weight: 200;
+  font-size: 13px;
+  margin: 0px 8px;
+}
+
+/* Text color and font weight of the link inside the active <li> */
+.navbar-center .nav-items li.active a {
+  color: var(--blue-4); /* Active link color */
+  font-weight: 500; /* Active font weight */
+}
+
+/* Icon styling */
+.navbar-center .nav-items li a img {
+  margin: 0 0 5px 0; /* Space between the icon and text */
+  height: 24px;
+}
+
+/* Ensure the right navbar div aligns items horizontally */
+.navbar-right {
+  display: flex;
+  align-items: center; /* Align items vertically in the center */
+  justify-content: flex-end; /* Optional: Align both elements to the right */
+  gap: 20px; /* Space between support-container and profile */
+}
+
+/* Container for the support link */
+.navbar-right .support-container {
+  background-color: var(--l-blue-10); /* Light blue background */
+  border: 1px solid var(--l-blue-20); /* Border with specific color */
+  padding: 12px; /* Padding inside the container */
+  display: flex;
+  align-items: center;
+  border-radius: 4px; /* Optional: Add some rounding to corners */
+}
+
+/* "Get support" text style */
+.navbar-right .support-container .support-text {
+  color: var(--grey-2); /* Grey color for the "Get support" text */
+  font-size: 14px;
+  margin-right: 5px; /* Space between "Get support" and the number */
+}
+
+/* Support number link style */
+.navbar-right .support-container .support-number {
+  color: var(--blue-main); /* Blue color for the phone number */
+  font-size: 14px;
+  text-decoration: none; /* Remove underline from the link */
+  font-weight: 700;
+}
+
+/* Profile container styling */
+.navbar-right .profile {
+  display: flex;
+  align-items: center;
+  position: relative; /* Needed for dropdown positioning */
+  cursor: pointer; /* Makes the profile area clickable */
+}
+
+/* Profile icon styling */
+.navbar-right .profile .profile-icon {
+  width: 40px; /* Set the size of the circle */
+  height: 40px; /* Set the size of the circle */
+  border-radius: 50%; /* Make the image a perfect circle */
+  object-fit: cover; /* Ensure the image covers the entire circle */
+  margin-right: 10px; /* Space between image and the profile name */
+  border: 2px solid var(--l-blue-20); /* Optional: Add a border around the circle */
+}
+
+/* Profile name styling */
+.navbar-right .profile .profile-name {
+  font-weight: 500;
+}
+
+/* Dropdown menu styling */
+.dropdown-menu {
+  display: none; /* Initially hidden */
+  position: absolute;
+  top: 60px; /* Position dropdown below profile */
+  right: 0;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--l-blue-20);
+  border-radius: 4px;
+  width: 180px; /* Adjust width as needed */
+  z-index: 1000;    
+}
+
+.dropdown-menu ul {
+  list-style: none;
+  padding: 10px 0;
+  margin: 0;
+}
+
+.dropdown-menu ul li {
+  padding: 8px 16px;
+}
+
+.dropdown-menu ul li a {
+  color: var(--grey-3);
+  text-decoration: none;
+  font-size: 14px;
+  display: block;
+  font-weight: 500;
+}
+
+.dropdown-menu ul li a:hover {
+  background-color: var(--l-blue-10); /* Hover effect */
+  color: var(--blue-main);
+}
+
+
+
+/* Main Container Styles */
+.restaurant-dashboard {
+  padding: 20px;
+}
+
+/* Header Styles */
+.restaurant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.restaurant-buttons button {
+  margin-left: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+/* States Styles */
+.restaurant-states {
+  display: flex; /* Use flexbox to layout the columns */
+  flex-direction: row; /* Arrange columns in a row */
+  justify-content: space-between; /* Space between columns */
+  margin-bottom: 20px;
+}
+
+
+.restaurant-state-column {
+  flex: 1; /* Each column takes equal space */
+  padding: 20px; /* 20px padding */
+  text-align: left; /* Left align content */
+  margin: 0 12px; /* Default margin for left and right */
+  border-radius: 8px;
+}
+
+.restaurant-state-column .order-count {
+  font-weight: bold; /* Bold text */
+  font-size: 24px; /* Font size */
+  margin: 0; /* Remove default margin */
+}
+
+.restaurant-state-column .order-text {
+  font-weight: normal; /* Regular weight */
+  font-size: 16px; /* Font size */
+  color: var(--blue-4); /* Regular blue 4 color */
+  margin: 5px 0 0 0; /* Add some space above */
+}
+
+.restaurant-state-column:first-child {
+  margin-left: 0; /* No left margin for the first column */
+}
+
+.restaurant-state-column:last-child {
+  margin-right: 0; /* No right margin for the last column */
+}
+
+/* Specific styles for each state column */
+.state-1 {
+  background-color: var(--l-blue-10); /* Light blue */
+  border: 1px solid var(--blue-main); /* Blue border */
+}
+
+.state-1 .order-count {
+  color: var(--blue-main); /* Blue text color */
+}
+
+.state-2 {
+  color: var(--purple); /* Purple text color */
+  background-color: var(--l-purple-20);
+  border: 1px solid var(--purple);
+}
+
+.state-3 {
+  color: var(--yellow); /* Purple text color */
+  background-color: var(--l-yellow-20);
+  border: 1px solid var(--yellow);
+}
+
+.state-4 {
+  color: var(--green); /* Purple text color */
+  background-color: var(--l-green-20);
+  border: 1px solid var(--green);
+}
+
+
+
+
+
+.restaurant-total-sales {
+  flex: 1;
+  padding: 20px;
+  border: 1px solid #ccc;
+}
+
+/* Order List Styles */
+.restaurant-order-list {
+  padding: 20px;
+  border: 1px solid #ccc;
+}
+
+.restaurant-header h1 {
+  font-family: 'Inter', sans-serif; /* Ensure this font is imported in your HTML */
+  font-weight: 600; /* Semi-bold */
+  font-size: 24px; /* Font size */
+  color: var(--blue-4); /* Custom variable for color */
+  margin: 0; /* Remove default margin */
+}
+
+.restaurant-buttons button {
+  font-family: 'Inter', sans-serif; /* Ensure this font is imported in your HTML */
+  font-weight: 600; /* Semi-bold */
+  font-size: 14px; /* Font size */
+  color: white; /* Text color */
+  background-color: var(--blue-main); /* Button color */
+  padding: 8px 16px; /* Padding: top/bottom and left/right */
+  border: none; /* Remove default border */
+  border-radius: 4px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.restaurant-buttons button:hover {
+  background-color: var(--blue-2); /* Optional: Darker shade on hover */
+}
+
+
+/* Reset Styles */
+
+/* Container for the Sales Graph */
+.sales-graph {
+  flex: 2; /* Takes up 2 parts of the available space */
+  background-color: var(--white);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 0px rgba(0, 0, 0, 0.04);
+  margin: 0px 20px 0px 0px;
+  border: 1px solid var(--light-grey-3);
+}
+
+.sales-graph h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Header Section with Two Columns */
+.sales-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Sales Info Column */
+.sales-info {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.sales-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.sales-amount {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--blue-main);
+  margin-top: 5px;
+}
+
+/* Tabs Section */
+.sales-tabs {
+  display: flex;
+  align-items: center;
+}
+
+.tab {
+  border: none;
+  background-color: var(--white);
+  color: var(--blue-4);
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.tab.active {
+  background-color: var(--blue-main);
+  color: var(--white);
+}
+
+.tab:hover {
+  background-color: var(--l-blue-10);
+}
+
+/* Calendar Button Styling */
+.calendar-btn {
+  border: 1px solid var(--l-blue-10);
+  border-radius: 8px;
+  background-color: transparent;
+  cursor: pointer;
+  height: 40px;
+  width: 40px;
+
+  /* Center content with Flexbox */
+  display: flex;
+  justify-content: center; /* Horizontal center */
+  align-items: center; /* Vertical center */
+}
+
+.calendar-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+/* Graph Container */
+.graph-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 300px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+/* Bar Groups */
+.bar-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 10px;
+}
+
+/* Bars */
+.bar {
+  width: 180px;
+  margin: 5px 0;
+  border-radius: 5px;
+  background-color: #ddd;
+  transition: opacity 0.3s;
+}
+
+.bar:hover {
+  opacity: 0.8;
+}
+
+.dine-in {
+  background-color: var(--blue-main);
+}
+
+.delivery {
+  background-color: var(--purple);
+}
+
+/* Time Labels */
+.time-label {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+}
+
+
+.sales-summary {
+  display: flex;
+  flex-direction: column; /* Arrange children vertically */
+  align-items: flex-start; /* Align text to the left */
+}
+
+.sales-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+
+
+
+/* Sales Tabs Container Styling */
+.sales-tabs-container {
+  display: flex;
+  align-items: center; /* Vertically center the calendar with tabs */
+  gap: 8px; /* Space between the tabs and the calendar button */
+}
+
+/* Tabs Group Styling */
+.tabs-group {
+  display: flex;
+  gap: 4px; /* Space between tabs */
+  padding: 4px;
+  border: 1px solid var(--l-blue-10);
+  border-radius: 8px;
+}
+
+/* Individual Tab Styling */
+.tab {
+  border: none;
+  background-color: var(--white);
+  color: var(--blue-4);
+  font-size: 12px;
+  font-weight: 400;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Active Tab Styling */
+.tab.active {
+  background-color: var(--blue-main);
+  color: var(--white);
+  pointer-events: none; /* Disable interactions on active tab */
+}
+
+/* Hover Effect Only on Non-Active Tabs */
+.tab:not(.active):hover {
+  background-color: var(--l-blue-10);
+}
+
+/* Legend Container */
+.legend-container {
+  display: flex;
+  gap: 16px; /* Space between the two items */
+  margin-top: 16px; /* Space above the legend */
+  justify-content: center;
+}
+
+/* Legend Items */
+.legend-item {
+  display: flex;
+  align-items: center; /* Align dot and text vertically */
+  gap: 8px; /* Space between dot and text */
+}
+
+/* Legend Dots */
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%; /* Make it a perfect circle */
+}
+
+/* Blue Dot */
+.blue-dot {
+  background-color: var(--blue-main); /* Main blue color */
+}
+
+/* Purple Dot */
+.purple-dot {
+  background-color: var(--purple); /* Purple color for Delivery */
+}
+
+/* Legend Text */
+.legend-text {
+  font-size: 12px;
+  color: var(--blue-main); /* Same color as blue dot */
+}
+
+/* Purple Text for Delivery */
+.purple-dot + .legend-text {
+  color: var(--purple); /* Purple color for Delivery text */
+}
+
+
+
+/* Total Sales Amount */
+
+.total-sales-amount {
+  flex: 1; /* Takes up 1 part of the available space */
+  border: 1px solid var(--light-grey-3); /* Optional for visual structure */
+  border-radius: 8px;
+  background-color: var(--white);
+  padding: 20px;
+  box-shadow: 0px 4px 0px rgba(0, 0, 0, 0.04);
+}
+
+.total-sales-info {
+  display: flex; /* Use flexbox for two columns */
+  justify-content: space-between; /* Space between columns */
+  align-items: center; /* Center align items vertically */
+  margin-bottom: 20px;
+}
+
+.sales-title {
+  flex: 1; /* First column takes available space */
+}
+
+.sales-title h2 {
+  font-size: 18px; /* Heading size */
+  font-weight: bold; /* Bold weight */
+  color: var(--blue-4); /* Blue 4 color (you may adjust the hex value as needed) */
+  margin-bottom: 5px; /* Space below the heading */
+}
+
+.sales-title p {
+  font-size: 13px; /* Font size for amount */
+  margin: 0; /* Remove margin */
+  font-weight: normal;
+}
+
+.sales-title p span {
+  font-size: 13px; /* Font size for amount */
+  margin: 0; /* Remove margin */
+  font-weight: bold;
+  color: var(--blue-main);
+}
+
+.sales-dropdown {
+  flex: 0 0 auto; /* Second column does not grow */
+}
+
+.sales-dropdown select {
+  padding: 5px; /* Padding for dropdown */
+  font-size: 13px; /* Font size for dropdown */
+  border: 1px solid lightgrey; /* Border for dropdown */
+  border-radius: 4px; /* Rounded corners for dropdown */
+}
+
+
+
+.sales-container {
+  display: flex; /* Use flexbox to align the chart and legend */
+  align-items: flex-start; /* Align items at the start */
+  padding: 20px 0px;
+}
+
+.sales-legend {
+  margin-right: 20px; /* Space between chart and legend */
+}
+
+.sales-legend h4 {
+  margin-bottom: 10px; /* Space below the heading */
+}
+
+.sales-legend ul {
+  list-style-type: none; /* Remove default list styles */
+  padding: 0; /* Remove padding */
+}
+
+.sales-legend li {
+  margin-bottom: 8px; /* Space between legend items */
+  font-size: 12px; /* Adjust font size if needed */
+  align-items: center;
+}
+
+.legend-color {
+  display: inline-block; /* Allow color squares to be inline */
+  width: 12px; /* Width of the color box */
+  height: 12px; /* Height of the color box */
+  border-radius: 2px; /* Rounded corners */
+  margin-right: 4px; /* Space between color box and text */
+}
+
+.cash {
+  background-color: rgba(0, 123, 255, 0.6); /* Cash color */
+}
+
+.card {
+  background-color: rgba(40, 167, 69, 0.6); /* Card color */
+}
+
+.upi {
+  background-color: rgba(255, 193, 7, 0.6); /* UPI color */
+}
+
+.due-balance {
+  background-color: rgba(255, 0, 0, 0.6); /* Due Balance color */
+}
+
+
+
+/* Order List*/
+
+/* Order List Container */
+.order-list-container {
+  background-color: var(--white);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 0px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--light-grey-3);
+}
+
+
+/* Header Section */
+.order-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.order-list-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--blue-4); /* Blue 4 color */
+}
+
+/* Search Bar */
+.search-bar {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid var(--l-blue-10);
+  border-radius: 8px;
+  width: 250px;
+  height: 40px;
+}
+
+
+
+/* Table Styling */
+.order-list-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.order-list-table th, .order-list-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #E6F0FA;
+  font-size: 14px;
+}
+
+.order-list-table th {
+  background-color: var(--white);
+  font-weight: 600;
+  color: var(--grey-3);
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.order-list-table tbody tr:hover {
+  background-color: #F9FBFF;
+}
+
+table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Order Status Styles */
+.status {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+}
+
+/* Status specific colors */
+.new-order {
+  color: var(--blue-main);  /* Blue */
+  background-color: var(--l-blue-10);
+}
+
+.in-process {
+  color: var(--yellow);  /* Yellow */
+  background-color: var(--l-yellow-10);
+}
+
+.completed {
+  color: var(--green);  /* Green */
+  background-color: var(--l-green-10);
+}
+
+.canceled {
+  color: var(--red);  /* Red */
+  background-color: var(--l-red-10);
+}
+
+/* Action Icon Container */
+.action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Icon Inside the Action Icon Container */
+.action-icon img {
+  width: 28px;
+  height: 28px;
+}
+
+/* Action Button */
+.action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* Dropdown container */
+.dropdown {
+  position: relative;
+}
+
+/* Dropdown List (Initially hidden) */
+.dropdown-list {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: var(--white);
+  border: 1px solid var(--light-grey-4);
+  border-radius: 4px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  width: 150px;
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+  z-index: 10;
+}
+
+/* Dropdown Item */
+.dropdown-list li {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  gap: 8px; /* Space between icon and text */
+  cursor: pointer;
+}
+
+.dropdown-list li:hover {
+  background-color: var(--l-blue-10);
+}
+
+/* Icon inside dropdown */
+.dropdown-list li img {
+  width: 20px;
+  height: 20px;
+}
+
+
+.tabs-and-status {
+  display: flex; /* Flexbox for alignment */
+  justify-content: space-between; /* Space between the two sections */
+  align-items: center; /* Center vertically */
+  margin-bottom: 20px; /* Space between tabs and state columns */
+}
+
+.table-tabs {
+  display: flex; /* Display tabs in a row */
+}
+
+.table-tab {
+  padding: 10px 15px; /* Padding for the tabs */
+  background-color: transparent; /* Background color for inactive tabs */
+  border: 1px solid #E6F0FA; /* Border color */
+  border-radius: 4px; /* Rounded corners */
+  cursor: pointer; /* Cursor style on hover */
+  margin-right: 10px; /* Space between tabs */
+}
+
+.table-tab.active {
+  background-color: #0044CC; /* Background color for the active tab */
+  color: white; /* Text color for active tab */
+}
+
+.status-indicators {
+  display: flex; /* Display indicators in a row */
+}
+
+.status-item {
+  display: flex; /* Align circle and text */
+  align-items: center; /* Center vertically */
+  margin-right: 20px; /* Space between items */
+}
+
+.status-circle {
+  width: 8px; /* Circle width */
+  height: 8px; /* Circle height */
+  border-radius: 50%; /* Make it a circle */
+  margin-right: 5px; /* Space between circle and text */
+}
+
+.status-circle.available {
+  background-color: #28A745; /* Green for Available */
+}
+
+.status-circle.reserved {
+  background-color: #FFC107; /* Yellow for Reserved */
+}
+
+.status-circle.running-orders {
+  background-color: #007BFF; /* Blue for Running Orders */
+}
+
+.status-circle.billed {
+  background-color: #DC3545; /* Red for Billed */
+}
+
+.state-column {
+  flex: 1; /* Each column takes equal space */
+  text-align: center; /* Center text */
+}
+
+.delete-floor-btn {
+  background-color: transparent; /* No background color */
+  color: var(--red); /* Text color in red */
+  border: none; /* Remove default border */
+  cursor: pointer; /* Pointer cursor */
+  display: flex; /* Use flexbox to align icon and text */
+  align-items: center; /* Center align items vertically */
+  font-size: 14px; /* Font size for the button text */
+}
+
+.delete-floor-btn .delete-icon {
+  margin-right: 4px; /* Space between the icon and text */
+  width: 20px; /* Adjust the size of the icon */
+  height: 20px; /* Adjust the size of the icon */
+}
+
+.table-layout {
+  display: grid; /* Use grid for table layout */
+  grid-template-columns: repeat(7, 0fr); /* 4 columns */
+  gap: 94px; /* Space between tables */
+  margin-top: 20px; /* Space above table layout */
+  padding: 32px;
+}
+.tdcontainerformanage
+{
+  position:absolute!important;
+  top: 100px!important;
+ 
+  
+}
+.table {
+  position: relative; /* Position relative for absolute positioning of circles */
+  width: 104px; /* Set a fixed width for square tables */
+  height: 104px; /* Set a fixed height for square tables */
+  background-color: #E6F0FA; /* Light gray background for tables */
+  border: 1px solid #CDE0F4; /* Light border for tables */
+  border-radius: 8px; /* Slightly rounded corners */
+  padding: 8px; /* Padding inside table */
+  font-weight: 500; /* Make table number bold */
+  display: flex; /* Use flexbox for centering text */
+  font-size: 12px; /* Font size for table number */
+  color: var(--blue-main); /* Text color */
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
+}
+
+.circle {
+  position: absolute; /* Position absolute to place circles around the table */
+  transform: translate(-50%, -50%);
+  width: 32px; /* Circle diameter */
+  height: 16px; /* Circle diameter */
+  background-color: var(--l-blue-20); /* Color of circles for reserved table */
+  border-radius: 150px 150px 0 0;
+}
+
+.circle.top-left {
+  top: -9px;
+  left: 51px;
+}
+
+.circle.top-right {
+  top: 56px;
+  right: -17px;
+  rotate: 90deg;
+}
+
+.circle.bottom-left {
+  bottom: 62px;
+  left: -17px;
+  rotate: -90deg;
+}
+
+.circle.bottom-right {
+  bottom: -9px;
+  right: 51px;
+  rotate: 180deg;
+}
+
+/* Styling for the Add Table button */
+.add-table {
+  display: flex; /* Center the text */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  width: 104px; /* Same width as other tables */
+  height: 104px; /* Same height as other tables */
+  background-color: #E6F0FA; /* Background color */
+  border: 1px solid #CDE0F4; /* Light border for tables */
+  border-radius: 8px; /* Slightly rounded corners */
+  font-weight: 500; /* Make text bold */
+  color: white; /* Change text color to white */
+  text-align: center; /* Center text */
+  cursor: pointer; /* Pointer cursor */
+  z-index: 1; /* Ensure it stays above circles */
+}
+
+.add-table:hover {
+  background-color: #D1E4F7; /* Change color on hover */
+}
+
+
+/* Responsive Styling */
+@media (max-width: 600px) {
+  .login-container {
+      width: 90%;
+      padding: 20px;
+  }
+}
+.swal-title {
+  font-size: 22px;
+  color: #007bff;
+}
+
+.swal-button {
+  font-size: 16px;
+  padding: 8px 16px;
+  border-radius: 5px;
+}

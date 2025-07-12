@@ -1,0 +1,159 @@
+
+<div class="container">
+<div class="row" >
+    
+   
+</div>
+<div>
+    <input class="lbl" type="button" value="Pick Up">
+</div>
+</div>
+
+
+
+<div class="restaurant-dashboard">
+    <!-- First Div -->
+    <div class="header restaurant-header">
+        <h1>Books & Beans Dashboard</h1>
+        <div class="buttons restaurant-buttons">
+            <button class="dine-in">Reserve a Table</button>
+        </div>
+    </div>
+
+    <!-- Second Div -->
+    <div class="tabs-and-status">
+    <div class="table-tabs restaurant-tabs">
+        <button class="table-tab active">Available</button>
+        <button class="table-tab">Reserved</button>
+        <button class="table-tab">Running Orders (KOT)</button>
+        <button class="table-tab">Billed</button>
+    </div>
+    
+    <div class="status-indicators">
+        <div class="status-item">
+            <span class="status-circle available"></span>
+            <span class="status-text">Available</span>
+        </div>
+        <div class="status-item">
+            <span class="status-circle reserved"></span>
+            <span class="status-text">Reserved</span>
+        </div>
+        <div class="status-item">
+            <span class="status-circle running-orders"></span>
+            <span class="status-text">Running Orders (KOT)</span>
+        </div>
+        <div class="status-item">
+            <span class="status-circle billed"></span>
+            <span class="status-text">Billed</span>
+        </div>
+    </div>
+    </div>
+    
+
+    <!-- Fourth Div -->
+    
+    <div class="order-list-container">
+        <div *ngFor="let floor of Floordata">
+            <div class="order-list-header">
+                {{floor.name}}
+                <button class="delete-floor-btn">
+                    <img src="Images/DeleteIcon.svg" alt="Delete" class="delete-icon"> <!-- Make sure to update the image path -->
+                    Delete Floor
+                </button>
+            </div>
+            <div class="table-layout">
+              <div *ngFor="let d of dinedata index as ii">
+                <a class="table" *ngIf="floor._id==d.floor_id">
+                  <p>{{d.name}}</p>
+                  <div >
+
+
+                    <div style="float:left" *ngFor="let chair of chairs; let i = index ">
+                      <div >
+                        <!-- chair booking status 0-booked 1-booking available 2-booking available but do want book -->
+                        <div class="circle top-left" *ngIf="chair.status && d._id==chair.table_id && chair.chairstatus!=0">
+                          {{chair.name}}   <input type="checkbox" id="{{chair._id}}" (change)="chairstatus(chair._id,chair.name,chair.description,chair.table_id)" checked />
+                          Available
+                        </div>
+                        <div class="circle top-left" *ngIf="!chair.status && d._id==chair.table_id && chair.chairstatus==0">
+                          {{chair.name}}    <input type="checkbox" disabled>
+                          Booked
+                        </div>
+                      </div>
+                      <div *ngIf="i==1">
+
+                        <!-- chair booking status 0-booked 1-booking available 2-booking available but do want book -->
+                        <div class="circle top-right" *ngIf="chair.status && d._id==chair.table_id && chair.chairstatus!=0">
+                          {{chair.name}}   <input type="checkbox" id="{{chair._id}}" (change)="chairstatus(chair._id,chair.name,chair.description,chair.table_id)" checked />
+                          Available
+                        </div>
+                        <div class="circle top-right" *ngIf="!chair.status && d._id==chair.table_id && chair.chairstatus==0">
+                          {{chair.name}}    <input type="checkbox" disabled>
+                          Booked
+                        </div>
+
+                      </div>
+                      <div *ngIf="i==2">
+
+                        <!-- chair booking status 0-booked 1-booking available 2-booking available but do want book -->
+                        <div class="circle bottom-left" *ngIf="chair.status && d._id==chair.table_id && chair.chairstatus!=0">
+                          {{chair.name}}   <input type="checkbox" id="{{chair._id}}" (change)="chairstatus(chair._id,chair.name,chair.description,chair.table_id)" checked />
+                          Available
+                        </div>
+                        <div class="circle bottom-left" *ngIf="!chair.status && d._id==chair.table_id && chair.chairstatus==0">
+                          {{chair.name}}    <input type="checkbox" disabled>
+                          Booked
+                        </div>
+
+                      </div>
+                      <div *ngIf="i==3">
+
+                        <!-- chair booking status 0-booked 1-booking available 2-booking available but do want book -->
+                        <div class="circle bottom-right" *ngIf="chair.status && d._id==chair.table_id && chair.chairstatus!=0">
+                          {{chair.name}}   <input type="checkbox" id="{{chair._id}}" (change)="chairstatus(chair._id,chair.name,chair.description,chair.table_id)" checked />
+                          Available
+                        </div>
+                        <div class="circle bottom-right" *ngIf="!chair.status && d._id==chair.table_id && chair.chairstatus==0">
+                          {{chair.name}}    <input type="checkbox" disabled>
+                          Booked
+                        </div>
+
+                      </div>
+                      <div *ngIf="i>3">
+
+                        <!-- chair booking status 0-booked 1-booking available 2-booking available but do want book -->
+                        <div class="circle top-right" *ngIf="chair.status && d._id==chair.table_id && chair.chairstatus!=0">
+                          {{chair.name}}   <input type="checkbox" id="{{chair._id}}" (change)="chairstatus(chair._id,chair.name,chair.description,chair.table_id)" checked />
+                          Available
+                        </div>
+                        <div class="circle top-right" *ngIf="!chair.status && d._id==chair.table_id && chair.chairstatus==0">
+                          {{chair.name}}    <input type="checkbox" disabled>
+                          Booked
+                        </div>
+
+                      </div>
+                    </div>
+
+                    <!--<div>
+                      <div *ngIf="d.status "> <input type="button" value="d.name}}" id="{d._id}}" (click)="getchair(d._id)" />Available Table</div>
+                      <div *ngIf="!d.status"> <input type="button" disabled value="{d.name}}" />Booked Table</div>
+                    </div>--> 
+                  </div>
+
+                </a>
+              </div>
+            </div>
+        </div>
+    
+        </div>
+        <!-- Top Section -->
+       
+    
+        <!-- Table Section -->
+        
+            
+        
+        
+        
+    </div>
+    

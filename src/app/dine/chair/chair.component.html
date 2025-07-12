@@ -1,0 +1,101 @@
+
+<h4 class="titleh4">Chairs Management</h4>
+<button class="bt1n btnbox" id="show" (click)="shows()">+Add chairs</button>
+
+@if (show) {
+  <div class="comman" >
+    <div class="row box">
+      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()"  class="col lbl2">
+        <button  class="close" (click)="close()">Close</button>
+        <div class="row lbl"><h4>Add Dinning Table Name like(T1,T2,T3,T4 or Table1,Table2,Table3,Table4)</h4></div>
+        <div class="col">  <label>
+          <input type="checkbox"  formControlName="status"/>
+          <input type="checkbox" style="visibility: hidden;"  formControlName="chairorderstatus" value="1"/>
+          Status
+        </label>
+      </div>
+      <div class="form-group row">
+        <div class="col"><label class="lbl" for="dinedata" id="dinedata" >Select Dining Table :</label></div>
+        <div class="col">
+          <select class="lbl" formControlName="table_id">
+            @for (d of dinedata; track d) {
+              <option  class="lbl" value="{{d._id}}" >{{d.name}}</option>
+            }
+          </select>
+        </div>
+        <div class="col">@if (myEditForm.get('table_id')?.invalid || myEditForm.get('table_id')?.touched ) {
+          <div></div>
+        }
+      Option is required.</div>
+    </div>
+    <div class="form-group row">
+      <div class="col"><label class="lbl" for="name" id="name" > Name :</label></div>
+      <div class="col"><input class="lbl" type="text" formControlName="name"   id="nametxt"/></div>
+    </div>
+    <div class="form-group row">
+      <div class="col"><label class="lbl" for="description" id="description" > Description :</label></div>
+      <div class="col"><input class="lbl" type="text" formControlName="description"   id="description"/></div>
+    </div>
+    <p>{{args}}</p>
+    <div class="row">
+      <div class="col"><button style="border: solid black; padding: 10px;" [disabled]="myAddForm.invalid " class="bt1n" type="submit">+</button>
+    </div>
+  </div>
+</form>
+</div>
+</div>
+}
+
+@if (showEdit) {
+  <div class=" comman">
+    <div class="row box">
+      <form  [formGroup]="myEditForm" (ngSubmit)="onFormEdit()"  class="col lbl2">
+        <button  class="close" (click)="close()">Close</button>
+        <div class="row">
+          <div class="col"><h2 ><b>Edit</b></h2></div>
+        </div>
+        <p>{{args}}</p>
+        <div class="col">  <label>
+          <input type="checkbox"  formControlName="status"/>
+          <input type="checkbox" style="visibility: hidden;"  formControlName="chairorderstatus" value="1"/>
+          Status
+        </label>
+      </div>
+      <div class="form-group row">
+        <div class="col"><label class="lbl" for="dinedata" id="dinedata" >Select Table Name :</label></div>
+        <div class="col">
+          <select class="lbl" formControlName="table_id">
+            <option  class="lbl" *ngFor="let d of dinedata index as i" [selected]="d._id===popdata2.table_id" value="{{d._id}}" >{{d.name}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col"><label class="lbl" for="name" id="name" > Name :</label></div>
+        <div class="col">  <input style="width: 114px; margin: 3px;" formControlName="name" type="text"  value="{{popdata2.name}}">
+        </div></div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="description" id="description" > Description :</label></div>
+          <div class="col"> <input style="width: 250px; margin: 3px;" formControlName="description"  type="text"  aria-multiline="true" value="{{popdata2.description}}">
+          </div></div>
+          <div class="row">
+            <div class="col">
+              <button class="bt1n" style=" margin: 3px;" id="baseb"[disabled]="myEditForm.invalid" >Update</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <ag-grid-angular class="box ag-theme-quartz"
+    style="height:500px;"
+    [rowData]="dinename"
+    [columnDefs]="colDefs"
+    [pagination]="pagination"
+    [paginationPageSize]="paginationPageSize"
+    [paginationPageSizeSelector]="paginationPageSizeSelector"
+    (cellClicked)="onCellClick($event)"
+    />
+  <div >
+    <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()" [style]="display" [tabname]="tablename" [data]="valueid" [modal]="modal"></app-popupmodel>
+  </div>

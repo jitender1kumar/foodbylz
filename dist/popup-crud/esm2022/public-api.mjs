@@ -1,0 +1,6 @@
+/*
+ * Public API Surface of popup-crud
+ */
+export * from './lib/popup-crud.service';
+export * from './lib/popup-crud.component';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljLWFwaS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3Byb2plY3RzL3BvcHVwLWNydWQvc3JjL3B1YmxpYy1hcGkudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7O0dBRUc7QUFFSCxjQUFjLDBCQUEwQixDQUFDO0FBQ3pDLGNBQWMsNEJBQTRCLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKlxyXG4gKiBQdWJsaWMgQVBJIFN1cmZhY2Ugb2YgcG9wdXAtY3J1ZFxyXG4gKi9cclxuXHJcbmV4cG9ydCAqIGZyb20gJy4vbGliL3BvcHVwLWNydWQuc2VydmljZSc7XHJcbmV4cG9ydCAqIGZyb20gJy4vbGliL3BvcHVwLWNydWQuY29tcG9uZW50JztcclxuIl19

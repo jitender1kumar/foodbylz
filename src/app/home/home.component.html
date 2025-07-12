@@ -1,0 +1,360 @@
+<h4 class="titleh4"> Billing Orders</h4>
+<table>
+
+  <tr>
+    <!-- left pan -->
+    <td class="category-sidebar">
+      <div class="category-card">
+        <div class="category-header">
+          <h5>Categories</h5>
+        </div>
+        <ul class="category-list">
+          <li *ngFor="let category of categorynamedata$ | async">
+            <button class="category-button" (click)="getproductbycategory(category._id)">
+              {{ category.name }}
+            </button>
+          </li>
+        </ul>
+      </div>
+    </td>
+    <!-- center pan -->
+    <td class="billing-container align-top p-0">
+      <div style="width:100%;" class="billing-app px-4 py-6 sm:px-6 lg:px-12 max-w-screen-xl mx-auto">
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">Search Foods</h2>
+
+        <div *ngIf="productsByCategoryId && productsByCategoryId.length >= 0" class="space-y-4">
+          <!-- Search Box -->
+          <input type="text" [(ngModel)]="selectedType" placeholder="Search food..."
+            (keyup)="getFilteredProductsByCategoryId()"
+            class="w-full max-w-md px-4 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+
+          <!-- Filters -->
+          <div class="flex flex-wrap gap-4 text-sm text-gray-700">
+            <label class="inline-flex items-center gap-1">
+              <input type="radio" name="foodType" value="" [(ngModel)]="selectedType"
+                (change)="getFilteredProductsByCategoryId()" class="accent-cyan-600" />
+              All
+            </label>
+
+            <label class="inline-flex items-center gap-1">
+              <input type="radio" name="foodType" value="false" [(ngModel)]="selectedType"
+                (change)="getFilteredProductsByCategoryId()" class="accent-green-600" />
+              🍃 Veg
+            </label>
+
+            <label class="inline-flex items-center gap-1">
+              <input type="radio" name="foodType" value="true" [(ngModel)]="selectedType"
+                (change)="getFilteredProductsByCategoryId()" class="accent-red-600" />
+              🍗 Non-Veg
+            </label>
+          </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div *ngIf="productsByCategoryId" class="mt-8 px-4">
+          <div class="grid gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 ">
+            <div *ngFor="let product of productsByCategoryId" class="group h-50">
+              <div
+                class="bg-white  rounded-2xl shadow-md hover:shadow-xl border border-gray-200 hover:border-cyan-500 transition-all duration-300 p-5 flex flex-col items-center text-center cursor-pointer"
+                (click)="increment(product._id)">
+
+                <!-- Optional: Product Image Placeholder -->
+                <div
+                  class="w-10 h-10 bg-cyan-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-cyan-200 transition">
+                  <span class="text-3xl text-cyan-600 font-bold">+</span>
+                </div>
+
+                <!-- Product Name -->
+                <span class="text-base  font-semibold text-gray-800 group-hover:text-cyan-700 transition">
+                  {{ product.ProductName }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </td>
+
+
+    <!-- right pan -->
+    <td class="fooditems">
+      <div class="invoice-card">
+        <p *ngIf="ordermode"
+          style="top:0;font-weight: bolder;font-size: small;font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">
+          Invoice No.: {{invoiceid}}, Token Number.: {{TokenNumber}}</p>
+        <div class="flex items-center justify-between flex-wrap gap-1 bg-gray-50 px-1 py-1 rounded shadow mb-1">
+          <!-- Buttons -->
+          <div class="flex gap-1" *ngIf="ordermode">
+            <!-- <button
+              class="bg-gradient-to-r from-blue-600 to-violet-600 text-black font-semibold py-2 px-4 rounded shadow hover:scale-105 transition">
+             <p style="font-size: x-small;">Invoice Number</p>
+          <hr>
+              {{ chardata }}
+            </button> -->
+            <button
+              class="bg-gradient-to-r from-blue-600 to-violet-600 text-black font-semibold py-2 px-4 rounded shadow hover:scale-105 transition">
+              {{ ordermode }}
+            </button>
+<!-- *ngIf="CustomerName == "Guest"" -->
+            <button (click)="showCustomersPopUp()" 
+              class="bg-gradient-to-r from-indigo-500 to-purple-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition">
+              +Customer
+            </button>
+            <button (click)="showCommentsPopUp()"
+              class="bg-gradient-to-r from-indigo-500 to-purple-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition">
+              Comment
+            </button>
+            <button
+              class="bg-gradient-to-r from-blue-600 to-violet-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition">
+              Assist To
+            </button>
+
+            <button 
+              class="bg-gradient-to-r from-blue-600 to-green-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition">
+              {{CustomerName}}
+            </button>
+          </div>
+
+          <!-- Invoice Header -->
+
+
+
+
+        </div>
+
+
+        <!-- Item List -->
+        <div class="item-list">
+          <div *ngFor="let d of RunningItems_; index as i" class="item-row">
+            <!-- Show Header Row for the First Item -->
+            <ng-container *ngIf="i === 0">
+              <div class="item-header">
+                <div class="item-col action-col"></div>
+                <div class="item-col action-col"></div>
+                <div class="item-col name-col">Name</div>
+                <div class="item-col type-col">Type</div>
+                <div class="item-col quantity-col">Qty.</div>
+                <div class="item-col price-col">Price</div>
+                <div class="item-col total-col">Item Total</div>
+              </div>
+            </ng-container>
+
+            <!-- Product Row -->
+            <div class="item-row-content">
+              <button class="action-button"
+                (click)="increment2(d._idPP, d.SubQuantityTypeName, d.quntityvalue, d.ProductPrice)">
+                <b>+</b>
+              </button>
+              <button class="action-button"
+                (click)="decrement2(d._idPP, d.SubQuantityTypeName, d.qvalue, d.ProductPrice)">
+                <b>-</b>
+              </button>
+              <div class="item-col name-col">
+                <span class="item-text">{{ d.ProductName }}</span>
+              </div>
+              <div class="item-col type-col">
+                <span class="item-text">{{ d.SubQuantityTypeName }}</span>
+              </div>
+              <div class="item-col quantity-col">
+                <span class="item-text">{{ d.quntityvalue }}</span>
+              </div>
+              <div class="item-col price-col">
+                <span class="item-text">{{ d.ProductPrice }}</span>
+              </div>
+              <div class="item-col total-col">
+                <span class="item-text">{{ (+d.ProductPrice) * (d.quntityvalue) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary & Discount Section -->
+        <div class="summary-section" *ngIf="RunningItems_.length > 0">
+          <div class="summary-row">
+            <span>Total Amount:</span>
+            <span>{{ totalamount }}</span>
+          </div>
+
+          <div class="summary-row grand-total">
+            <span>Grand Total Amount:</span>
+            <span>{{ itemtotalamount }}</span>
+          </div>
+
+          <!-- Discount Form -->
+
+          <div *ngIf="showDiscountForm"
+            class="overflow-hidden transition-all duration-1000 ease-in-out transform scale-y-100 origin-top discount-form shadow-md w-full max-w-lg mx-auto">
+            <div class="summary-row">
+              <span>Tax Name:</span>
+              <span>{{ taxname }}</span>
+              <span>Total Tax:</span>
+              <span>{{ totaltax }}</span>
+            </div>
+            <div class="discount-form">
+              <form [formGroup]="myDiscountForm" (ngSubmit)="discountChange()">
+                <div class="discount-options">
+                  <label>
+                    <input type="radio" name="discount" formControlName="discount" value="%" ngModel>
+                    Discount By %
+                  </label>
+                  <label>
+                    <input type="radio" name="discount" formControlName="discount" value="Rupees" ngModel>
+                    Discount By Rupees
+                  </label>
+                  <label><input type="number" name="discountvalue" formControlName="numberInput" required
+                      placeholder="Amount">
+                  </label> <label><button class="apply-button" type="submit">Apply</button>
+                  </label>
+
+                </div>
+                <div class="summary-row">
+                  <span>Discount Percent:</span>
+                  <span>{{ percent }}%</span>
+                </div>
+                <!-- Final Totals & Actions -->
+                <div class="summary-row">
+                  <span>Settle Amount:</span>
+                  <span>{{ discountvalue }}</span>
+                </div>
+              </form>
+
+            </div>
+          </div>
+          <div class="text-center mb-4">
+            <a (click)="showDiscountForm = !showDiscountForm"
+              class="bg-indigo-600 hover:bg-indigo-700 text-gray px-6 py-2 rounded shadow transition">
+              {{ showDiscountForm ? 'Hide' : 'Show' }} Discount
+            </a>
+          </div>
+
+          <div class="action-buttons">
+            <button class="action-success" (click)="placeOrder()">Settle</button>
+            <button class="action-success" style="background-color: blueviolet;" (click)="KOT()">Print KOT</button>
+            <button class="action-warning" (click)="CancelOrder()">Cancel Order</button>
+          </div>
+        </div>
+      </div>
+    </td>
+
+  </tr>
+</table>
+<div class=" comman" style="position: fixed;" *ngIf="showplaceorderPopup">
+  <div class="row box" style="max-width: 60%;">
+    <button class="close" (click)="close2()">Close</button>
+    <div class="col">
+
+      <!-- FoodName: Quntity: -->
+      <pre> <h3>Invoice</h3></pre>
+      <table class="w-4/5 mx-auto text-sm text-left text-gray-700 border border-aqua rounded-lg shadow-lg">
+        <thead class="text-white bg-gradient-to-r from-cyan-500 to-blue-500">
+          <tr>
+            <th class="px-4 py-2">Name</th>
+            <th class="px-4 py-2">Type</th>
+            <th class="px-4 py-2">Price</th>
+            <th class="px-4 py-2">Quantity</th>
+            <th class="px-4 py-2">Item Quantity Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="2"> <p *ngIf="ordermode"
+          style="top:0;font-weight: bolder;font-size: small;font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">
+          Invoice No.: {{invoiceid}}</p></td>
+          <td colspan="2"> <p *ngIf="ordermode"
+          style="top:0;font-weight: bolder;font-size: small;font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">
+           Token Number.: {{TokenNumber}}</p></td>
+          </tr>
+          <tr *ngFor="let d of RunningItems_; index as i" class="hover:bg-blue-50">
+            <td class="px-4 py-2">{{ d.ProductName }}</td>
+            <td class="px-4 py-2">{{ d.SubQuantityTypeName }}</td>
+            <td class="px-4 py-2">{{ d.ProductPrice }}</td>
+            <td class="px-4 py-2">{{ d.quntityvalue }}</td>
+            <td class="px-4 py-2">{{ (+d.ProductPrice) * d.quntityvalue }}</td>
+          </tr>
+
+          <!-- Totals and extras -->
+          <tr class="font-semibold bg-gray-50">
+            <td class="px-4 py-2">Total Items Amount</td>
+            <td colspan="3"></td>
+            <td class="px-4 py-2">{{ totalamount }}</td>
+          </tr>
+          <tr class="bg-gray-100">
+            <td class="px-4 py-2">Total Tax</td>
+            <td colspan="3">
+              <div *ngFor="let t of taxnamedata">
+                <div *ngIf="t.Status">
+                  {{ t.name }} - {{ t.perscentRate }}% = {{ ((+totalamount) * t.perscentRate) / 100 }}
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-2">{{ totaltax }}</td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="px-4 py-2">Grand Total</td>
+            <td colspan="3"></td>
+            <td class="px-4 py-2">{{ itemtotalamount }}</td>
+          </tr>
+          <tr class="bg-gray-100">
+            <td class="px-4 py-2">Discount Percent</td>
+            <td colspan="3"></td>
+            <td class="px-4 py-2">{{ percent }}%</td>
+          </tr>
+          <tr class="font-bold text-green-700">
+            <td class="px-4 py-2">Discounted Total</td>
+            <td colspan="3"></td>
+            <td class="px-4 py-2">{{ discountvalue }}</td>
+          </tr>
+
+          <!-- Pay and input -->
+          <tr>
+            <td class="px-4 py-2">Pay Mode</td>
+            <td colspan="4">
+              <select class="w-full px-2 py-1 border rounded" [(ngModel)]="paybyId" (change)="getpaybyid()">
+                <option *ngFor="let dd of paybydata" [value]="dd._id">{{ dd.Paybyname }}</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="px-4 py-2">Customer Paid</td>
+            <td colspan="4">
+              <input type="number" min="0" max="paidamount+500" [(ngModel)]="paidamount" placeholder="Paid Amount"
+                class="w-full px-2 py-1 border rounded" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+
+      <!-- <div>
+        <app-ordermodebutton  (notifyDine)="receiveNotification($event )" (notifyPacking)="receivePacking($event )" (notifyOnlineDelivery)="receiveOnlineDelivery($event )"></app-ordermodebutton>
+   </div> -->
+      <button (click)="genrateOrder()">Satle</button>
+
+
+    </div>
+  </div>
+</div>
+<div class="common-modal" *ngIf="showtype">
+  <div class="modal-box">
+    <button class="close-btn" (click)="close()">×</button>
+    <h6 class="modal-title">Quantity</h6>
+    <form #myForm="ngForm" (ngSubmit)="onSubmit(myForm)">
+      <div *ngFor="let dd of ppalsoavailable" class="option-row">
+        <label class="radio-option">
+          <input type="radio" name="option" [value]="dd.SubQuantityTypeName" ngModel>
+          <span class="option-label">{{ dd.SubQuantityTypeName }}</span>
+          <span class="option-price"> {{ dd.price }}</span>
+        </label>
+      </div>
+      <button type="submit" class="submit-btn">Add Item</button>
+    </form>
+  </div>
+</div>
+
+<app-addcustomers [showPopUp]="showCustomerPopUp" [closePopUp]="closePopUp"
+  (closePopUpByChild)="closePopUpByChild($event)" (CustomersDetail)="initializeCustomer($event)"></app-addcustomers>
+<app-comment-in-invoice [showPopUp]="showCommentPopUp" [closePopUp]="closePopUp"
+  (closePopUpByChild)="closePopUpByChild($event)"
+  (CommentToInvoice)="initializeComment($event)"></app-comment-in-invoice>

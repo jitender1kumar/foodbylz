@@ -1,0 +1,85 @@
+
+<h4 class="titleh4">Floors Management</h4>
+<button class="bt1n btnbox" id="show" (click)="shows()">+Add Floors</button>
+
+@if (show) {
+  <div class="comman" >
+    <div class="row box">
+      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()"  class="col lbl2">
+        <button  class="close" (click)="close()">Close</button>
+        <div class="row lbl"><h4>Add Floor Name like(Ground Floor, First Floor, Second Floor)</h4></div>
+        <div class="col">  <label>
+          <input type="checkbox"  formControlName="status"/>
+          Status
+        </label>
+      </div>
+      <div class="form-group row">
+        <div class="col"><label class="lbl" for="name" id="name" > Name :</label></div>
+        <div class="col"><input class="lbl" type="text" formControlName="name" ngModel  id="nametxt"/></div>
+        <div class="col">@if (myAddForm.get('name')?.invalid) {
+          <div>
+          Name is required.</div>
+        }
+      </div>
+    </div>
+    <div class="form-group row">
+      <div class="col"><label class="lbl" for="description" id="description" > Description :</label></div>
+      <div class="col"><input class="lbl" type="text" formControlName="description" ngModel  id="description"/></div>
+    </div>
+    <p>{{args}}</p>
+    <div class="row">
+      <div class="col"><button style="border: solid black; padding: 10px;" [disabled]="myAddForm.invalid " class="bt1n" type="submit">+</button>
+    </div>
+  </div>
+</form>
+</div>
+</div>
+}
+
+@if (showEdit) {
+  <div class=" comman">
+    <div class="row box">
+      <form  [formGroup]="myEditForm" (ngSubmit)="onFormEdit()"  class="col lbl2">
+        <button  class="close" (click)="close()">Close</button>
+        <div class="row">
+          <div class="col"><h2 ><b>Edit</b></h2></div>
+        </div>
+        <p>{{args}}</p>
+        <div class="col">  <label>
+          <input type="checkbox"  formControlName="status"/>
+          Status
+        </label>
+      </div>
+      <div class="form-group row">
+        <div class="col"><label class="lbl" for="name1" id="name1" > Name :</label></div>
+        <div class="col">  <input style="width: 114px; margin: 3px;" formControlName="name" type="text"  value="{{popdata2.name}}">
+          @if (myEditForm.get('name')?.invalid) {
+            <div>
+              Name is required.
+            </div>
+          }
+        </div></div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="description1" id="description1" > Description :</label></div>
+          <div class="col"> <input style="width: 250px; margin: 3px;" formControlName="description"  type="text" #desc aria-multiline="true" value="{{popdata2.description}}">
+          </div></div>
+          <div class="row">
+            <div class="col">
+              <button class="bt1n" style=" margin: 3px;" id="baseb"[disabled]="myEditForm.invalid" >Update</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <ag-grid-angular class="box ag-theme-quartz"
+    style="height:500px;"
+    [rowData]="Floordata"
+    [columnDefs]="colDefs"
+    [pagination]="pagination"
+    [paginationPageSize]="paginationPageSize"
+    [paginationPageSizeSelector]="paginationPageSizeSelector"
+    (cellClicked)="onCellClick($event)"
+    />
+

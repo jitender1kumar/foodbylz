@@ -1,0 +1,15 @@
+
+<!-- delete-confirmation.component.html -->
+<div id="id01" [style]="style" [class]="modal">
+  <div class="modal-content">
+    <span class="close" (click)="notifyParent()" title="Close Modal">×</span>
+    <div class="modal-body">
+      <h2>🗑️ Delete Record</h2>
+      <p>Are you sure you want to delete this record?</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn cancel" (click)="notifyParent()">Cancel</button>
+      <button class="btn delete" (click)="deletedConfirmed()">Delete</button>
+    </div>
+  </div>
+</div>

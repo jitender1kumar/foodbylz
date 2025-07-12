@@ -1,0 +1,49 @@
+
+@if (showPopUp) {
+  <div class="comman" >
+    <div class="row box">
+      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()"  class="col lbl2">
+<button  class="close" (click)="close()">Close</button>
+       
+        
+       
+        
+        <div class="row lbl"><h4>Add Comment</h4></div>
+       
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="Comment" id="Comment" > Comment :</label></div>
+          <div class="col"><input class="lbl" type="text "minlength="10" maxlength="20" formControlName="Comment" ngModel  id="Commenttxt"/></div>
+        </div>
+      
+        <div class="row">
+          <div class="col"><button style="border: solid black; padding: 10px;" [disabled]="myAddForm.invalid " class="bt1n" type="submit">+</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+}
+
+<!-- @if (showEdit) {
+  <div class=" comman">
+    <div class="row box">
+      <form  [formGroup]="myEditForm" (ngSubmit)="onFormEdit()"  class="col lbl2">
+        <button  class="close" (click)="close()">Close</button>
+        <div class="row">
+          <div class="col"><h2 ><b>Edit</b></h2></div>
+        </div>
+       
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="Comment" id="Comment" > Add Comment :</label></div>
+          <div class="col"><input class="lbl" type="text"  id="nametxt" formControlName="Comment" value="{{popdata2.Name}}"/></div>
+        </div>
+       
+        <div class="row">
+          <div class="col">
+            <button class="bt1n" style=" margin: 3px;" id="baseb"[disabled]="myEditForm.invalid" >Update</button>
+          </div>
+        </div>r
+      </form>
+    </div>
+  </div>
+} -->

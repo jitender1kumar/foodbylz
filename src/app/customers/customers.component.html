@@ -1,0 +1,103 @@
+
+<div class="container">
+  <div class="row">
+    <div class="col"><h4 style="float: left;">Customers Management</h4>  </div>
+  </div>
+  <div class="row">
+    <div class="col"><button style="float: left;left:0px" class="btn btn-primary"  (click)="shows()">+ Add a Customer</button></div>
+  </div>
+  <div class="row">
+    <div class="col">
+
+    </div>
+  </div>
+</div>
+
+
+@if (show) {
+  <div class="comman" >
+    <div class="row box">
+      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()"  class="col lbl2">
+        <button  class="close" (click)="close()">Close</button>
+        <div class="row lbl"><h4>Add Cutomer</h4></div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="Name" id="Name" > Name :</label></div>
+          <div class="col"><input class="lbl" type="text" formControlName="Name" ngModel  id="nametxt"/></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="mob" id="mob" > Mobile No. :</label></div>
+          <div class="col"><input class="lbl" type="text "minlength="10" maxlength="20" formControlName="MobileNo" ngModel  id="mobtxt"/></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="dob" id="dob" > Data Of Birth :</label></div>
+          <div class="col"><input class="lbl" type="date" formControlName="DOB" ngModel  id="dobtxt"/></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="tag" id="tag" > Tag :</label></div>
+          <div class="col"><input class="lbl" type="text" formControlName="tag" ngModel  id="tagtxt"/></div>
+        </div>
+        <p>{{args}}</p>
+        <div class="row">
+          <div class="col"><button style="border: solid black; padding: 10px;" [disabled]="myAddForm.invalid " class="bt1n" type="submit">+</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+}
+
+@if (showEdit) {
+  <div class=" comman">
+    <div class="row box">
+      <form  [formGroup]="myEditForm" (ngSubmit)="onFormEdit()"  class="col lbl2">
+        <button  class="close" (click)="close()">Close</button>
+        <div class="row">
+          <div class="col"><h2 ><b>Edit</b></h2></div>
+        </div>
+        <p>{{args}}</p>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="Name" id="Name" > Name :</label></div>
+          <div class="col"><input class="lbl" type="text"  id="nametxt" formControlName="Name" value="{{popdata2.Name}}"/></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="mob" id="mob" > Mobile No. :</label></div>
+          <div class="col"><input class="lbl" type="TEXT"minlength="10" maxlength="20" formControlName="MobileNo"   id="mobtxt"  value="{{popdata2.MobileNo}}"/></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="dob" id="dob" > Data Of Birth :</label></div>
+          <div class="col"><input class="lbl" type="date" formControlName="DOB"   id="dobtxt"  value="{{popdata2.DOB}}"/></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="tag" id="tag" > Tag :</label></div>
+          <div class="col"><input class="lbl" type="text" formControlName="tag"   id="tagtxt"  value="{{popdata2.tag}}"/></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="DueAmount" id="DueAmount" > Due Amount :</label></div>
+          <div class="col"><input class="lbl" type="text" formControlName="DOB"   id="DueAmounttxt"  value="{{popdata2.DueAmount}}"/></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="Anniversary" id="tag" > Anniversary :</label></div>
+          <div class="col"><input class="lbl" type="date" formControlName="Anniversary"   id="Anniversarytxt"  value="{{popdata2.Anniversary}}"/></div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <button class="bt1n" style=" margin: 3px;" id="baseb"[disabled]="myEditForm.invalid" >Update</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<ag-grid-angular class="box ag-theme-quartz"
+  style="height:500px;"
+  [rowData]="Customersdata"
+  [columnDefs]="colDefs"
+  [pagination]="pagination"
+  [paginationPageSize]="paginationPageSize"
+  [paginationPageSizeSelector]="paginationPageSizeSelector"
+  (cellClicked)="onCellClick($event)"
+  />
+  <div >
+    <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()" [style]="display" [tabname]="tablename" [data]="valueid" [modal]="modal"></app-popupmodel>
+  </div>

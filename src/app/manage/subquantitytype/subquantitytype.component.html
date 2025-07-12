@@ -1,0 +1,108 @@
+<h4 class="titleh4"> Quantity Type Management</h4>
+@if (loading$ | async) {
+  <div>Loading...</div>
+}
+@if (error$ | async; as error) {
+  <div style="color:red">{{ error }}</div>
+}
+<button class="bt1n btnbox" id="show" (click)="shows()">+Add Quantity Type</button>
+
+@if (show) {
+  <div class="comman">
+    <div class="row box">
+      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" class="col lbl2">
+        <button class="close" (click)="close()">Close</button>
+        <div class="row lbl">
+          <h4>Insert Quantity Type Records (like full, half, small, medium, large)</h4>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="selectQtypeID" id="selectQtypeID">Select Quntity Type :</label>
+        </div>
+        <div class="col">
+          <select class="lbl" formControlName="selectQtypeID">
+            @for (d of Qtypenamedata$|async; track d) {
+              <option class="lbl" value="{{d._id}}">{{d.name}}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col"><label class="lbl" for="name" id="name"> Name :</label></div>
+        <div class="col"><input class="lbl" minlength="0" maxlength="200" type="text" formControlName="name" ngModel
+        id="nametxt" /></div>
+        <div class="col">
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col"><label class="lbl" for="description" id="description"> Description :</label></div>
+        <div class="col"><input class="lbl" minlength="0" maxlength="200" type="text" formControlName="description" ngModel
+        id="descriptiontxt" /></div>
+      </div>
+      <p>{{args}}</p>
+      <div class="row">
+        <div class="col"><button style="border: solid black; padding: 10px;" [disabled]="myAddForm.invalid "
+        class="bt1n" type="submit">+</button>
+      </div>
+    </div>
+  </form>
+</div>
+</div>
+}
+
+@if (showEdit) {
+  <div class=" comman">
+    <div class="row box">
+      <form [formGroup]="myEditForm" (ngSubmit)="onFormEdit()" class="col lbl2">
+        <button class="close" (click)="close()">Close</button>
+        <div class="row">
+          <div class="col">
+            <h2><b>Edit</b></h2>
+          </div>
+        </div>
+        <p>{{args}}</p>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="selectQtypeID" id="selectQtypeID">Select Quntity Type
+          :</label></div>
+          <div class="col">
+            <select id="selectedit">
+              <option>Select Options </option>
+              <option formControlName="selectQtypeID" *ngFor="let d of Qtypenamedata$|async index as i"
+              [selected]="d._id===popdata2.selectQtypeID" value="{{d._id}}">{{d.name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="name" id="name"> Name :</label></div>
+          <div class="col"> <input style="width: 114px; margin: 3px;" minlength="0" maxlength="200" formControlName="name" type="text"
+            value="{{popdata2.name}}">
+            @if (myEditForm.get('name')?.invalid) {
+              <div>
+                Name is required.
+              </div>
+            }
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl"  for="description" id="description"> Description :</label></div>
+          <div class="col"> <input style="width: 250px; margin: 3px;" minlength="0" maxlength="200" formControlName="description" type="text"
+            #desc aria-multiline="true" value="{{popdata2.description}}">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <button class="bt1n" style=" margin: 3px;" id="baseb"
+            [disabled]="myEditForm.invalid">Update</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<ag-grid-angular class="box ag-theme-quartz" style="height:500px;" [rowData]="subQuantityTypeData$|async" [columnDefs]="colDefs"
+  [pagination]="pagination" [paginationPageSize]="paginationPageSize"
+  [paginationPageSizeSelector]="paginationPageSizeSelector" (cellClicked)="onCellClick($event)" />
+  <div>
+    <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()"
+    [style]="display" [tabname]="tablename" [data]="valueid" [modal]="modal"></app-popupmodel>
+  </div>

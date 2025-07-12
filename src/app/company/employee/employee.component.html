@@ -1,0 +1,151 @@
+<h4 class="titleh4">Employee Management</h4>
+<button class="bt1n btnbox" id="show" (click)="shows()">+Add a employee</button>
+
+<!-- <div *ngFor="let dd of employeedata2_core">
+<h4>{{dd.name}}</h4>
+<p>{{dd|json}}>
+</div> -->
+@if (show) {
+  <div class="comman">
+    <div class="row box">
+      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" class="col lbl2">
+        <button class="close" (click)="close()">Close</button>
+        <div class="row lbl">
+          <h4>Insert Employee</h4>
+        </div>
+        <!-- name: "undefined",
+        role: "undefined",
+        type: "undefined",
+        status: false,
+        managepermission: false,
+        title: "undefined",
+        desc: "undefined" -->
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="name" id="name"> Name :</label></div>
+          <div class="col"><input class="lbl" type="text" formControlName="name" ngModel
+          id="nametxt" /></div>
+          <div class="col">
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="role" id="role"> role :</label></div>
+          <div class="col"><input class="lbl" type="text" formControlName="role" ngModel
+          id="roletxt" /></div>
+          <div class="col">
+          </div>
+        </div><div class="form-group row">
+        <div class="col"><label class="lbl" for="type" id="type"> type :</label></div>
+        <div class="col"><input class="lbl" type="text" formControlName="type" ngModel
+        id="typetxt" /></div>
+        <div class="col">
+        </div>
+      </div><div class="form-group row">
+      <div class="col"><label class="lbl" for="status" id="status"> status :</label></div>
+      <div class="col"><input class="lbl" type="checkbox" formControlName="status" ngModel
+      id="statustxt" /></div>
+      <div class="col">
+      </div>
+    </div><div class="form-group row">
+    <div class="col"><label class="lbl" for="managepermission" id="managepermission"> managepermission :</label></div>
+    <div class="col"><input class="lbl" type="checkbox" formControlName="managepermission" ngModel
+    id="managepermissiontxt" /></div>
+    <div class="col">
+    </div>
+  </div><div class="form-group row">
+  <div class="col"><label class="lbl" for="title" id="title"> title :</label></div>
+  <div class="col"><input class="lbl" type="text" formControlName="title" ngModel
+  id="titletxt" /></div>
+  <div class="col">
+  </div>
+</div><div class="form-group row">
+<div class="col"><label class="lbl" for="desc" id="desc"> desc :</label></div>
+<div class="col"><input class="lbl" type="text" formControlName="desc" ngModel
+id="desctxt" /></div>
+<div class="col">
+</div>
+</div>
+<p>{{args}}</p>
+<div class="row">
+  <div class="col"><button style="border: solid black; padding: 10px;" [disabled]="myAddForm.invalid "
+  class="bt1n" type="submit">+</button>
+</div>
+</div>
+</form>
+</div>
+</div>
+}
+
+@if (showEdit) {
+  <div class=" comman">
+    <div class="row box">
+      <form [formGroup]="myEditForm" (ngSubmit)="onFormEdit()" class="col lbl2">
+        <button class="close" (click)="close()">Close</button>
+        <div class="row">
+          <div class="col">
+            <h2><b>Edit</b></h2>
+          </div>
+        </div>
+        <p>{{args}}</p>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="name" id="name"> Name :</label></div>
+          <div class="col"><input class="lbl" type="text" formControlName="name"  value="{{popdata2.name}}"
+          id="nametxt" /></div>
+          <div class="col">
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="role" id="role"> role :</label></div>
+          <div class="col"><input class="lbl" type="text" formControlName="role"  value="{{popdata2.role}}"
+          id="roletxt" /></div>
+          <div class="col">
+          </div>
+        </div><div class="form-group row">
+        <div class="col"><label class="lbl" for="type" id="type"> type :</label></div>
+        <div class="col"><input class="lbl" type="text" formControlName="type"  value="{{popdata2.type}}"
+        id="typetxt" /></div>
+        <div class="col">
+        </div>
+      </div><div class="form-group row">
+      <div class="col"><label class="lbl" for="status" id="status"> status :</label></div>
+      <div class="col"><input class="lbl" type="checkbox" formControlName="status"  value="{{popdata2.status}}"
+      id="statustxt" /></div>
+      <div class="col">
+      </div>
+    </div><div class="form-group row">
+    <div class="col"><label class="lbl" for="managepermission" id="managepermission"> managepermission :</label></div>
+    <div class="col"><input class="lbl" type="checkbox" formControlName="managepermission"  value="{{popdata2.managepermission}}"
+    id="managepermissiontxt" /></div>
+    <div class="col">
+    </div>
+  </div><div class="form-group row">
+  <div class="col"><label class="lbl" for="title" id="title"> title :</label></div>
+  <div class="col"><input class="lbl" type="text" formControlName="title"  value="{{popdata2.title}}"
+  id="titletxt" /></div>
+  <div class="col">
+  </div>
+</div><div class="form-group row">
+<div class="col"><label class="lbl" for="desc" id="desc"> desc :</label></div>
+<div class="col"><input class="lbl" type="text" formControlName="desc"  value="{{popdata2.desc}}"
+id="desctxt" /></div>
+<div class="col">
+</div>
+</div>
+<div class="row">
+  <div class="col">
+    <button class="bt1n" style=" margin: 3px;" id="baseb"
+    [disabled]="myEditForm.invalid">Update</button>
+  </div>
+</div>
+</form>
+</div>
+</div>
+}
+
+<ag-grid-angular class="box ag-theme-quartz" style="height:500px;" [rowData]="employeedata" [columnDefs]="colDefs"
+  [pagination]="pagination" [paginationPageSize]="paginationPageSize"
+  [paginationPageSizeSelector]="paginationPageSizeSelector" (cellClicked)="onCellClick($event)" />
+  <div>
+    <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()"
+    [style]="display" [tabname]="tablename" [data]="valueid" [modal]="modal"></app-popupmodel>
+  </div>
+

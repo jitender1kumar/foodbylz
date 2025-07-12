@@ -1,0 +1,88 @@
+
+@if (showPopUp) {
+  <div class="comman" >
+    <div class="row box">
+      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()"  class="col lbl2">
+        <button  class="close" (click)="close()">Close</button>
+         <div class="row lbl"><h4>Select Cutsomer</h4></div>
+        <div class="form-group row">
+         <ng-select (change)="onSelect($event)"
+  class="w-full rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+  [items]="customersdata"
+  bindLabel="Name"
+  placeholder=""
+  [(ngModel)]="selectedItem"
+  [searchable]="true"
+  [clearable]="true"
+  [dropdownPosition]="'bottom'">
+</ng-select>
+
+        </div>
+        
+        <div class="row lbl" *ngIf="DisplayCustomers"><label>{{DisplayCustomers}}</label>
+        <button (click)="onProceed()" class="bt1n" style="margin: 3px;" >
+          Proceed
+        </button>
+        </div>
+        <div class="row lbl"><h4>OR</h4></div>
+        <div class="row lbl"><h4>Add Cutomer</h4></div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="Name" id="Name" > Name :</label></div>
+          <div class="col"><input class="lbl" type="text" formControlName="Name" ngModel  id="nametxt"/></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="mob" id="mob" > Mobile No. :</label></div>
+          <div class="col"><input class="lbl" type="text "minlength="10" maxlength="20" formControlName="MobileNo" ngModel  id="mobtxt"/></div>
+        </div>
+      
+        <div class="row">
+          <div class="col"><button style="border: solid black; padding: 10px;" [disabled]="myAddForm.invalid " class="bt1n" type="submit">+</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+}
+
+<!-- @if (showEdit) {
+  <div class=" comman">
+    <div class="row box">
+      <form  [formGroup]="myEditForm" (ngSubmit)="onFormEdit()"  class="col lbl2">
+        <button  class="close" (click)="close()">Close</button>
+        <div class="row">
+          <div class="col"><h2 ><b>Edit</b></h2></div>
+        </div>
+        <p>{{args}}</p>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="Name" id="Name" > Name :</label></div>
+          <div class="col"><input class="lbl" type="text"  id="nametxt" formControlName="Name" value="{{popdata2.Name}}"/></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="mob" id="mob" > Mobile No. :</label></div>
+          <div class="col"><input class="lbl" type="TEXT"minlength="10" maxlength="20" formControlName="MobileNo"   id="mobtxt"  value="{{popdata2.MobileNo}}"/></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="dob" id="dob" > Data Of Birth :</label></div>
+          <div class="col"><input class="lbl" type="date" formControlName="DOB"   id="dobtxt"  value="{{popdata2.DOB}}"/></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="tag" id="tag" > Tag :</label></div>
+          <div class="col"><input class="lbl" type="text" formControlName="tag"   id="tagtxt"  value="{{popdata2.tag}}"/></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="DueAmount" id="DueAmount" > Due Amount :</label></div>
+          <div class="col"><input class="lbl" type="text" formControlName="DOB"   id="DueAmounttxt"  value="{{popdata2.DueAmount}}"/></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="Anniversary" id="tag" > Anniversary :</label></div>
+          <div class="col"><input class="lbl" type="date" formControlName="Anniversary"   id="Anniversarytxt"  value="{{popdata2.Anniversary}}"/></div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <button class="bt1n" style=" margin: 3px;" id="baseb"[disabled]="myEditForm.invalid" >Update</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+} -->

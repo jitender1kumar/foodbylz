@@ -1,0 +1,92 @@
+<h4 class="titleh4"> Tax Type Management</h4>
+@if (loading$ | async) {
+  <div>Loading...</div>
+}
+@if (error$ | async; as error) {
+  <div style="color:red">{{ error }}</div>
+}
+<button class="bt1n btnbox" id="show" (click)="shows()">+Add Tax Type</button>
+
+@if (show) {
+  <div class="comman" >
+    <div class="row box">
+      <form (ngSubmit)="onFormSubmit()" [formGroup]="myAddForm"  class="col lbl2">
+        <button  class="close" (click)="close()">Close</button>
+        <div class="row lbl"><h4>Tax</h4></div>
+        <div class="row">
+          <div class="col">  <label>
+            <input type="checkbox"  formControlName="Status"/>
+            Status
+          </label>
+        </div>
+      </div>
+      <div class="form-group row" >
+        <div class="col"><label class="lbl" for="name" id="name" >Tax Name :</label></div>
+        <div class="col"><input class="lbl" type="text"  minlength="0" maxlength="200" formControlName="name"  /></div>
+      </div>
+      <div class="form-group row">
+        <div class="col"><label class="lbl" for="Description" id="Description" >Tax Description :</label></div>
+        <div class="col"><input class="lbl" type="text"  minlength="0" maxlength="200" formControlName="Description"/></div>
+      </div>
+      <div class="form-group row">
+        <div class="col"><label class="lbl" for="perscentRate" id="perscentRate" >Perscent Rate :</label></div>
+        <div class="col"><input class="lbl" type="number"  min="0" max="50" formControlName="perscentRate" /></div>
+      </div>
+      <p>{{args}}</p>
+      <div class="form-group row">
+        <div class="col"><div class="col"><button class="bt1n" type="submit"[disabled]="myAddForm.invalid">Add Category</button></div>
+      </div>
+    </div>
+  </form>
+</div>
+</div>
+}
+<!-- right col -->
+@if (showEdit) {
+  <div class=" comman">
+    <div class="row box">
+      <form   [formGroup]="myEditForm" (ngSubmit)="onFormUpdateSubmit()"  class="col lbl2">
+        <button  class="close" (click)="close()">Close</button>
+        <div class="row ">
+          <div class="col"><h2 ><b>Edit Tax</b></h2></div></div>
+          <p>{{args}}</p>
+          <div class="row">
+            <div class="col">  <label>
+              <input type="checkbox"  formControlName="Status"/>
+              Status
+            </label>
+          </div>
+        </div>
+        <div class="form-group row" >
+          <div class="col"><label class="lbl" for="name" id="name" >Tax Name :</label></div>
+          <div class="col"><input class="lbl" minlength="0" maxlength="200" type="text"  formControlName="name"  /></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="Description" id="Description" >Tax Description :</label></div>
+          <div class="col"><input class="lbl" minlength="0" maxlength="200" type="text"  formControlName="Description"/></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="perscentRate" id="perscentRate" >Perscent Rate :</label></div>
+          <div class="col"><input class="lbl" type="number" min="0" max="50" formControlName="perscentRate" /></div>
+        </div>
+        <div class="row form-group">
+          <div class="col"><button class="bt1n" [disabled]="myEditForm.invalid"style=" margin: 3px;" id="qtypeupdate{{popdata2._id}}">Update</button>
+        </div></div>
+      </form>
+    </div>
+  </div>
+}
+
+<ag-grid-angular class="box ag-theme-quartz"
+  style="height:500px;"
+  [rowData]="tax$|async"
+  [columnDefs]="colDefs"
+  [pagination]="pagination"
+  [paginationPageSize]="paginationPageSize"
+  [paginationPageSizeSelector]="paginationPageSizeSelector"
+  (cellClicked)="onCellClick($event)"
+  />
+
+  <div >
+    <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()" [style]="display" [tabname]="tablename" [data]="" [modal]="modal"></app-popupmodel>
+  </div>

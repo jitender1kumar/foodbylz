@@ -1,0 +1,12 @@
+<table>
+  <tr>
+    <td><input type="radio" class="btn-primary b2" name="o1" (click)="showdiningfun()">DineIn</td>
+    <td><input type="radio" class="btn-primary b2" name="o1" (click)="paking()">TakeAway</td>
+    <td><input type="radio" class="btn-primary b2" name="o1"  (click)="delivery()">Online</td>
+  </tr></table>
+  @if (showdining2) {
+    <div class="form-group row">
+      <app-dinetable (notify)="receiveNotification($event)" (notifclose)="close($event)" (notifytoorder)="receiveNotification2($event)" [showdining]="showdining2" ></app-dinetable>
+      <!-- <div class="col"><p>Select All</p><input type="checkbox" [checked]="statusselectall" value="Select All" (click)="selectall($event)"/></div> -->
+    </div>
+  }
