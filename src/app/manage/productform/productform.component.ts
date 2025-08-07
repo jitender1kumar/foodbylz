@@ -16,6 +16,7 @@ import {  loadSubQuantityTypeById } from '../ManageStore/subQuantityTypeStore/su
 import {loadQuantityType } from '../ManageStore/quntityTypeStore/quntityType.actions';
 import { addProduct, deleteProduct, loadProduct, updateProduct } from '../ManageStore/productStore/product.actions';
 import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
+import { ProductPriceService } from '../../core/Services/productprice.service';
 @Component({
     selector: 'app-productform',
     templateUrl: './productform.component.html',
@@ -65,7 +66,7 @@ myAddForm: FormGroup;
 isCheckedveg_nonveg: any=false;
 isCheckedavailablity: any=true;
 isCheckedStatus: any=true;
-  constructor(private service: ProductService,private QuantitytypeService_:QuantitytypeService,private CategoryService_:CategoryService,private subQuantityTypeService_:subQuantityTypeService,private router: Router,private formedit: FormBuilder, private store: Store<{ categoryLoad: any,productLoad:any,quantityTypeLoad:any,subQuantityTypeLoad:any, subQuantityTypeByIdLoad:any }>,private SweetAlert2_:SweetAlert2)
+  constructor(private service: ProductService,private ProductPriceService_:ProductPriceService, private QuantitytypeService_:QuantitytypeService,private CategoryService_:CategoryService,private subQuantityTypeService_:subQuantityTypeService,private router: Router,private formedit: FormBuilder, private store: Store<{ categoryLoad: any,productLoad:any,quantityTypeLoad:any,subQuantityTypeLoad:any, subQuantityTypeByIdLoad:any }>,private SweetAlert2_:SweetAlert2)
   {
         
     this.subQuantityTypeData$ = store.select(state => state.subQuantityTypeLoad.SubQuantityType_.allTasks);
@@ -251,13 +252,28 @@ showEdit:any=false;
     handleChildClick() {
       this.display="display:none;";
     }
+    ProductIdExistData:any;
     deletedConfirmed(_id:any)
     {
-      this.store.dispatch(deleteProduct({_id}));
+     this.ProductPriceService_.getbyproductid(_id).subscribe(ProductIdExist => {
+      this.ProductIdExistData = ProductIdExist;
+      
+      console.log(this.ProductIdExistData.allTasks.length);
+      if(this.ProductIdExistData.allTasks.length==0)
+      {
+            this.store.dispatch(deleteProduct({_id}));
       this.store.dispatch(loadProduct());
   this.Products$ = this.store.select(state => state.productLoad.Product_.allTasks);
   this.SweetAlert2_.showFancyAlertSuccess("Deleted.");
       this.display="display:none;";
+      }
+   else
+        {
+          this.SweetAlert2_.showFancyAlertFail("Assocciated with Sub Quantity Type. Can't Delete");
+              this.display="display:none;";
+        }
+     });
+  
      // this.args = " Record Deleted Successfully ";
     }
 }

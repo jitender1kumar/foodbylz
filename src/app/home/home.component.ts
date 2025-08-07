@@ -29,6 +29,7 @@ import { SweetAlert2 } from '../core/commanFunction/sweetalert';
 import { CustomresService } from '../core/Services/customers.service';
 import { TablesComponent } from '../dine/tables/tables.component';
 import { InitializeInvoice } from '../core/commanFunction/InitializeInvoice.service';
+import { JsonpClientBackend } from '@angular/common/http';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -98,7 +99,8 @@ export class HomeComponent implements OnInit {
   Itemsdata: any;
   Itemsdata2: any;
   statusall: any;
-
+  getCustomer: any;
+  getCustomerdata: any;
   ppalsoavailable: any;
   args: any = null;
   popdata2: any;
@@ -580,7 +582,7 @@ invoice:any;
       paybyId: this.paybyId,
       table_id: this.table_id,
       tablename: (this.table_name) == "" ? "Pick Up" : this.table_name,
-      customer_id: this.CustomerId,
+      customer_id: (this.CustomerId)=="undefined"?this.getCustomerID(this.invoiceid):this.CustomerId,
       employee_id: this.employeeId,
      // createdAt:this.InitializeInvoice_.gettoday(),
       AssistToId: 'undefined',
@@ -1406,8 +1408,19 @@ invoice:any;
     // console.log(CustomerDetail);
     // this.CustomerName = CustomerDetail.Name;
   }
-  getCustomer: any;
-  getCustomerdata: any;
+getCustomerID(invoiceid:string)
+{
+this.InvoiceService_.getbyid(invoiceid).subscribe(getCustomerid=>{
+  if(getCustomerid)
+  {
+     this.innvoicedata2 = getCustomerid;
+     this.innvoicedata = this.innvoicedata2.allTasks;
+     this.CustomerId = this.innvoicedata.customer_id;
+     alert(this.CustomerId );
+
+  }
+});
+}
   getCustomerName(customer_id: string) {
 
     this.CustomerService_.getbyid(customer_id).subscribe(CustomerName => {
@@ -1424,8 +1437,8 @@ invoice:any;
     //   const table = TablesComponent;
     // table.cancel(this.invoiceid);
     //alert();
-    //this.cancelOrder.emit(this.invoiceid);
+    this.cancelOrder.emit(this.invoiceid);
     // this.Table.cancel(this.invoiceid);
-    // this.ClearSomeVariable();
+     this.ClearSomeVariable();
   }
 }

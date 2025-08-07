@@ -28,10 +28,10 @@
   <div class="graph-container">
     @for (d of graphRecord; track d) {
       <div class="bar-group">
-        <div class="bar dine-in"  [style.height.px]="d.orderMode2 && d.orderMode2[0] && d.orderMode2[0].Amount != null ? (+d.orderMode2[0].Amount % 10) * 2 : 0"
+        <div class="bar dine-in"  [style.height.px]="d.orderMode2 && d.orderMode2[0] && d.orderMode2[0].Amount != null ? (+d.orderMode2[0].Amount % 100) * 2 : 0"
         title="{{d.orderMode2 && d.orderMode2[0] ? d.orderMode2[0].Amount : ''}}"></div>
         <div class="bar delivery"
-          [style.height.px]="d.orderMode1 && d.orderMode1[0] && d.orderMode1[0].Amount != null ? (+d.orderMode1[0].Amount % 10) * 2 : 0"
+          [style.height.px]="d.orderMode1 && d.orderMode1[0] && d.orderMode1[0].Amount != null ? (+d.orderMode1[0].Amount % 100) * 2 : 0"
           title="{{d.orderMode1 && d.orderMode1[0] ? d.orderMode1[0].Amount : ''}}">
         </div>
         <span class="time-label">{{d.Time}}</span>

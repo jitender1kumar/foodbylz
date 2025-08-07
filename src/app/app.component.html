@@ -8,7 +8,7 @@
 }
 <!-- <app-home [invoiceid]="invoiceid" (valueChanged)="updateValue($event)"></app-home> -->
 @if (showmanagebar=='home') {
-  <div> <app-home [invoiceid]="invoiceid" [TokenNumber]="TokenNumber" (valueChanged)="updateValue($event)"  ></app-home> </div>
+  <div> <app-home [invoiceid]="invoiceid" [TokenNumber]="TokenNumber" (valueChanged)="updateValue($event)" (cancelOrder)="cancelOrder($event)" ></app-home> </div>
 }
 @if (showmanagebar=='dashboard') {
   <div> <app-dashboard></app-dashboard></div>
@@ -23,7 +23,7 @@
   <div > <app-runningorders  (notifyManage3)="gohomeinvoiceid($event)"></app-runningorders></div>
 }
 @if (showmanagebar=='tables') {
-  <div> <app-tables [pickupOrder]="pickup" (notifyManage2)="receiveNotification2($event)" (clearPickupOrder)="clearPickupOrders($event)"></app-tables></div>
+  <div> <app-tables [pickupOrder]="pickup" [CancelOrder]="CancelOrder" (clearCancelOrder)="clearCancelOrders($event)" (notifyManage2)="receiveNotification2($event)" (clearPickupOrder)="clearPickupOrders($event)"></app-tables></div>
 }
 
 <app-navbar (notifyManage)="receiveNotification($event )" ></app-navbar>

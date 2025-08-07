@@ -29,6 +29,8 @@ import { InitializeInvoice } from '../../core/commanFunction/InitializeInvoice.s
 export class TablesComponent implements OnInit {
   // this.router.navigate(['\Home']);
   @Input() pickupOrder:any;
+  @Input() CancelOrder:any;
+  @Output() clearCancelOrder = new EventEmitter<string>();
   @Output() clearPickupOrder = new EventEmitter<string>();
   pickupinvoiceid: number = 0;
     ordersdataforToken:any;
@@ -180,6 +182,12 @@ this.loadToken();
     ////("2");
 
    this.referesh();
+   if(this.CancelOrder!="")
+   {
+this.cancel(this.CancelOrder);
+this.clearCancelOrder.emit("");
+alert("Order Cancelled.");
+   }
 if(this.pickupOrder=="pickup")
       {
         this.TokenNumber=0;

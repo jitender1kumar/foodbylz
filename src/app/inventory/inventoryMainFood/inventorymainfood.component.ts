@@ -100,7 +100,48 @@ export class InventorymainfoodComponent implements OnInit {
   }
   ngOnInit(): void {
 
-    this.loadInventoryMainFood();
+    this.loadInventoryMainFoods();
+    this.loadinventoeryfoodquantitytype();
+  }
+    getInventoryFoodQuantityTypeName() {
+  this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
+    this.loading$ = this.store.select(state => state.loadInventoryFoodQuantityType.loading);
+    this.error$ = this.store.select(state => state.loadInventoryFoodQuantityType.error);
+  this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
+    if (this.inventoryQuantityTypeData$) {
+      this.inventoryQuantityTypeData$.subscribe(inventoryQuantityTypeData => {
+        const indexInvetoryMainFood = inventoryQuantityTypeData.findIndex((item: { _id: any; }) => item._id === this.myAddForm.value.quantitytypeID);
+        this.quantitytypename = inventoryQuantityTypeData[indexInvetoryMainFood].name;
+        console.log(indexInvetoryMainFood);
+        console.log(inventoryQuantityTypeData);
+})
+    }
+
+  }
+    getInventoryFoodQuantityTypeNameforEdit() {
+  this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
+    this.loading$ = this.store.select(state => state.loadInventoryFoodQuantityType.loading);
+    this.error$ = this.store.select(state => state.loadInventoryFoodQuantityType.error);
+  this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
+    if (this.inventoryQuantityTypeData$) {
+      this.inventoryQuantityTypeData$.subscribe(inventoryQuantityTypeData => {
+        const indexInvetoryMainFood = inventoryQuantityTypeData.findIndex((item: { _id: any; }) => item._id === this.myEditForm.value.quantitytypeID);
+        this.quantitytypename = inventoryQuantityTypeData[indexInvetoryMainFood].name;
+      // this.myEditForm.value.quantitytypeID=inventoryQuantityTypeData[indexInvetoryMainFood].quantitytypeID;
+       // alert(this.myEditForm.value.quantitytypeID);
+ this.myEditForm = this.formedit.group({
+        _id: [this.myEditForm.value._id],
+        name: [this.myEditForm.value.name, Validators.required],
+        discription: [this.myEditForm.value.description],
+        //quantitytypeID: [inventoryQuantityTypeData[indexInvetoryMainFood].quantitytypeID, Validators.required],
+       quantitytypeID: [this.myEditForm.value.quantitytypeID, Validators.required],
+        quantitytypename: [this.quantitytypename],
+        quantitytypevalue: [this.myEditForm.value.quantitytypevalue]
+
+      });
+})
+    }
+
   }
   getqtname() {
   this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
@@ -171,10 +212,22 @@ export class InventorymainfoodComponent implements OnInit {
       });
     }
   }
+changeQuantityTypeName()
+{
+// alert(this.myEditForm.value.quantitytypeID);
+//  this.myEditForm = this.formedit.group({
+//         _id: [this.myEditForm.value._id],
+//         name: [this.myEditForm.value.name, Validators.required],
+//         discription: [this.myEditForm.value.description],
+//         quantitytypeID: [this.myEditForm.value.quantitytypeID, Validators.required],
+//         quantitytypename: [this.myEditForm.value.quantitytypename],
+//         quantitytypevalue: [this.myEditForm.value.quantitytypevalue]
 
-  loadInventoryMainFood() {
+//       });
+}
+  loadInventoryMainFoods() {
     this.store.dispatch(loadInventoryMainFood());
-   this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
+  this.InventoryMainFooddata$ =  this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
    this.store.select(state => state.loadInventoryMainFood.loading);
      this.store.select(state => state.loadInventoryMainFood.error);
   }
@@ -182,8 +235,9 @@ export class InventorymainfoodComponent implements OnInit {
 
     this.store.dispatch(updateInventoryMainFood({ InventoryMainFood_ }));
     this.args="Updated";
-      this.store.dispatch(loadInventoryMainFood());
-   this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
+    this.loadInventoryMainFoods();
+  //     this.store.dispatch(loadInventoryMainFood());
+  //  this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
    
 
   }

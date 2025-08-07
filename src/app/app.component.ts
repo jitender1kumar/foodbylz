@@ -15,6 +15,7 @@ export class AppComponent implements OnInit{
   invoiceid:string="";
   TokenNumber:number=0;
   pickup="";
+  CancelOrder="";
   constructor(private router: Router, private activatedRoute: ActivatedRoute)
   {
    
@@ -65,6 +66,19 @@ pickUpOrders(event: string)
 {
   this.showmanagebar= "tables";
 this.pickup=event;
+}
+cancelOrder(event: string)
+{
+   this.CancelOrder="";
+  this.CancelOrder=event;
+  this.router.navigate(['/tables']);
+    this.showmanagebar= "tables";  
+   // this.CancelOrder="";
+//alert("Cancel Order"+event);
+}
+clearCancelOrders(event: string)
+{
+this.CancelOrder=event;
 }
 clearPickupOrders(event: string)
 {

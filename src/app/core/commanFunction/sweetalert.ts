@@ -6,6 +6,9 @@ import Swal from 'sweetalert2';
   
 })
 export class SweetAlert2 {
+  showFancyAlertError(arg0: string) {
+    throw new Error('Method not implemented.');
+  }
 showFancyAlertSuccess(msg:any) {
   Swal.fire({
     title: 'Done',

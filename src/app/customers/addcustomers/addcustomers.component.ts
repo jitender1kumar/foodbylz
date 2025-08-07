@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Customers } from '../../core/Model/crud.model';
 import { CustomresService } from '../../core/Services/customers.service';
 
@@ -24,15 +24,20 @@ selectedItem: Customers | null = null;
 CustomersDetails: any[] = [];
 constructor( private router: Router,private formedit: FormBuilder,private CustomersService_:CustomresService)
 {
- this.myAddForm = this.formedit.group({
+  this.myAddForm = new FormGroup({
+  Name: new FormControl('', Validators.required),
+  MobileNo: new FormControl('', [Validators.required, Validators.minLength(10), Validators.maxLength(20)]),
+});
+
+//  this.myAddForm = this.formedit.group({
        
-        Name: ['', Validators.required],
-        MobileNo: [''],
-        DOB: [''],
-        tag: [''],
-         DueAmount: [0],
-         Anniversary: [''],                                                                                   
-      });
+//         Name: ['', Validators.required],
+//         MobileNo: [''],
+//         DOB: [''],
+//         tag: [''],
+//          DueAmount: [0],
+//          Anniversary: [''],                                                                                   
+//       });
 }
   ngOnInit(): void {
     this.loadCustomers();

@@ -26,7 +26,7 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
   qid: any;
   id: any; basedata: any;
   popdata2: any;
-  popdataId: any;
+  popdataId: any; IChairdata2: any; IChairdata: any;
   popdataBasetypedesc: any;
   popdataBasetypeName: any;
   popdataQuntityId: any;
@@ -113,6 +113,17 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
   refresh(params: ICellRendererParams<any, any, any>): boolean {
     throw new Error('Method not implemented.');
   }
+  loadChairs() {
+    //alert(selectcategoryID);
+
+    this.chairService.get().subscribe(data => {
+      if (data) {
+        this.IChairdata2 = data;
+        this.IChairdata = this.IChairdata2.allTasks
+
+      }
+    })
+  }
   loadfloor() {
     //alert(selectcategoryID);
     this.floorservice.get().subscribe(data => {
@@ -174,17 +185,18 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
   }
 
   ngOnInit(): void {
+    this.loadChairs();
     this.loadfloor()
     this.classname = "";
     this.loaddine2();
   }
- createdTaskTable:any;
+  createdTaskTable: any;
   dineExists = "false";
   add(dine: IDine): void {
     this.dineExists = "false";
-    console.log(this.dinedata );
+    console.log(this.dinedata);
     for (let i = 0; i < this.dinedata.length; i++) {
-      if (this.dinedata[i].name == dine.name) {
+      if (this.dinedata[i].name == dine.name && this.dinedata[i].floor_id == dine.floor_id) {
         this.SweetAlert2_.showFancyAlertFail("Already Exists: " + this.dinedata[i].name);
         this.dineExists = "true";
         break;
@@ -193,19 +205,19 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
     if (this.dineExists == "false") {
       this.service.add(dine).subscribe(res => {
         if (res) {
-        this.createdTaskTable=res;
+          this.createdTaskTable = res;
           console.log(this.createdTaskTable.createdTask);
-          
-            const chair: IChairDefault = {
-              name: "Chair 1",
-              description: 'Default Chair',
-              status: true,
-              table_id: this.createdTaskTable.createdTask._id,
-              chairorderstatus: '1',
 
-            }
-            this.addChair(chair);
-          
+          const chair: IChairDefault = {
+            name: "Chair 1",
+            description: 'Default Chair',
+            status: true,
+            table_id: this.createdTaskTable.createdTask._id,
+            chairorderstatus: '1',
+
+          }
+          this.addChair(chair);
+
 
 
           // this.args = ;
@@ -289,11 +301,26 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
     this.display = "display:none;";
   }
   deletedConfirmed(id: any) {
+    alert(id)
+    console.log(this.IChairdata);
+     console.log(id);
+    alert(this.IChairdata.length);
+    for (let i = 0; i < this.IChairdata.length; i++) {
+      if (this.IChairdata[i].table_id == id) {
+        alert(this.IChairdata[i]._id);
+
+        this.chairService.delete(this.IChairdata[i]._id).subscribe(deleteChair => {
+alert("Chair deleted");
+        })
+      }
+    }
+
     this.service.delete(id).subscribe(res => {
       if (res) {
         this.display = "display:none;";
         this.loaddine2();
         this.args = " Record Deleted Successfully ";
+
       }
     })
   }

@@ -1,4 +1,72 @@
+@if (showPopUp) {
+  <div class="comman">
+    <div class="row box">
+      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" class="col lbl2">
+        <button class="close" type="button" (click)="close()">Close</button>
 
+        <div class="row lbl">
+          <h4>Select Customer</h4>
+        </div>
+
+        <div class="form-group row">
+          <ng-select
+            class="w-full rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+            [items]="customersdata"
+            bindLabel="Name"
+            placeholder=""
+            [searchable]="true"
+            [clearable]="true"
+            [dropdownPosition]="'bottom'"
+            [(ngModel)]="selectedItem"
+            [ngModelOptions]="{ standalone: true }"
+            (change)="onSelect($event)">
+          </ng-select>
+        </div>
+
+        <div class="row lbl" *ngIf="DisplayCustomers">
+          <label>{{ DisplayCustomers }}</label>
+          <button type="button" (click)="onProceed()" class="bt1n" style="margin: 3px;">
+            Proceed
+          </button>
+        </div>
+
+        <div class="row lbl">
+          <h4>OR</h4>
+        </div>
+
+        <div class="row lbl">
+          <h4>Add Customer</h4>
+        </div>
+
+        <div class="form-group row">
+          <div class="col">
+            <label class="lbl" for="nametxt">Name:</label>
+          </div>
+          <div class="col">
+            <input class="lbl" type="text" formControlName="Name" id="nametxt" />
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <div class="col">
+            <label class="lbl" for="mobtxt">Mobile No.:</label>
+          </div>
+          <div class="col">
+            <input class="lbl" type="text" minlength="10" maxlength="20" formControlName="MobileNo" id="mobtxt" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <button type="submit" [disabled]="myAddForm.invalid" class="bt1n" style="border: solid black; padding: 10px;">+</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- 
 @if (showPopUp) {
   <div class="comman" >
     <div class="row box">
@@ -42,7 +110,7 @@
     </form>
   </div>
 </div>
-}
+} -->
 
 <!-- @if (showEdit) {
   <div class=" comman">

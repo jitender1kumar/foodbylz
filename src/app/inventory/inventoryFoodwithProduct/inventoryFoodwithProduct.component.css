@@ -1,8 +1,41 @@
-.tag
-{
-    background-color: rgb(221, 203, 188);
-    border-radius: 20%;
-    border: solid rgb(202, 158, 158) 0.1rem;
-   padding: 0.2rem;
-    margin: 0.2rem;
+.tag {
+  display: flex;
+  float: left;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f0f4ff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 5px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  max-width: 250px;
+  transition: background-color 0.3s ease;
+}
+
+.tag:hover {
+  background-color: #e6f0ff;
+}
+
+.tag-content {
+  flex-grow: 1;
+  line-height: 1.3;
+}
+
+.tag-close {
+  color: #ff4d4f;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 0 6px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.tag-close:hover {
+  background-color: #ff4d4f;
+  color: white;
 }

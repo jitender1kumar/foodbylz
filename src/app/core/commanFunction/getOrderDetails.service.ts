@@ -46,30 +46,6 @@ startdate:any;enddate:any;
 
 
 
-todate() {
-//alert(this.to_date);
-if(this.from_date=="0")
-{
-  alert("Please select start date by from calender.");
-}
-else
-{
-  this.getDataByDate(this.from_date,this.to_date);
-}
-}
-
-fromdate() {
-//alert(this.from_date);
-if(this.to_date=="0")
-  {
-   
-  }
-  else
-  {
-    this.getDataByDate(this.from_date,this.to_date);
-  }
-}
-  
  
 loadToday()
   { 

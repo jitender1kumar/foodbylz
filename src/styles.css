@@ -34,18 +34,18 @@
 }
 .box
 {
-  position: relative;
+  position: initial;
   padding-top: 0px;
   padding-bottom: 0px;
     border-radius: 0.5rem;
     margin: auto;
-    width: auto;
-    width: auto 70%;
+    
+    width:  70% ;
     background-color: #eff3fa;
 }
 .comman * {
   margin: 2px 0;       /* Reduces top and bottom margin */
-  line-height: 1.2;    /* Tightens text spacing */
+  line-height: 0.9;    /* Tightens text spacing */
 }
 
   .fooditems

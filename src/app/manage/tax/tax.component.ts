@@ -6,10 +6,11 @@ import { ColDef } from 'ag-grid-community';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
 import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
 import { TaxService } from '../../core/Services/tax.service';
-import { Observable } from 'rxjs';
+import { filter, Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { addTax, deleteTax, loadTax } from '../ManageStore/taxStore/tax.actions';
+import { addTax, deleteTax, deleteTaxSuccess, loadTax } from '../ManageStore/taxStore/tax.actions';
 import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
+import { ofType } from '@ngrx/effects';
 @Component({
     selector: 'app-tax',
     templateUrl: './tax.component.html',
@@ -41,6 +42,7 @@ export class TaxComponent implements OnInit {
   pagination = true;
   paginationPageSize = 10;
   paginationPageSizeSelector = [200, 500, 1000];
+  actions$: any;
   onFormSubmit() {
     if (this.myAddForm.valid) {
       this.add(this.myAddForm.value);
@@ -83,6 +85,8 @@ export class TaxComponent implements OnInit {
   }
   ngOnInit(): void {
     this.loadTax();
+    this.handleDeleteConfirmed();
+    
   }
   onFormUpdateSubmit() {
     this.Update(this.myEditForm.value);
@@ -165,13 +169,35 @@ export class TaxComponent implements OnInit {
   handleChildClick() {
     this.display = "display:none;";
   }
+  // deletedConfirmed(_id: any) {
+  //   this.store.dispatch(deleteTax({ _id }));
+  //   this.store.dispatch(loadTax());
+  //   this.tax$ = this.store.select(state => state.taxLoad.Tax_.allTasks);
+  //   this.display = "display:none;";
+  //    this.SweetAlert2_.showFancyAlertSuccess("Record Deleted Successfully.");
+  //   //this.args = " Record Deleted Successfully ";
+  // }
   deletedConfirmed(_id: any) {
-    this.store.dispatch(deleteTax({ _id }));
-    this.store.dispatch(loadTax());
-    this.tax$ = this.store.select(state => state.taxLoad.Tax_.allTasks);
-    this.display = "display:none;";
-     this.SweetAlert2_.showFancyAlertSuccess("Record Deleted Successfully.");
-    //this.args = " Record Deleted Successfully ";
+    console.log(_id);
+  this.store.dispatch(deleteTax({ _id }));
   }
+handleDeleteConfirmed()
+{
+  this.tax$ = this.store.select(state => state.taxLoad.Tax_.allTasks);
+
+  this.store.select(state => state.taxLoad.error)
+    .pipe(filter(error => !!error))
+    .subscribe(error => {
+      console.error('Delete failed:', error);
+      this.SweetAlert2_.showFancyAlertError('Failed to delete record.');
+    });
+
+  this.actions$.pipe(
+    ofType(deleteTaxSuccess)
+  ).subscribe(() => {
+    this.SweetAlert2_.showFancyAlertSuccess('Record deleted successfully.');
+    this.display = 'display:none;';
+  });
+}
 }
 

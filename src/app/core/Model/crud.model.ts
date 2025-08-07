@@ -162,6 +162,8 @@ Status:Boolean,
         DineTable:String,
         table_id:String,
         name:String,
+        FloorName:string,
+        
         description:string,
         status:boolean
       }

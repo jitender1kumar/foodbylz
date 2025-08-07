@@ -127,24 +127,35 @@ export class DisplayOrdersListComponent implements OnInit {
     // alert(this.datePipe.transform(todaydate, 'dd-MM-yyyy'));
   }
 
-
+// this.startdate=formattedyesterday+"T00:00:00.000+00:00";
+//    this.enddate=formattedyesterday+"T23:59:59.000+00:00";
   todate() {
     //alert(this.to_date);
+    console.log(this.to_date);
     if (this.from_date == "0") {
       alert("Please select start date by from calender.");
     }
     else {
-      this.GetOrderDetailsService_.getDataByDate(this.from_date, this.to_date);
+      this.GetOrderDetailsService_.getDataByDate(this.from_date+"T00:00:00.000+00:00", this.to_date+"T23:59:59.000+00:00").subscribe(data => {
+      this.ordersdata = data;
+      this.initializeDataforBox(this.ordersdata);
+      console.log(this.ordersdata);
+    });
     }
   }
 
   fromdate() {
+    console.log(this.from_date);
     //alert(this.from_date);
     if (this.to_date == "0") {
 
     }
     else {
-      this.GetOrderDetailsService_.getDataByDate(this.from_date, this.to_date);
+     this.GetOrderDetailsService_.getDataByDate(this.from_date+"T00:00:00.000+00:00", this.to_date+"T23:59:59.000+00:00").subscribe(data => {
+      this.ordersdata = data;
+      this.initializeDataforBox(this.ordersdata);
+      console.log(this.ordersdata);
+    });
     }
   }
 

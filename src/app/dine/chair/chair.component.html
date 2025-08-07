@@ -18,8 +18,8 @@
         <div class="col"><label class="lbl" for="dinedata" id="dinedata" >Select Dining Table :</label></div>
         <div class="col">
           <select class="lbl" formControlName="table_id">
-            @for (d of dinedata; track d) {
-              <option  class="lbl" value="{{d._id}}" >{{d.name}}</option>
+            @for (d of dinename; track d) {
+              <option  class="lbl" value="{{d.table_id}}" >{{d.DineTable}}  {{d.FloorName}}</option>
             }
           </select>
         </div>
