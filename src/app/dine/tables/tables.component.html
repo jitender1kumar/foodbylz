@@ -1,5 +1,3 @@
-
-
 <h4 class="titleh4">Tables Management</h4>
 <div class="restaurant-dashboard">
   <!-- First Div -->
@@ -16,7 +14,7 @@
     <div class="table-tabs restaurant-tabs">
       <!-- table-tab active -->
       <button [class]="tabactive0" (click)="tabshow(0)">Available </button>
-      <button [class]="tabactive1"(click)="tabshow(1)" >Reserved ({{reservedLength}}) </button>
+      <button [class]="tabactive1" (click)="tabshow(1)">Reserved ({{reservedLength}}) </button>
       <button [class]="tabactive2" (click)="tabshow(2)">Running Orders ({{runningOrderLength}}) </button>
       <button [class]="tabactive3" (click)="tabshow(3)">Billed</button>
     </div>
@@ -45,170 +43,166 @@
   <!-- Fourth Div -->
   <!-- selet table start-->
   @if (tab==0) {
-    <div class="order-list-container">
-      @for (floor of Floordata; track floor) {
-        <div>
-          <div class="order-list-header">
-            {{floor.name}}
+  <div class="order-list-container">
+    @for (floor of Floordata; track floor) {
+    <div>
+      <div class="order-list-header">
+        {{floor.name}}
+      </div>
+      <div class="table-layout">
+        <div *ngFor="let d of dinedata index as ii">
+          @if (d.status) {
+          <div>
+            @if (floor._id==d.floor_id) {
+            <a (click)="booktable(d._id)" class="table">
+              <p> <b>{{d.name}} </b> Available </p>
+
+              <div>
+                <!-- chair booking status 0-booked 1-booking available 2-booking available but do want book -->
+                <div class="circle top-left"></div>
+                <div class="circle top-right"></div>
+                <div class="circle bottom-left">
+                </div>
+                <div class="circle bottom-right">
+                </div>
+              </div>
+            </a>
+            }
           </div>
-          <div class="table-layout">
-            <div *ngFor="let d of dinedata index as ii">
-              @if (d.status) {
-                <div>
-                  @if (floor._id==d.floor_id) {
-                    <a (click)="booktable(d._id)" class="table">
-                      <p> <b>{{d.name}} </b> Available </p>
-                     
-                      <div >
-                        <!-- chair booking status 0-booked 1-booking available 2-booking available but do want book -->
-                        <div class="circle top-left" ></div>
-                        <div class="circle top-right" ></div>
-                        <div class="circle bottom-left" >
-                        </div>
-                        <div class="circle bottom-right" >
-                        </div>
-                      </div>
-                    </a>
-                  }
+          } @else {
+          <div>
+            @if (floor._id==d.floor_id) {
+            <div class="table">
+              <b>{{d.name}} Booked</b>
+              <div>
+                <!-- chair booking status 0-booked 1-booking available 2-booking available but do want book -->
+                <div class="circle top-left"></div>
+                <div class="circle top-right"></div>
+                <div class="circle bottom-left">
                 </div>
-              } @else {
-                <div >
-                  @if (floor._id==d.floor_id) {
-                    <div class="table">
-                      <b>{{d.name}} Booked</b>
-                      <div >
-                        <!-- chair booking status 0-booked 1-booking available 2-booking available but do want book -->
-                        <div class="circle top-left" ></div>
-                        <div class="circle top-right" ></div>
-                        <div class="circle bottom-left" >
-                        </div>
-                        <div class="circle bottom-right" >
-                        </div>
-                      </div>
-                    </div>
-                  }
+                <div class="circle bottom-right">
                 </div>
-              }
+              </div>
             </div>
+            }
           </div>
+          }
         </div>
-      }
+      </div>
     </div>
+    }
+  </div>
   }
   <!-- end -->
   <!-- reservedind start -->
   @if (tab==1) {
-    <div class="order-list-container">
-      <div>
-        <div class="table-layout">
-          <div *ngFor="let d of reservedinedata index as ii">
-            <b>{{d.TableName}}</b>
-            @if (d.Bookingstatus) {
+  <div class="order-list-container">
+    <div>
+      <div class="table-layout">
+        <div *ngFor="let d of reservedinedata index as ii">
+          <b>{{d.TableName}}</b>
+          @if (d.Bookingstatus) {
+          <div>
+            <a (click)="booktable(d._id)" class="table">
+              <p style="font-size:small;"> {{d.DateTimeStart.split('T')}}
+                <br> Mobile No: {{d.MobileNo}}
+              </p>
               <div>
-                <a (click)="booktable(d._id)" class="table">
-                  <p style="font-size:small;"> {{d.DateTimeStart.split('T')}}
-                    <br>  Mobile No: {{d.MobileNo}}</p>
-                    <div >
-                      <!-- chair booking status 0-booked 1-booking available 2-booking available but do want book -->
-                      <div class="circle top-left" ></div>
-                      <div class="circle top-right" ></div>
-                      <div class="circle bottom-left" >
-                      </div>
-                      <div class="circle bottom-right" >
-                      </div>
-                    </div>
-                  </a>
+                <!-- chair booking status 0-booked 1-booking available 2-booking available but do want book -->
+                <div class="circle top-left"></div>
+                <div class="circle top-right"></div>
+                <div class="circle bottom-left">
                 </div>
-              }
-              <b>{{d.Name}}</b>
-              <a (click)="deletereservedine(d._id)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
-                  <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"/>
-                </svg>
-              </a>
-              <a (click)="editreservedine(d._id)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"   viewBox="0 0 16 16">
-                  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                  <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-                </svg>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    }
-    <!-- end  -->
-    <!-- runing order start -->
-    @if (tab==2) {
-      <div class="order-list-container">
-        <div class="running-layout">
-          @for (runningorder_ of runningorder; track runningorder_) {
-            <div class="table">
-              <div class="states restaurant-states">
-                <div class="state-column restaurant-state-column">
-                  @if (runningorder_.Chairsrunningorder.length > 0) {
-                    <div>
-                      @for (d of dinedata; track d) {
-                        <div class="order-text">
-                          @if (d._id == runningorder_.Chairsrunningorder[0].table_id) {
-                            <h6>{{d.name}}, Token: ({{runningorder_.tokennumber}})
-                              
-                              <h6 class="order-meta">{{runningorder_.createdAt}}</h6>
-                            </h6>
-                          }
-                        </div>
-                      }
-                    </div>
-                  } @else {
-                    <h6 class="order-text"><b>{{runningorder_.tablename}}, Token: ({{runningorder_.tokennumber}})</b></h6>
-                    <h6 class="order-meta">{{runningorder_.createdAt}}</h6>
-                  }
-                  <div class="order-actions">
-                    <button class="btn-danger" (click)="cancel(runningorder_.createdAt)">🗑️</button>
-                    <button class="btn-primary" (click)="gotohome(runningorder_.createdAt,runningorder_.tokennumber)">Go</button>
-                    
-                  </div>
+                <div class="circle bottom-right">
                 </div>
               </div>
-            </div>
-          }
-        </div>
-      </div>
-    }
-
-
-
-    <!-- end -->
-    <!-- Top Section -->
-    @if (tab==3) {
-      <div class="order-list-container">
-        <div>
-          <div class="table-layout">
-            <div *ngFor="let d of todayBilledLists index as ii">
-              <div class="receipt-container">
-                <b class="table-name">{{ d.tablename }}</b>
-                <div class="receipt-details">
-                  <span><strong>Receipt No:</strong> {{ d.RecieptNumber }}</span>
-                  <span><strong>Grand Total:</strong> ₹{{ d.grandtotal }}</span>
-                  <span><strong>Paid:</strong> ₹{{ d.PaidAmount }}</span>
-                </div>
-                <p class="receipt-date">{{ d.createdAt }}</p>
-              </div>
-              <!-- <a (click)="deletereservedine(d._id)">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
-                <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"/>
-              </svg>
             </a>
-            <a (click)="editreservedine(d._id)">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"   viewBox="0 0 16 16">
-                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-              </svg>
-            </a> -->
           </div>
+          }
+          <b>{{d.Name}}</b>
+          <a (click)="deletereservedine(d._id)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill"
+              viewBox="0 0 16 16">
+              <path
+                d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
+            </svg>
+          </a>
+          <a (click)="editreservedine(d._id)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+              <path
+                d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+              <path fill-rule="evenodd"
+                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+            </svg>
+          </a>
         </div>
       </div>
     </div>
+  </div>
+  }
+  <!-- end  -->
+  <!-- runing order start -->
+  @if (tab==2) {
+  <div class="order-list-container">
+    <div class="running-layout">
+      @for (runningorder_ of runningorder; track runningorder_) {
+      <div class="table">
+        <div class="states restaurant-states">
+          <div class="state-column restaurant-state-column">
+            @if (runningorder_.Chairsrunningorder.length > 0) {
+            <div>
+              @for (d of dinedata; track d) {
+              <div class="order-text">
+                @if (d._id == runningorder_.Chairsrunningorder[0].table_id) {
+                <h6>{{d.name}}, Token: ({{runningorder_.tokennumber}})
+
+                  <h6 class="order-meta">{{runningorder_.createdAt}}</h6>
+                </h6>
+                }
+              </div>
+              }
+            </div>
+            } @else {
+            <h6 class="order-text"><b>{{runningorder_.tablename}}, Token: ({{runningorder_.tokennumber}})</b></h6>
+            <h6 class="order-meta">{{runningorder_.createdAt}}</h6>
+            }
+            <div class="order-actions">
+              <button class="btn-danger" (click)="cancel(runningorder_.createdAt)">🗑️</button>
+              <button class="btn-primary"
+                (click)="gotohome(runningorder_.createdAt,runningorder_.tokennumber)">Go</button>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  }
+
+
+
+  <!-- end -->
+  <!-- Top Section -->
+  @if (tab==3) {
+  <div class="order-list-container">
+    <div>
+      <div class="table-layout">
+        <div *ngFor="let d of todayBilledLists index as ii">
+          <div class="receipt-container">
+            <b class="table-name">{{ d.tablename }}</b>
+            <div class="receipt-details">
+              <span><strong>Receipt No:</strong> {{ d.RecieptNumber }}</span>
+              <span><strong>Grand Total:</strong> ₹{{ d.grandtotal }}</span>
+              <span><strong>Paid:</strong> ₹{{ d.PaidAmount }}</span>
+            </div>
+            <p class="receipt-date">{{ d.createdAt }}</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
   }
 
   <!-- Table Section -->
@@ -216,167 +210,236 @@
   <!-- show popup reserve table start -->
 
   @if (show) {
-    <div class="comman">
-      <div class="row box">
-        <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" class="col lbl2">
-          <button class="close" (click)="close()">Close</button>
-          <div class="row lbl">
-            <h4>Reserve a Dine (Validity for 1 hour.)</h4>
-          </div>
-          <div class="form-group row">
-            <div class="col"><label class="lbl" for="TableId" id="TableId">Select Table :</label>
+  <div class="comman">
+    <div class="row box">
+      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" class="col lbl2">
+
+        <!-- Close Button -->
+        <button class="close" type="button" (click)="close()">Close</button>
+
+        <!-- Header -->
+        <div class="row lbl">
+          <h4>Reserve a Dine (Validity for 2 hour)</h4>
+        </div>
+
+        <!-- Table Selection -->
+        <div class="form-group row">
+          <div class="col">
+            <label for="TableId">Select Table:</label>
           </div>
           <div class="col">
-            <select class="lbl" formControlName="TableId">
-              @for (d of dinedata; track d) {
-                <option class="lbl" value="{{d._id}}" >{{d.name}}</option>
+            <select id="TableId" formControlName="TableId" class="form-control">
+              @for (table of dinedata; track table) {
+              <option [value]="table._id">{{ table.name }}</option>
               }
             </select>
           </div>
         </div>
+
+        <!-- Date & Time Picker -->
+        <!-- Date Picker -->
         <div class="form-group row">
-          <div class="col"><label class="lbl" for="DateTimeStart" id="DateTimeStart"> Pick Date :</label></div>
-          <div class="col"><input class="lbl" name="ordinary"  type="datetime-local" (change)="selectdateandtime()" (click)="checkdate()" formControlName="DateTimeStart" ngModel
-          id="DateTimeStarttxt"  min="{{currentdate}}" /></div>
           <div class="col">
+            <label for="DateOnly">Pick Date:</label>
+          </div>
+          <div class="col">
+            <input id="DateOnly" type="date" class="form-control" [min]="currentDateOnly" [value]="selectedDate"
+              (change)="onDateChange($event)" />
           </div>
         </div>
+
+        <!-- Time Dropdown -->
         <div class="form-group row">
-          <div class="col"><label class="lbl" for="TableId" id="TableId">Select Customer :</label>
+          <div class="col">
+            <label for="TimeOnly">Pick Time (2 hour slots):</label>
+          </div>
+          <div class="col">
+            <select id="TimeOnly" class="form-control" [value]="selectedTime" (change)="onTimeChange($event)">
+              <option *ngFor="let time of availableTimeSlots" [value]="time">{{ time }}</option>
+            </select>
+          </div>
         </div>
-        <select class="lbl" formControlName="CustomerId"  (click)="bindcustomer()">
-          <option class="lbl" >none</option>
-          @for (d of Customersnamedata; track d) {
-            <option class="lbl" value="{{d._id}}">{{d.Name}}</option>
-          }
-        </select>
-      </div>
-      <div class="form-group row">
-        <div class="col"><label class="lbl" for="Name" id="Name"> Name :</label></div>
-        <div class="col"><input class="lbl"  type="text" formControlName="Name" ngModel
-        id="Nametxt" /></div>
-      </div>
-      <div class="form-group row">
-        <div class="col"><label class="lbl" for="MobileNo" id="MobileNo"> MobileNo :</label></div>
-        <div class="col"><input class="lbl" type="number" minlength="10" maxlength="20" formControlName="MobileNo" ngModel
-        id="MobileNotxt" /></div>
-      </div>
-      <div class="form-group row">
-        <div class="col"><label class="lbl" for="BookingAmount" id="BookingAmount"> BookingAmount :</label></div>
-        <div class="col"><input class="lbl" type="number" maxlength="10" formControlName="BookingAmount" ngModel
-        id="BookingAmounttxt" /></div>
-      </div>
-      <div class="form-group row">
-        <div class="col"><label class="lbl" for="Paymentstatus" id="Paymentstatus"> Paymentstatus :</label></div>
-        <div class="col"><input class="lbl" type="checkbox" checked="true" formControlName="Paymentstatus"
-        id="Paymentstatustxt" /></div>
-      </div>
-      <p>{{args}}</p>
-      <div class="row">
-        <div class="col"><button style="border: solid black; padding: 10px;" [disabled]="myAddForm.invalid "
-        class="bt1n" type="submit">+</button>
-      </div>
+
+        <!-- Hidden field bound to the form's DateTimeStart -->
+        <input type="hidden" [formControl]="dateTimeStartControl" />
+
+
+        <!-- Customer Selection -->
+        <div class="form-group row">
+          <div class="col">
+            <label for="CustomerId">Select Customer:</label>
+          </div>
+          <div class="col">
+            <select id="CustomerId" formControlName="CustomerId" class="form-control" (click)="bindcustomer()">
+              <option value="">None</option>
+              @for (customer of Customersnamedata; track customer) {
+              <option [value]="customer._id">{{ customer.Name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Customer Name -->
+        <div class="form-group row">
+          <div class="col">
+            <label for="Name">Name:</label>
+          </div>
+          <div class="col">
+            <input id="Name" type="text" formControlName="Name" class="form-control" />
+          </div>
+        </div>
+
+        <!-- Mobile Number -->
+        <div class="form-group row">
+          <div class="col">
+            <label for="MobileNo">Mobile No:</label>
+          </div>
+          <div class="col">
+            <input id="MobileNo" type="tel" formControlName="MobileNo" class="form-control" pattern="[0-9]{10,20}"
+              title="Enter valid mobile number (10 to 20 digits)" />
+          </div>
+        </div>
+
+        <!-- Booking Amount -->
+        <div class="form-group row">
+          <div class="col">
+            <label for="BookingAmount">Booking Amount:</label>
+          </div>
+          <div class="col">
+            <input id="BookingAmount" type="number" formControlName="BookingAmount" class="form-control" min="0" />
+          </div>
+        </div>
+
+        <!-- Payment Status -->
+        <div class="form-group row">
+          <div class="col">
+            <label for="Paymentstatus">Payment Status:</label>
+          </div>
+          <div class="col">
+            <input id="Paymentstatus" type="checkbox" formControlName="Paymentstatus" class="form-check-input" />
+          </div>
+        </div>
+
+        <!-- Error or Info Message -->
+        <div class="form-group row">
+          <div class="col">
+            <p class="text-danger">{{ args }}</p>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="row">
+          <div class="col">
+            <button type="submit" class="btn btn-primary" [disabled]="myAddForm.invalid">
+              Reserve Table
+            </button>
+          </div>
+        </div>
+
+      </form>
     </div>
-  </form>
-</div>
-</div>
-}
-<!-- end -->
+  </div>
+  }
+
+  <!-- end -->
 
 
-<!-- reserve edit start -->
-@if (editshow) {
+  <!-- reserve edit start -->
+  @if (editshow) {
   <div class="comman">
     <div class="row box">
       <form [formGroup]="myEditForm" (ngSubmit)="onFormEditSubmit()" class="col lbl2">
         <button class="close" (click)="close()">Close</button>
         <div class="row lbl">
-          <h4>Edit Reserve a Dine (Validity for 1 hour.)</h4>
+          <h4>Edit Reserve a Dine (Validity for 2 hour.)</h4>
         </div>
         <div class="form-group row">
           <div class="col"><label class="lbl" for="TableId" id="TableId">Select Table :</label>
+          </div>
+          <div class="col">
+            <select class="lbl" formControlName="TableId">
+              <option class="lbl" *ngFor="let d of dinedata index as i"
+                [selected]="d._id===editreservedinefata[0].TableId">{{d.name}}</option>
+            </select>
+          </div>
         </div>
-        <div class="col">
-          <select class="lbl" formControlName="TableId">
-            <option class="lbl" *ngFor="let d of dinedata index as i" [selected]="d._id===editreservedinefata[0].TableId" >{{d.name}}</option>
-          </select>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="DateTimeStart" id="DateTimeStart"> Pick Date :</label></div>
+          <div class="col"><input class="lbl" name="ordinary" type="datetime-local"
+              [(ngModel)]="editreservedinefata[0].DateTimeStart" (change)="selectdateandtime()" (click)="checkdate()"
+              formControlName="DateTimeStart" id="DateTimeStarttxt" min="{{currentdate}}" /></div>
+          <div class="col">
+          </div>
         </div>
-      </div>
-      <div class="form-group row">
-        <div class="col"><label class="lbl" for="DateTimeStart" id="DateTimeStart"> Pick Date :</label></div>
-        <div class="col"><input class="lbl" name="ordinary"  type="datetime-local"  [(ngModel)]="editreservedinefata[0].DateTimeStart" (change)="selectdateandtime()" (click)="checkdate()" formControlName="DateTimeStart"
-        id="DateTimeStarttxt"  min="{{currentdate}}" /></div>
-        <div class="col">
-        </div>
-      </div>
-      <!-- <div class="form-group row">
+        <!-- <div class="form-group row">
       <div class="col"><label class="lbl" for="DateTimeEnd" id="DateTimeEnd"> Pick Time :</label></div>
       <div class="col"><input class="lbl" type="time"  (change)="selecttime()" formControlName="DateTimeEnd" ngModel
       id="DateTimeEndtxt" /></div>
       <div class="col">
       </div>
     </div> -->
-    <div class="form-group row">
-      <!-- <div class="col"><label class="lbl" for="CustomerId" id="CustomerId"> Search by Customer :</label></div>
+        <div class="form-group row">
+          <!-- <div class="col"><label class="lbl" for="CustomerId" id="CustomerId"> Search by Customer :</label></div>
       <div class="col"><input class="lbl" type="text" multiple="true" value="{{serchbynamecustomer}}" (keypress)="searchCustomer()" formControlName="CustomerId" ngModel
       id="CustomerIdtxt" /></div> -->
-      <div class="col"><label class="lbl" for="TableId" id="TableId">Select Customer :</label>
+          <div class="col"><label class="lbl" for="TableId" id="TableId">Select Customer :</label>
+          </div>
+          <select class="lbl" formControlName="CustomerId" (click)="bindcustomer()">
+            <option class="lbl">none</option>
+            <option class="lbl" *ngFor="let d of Customersnamedata index as i"
+              [selected]="d._id===editreservedinefata[0].CustomerId" value="{{d._id}}">{{d.Name}}</option>
+          </select>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="Name" id="Name"> Name :</label></div>
+          <div class="col"><input class="lbl" type="text" [(ngModel)]="editreservedinefata[0].Name"
+              value="{{editreservedinefata[0].Name}}" formControlName="Name" id="Nametxt" /></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="MobileNo" id="MobileNo"> MobileNo :</label></div>
+          <div class="col"><input class="lbl" type="number" [(ngModel)]="editreservedinefata[0].MobileNo" minlength="10"
+              maxlength="20" formControlName="MobileNo" ngModel id="MobileNotxt" /></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="BookingAmount" id="BookingAmount"> BookingAmount :</label></div>
+          <div class="col"><input class="lbl" type="number" [(ngModel)]="editreservedinefata[0].BookingAmount"
+              maxlength="10" formControlName="BookingAmount" ngModel id="BookingAmounttxt" /></div>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="Paymentstatus" id="Paymentstatus"> Paymentstatus :</label></div>
+          <div class="col"><input class="lbl" type="checkbox" [(ngModel)]="editreservedinefata[0].Paymentstatus"
+              formControlName="Paymentstatus" id="Paymentstatustxt" /></div>
+        </div>
+        <p>{{args}}</p>
+        <div class="row">
+          <div class="col"><button style="border: solid black; padding: 10px;" [disabled]="myAddForm.invalid "
+              class="bt1n" type="submit">Update</button>
+          </div>
+        </div>
+      </form>
     </div>
-    <select class="lbl" formControlName="CustomerId"  (click)="bindcustomer()">
-      <option class="lbl" >none</option>
-      <option class="lbl" *ngFor="let d of Customersnamedata index as i" [selected]="d._id===editreservedinefata[0].CustomerId" value="{{d._id}}">{{d.Name}}</option>
-    </select>
   </div>
-  <div class="form-group row">
-    <div class="col"><label class="lbl" for="Name" id="Name"> Name :</label></div>
-    <div class="col"><input class="lbl"  type="text" [(ngModel)]="editreservedinefata[0].Name" value="{{editreservedinefata[0].Name}}" formControlName="Name"
-    id="Nametxt" /></div>
-  </div>
-  <div class="form-group row">
-    <div class="col"><label class="lbl" for="MobileNo" id="MobileNo"> MobileNo :</label></div>
-    <div class="col"><input class="lbl" type="number" [(ngModel)]="editreservedinefata[0].MobileNo" minlength="10" maxlength="20" formControlName="MobileNo" ngModel
-    id="MobileNotxt" /></div>
-  </div>
-  <div class="form-group row">
-    <div class="col"><label class="lbl" for="BookingAmount" id="BookingAmount"> BookingAmount :</label></div>
-    <div class="col"><input class="lbl" type="number" [(ngModel)]="editreservedinefata[0].BookingAmount" maxlength="10" formControlName="BookingAmount" ngModel
-    id="BookingAmounttxt" /></div>
-  </div>
-  <div class="form-group row">
-    <div class="col"><label class="lbl" for="Paymentstatus" id="Paymentstatus"> Paymentstatus :</label></div>
-    <div class="col"><input class="lbl" type="checkbox" [(ngModel)]="editreservedinefata[0].Paymentstatus" formControlName="Paymentstatus"
-    id="Paymentstatustxt" /></div>
-  </div>
-  <p>{{args}}</p>
-  <div class="row">
-    <div class="col"><button style="border: solid black; padding: 10px;" [disabled]="myAddForm.invalid "
-    class="bt1n" type="submit">Update</button>
-  </div>
-</div>
-</form>
-</div>
-</div>
-}
-<!-- end  -->
+  }
+  <!-- end  -->
 
-<!-- reserve delete start -->
-@if (deleteshow) {
+  <!-- reserve delete start -->
+  @if (deleteshow) {
   <div class="comman">
     <div class="row box">
       <p>{{args}}</p>
       <div class="form-group row">
-        <div class="col"><h3>Please Confirme to Delete</h3>
+        <div class="col">
+          <h3>Please Confirme to Delete</h3>
+        </div>
+      </div>
+      <div class=" form-group row">
+        <div class="col"><button (click)="Confirmedelete()" style="border: solid black; padding: 10px;">Confirme
+            delete</button>
+        </div>
+        <div class="col"><button (click)="close()" style="border: solid black; padding: 10px;">Cancel</button>
+        </div>
       </div>
     </div>
-    <div class=" form-group row">
-      <div class="col"><button (click)="Confirmedelete()" style="border: solid black; padding: 10px;"
-      >Confirme delete</button>
-    </div>
-    <div class="col"><button (click)="close()" style="border: solid black; padding: 10px;"
-    >Cancel</button>
   </div>
-</div>
-</div>
-</div>
-}
-<!-- end  -->
+  }
+  <!-- end  -->

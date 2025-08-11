@@ -80,25 +80,35 @@ export class CategoryformComponent implements OnInit {
     this.store.dispatch(loadCategories());
   }
 
-  add(ProductCategory_: ProductCategory): void {
-    this.service.getCategoryByName(ProductCategory_.name).subscribe(categoryName => {
+ add(ProductCategory_: ProductCategory): void {
+  this.service.getCategoryByName(ProductCategory_.name).subscribe({
+    next: (categoryName) => {
       this.categoryNameResult = categoryName;
-      //console.log(); 
-      if (this.categoryNameResult.allTasks.length == 0) {
+
+      if (!this.categoryNameResult?.allTasks?.length) {
+        // Add new category
         this.store.dispatch(CategoryActions.addCategory({ ProductCategory_: ProductCategory_ }));
         this.store.dispatch(CategoryActions.loadCategories());
-    this.categories$ = this.store.select(state => state.categoryLoad.ProductCategory_.allTasks);
-            //this.args= ;
-           this.SweetAlert2_.showFancyAlertSuccess("Successfully Added Category..."+ProductCategory_.name);
-      }
-      else {
-       // this.args = " Category Name: " + ProductCategory_.name + " Exists Create Another Name  "
-        this.SweetAlert2_.showFancyAlertFail(" Category Name: " + ProductCategory_.name + " Exists Create Another Name  ");
-      }
-    })
 
+        // Safe selector to avoid undefined error
+        // this.categories$ = this.store.select(
+        //   state => state.categoryLoad?.ProductCategory_?.allTasks
+        // );
+this.loadcategory();
+        // Success message
+        this.args = `✅ Successfully Added Category: ${ProductCategory_.name}`;
+      } else {
+        // Duplicate warning
+        this.args = `⚠️ Category Name "${ProductCategory_.name}" already exists. Please choose another.`;
+      }
+    },
+    error: (err) => {
+      console.error('Error checking category name:', err);
+      this.args = `❌ Error checking category name: ${err.message || err}`;
+    }
+  });
+}
 
-  }
   onCellClick(event: any) {
 
     if (event.colDef.field == 'Delete') {
@@ -128,19 +138,38 @@ export class CategoryformComponent implements OnInit {
       categorydesc: [editData.categorydesc]
     });
   }
-  loadcategory() {
+ loadcategory() {
+  this.store.dispatch(CategoryActions.loadCategories());
 
-    this.store.dispatch(CategoryActions.loadCategories());
-    this.categories$ = this.store.select(state => state.categoryLoad.ProductCategory_.allTasks);
-  }
-  Update(productcategory: ProductCategory) {
-  
-    this.store.dispatch(CategoryActions.updateCategory({ ProductCategory_: productcategory }));
-    this.store.dispatch(CategoryActions.loadCategories());
-    this.categories$ = this.store.select(state => state.categoryLoad.ProductCategory_.allTasks);
-    
-   
-  }
+  this.categories$ = this.store.select(
+    state => state.categoryLoad?.ProductCategory_?.allTasks
+  );
+
+  this.store.select(state => state.categoryLoad).subscribe(categoryState => {
+    if (categoryState.error) {
+      this.SweetAlert2_.showFancyAlertFail(`Error loading categories: ${categoryState.error}`);
+    } 
+    else if (!categoryState.loading && categoryState.ProductCategory_?.allTasks?.length) {
+     // this.SweetAlert2_.showFancyAlertSuccess("Categories loaded successfully.");
+    }
+  });
+}
+
+ Update(productcategory: ProductCategory) {
+  this.store.dispatch(CategoryActions.updateCategory({ ProductCategory_: productcategory }));
+  this.store.dispatch(CategoryActions.loadCategories());
+
+  this.categories$ = this.store.select(state => state.categoryLoad.ProductCategory_.allTasks);
+
+  this.store.select(state => state.categoryLoad).subscribe(categoryState => {
+    if (categoryState.error) {
+      this.SweetAlert2_.showFancyAlertFail(`Error updating category: ${categoryState.error}`);
+    } else if (!categoryState.loading) {
+      this.SweetAlert2_.showFancyAlertSuccess(`Category "${productcategory.name}" updated successfully.`);
+    }
+  });
+}
+
   cDelete(_id: any) {
 
   }
@@ -175,22 +204,38 @@ export class CategoryformComponent implements OnInit {
   handleChildClick() {
     this.display = "display:none;";
   }
-  deletedConfirmed(_id: any) {
-    this.productservice.getbycategoryid(_id).subscribe(records => {
+deletedConfirmed(_id: any) {
+  this.productservice.getbycategoryid(_id).subscribe({
+    next: (records) => {
       this.productrecord2 = records;
-      this.productrecord = this.productrecord2.allTasks;
-      if (this.productrecord.length == 0) {
+      this.productrecord = this.productrecord2?.allTasks || [];
+
+      if (this.productrecord.length === 0) {
         this.store.dispatch(CategoryActions.deleteCategory({ _id }));
         
-        this.store.dispatch(CategoryActions.loadCategories());
-    this.categories$ = this.store.select(state => state.categoryLoad.ProductCategory_.allTasks);
+
+        // Safe selector to avoid undefined errors
+        this.categories$ = this.store.select(
+          state => state.categoryLoad?.ProductCategory_?.allTasks
+        );
+
+        // ✅ Success message
+        this.SweetAlert2_.showFancyAlertSuccess("Category deleted successfully.");
+        this.loadcategory();
       }
-      else if (this.productrecord.length > 0) {
-       // alert("");
- this.SweetAlert2_.showFancyAlertFail("Can't delete because there is product available.");
+      else {
+        // ⚠️ Error message
+        this.SweetAlert2_.showFancyAlertFail("Can't delete — products exist in another fields.");
       }
+    },
+    error: (err) => {
+      console.error("Error checking category products:", err);
+      this.SweetAlert2_.showFancyAlertFail(`Error: ${err.message || err}`);
     }
-    )
-    this.display="display:none;";
-  }
+  });
+
+  // Hide dialog
+  this.display = "display:none;";
+}
+
 }

@@ -267,6 +267,7 @@ Status:Boolean,
          MobileNo: String,
         BookingAmount: Number,
         Bookingstatus:boolean,
+        ConfirmStatus:boolean,
         Paymentstatus: boolean,
           RecieptNumber:String,
           employee_id:String

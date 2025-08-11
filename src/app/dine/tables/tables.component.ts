@@ -32,11 +32,20 @@ export class TablesComponent implements OnInit {
   @Input() CancelOrder:any;
   @Output() clearCancelOrder = new EventEmitter<string>();
   @Output() clearPickupOrder = new EventEmitter<string>();
-  pickupinvoiceid: number = 0;
-    ordersdataforToken:any;
-  TokenNumber:number=0;
+  
   @Output() notifyManage3: EventEmitter<string> = new EventEmitter<string>();
   editreservedinefata: any;
+  currentDateOnly: string = '';       // yyyy-MM-dd
+  selectedDate: string = '';
+  selectedTime: string = '';
+  availableTimeSlots: string[] = [];
+  pickupinvoiceid: number = 0;
+    ordersdataforToken:any;
+      get dateTimeStartControl(): FormControl {
+  return this.myAddForm.get('DateTimeStart') as FormControl;
+}
+
+  TokenNumber:number=0;
   editreservedinefata2: any;
   isChecked = false;
   date: any; now: any = new Date('').getTime().toString();
@@ -60,6 +69,7 @@ export class TablesComponent implements OnInit {
     Bookingstatus: true,
     TableName: "undefined",
     employee_id: this.employeeId,
+    ConfirmStatus: false
   }
 
   runningOrderLength = 0;
@@ -136,7 +146,12 @@ export class TablesComponent implements OnInit {
   };
   ordersdata: any;
   constructor(private service: DineService, private QuantitytypeService_: QuantitytypeService, private router: Router, private fb: FormBuilder, private floorservice: FloorService, private chairservice: ChairService, private chairsrunningorderservice: ChairServiceService, private _InvoiceService: InvoiceService, private formedit: FormBuilder, private customerservice: CustomresService, private reservedineservice: ReserveDineService, private datePipe: DatePipe, private GetOrderDetailsService_: GetOrderDetailsService,private InitializeInvoice_:InitializeInvoice) {
-this.invoicedelete = this.InitializeInvoice_.initializeInvoice("Cancelled",this.employeeId,0);
+const today = new Date();
+    this.currentDateOnly = today.toISOString().split('T')[0];
+    this.selectedDate = this.currentDateOnly;
+
+    this.generateTimeSlots();
+    this.invoicedelete = this.InitializeInvoice_.initializeInvoice("Cancelled",this.employeeId,0);
 this.invoicepickup = this.InitializeInvoice_.initializeInvoice("New Order",this.employeeId,0);
 this.invoice = this.InitializeInvoice_.initializeInvoice("Cancelled",this.employeeId,0);
 this.loadToken();
@@ -161,19 +176,21 @@ this.loadToken();
       MobileNo: ['',],
       Paymentstatus: [false,],
       Bookingstatus: [true,],
+     
       BookingAmount: ['',],
-      RecieptNumber: [this.now,],
+      RecieptNumber: [],
 
     });
     this.myAddForm = this.formedit.group({
       TableId: ['',],
-      DateTimeStart: ['',],
+      DateTimeStart: new FormControl('', Validators.required),
       DateTimeEnd: ['',],
       CustomerId: ['',],
       Name: ['',],
       MobileNo: ['',],
       Paymentstatus: [false,],
       Bookingstatus: [true,],
+       ConfirmStatus:[false,],
       BookingAmount: ['',],
       RecieptNumber: [this.now,]
     });
@@ -240,6 +257,36 @@ referesh()
     this.deleteshow = true;
     this.holdreservetableid = _id;
 
+  }
+ generateTimeSlots() {
+    // Generates slots: 10:00, 12:00, 14:00 ... 22:00
+    const startHour = 10;
+    const endHour = 22;
+    this.availableTimeSlots = [];
+
+    for (let hour = startHour; hour <= endHour; hour += 2) {
+      const hourStr = hour.toString().padStart(2, '0');
+      this.availableTimeSlots.push(`${hourStr}:00`);
+    }
+  }
+
+  onDateChange(event: any) {
+    this.selectedDate = event.target.value;
+    console.log(this.selectedDate);
+    console.log(event.target.value);
+    this.updateDateTime();
+  }
+
+  onTimeChange(event: any) {
+    this.selectedTime = event.target.value;
+    this.updateDateTime();
+  }
+
+  updateDateTime() {
+    if (this.selectedDate && this.selectedTime) {
+      const combined = `${this.selectedDate}T${this.selectedTime}`;
+      this.myAddForm.get('DateTimeStart')?.setValue(combined);
+    }
   }
 
   editreservedine(_id: any) {

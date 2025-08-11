@@ -14,11 +14,12 @@ import { InventoryMainFoodService } from '../../core/Services/inventoryMainFood.
 import { itemQminus } from '../../home/state/itemqunatity/itemquantity.action';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { addInventoryFoodwithProduct, loadInventoryFoodwithProduct, updateInventoryFoodwithProduct } from '../inventoryStore/inventoryFoodwithProductStore/inventoryFoodwithProduct.actions';
+import { addInventoryFoodwithProduct, addInventoryFoodwithProductFailure, addInventoryFoodwithProductSuccess, loadInventoryFoodwithProduct, updateInventoryFoodwithProduct, updateInventoryFoodwithProductFailure, updateInventoryFoodwithProductSuccess } from '../inventoryStore/inventoryFoodwithProductStore/inventoryFoodwithProduct.actions';
 import { loadProduct } from '../../manage/ManageStore/productStore/product.actions';
 import { loadInventoryMainFood } from '../inventoryStore/inventoryMainFoodStore/inventoryMainFood.actions';
 import { loadSubQuantityType } from '../../manage/ManageStore/subQuantityTypeStore/subQuantityType.actions';
 import { loadInventoryFoodQuantityType } from '../inventoryStore/inventoryFoodQuantityTypeStore/inventoryFoodQuantityType.actions';
+import { ofType, Actions } from '@ngrx/effects';
 
 
 @Injectable({ providedIn: 'root' })
@@ -117,7 +118,18 @@ export class InventoryfoodComponent implements OnInit {
   showubelements: boolean = false;
   myAddForm: FormGroup;
   employeeId = "JSK";
-  constructor(private service: InventoryMainFoodwithProductService, private router: Router, private formedit: FormBuilder, private _InventoryMFoodQuantityTypeService: InventoryMFoodQuantityTypeService, private ppservice: ProductPriceService, private productservice: ProductService, private subQuantityTypeService_: subQuantityTypeService, private inventoryfoodmainservice: InventoryMainFoodService, private store: Store<{ loadInventoryFoodQuantityType: any, loadInventoryMainFood: any, loadAssocciatedInvtoryFood: any, productLoad: any, subQuantityTypeLoad: any }>) {
+  constructor(
+    private service: InventoryMainFoodwithProductService,
+    private router: Router,
+    private formedit: FormBuilder,
+    private _InventoryMFoodQuantityTypeService: InventoryMFoodQuantityTypeService,
+    private ppservice: ProductPriceService,
+    private productservice: ProductService,
+    private subQuantityTypeService_: subQuantityTypeService,
+    private inventoryfoodmainservice: InventoryMainFoodService,
+    private store: Store<{ loadInventoryFoodQuantityType: any, loadInventoryMainFood: any, loadAssocciatedInvtoryFood: any, productLoad: any, subQuantityTypeLoad: any }>,
+    public actions$: Actions
+  ) {
     // this.getinventoryfoodmain_id="";
     this.inventoryQuantityTypeData$ = store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
     this.loading$ = store.select(state => state.loadInventoryFoodQuantityType.loading);
@@ -192,7 +204,7 @@ export class InventoryfoodComponent implements OnInit {
   }
   getProductPriceAndSubQuantityTypeDetails() {
     //alert(this.myAddForm.value.ProductId);
-    this._InventoryFoodwithProduct2List = [];
+    
     this.ppservice.getbyproductid(this.myAddForm.value.ProductId).subscribe(data => {
       if (data) {
         console.log(data);
@@ -206,6 +218,7 @@ export class InventoryfoodComponent implements OnInit {
           this.Products$.subscribe(productdata => {
             const productindex = productdata.findIndex((item: { _id: any; }) => item._id === this.myAddForm.value.ProductId);
             // alert(productindex);
+            this._InventoryFoodwithProduct2List = [];
             for (var ii = 0; ii < this.productPrice_SubQuantityType_data.length; ii++) {
               this.subQuantityTypeData$.subscribe((subQuantityTypeData: any) => {
                 const subQuantityTypeIndex = subQuantityTypeData.findIndex((item: { _id: any; }) => item._id === this.productPrice_SubQuantityType_data[ii].selectSubQuantityTypeID);
@@ -230,7 +243,7 @@ export class InventoryfoodComponent implements OnInit {
     })
   }
   getsubQuantityTypeDatatypeforedit(ProductId: any) {
-    this._InventoryFoodwithProduct2List = [];
+    
     this.ppservice.getbyproductid(ProductId).subscribe(data => {
       if (data) {
         console.log(data);
@@ -245,6 +258,7 @@ export class InventoryfoodComponent implements OnInit {
           this.Products$.subscribe(productdata => {
             const productindex = productdata.findIndex((item: { _id: any; }) => item._id === ProductId);
             // alert(productindex);
+            this._InventoryFoodwithProduct2List = [];
             for (var ii = 0; ii < this.productPrice_SubQuantityType_data.length; ii++) {
               this.subQuantityTypeData$.subscribe((subQuantityTypeData: any) => {
                 const subQuantityTypeIndex = subQuantityTypeData.findIndex((item: { _id: any; }) => item._id === this.productPrice_SubQuantityType_data[ii].selectSubQuantityTypeID);
@@ -527,13 +541,7 @@ export class InventoryfoodComponent implements OnInit {
   //     }
   //   })
   // }
-  add(InventoryFoodwithProduct_: InventoryFoodwithProduct): void {
-    console.log(InventoryFoodwithProduct_);
-    this.store.dispatch(addInventoryFoodwithProduct({ InventoryFoodwithProduct_ }));
-    this.store.dispatch(loadInventoryFoodwithProduct());
-    this.fooddata$ = this.store.select(state => state.loadAssocciatedInvtoryFood.InventoryFoodwithProduct_.allTasks);
-
-  }
+ 
   onCellClick(event: any) {
 
     if (event.colDef.field == 'Delete') {
@@ -595,12 +603,25 @@ export class InventoryfoodComponent implements OnInit {
     this.loading$ = this.store.select(state => state.loadAssocciatedInvtoryFood.loading);
     this.error$ = this.store.select(state => state.loadAssocciatedInvtoryFood.error);
   }
-  Update(InventoryFoodwithProductForEdit_: InventoryFoodwithProductforEdit) {
-    this.store.dispatch(updateInventoryFoodwithProduct({ InventoryFoodwithProductForEdit_ }));
-    this.store.dispatch(loadInventoryFoodwithProduct());
-    this.fooddata$ = this.store.select(state => state.loadAssocciatedInvtoryFood.InventoryFoodwithProduct_.allTasks);
+ Update(InventoryFoodwithProductForEdit_: InventoryFoodwithProductforEdit) {
+  this.store.dispatch(updateInventoryFoodwithProduct({ InventoryFoodwithProductForEdit_ }));
+  this.store.dispatch(loadInventoryFoodwithProduct());
+  this.fooddata$ = this.store.select(
+    state => state.loadAssocciatedInvtoryFood?.InventoryFoodwithProduct_?.allTasks
+  );
 
-  }
+  // Success notification
+  this.actions$.pipe(ofType(updateInventoryFoodwithProductSuccess)).subscribe(() => {
+   this.args ='Inventory updated successfully!';
+    this.loadInventoryAssocciatedFood();
+  });
+
+  // Error notification
+  this.actions$.pipe(ofType(updateInventoryFoodwithProductFailure)).subscribe(({ error }: { error: any }) => {
+    this.args ='Failed to update inventory: ' + error;
+  });
+ 
+}
   cDelete(_id: any) {
 
   }
@@ -634,8 +655,25 @@ export class InventoryfoodComponent implements OnInit {
       }
     })
 
-
   }
+   add(InventoryFoodwithProduct_: InventoryFoodwithProduct): void {
+  console.log(InventoryFoodwithProduct_);
+  this.store.dispatch(addInventoryFoodwithProduct({ InventoryFoodwithProduct_ }));
+  this.store.dispatch(loadInventoryFoodwithProduct());
+  this.fooddata$ = this.store.select(
+    state => state.loadAssocciatedInvtoryFood?.InventoryFoodwithProduct_?.allTasks
+  );
+
+  // Success message
+  this.actions$.pipe(ofType(addInventoryFoodwithProductSuccess)).subscribe(() => {
+    this.args='Inventory item added successfully!';
+  });
+
+  // Error message
+  this.actions$.pipe(ofType(addInventoryFoodwithProductFailure)).subscribe(({ error }) => {
+    this.args='Failed to add inventory item: ' + error;
+  });
+}
   show: any = false;
   showEdit: any = false;
   shows() {
@@ -700,22 +738,30 @@ export class InventoryfoodComponent implements OnInit {
   handleChildClick() {
     this.display = "display:none;";
   }
-  deletedConfirmed(id: any) {
-
-    this.service.delete(id).subscribe(data => {
+ deletedConfirmed(id: any) {
+  this.service.delete(id).subscribe({
+    next: (data) => {
       if (data) {
         this.store.dispatch(loadInventoryFoodwithProduct());
-        this.fooddata$ = this.store.select(state => state.loadAssocciatedInvtoryFood.InventoryFoodwithProduct_.allTasks);
+        this.fooddata$ = this.store.select(
+          state => state.loadAssocciatedInvtoryFood?.InventoryFoodwithProduct_?.allTasks
+        );
 
         this.display = "display:none;";
-        this.args = " Record Deleted Successfully ";
-        //  alert("Deleted.");
+        this.args = "Record Deleted Successfully";
+      } else {
+        this.display = "display:none;";
+        this.args = "Failed to delete record (no response from server)";
       }
-    })
+    },
+    error: (err) => {
+      console.error("Delete failed", err);
+      this.display = "display:none;";
+      this.args = `Error deleting record: ${err.message || err}`;
+    }
+  });
+}
 
-
-
-  }
   // deleterawitems(arg0: String) {
   //   const index = this._GoodscollectionMergename_List.findIndex(item => item.IventoryFoodMainId === arg0);
   //   this._GoodscollectionMergename_List.splice(index, 1);
