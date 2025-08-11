@@ -17,36 +17,53 @@
 {
     border: solid rgb(212, 207, 216) 1px;
 }
-.comman
-{
-     /* Hidden by default */
-  position: absolute; /* Stay in place */
-  z-index: 5; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
-  left: 0;
+.comman {
+  position: fixed; /* fixed so it stays in view */
+  z-index: 5;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgba(23, 110, 45, 0.849); /* Black w/ opacity */
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(23, 110, 45, 0.85);
   
- 
+  /* Center the box inside */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Fade-in effect */
+  animation: fadeIn 0.3s ease-in-out;
 }
-.box
-{
-  position: initial;
-  padding-top: 0px;
-  padding-bottom: 0px;
-    border-radius: 0.5rem;
-    margin: auto;
-    
-    width:  70% ;
-    background-color: #eff3fa;
+
+.box {
+  background: linear-gradient(135deg, #ffffff, #f0f4f9);
+  padding: 5px 5px;
+  border-radius: 12px;
+  width: 70% auto;
+  max-width: 1450px;
+  
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+  
+  /* Slight scale animation */
+  /* animation: popUp 0.3s ease-out; */
 }
+
 .comman * {
-  margin: 2px 0;       /* Reduces top and bottom margin */
-  line-height: 0.9;    /* Tightens text spacing */
+  margin: 3px 0;
+  line-height: 1.4;
 }
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes popUp {
+  from { transform: scale(0.9); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
 
   .fooditems
   {
