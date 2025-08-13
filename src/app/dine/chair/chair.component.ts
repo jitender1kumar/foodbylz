@@ -10,6 +10,7 @@ import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { ChairService } from '../../core/Services/chair.service';
 import { DineService } from '../../core/Services/dine.service';
 import { FloorService } from '../../core/Services/floor.service';
+import { NameExistOrNotService } from '../../core/commanFunction/NameExistOrNot.service';
 
 @Component({
   selector: 'app-chair',
@@ -82,7 +83,9 @@ export class ChairComponent implements OnInit, ICellRendererAngularComp {
   static myGlobalVariable: any;
   exampleModal: any;
   qname = "";
-  constructor(private service: ChairService, private floorservice: FloorService, private QuantitytypeService_: QuantitytypeService, private router: Router, private formedit: FormBuilder, private dineservice: DineService) {
+  constructor(private service: ChairService,
+    private NameExistOrNotService_:NameExistOrNotService,
+    private floorservice: FloorService, private QuantitytypeService_: QuantitytypeService, private router: Router, private formedit: FormBuilder, private dineservice: DineService) {
     this.display = "display:none;"
     this.args = null;
     this.myEditForm = this.formedit.group({
@@ -156,8 +159,6 @@ export class ChairComponent implements OnInit, ICellRendererAngularComp {
 
       }
     }
-
-
   }
   getdinename(id: string) {
     const itemP = this.dinedata.find((item: { _id: string; }) => item._id === id);
@@ -240,7 +241,12 @@ export class ChairComponent implements OnInit, ICellRendererAngularComp {
 
 
   add(chair: IChair): void {
-
+  if(this.NameExistOrNotService_.checkChairNameExist(this.myEditForm.value.name,this.IChairdata,this.dinedata,this.Floordata ))
+    {
+     this.args="Chair Exists.";
+    }
+    else
+    {
     this.service.add(chair).subscribe(res => {
       if (res) {
         // console.log(data);
@@ -253,11 +259,18 @@ export class ChairComponent implements OnInit, ICellRendererAngularComp {
     })
 this.loadChairs();
   }
+  }
 
 
 
   Update(chair: IChair) {
     //alert(basetype._id);
+      if(this.NameExistOrNotService_.checkChairNameExist(this.myEditForm.value.name,this.IChairdata,this.dinedata,this.Floordata ))
+    {
+     this.args="Chair Exists.";
+    }
+    else
+    {
     this.service.update(chair).subscribe(res => {
       if (res) {
         //this.search(id);
@@ -269,6 +282,7 @@ this.loadChairs();
         this.loadChairs();
       }
     })
+  }
   }
   cDelete(_id: any) {
     //this.loadbasetype();

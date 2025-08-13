@@ -7,10 +7,12 @@ import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttonco
 import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
 import { TaxService } from '../../core/Services/tax.service';
 import { filter, Observable } from 'rxjs';
+import * as TaxAction from '../ManageStore/taxStore/tax.actions';
 import { Store } from '@ngrx/store';
 import { addTax, deleteTax, deleteTaxSuccess, loadTax } from '../ManageStore/taxStore/tax.actions';
 import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
 import { ofType } from '@ngrx/effects';
+import { NameExistOrNotService } from '../../core/commanFunction/NameExistOrNot.service';
 @Component({
     selector: 'app-tax',
     templateUrl: './tax.component.html',
@@ -64,7 +66,9 @@ export class TaxComponent implements OnInit {
   name: any;
   Desc: any;
   myAddForm: FormGroup;
-  constructor(private service: TaxService, private router: Router, private formedit: FormBuilder, private store: Store<{ taxLoad: any }>,private SweetAlert2_:SweetAlert2) {
+  constructor(private service: TaxService, 
+    private NameExistOrNotService_:NameExistOrNotService,
+    private router: Router, private formedit: FormBuilder, private store: Store<{ taxLoad: any }>,private SweetAlert2_:SweetAlert2) {
     this.tax$ = store.select(state => state.taxLoad.Tax_.allTasks);
     this.loading$ = store.select(state => state.taxLoad.loading);
     this.error$ = store.select(state => state.taxLoad.error);
@@ -92,15 +96,31 @@ export class TaxComponent implements OnInit {
     this.Update(this.myEditForm.value);
   }
   Update(Tax_: Tax) {
-    this.service.update(Tax_).subscribe(res => {
-      if (res) {
-        //this.args = "Successfully Updated quantity types..." + Tax.name;
-         this.SweetAlert2_.showFancyAlertSuccess("Successfully updated Tax: " + Tax_.name);
-         this.store.dispatch(loadTax());
-  this.tax$ = this.store.select(state => state.taxLoad.Tax_.allTasks);
+    if(this.NameExistOrNotService_.checkNameExist(this.myEditForm.value.name,this.myEditForm.value._id,this.tax$ ))
+        {
+         this.args = `Tax Name: ${this.myEditForm.value.name} Exists. Please create another name.`;
+        }
+        else
+        {
+          this.store.dispatch(TaxAction.updateTax({Tax_}));
+           this.actions$.pipe(ofType(TaxAction.updateTaxSuccess)).subscribe(() => {
+                this.args="Successfully Updated Tax: " + Tax_.name;
+                  this.loadTax();
+                });
+             this.actions$.pipe(ofType(TaxAction.updateTaxFailure)).subscribe(() => {
+                 this.args="Something went wrong";
+                  
+                });
+  //   this.service.update(Tax_).subscribe(res => {
+  //     if (res) {
+  //       //this.args = "Successfully Updated quantity types..." + Tax.name;
+  //        this.SweetAlert2_.showFancyAlertSuccess("Successfully updated Tax: " + Tax_.name);
+  //        this.store.dispatch(loadTax());
+  // this.tax$ = this.store.select(state => state.taxLoad.Tax_.allTasks);
  
-      }
-    })
+  //     }
+  //   })
+  }
 
   }
   cDelete(_id: any) {
@@ -110,13 +130,26 @@ export class TaxComponent implements OnInit {
 
   add(Tax_: Tax): void {
 
-    this.store.dispatch(addTax({ Tax_ }));
-   // this.args = "Successfully Added quantity types..." + Tax_.name;
-     this.SweetAlert2_.showFancyAlertSuccess("Successfully Added Tax: " + Tax_.name);
+   
     //alert("Successfully Created quantity types...");
-    this.store.dispatch(loadTax());
-    this.tax$ = this.store.select(state => state.taxLoad.Tax_.allTasks);
-
+      if(this.NameExistOrNotService_.checkNameExistforAddForm(this.myEditForm.value.name,this.tax$ ))
+        {
+         this.args = `Tax Name: ${this.myAddForm.value.name} Exists. Please create another name.`;
+        }
+        else
+        {
+         this.store.dispatch(addTax({ Tax_ }));
+   // this.args = "Successfully Added quantity types..." + Tax_.name;
+     
+          this.actions$.pipe(ofType(TaxAction.addTaxSuccess)).subscribe(() => {
+                this.args="Successfully Added Tax: " + Tax_.name;
+                  this.loadTax();
+                });
+             this.actions$.pipe(ofType(TaxAction.addTaxFailure)).subscribe(() => {
+                 this.args="Something went wrong";
+                  
+                });
+              }
   }
 
   onCellClick(event: any) {
@@ -146,8 +179,14 @@ export class TaxComponent implements OnInit {
   loadTax() {
     this.store.dispatch(loadTax());
     this.tax$ = this.store.select(state => state.taxLoad.Tax_.allTasks);
-    this.loading$ = this.store.select(state => state.taxLoad.loading);
-    this.error$ = this.store.select(state => state.taxLoad.error);
+     this.actions$.pipe(ofType(TaxAction.loadTaxSuccess)).subscribe(() => {
+                // this.args="Successfully Added Tax: " + Tax_.name;
+                //   this.loadTax();
+                });
+             this.actions$.pipe(ofType(TaxAction.loadTaxFailure)).subscribe(() => {
+                 this.args="Something went wrong";
+                  
+                });
 
   }
   show: any = false;
@@ -195,7 +234,7 @@ handleDeleteConfirmed()
   this.actions$.pipe(
     ofType(deleteTaxSuccess)
   ).subscribe(() => {
-    this.SweetAlert2_.showFancyAlertSuccess('Record deleted successfully.');
+   // this.SweetAlert2_.showFancyAlertSuccess('Record deleted successfully.');
     this.display = 'display:none;';
   });
 }

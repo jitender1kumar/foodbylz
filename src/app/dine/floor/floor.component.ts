@@ -186,7 +186,8 @@ export class FloorComponent implements OnInit, ICellRendererAngularComp {
       })
     }
     else {
-      this.SweetAlert2_.showFancyAlertFail("Floor Name Already Exists");
+        this.args="Floor Name: " + floor.name+" Already Exists";
+      // this.SweetAlert2_.showFancyAlertFail("Floor Name Already Exists");
     }
   }
 
@@ -194,6 +195,7 @@ export class FloorComponent implements OnInit, ICellRendererAngularComp {
 
   Update(floor: Floor) {
     // alert("works.");
+     if (this.ValidateFloorNameExists(floor.name)) {
     this.floorservice.update(floor).subscribe(res => {
       if (res) {
         //this.search(id);
@@ -205,6 +207,10 @@ export class FloorComponent implements OnInit, ICellRendererAngularComp {
         this.loadfloor();
       }
     })
+  }
+  else {
+      this.args="Floor Name: " + floor.name+" Already Exists";
+    }
   }
   cDelete(_id: any) {
     //this.loadbasetype();

@@ -8,7 +8,9 @@ import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbas
 import { InventoryMFoodQuantityTypeService } from '../../core/Services/inventoryFoodQuantityType.service';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
+import * as InveroryFoodQuantityTypeActions from '../inventoryStore/inventoryFoodQuantityTypeStore/inventoryFoodQuantityType.actions';
 import { addInventoryFoodQuantityType, deleteInventoryFoodQuantityType, loadInventoryFoodQuantityType, updateInventoryFoodQuantityType } from '../inventoryStore/inventoryFoodQuantityTypeStore/inventoryFoodQuantityType.actions';
+import { Actions, ofType } from '@ngrx/effects';
 
 
 @Injectable({ providedIn: 'root' })
@@ -55,7 +57,9 @@ export class InventoryfoodquntitytypeComponent implements OnInit {
   valueid: any;
   modal: any;
   myAddForm: FormGroup;
-  constructor(private service: InventoryMFoodQuantityTypeService, private router: Router, private formedit: FormBuilder, private store: Store<{ loadInventoryFoodQuantityType: any }>) {
+  constructor(private service: InventoryMFoodQuantityTypeService, 
+     public actions$: Actions,
+    private router: Router, private formedit: FormBuilder, private store: Store<{ loadInventoryFoodQuantityType: any }>) {
     this.inventoryQuantityTypeData$ = store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
     this.loading$ = store.select(state => state.loadInventoryFoodQuantityType.loading);
     this.error$ = store.select(state => state.loadInventoryFoodQuantityType.error);
@@ -74,14 +78,44 @@ export class InventoryfoodquntitytypeComponent implements OnInit {
   ngOnInit(): void {
     this.loadinventoeryfoodquantitytype();
   }
-
-  add(InventoryFoodQuantityType_: InventoryFoodQuantityType): void {
+  InventoryNameExist=false;
+checkNameExist(checkName:string)
+{
    
-this.store.dispatch(addInventoryFoodQuantityType({InventoryFoodQuantityType_}));
+ this.inventoryQuantityTypeData$?.subscribe(getName=>{
+const NameExist = getName.find(item =>item.name===checkName);
+if(NameExist)
+{
+//alert("if"+NameExist);
+  return this.InventoryNameExist= true;
+}
+else
+{
+//  alert("else"+NameExist);
+  return this.InventoryNameExist= false;
+}
+});
+return this.InventoryNameExist;
+}
+  add(InventoryFoodQuantityType_: InventoryFoodQuantityType): void {
+   if(this.checkNameExist(this.myAddForm.value.name))
+   {
+this.args = "Inventory Name Already Exist";
+   }
+   else
+   {
+    this.store.dispatch(addInventoryFoodQuantityType({InventoryFoodQuantityType_}));
 this.args = "Successfully Added Category..." + InventoryFoodQuantityType_.name;
-    this.store.dispatch(loadInventoryFoodQuantityType());
-    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
-    
+    this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.addInventoryFoodQuantityTypeSuccess)).subscribe(() => {
+            this.args=" added";
+            // this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
+   this.loadinventoeryfoodquantitytype();
+           });
+        this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.addInventoryFoodQuantityTypeFailure)).subscribe(() => {
+            this.args="Something went wrong.";
+           }); 
+   }
+
   }
   onCellClick(event: any) {
 
@@ -113,17 +147,37 @@ this.args = "Successfully Added Category..." + InventoryFoodQuantityType_.name;
 
     this.store.dispatch(loadInventoryFoodQuantityType());
     this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
-    this.loading$ = this.store.select(state => state.loadInventoryFoodQuantityType.loading);
-    this.error$ = this.store.select(state => state.loadInventoryFoodQuantityType.error);
+    this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.loadInventoryFoodQuantityTypeSuccess)).subscribe(() => {
+           // this.args=" Updated";
+            // this.loadcategory();
+           });
+        this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.loadInventoryFoodQuantityTypeFailure)).subscribe(() => {
+            this.args="Something went wrong.";
+           }); 
+    // this.loading$ = this.store.select(state => state.loadInventoryFoodQuantityType.loading);
+    // this.error$ = this.store.select(state => state.loadInventoryFoodQuantityType.error);
    
   }
   Update(InventoryFoodQuantityType_: InventoryFoodQuantityType) {
-   
+    if(this.checkNameExist(this.myEditForm.value.name))
+   {
+this.args = "Inventory Name Already Exist";
+   }
+   else
+   {
 this.store.dispatch(updateInventoryFoodQuantityType({InventoryFoodQuantityType_}));
-this.args = "Successfully Updated Category..." + InventoryFoodQuantityType_.name;
- this.store.dispatch(loadInventoryFoodQuantityType());
+// this.args = "Successfully Updated Category..." + InventoryFoodQuantityType_.name;
+//  this.store.dispatch(loadInventoryFoodQuantityType());
     this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
-    
+    this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.updateInventoryFoodQuantityTypeSuccess)).subscribe(() => {
+            this.args=" Updated";
+            this.loadinventoeryfoodquantitytype();
+            // this.loadcategory();
+           });
+        this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.updateInventoryFoodQuantityTypeFailure)).subscribe(() => {
+            this.args="Something went wrong.";
+           }); 
+          }
   }
   cDelete(_id: any) {
 
@@ -164,7 +218,13 @@ this.args = "Successfully Updated Category..." + InventoryFoodQuantityType_.name
 this.store.dispatch(deleteInventoryFoodQuantityType({_id}));
      this.store.dispatch(loadInventoryFoodQuantityType());
     this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
-    
+     this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.deleteInventoryFoodQuantityTypeSuccess)).subscribe(() => {
+           // this.args=" Updated";
+            // this.loadcategory();
+           });
+        this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.deleteInventoryFoodQuantityTypeFailure)).subscribe(() => {
+            this.args="Something went wrong.";
+           }); 
          this.display = "display:none;";
     //     this.args = " Record Deleted Successfully ";
 

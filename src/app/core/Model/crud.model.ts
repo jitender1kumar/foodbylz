@@ -157,6 +157,14 @@ Status:Boolean,
         table_id:string,
         chairorderstatus:string
       }
+       export interface IFloorMergeWithDine{
+        _id:string,
+       floor_id:string,
+        name:String,
+        FloorName:string,
+        description:string,
+        status:boolean
+      }
       export interface IChairMergeDineName{
         _id:string,
         DineTable:String,

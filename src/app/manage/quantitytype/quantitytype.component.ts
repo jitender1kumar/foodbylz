@@ -12,6 +12,7 @@ import { Store } from '@ngrx/store';
 import { addQuantityType, deleteQuantityType, loadQuantityType, updateQuantityType, updateQuantityTypeFailure, updateQuantityTypeSuccess } from '../ManageStore/quntityTypeStore/quntityType.actions';
 import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
 import { ofType, Actions } from '@ngrx/effects';
+import { NameExistOrNotService } from '../../core/commanFunction/NameExistOrNot.service';
 @Component({
   selector: 'app-categorytypeform',
   templateUrl: './quantitytype.component.html',
@@ -62,6 +63,7 @@ export class CategorytypeformComponent implements OnInit {
   constructor(
     private service: QuantitytypeService,
     private router: Router,
+    private NameExistOrNotService_:NameExistOrNotService,
     private formedit: FormBuilder,
     private productPriceservice: ProductPriceService,
     private store: Store<{ quantityTypeLoad: any }>,
@@ -239,6 +241,12 @@ private showDeleteBlockedMessage(): void {
     this.update(this.myEditForm.value);
   }
   update(quantityType: Quantitytype): void {
+     if(this.NameExistOrNotService_.checkNameExist(this.myEditForm.value.name,this.myEditForm.value._id,this.Qtypenamedata$ ))
+    {
+     this.args = `Quantity Type Name: ${this.myEditForm.value.name} Exists. Please create another name.`;
+    }
+    else
+    {
   this.store.dispatch(updateQuantityType({ QuantityType_: quantityType }));
   this.actions$.pipe(ofType(updateQuantityTypeSuccess)).subscribe(() => {
      this.args="Record Updated";
@@ -248,5 +256,6 @@ private showDeleteBlockedMessage(): void {
      this.args="Something went wrong";
       
     });
+  }
 }
 }

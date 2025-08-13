@@ -1,7 +1,7 @@
 import { Component, Injectable, OnInit, ViewChild } from '@angular/core';
 import { QuantitytypeService } from '../../core/Services/quantitytype.service';
 import { Router, RouterLink } from '@angular/router';
-import { IChairDefault, IDine } from '../../core/Model/crud.model';
+import { IChairDefault, IDine, IFloorMergeWithDine } from '../../core/Model/crud.model';
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
@@ -65,8 +65,9 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
 
 
   colDefs: ColDef[] = [
-    { field: "name" },
-    { field: "description", flex: 2 },
+    { field:"FloorName" },
+    { field: "name" as "TableName" },
+    { field: "description", flex: 1 },
     { field: "QR code", cellRenderer: ShowbuttonComponent },
     { field: "Delete", cellRenderer: BasetypDeleteButtun },
     { field: "Edit", cellRenderer: BasetypEditButtun }
@@ -108,7 +109,7 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
       floor_id: ['']
     });
     //  this.loadbasetype();
-    this.loaddine2();
+    this.loaddine();
   }
   refresh(params: ICellRendererParams<any, any, any>): boolean {
     throw new Error('Method not implemented.');
@@ -134,23 +135,42 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
       }
     })
   }
-  loaddine() {
-    //alert(selectcategoryID);
-    this.service.getbyid(this.myAddForm.value._id).subscribe(data => {
-      if (data) {
-        this.dinedata2 = data;
-        this.dinedata = this.dinedata2.allTasks
-
-      }
-    })
+  MergeFloorNameWithDineList: IFloorMergeWithDine[] = [];
+  FloorWithDineData: any[] = [];
+  MergeFloorNameWithDine() {
+    this.MergeFloorNameWithDineList = [];
+    for (var ii = 0; ii < this.dinedata.length; ii++) {
+      this.MergeFloorNameWithDineList.push({
+        _id: this.dinedata[ii]._id,
+        FloorName: this.getFloorName(this.dinedata[ii].floor_id),
+        name: this.dinedata[ii].name,
+        description: this.dinedata[ii].description,
+        status: this.dinedata[ii].status,
+        floor_id: this.dinedata[ii].floor_id
+      })
+    }
+    this.FloorWithDineData = this.MergeFloorNameWithDineList;
   }
-  loaddine2() {
+  getFloorName(floor_id: string) {
+
+
+
+    const itemP = this.Floordata.find((item: { _id: string; }) => item._id === floor_id);
+    const indexP = this.Floordata.findIndex((item: { _id: string; }) => item._id === floor_id);
+    //console.log()
+    if (itemP?._id) {
+      return this.Floordata[indexP].name;
+
+    }
+
+  }
+  loaddine() {
     //alert(selectcategoryID);
     this.service.get().subscribe(data => {
       if (data) {
         this.dinedata2 = data;
         this.dinedata = this.dinedata2.allTasks
-
+        this.MergeFloorNameWithDine();
       }
     })
   }
@@ -181,14 +201,15 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
       });
 
     }
-    this.loaddine2();
+    this.loaddine();
   }
 
   ngOnInit(): void {
     this.loadChairs();
     this.loadfloor()
     this.classname = "";
-    this.loaddine2();
+    this.loaddine();
+
   }
   createdTaskTable: any;
   dineExists = "false";
@@ -220,9 +241,9 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
 
 
 
-          // this.args = ;
-          this.SweetAlert2_.showFancyAlertSuccess("Record Added succefully..." + dine.name);
-          this.loaddine2();
+           this.args = "Record Added succefully..." + dine.name ;
+         // this.SweetAlert2_.showFancyAlertSuccess("Record Added succefully..." + dine.name);
+          this.loaddine();
         }
       })
     }
@@ -245,6 +266,16 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
 
   Update(dine: IDine) {
     //alert(basetype._id);
+    this.dineExists = "false";
+    console.log(this.dinedata);
+    for (let i = 0; i < this.dinedata.length; i++) {
+      if (this.dinedata[i].name == dine.name && this.dinedata[i].floor_id == dine.floor_id) {
+        this.args="Already Exists: " + this.dinedata[i].name;
+        this.dineExists = "true";
+        break;
+      }
+    }
+    if (this.dineExists == "false") {
     this.service.update(dine).subscribe(res => {
       if (res) {
         //this.search(id);
@@ -253,13 +284,14 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
         this.args = "Successfully Updated..." + dine.name;
         //  alert("Successfully Updated BaseType..."+basetype.Basetypename);
         // this.loadbasetype();
-        this.loaddine2();
+        this.loaddine();
       }
     })
   }
+  }
   cDelete(_id: any) {
     //this.loadbasetype();
-    this.loaddine2();
+    this.loaddine();
   }
   onFormSubmit() {
     if (this.myAddForm.valid) {
@@ -303,14 +335,14 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
   deletedConfirmed(id: any) {
     alert(id)
     console.log(this.IChairdata);
-     console.log(id);
+    console.log(id);
     alert(this.IChairdata.length);
     for (let i = 0; i < this.IChairdata.length; i++) {
       if (this.IChairdata[i].table_id == id) {
         alert(this.IChairdata[i]._id);
 
         this.chairService.delete(this.IChairdata[i]._id).subscribe(deleteChair => {
-alert("Chair deleted");
+          alert("Chair deleted");
         })
       }
     }
@@ -318,7 +350,7 @@ alert("Chair deleted");
     this.service.delete(id).subscribe(res => {
       if (res) {
         this.display = "display:none;";
-        this.loaddine2();
+        this.loaddine();
         this.args = " Record Deleted Successfully ";
 
       }

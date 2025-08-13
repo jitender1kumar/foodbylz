@@ -55,7 +55,7 @@
   <div class="row">
     <div class="col"><label class="lbl" for="categoryname" id="categoryname" >Select Quntity Type Name :</label></div>
     <div class="col">
-      <select formControlName="selectQtypeID"  class="lbl" (change)="loadSubQuantityType()">
+      <select formControlName="selectQtypeID"  class="lbl" (change)="loadSubQuantityTypeAdd()">
         <option class="lbl" disabled>Select Quntity Type Name </option>
         @for (d of Qtypenamedata$|async; track d) {
           <option class="lbl" value="{{d._id}}" >{{d.name}}</option>
@@ -119,16 +119,16 @@
     </div>
   </div>
   <div class="row form-group">
-    <div class="col"><label class="lbl" for="categorydesc" id="UProductname2" >Name :</label></div>
+    <div class="col"><label class="lbl" for="Productname" id="Productname" >Name :</label></div>
     <div class="col"> <input style="width: 114px; margin: 3px;" type="text" formControlName="Productname">
     </div></div>
     <div class="row form-group">
-      <div class="col"><label class="lbl" for="categorydesc" id="UProductdesc2" >Description :</label></div>
+      <div class="col"><label class="lbl" for="Description" id="Description" >Description :</label></div>
       <div class="col"> <input style="width: 250px; margin: 3px;" type="text" #UProductdesc2 aria-multiline="true" formControlName="Productdesc">
       </div>
     </div>
     <div class="row form-group">
-      <div class="col"><label class="lbl" for="categoryname" id="categoryname" >Select Category Name :</label></div>
+      <div class="col"><label class="lbl" for="selectcategoryID" id="selectcategoryID" >Select Category Name :</label></div>
       <div class="col">
         <select id="selectcategoryID"  formControlName="selectcategoryID">
           <option disabled>Select Category Name</option>
@@ -137,16 +137,16 @@
       </div>
     </div>
     <div class="row form-group">
-      <div class="col"><label class="lbl" for="categoryname" id="categoryname" >Select Quntity Type Name :</label></div>
+      <div class="col"><label class="lbl" for="selectQtypeID" id="selectQtypeID" >Select Quntity Type Name :</label></div>
       <div class="col">
-        <select id="selectQtypeID" formControlName="selectQtypeID"  (change)="loadSubQuantityType()">
+        <select id="selectQtypeID" formControlName="selectQtypeID"  (change)="loadSubQuantityTypeEdit()">
           <option disabled>Select Quntity Type Name </option>
           <option *ngFor="let d of Qtypenamedata$|async index as i" [selected]="d._id===popdata2.selectQtypeID" value="{{d._id}}"  >{{d.name}}</option>
         </select>
       </div>
     </div>
     <div class="row form-group">
-      <div class="col"><label class="lbl" for="categoryname" id="categoryname" >Select Sub Quantity Type:</label></div>
+      <div class="col"><label class="lbl" for="selectSubQuantityTypeID" id="selectSubQuantityTypeID" >Select Sub Quantity Type:</label></div>
       <div class="col">
         <select id="selectSubQuantityTypeID" formControlName="selectSubQuantityTypeID">
           <option class="lbl" disabled>Select  Sub Quantity Type Name</option>

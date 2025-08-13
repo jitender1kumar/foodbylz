@@ -11,9 +11,12 @@ import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { ProductPriceService } from '../../core/Services/productprice.service';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { addSubQuantityType, deleteSubQuantityType, loadSubQuantityType, updateSubQuantityType } from '../ManageStore/subQuantityTypeStore/subQuantityType.actions';
+import * as SubQuantityTypeAction from '../ManageStore/subQuantityTypeStore/subQuantityType.actions';
+import { addSubQuantityType, deleteSubQuantityType, loadSubQuantityType, updateSubQuantityType, updateSubQuantityTypeSuccess } from '../ManageStore/subQuantityTypeStore/subQuantityType.actions';
 import { loadQuantityType } from '../ManageStore/quntityTypeStore/quntityType.actions';
 import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
+import { Actions, ofType } from '@ngrx/effects';
+import { NameExistOrNotService } from '../../core/commanFunction/NameExistOrNot.service';
 @Component({
     selector: 'app-subQuantityType',
     templateUrl: './subquantitytype.component.html',
@@ -85,8 +88,13 @@ export class SubQuantityTypeComponenet implements OnInit, ICellRendererAngularCo
   static myGlobalVariable: any;
   exampleModal: any;
   qname = "";
-  constructor(private service: subQuantityTypeService, private QuantitytypeService_: QuantitytypeService, private router: Router, private formedit: FormBuilder, private productPriceservice: ProductPriceService, private store: Store<{
-    subQuantityTypeByNameLoad: any; subQuantityTypeLoad: any, subQuantityTypeByIdLoad: any, quantityTypeLoad: any
+  constructor(private service: subQuantityTypeService,
+    private NameExistOrNotService_:NameExistOrNotService,
+     private QuantitytypeService_: QuantitytypeService, public actions$: Actions,
+      private router: Router, private formedit: FormBuilder, 
+      private productPriceservice: ProductPriceService, private store: Store<{
+    subQuantityTypeByNameLoad: any; subQuantityTypeLoad: any,
+     subQuantityTypeByIdLoad: any, quantityTypeLoad: any
   }>,private SweetAlert2_:SweetAlert2) {
     this.Qtypenamedata$ = store.select(state => state.quantityTypeLoad.QuantityType_.allTasks);
     this.loading$ = store.select(state => state.quantityTypeLoad.loading);
@@ -172,11 +180,11 @@ export class SubQuantityTypeComponenet implements OnInit, ICellRendererAngularCo
       console.log(name);
       if (this.subQuantityTypeByNameCheck.length > 0) {
         //this.args = "";
-          this.SweetAlert2_.showFancyAlertFail("Exist SubQuantity Type"); 
+          this.args="SubQuantity Type Exists"; 
       }
       else {
         this.store.dispatch(addSubQuantityType({ SubQuantityType_ }));
-        this.SweetAlert2_.showFancyAlertSuccess("Add SubQuantity Type"); 
+        this.args="Add SubQuantity Type"; 
          this.store.dispatch(loadSubQuantityType());
     this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.allTasks);
     
@@ -188,17 +196,36 @@ this.loadSubQuantityType();
   loadSubQuantityType() {
     this.store.dispatch(loadSubQuantityType());
     this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.allTasks);
-    this.loading$ = this.store.select(state => state.subQuantityTypeLoad.loading);
-    this.error$ = this.store.select(state => state.subQuantityTypeLoad.error);
-
+    // this.loading$ = this.store.select(state => state.subQuantityTypeLoad.loading);
+    // this.error$ = this.store.select(state => state.subQuantityTypeLoad.error);
+ this.actions$.pipe(ofType(SubQuantityTypeAction.loadSubQuantityTypeSuccess)).subscribe(() => {
+           //  this.args="Record Loaded";
+             
+            });
+         this.actions$.pipe(ofType(SubQuantityTypeAction.loadSubQuantityTypeFailure)).subscribe(() => {
+            this.SweetAlert2_.showFancyAlertFail("Loading Failed.");
+              
+            });
   }
 
   Update(SubQuantityType_: subQuantityType) {
+     if(this.NameExistOrNotService_.checkNameExist(this.myEditForm.value.name,this.myEditForm.value._id,this.subQuantityTypeData$ ))
+    {
+     this.args = `SubQuantity Type Name: ${this.myEditForm.value.name} Exists. Please create another name.`;
+    }
+    else
+    {
     this.store.dispatch(updateSubQuantityType({ SubQuantityType_ }));
-     this.store.dispatch(loadSubQuantityType());
-    this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.allTasks);
-     this.SweetAlert2_.showFancyAlertSuccess("Record Updated."); 
-  }
+      this.actions$.pipe(ofType(updateSubQuantityTypeSuccess)).subscribe(() => {
+             this.args="Record Updated";
+              this.loadSubQuantityType();
+            });
+         this.actions$.pipe(ofType(SubQuantityTypeAction.updateSubQuantityTypeFailure)).subscribe(() => {
+             this.args="Something went wrong";
+              
+            });
+          }
+   }
   cDelete(_id: any) {
     this.loadSubQuantityType();
   }
@@ -251,7 +278,7 @@ this.loadSubQuantityType();
         this.display = "display:none;";
         this.loadSubQuantityType();
         //this.args = " ";
-         this.SweetAlert2_.showFancyAlertSuccess(" Record Deleted Successfully."); 
+       //  this.SweetAlert2_.showFancyAlertSuccess(" Record Deleted Successfully."); 
       }
       else if (this.productrecord.length > 0) {
         //alert("");
