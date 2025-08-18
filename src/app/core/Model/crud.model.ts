@@ -193,6 +193,7 @@ Status:Boolean,
       {
         Chairsrunningorder:IChair[],
         tablename:string,
+        receiptnumber:string,
         tokennumber:number
       }
 

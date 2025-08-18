@@ -70,11 +70,11 @@ export class InventorymainfoodComponent implements OnInit {
   modal: any;
   myAddForm: FormGroup;
   constructor(private service: InventoryMainFoodService, private router: Router, private formedit: FormBuilder, private _InventoryMFoodQuantityTypeService: InventoryMFoodQuantityTypeService, private store: Store<{ loadInventoryFoodQuantityType: any, loadInventoryMainFood: any }>) {
-    this.inventoryQuantityTypeData$ = store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
+    this.inventoryQuantityTypeData$ = store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
     this.loading$ = store.select(state => state.loadInventoryFoodQuantityType.loading);
     this.error$ = store.select(state => state.loadInventoryFoodQuantityType.error);
 
-    this.InventoryMainFooddata$ = store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
+    this.InventoryMainFooddata$ = store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
     this.loading$ = store.select(state => state.loadInventoryMainFood.loading);
     this.error$ = store.select(state => state.loadInventoryMainFood.error);
 
@@ -104,10 +104,10 @@ export class InventorymainfoodComponent implements OnInit {
     this.loadinventoeryfoodquantitytype();
   }
     getInventoryFoodQuantityTypeName() {
-  this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
+  this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
     this.loading$ = this.store.select(state => state.loadInventoryFoodQuantityType.loading);
     this.error$ = this.store.select(state => state.loadInventoryFoodQuantityType.error);
-  this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
+  this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
     if (this.inventoryQuantityTypeData$) {
       this.inventoryQuantityTypeData$.subscribe(inventoryQuantityTypeData => {
         const indexInvetoryMainFood = inventoryQuantityTypeData.findIndex((item: { _id: any; }) => item._id === this.myAddForm.value.quantitytypeID);
@@ -119,10 +119,10 @@ export class InventorymainfoodComponent implements OnInit {
 
   }
     getInventoryFoodQuantityTypeNameforEdit() {
-  this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
+  this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
     this.loading$ = this.store.select(state => state.loadInventoryFoodQuantityType.loading);
     this.error$ = this.store.select(state => state.loadInventoryFoodQuantityType.error);
-  this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
+  this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
     if (this.inventoryQuantityTypeData$) {
       this.inventoryQuantityTypeData$.subscribe(inventoryQuantityTypeData => {
         const indexInvetoryMainFood = inventoryQuantityTypeData.findIndex((item: { _id: any; }) => item._id === this.myEditForm.value.quantitytypeID);
@@ -144,7 +144,7 @@ export class InventorymainfoodComponent implements OnInit {
 
   }
   getqtname() {
-  this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
+  this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
      if (this.inventoryQuantityTypeData$) {
       this.inventoryQuantityTypeData$.subscribe(inventoryQuantityTypeData => {
         const itemP = inventoryQuantityTypeData.find((item: { _id: string; }) => item._id === this.myAddForm.value.quantitytypeID);
@@ -160,7 +160,7 @@ export class InventorymainfoodComponent implements OnInit {
   }
   loadinventoeryfoodquantitytype() {
     this.store.dispatch(loadInventoryFoodQuantityType());
-     this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
+     this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
     this.store.select(state => state.loadInventoryFoodQuantityType.loading);
     this.store.select(state => state.loadInventoryFoodQuantityType.error);
 
@@ -179,7 +179,7 @@ export class InventorymainfoodComponent implements OnInit {
       this.args = "Exist name";
     }
      this.store.dispatch(loadInventoryMainFood());
-   this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
+   this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
    
   }
   onCellClick(event: any) {
@@ -227,7 +227,7 @@ changeQuantityTypeName()
 }
   loadInventoryMainFoods() {
     this.store.dispatch(loadInventoryMainFood());
-  this.InventoryMainFooddata$ =  this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
+  this.InventoryMainFooddata$ =  this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
    this.store.select(state => state.loadInventoryMainFood.loading);
      this.store.select(state => state.loadInventoryMainFood.error);
   }
@@ -237,7 +237,7 @@ changeQuantityTypeName()
     this.args="Updated";
     this.loadInventoryMainFoods();
   //     this.store.dispatch(loadInventoryMainFood());
-  //  this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
+  //  this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
    
 
   }
@@ -282,7 +282,7 @@ changeQuantityTypeName()
      this.display = "display:none;";
         this.args = " Record Deleted Successfully ";
      this.store.dispatch(loadInventoryMainFood());
-   this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
+   this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
    
   }
 }

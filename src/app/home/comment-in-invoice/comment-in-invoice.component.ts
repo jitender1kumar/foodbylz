@@ -36,7 +36,7 @@ constructor( private router: Router,private formedit: FormBuilder,private Commen
 loadCustomers() {
   this.CommentService_.get().subscribe((data: Customers[]) => {
     this.commentData2 = data;
-    this.commentData = this.commentData2.allTasks;
+    this.commentData = this.commentData2.data;
   });
 }
   add(cutomer:Customers): void {                                              

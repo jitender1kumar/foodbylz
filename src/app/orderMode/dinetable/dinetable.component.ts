@@ -84,7 +84,7 @@ close() {
   this.chairservice.getbyid(this.myAddDineForm.value.table_id).subscribe(data => {
     if (data) {
      this.IChairdata2=data;
-     this.IChairdata=this.IChairdata2.allTasks
+     this.IChairdata=this.IChairdata2.data
     //this.loadstatusofchair();
     }
   })
@@ -103,7 +103,7 @@ let index = this.dinedata.findIndex((item: { _id: any; }) => item._id === this.m
 this.dineservice.get().subscribe(data => {
   if (data) {
    this.dinedata2=data;
-   this.dinedata=this.dinedata2.allTasks
+   this.dinedata=this.dinedata2.data
  
   }
   })

@@ -60,7 +60,7 @@ export class InventoryfoodquntitytypeComponent implements OnInit {
   constructor(private service: InventoryMFoodQuantityTypeService, 
      public actions$: Actions,
     private router: Router, private formedit: FormBuilder, private store: Store<{ loadInventoryFoodQuantityType: any }>) {
-    this.inventoryQuantityTypeData$ = store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
+    this.inventoryQuantityTypeData$ = store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
     this.loading$ = store.select(state => state.loadInventoryFoodQuantityType.loading);
     this.error$ = store.select(state => state.loadInventoryFoodQuantityType.error);
    
@@ -108,7 +108,7 @@ this.args = "Inventory Name Already Exist";
 this.args = "Successfully Added Category..." + InventoryFoodQuantityType_.name;
     this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.addInventoryFoodQuantityTypeSuccess)).subscribe(() => {
             this.args=" added";
-            // this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
+            // this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
    this.loadinventoeryfoodquantitytype();
            });
         this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.addInventoryFoodQuantityTypeFailure)).subscribe(() => {
@@ -146,7 +146,7 @@ this.args = "Successfully Added Category..." + InventoryFoodQuantityType_.name;
   loadinventoeryfoodquantitytype() {
 
     this.store.dispatch(loadInventoryFoodQuantityType());
-    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
+    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
     this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.loadInventoryFoodQuantityTypeSuccess)).subscribe(() => {
            // this.args=" Updated";
             // this.loadcategory();
@@ -168,7 +168,7 @@ this.args = "Inventory Name Already Exist";
 this.store.dispatch(updateInventoryFoodQuantityType({InventoryFoodQuantityType_}));
 // this.args = "Successfully Updated Category..." + InventoryFoodQuantityType_.name;
 //  this.store.dispatch(loadInventoryFoodQuantityType());
-    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
+    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
     this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.updateInventoryFoodQuantityTypeSuccess)).subscribe(() => {
             this.args=" Updated";
             this.loadinventoeryfoodquantitytype();
@@ -217,7 +217,7 @@ this.store.dispatch(updateInventoryFoodQuantityType({InventoryFoodQuantityType_}
 
 this.store.dispatch(deleteInventoryFoodQuantityType({_id}));
      this.store.dispatch(loadInventoryFoodQuantityType());
-    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
+    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
      this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.deleteInventoryFoodQuantityTypeSuccess)).subscribe(() => {
            // this.args=" Updated";
             // this.loadcategory();

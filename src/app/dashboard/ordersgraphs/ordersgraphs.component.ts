@@ -27,6 +27,7 @@ graphDayOrders:string="Today";
   payByListsRecord: any;
   payByListsRecord2: any;
   currentDateTime: string = "";
+   ordersdata2:any
   //orderstatus 1 for new order 2 pending 3 running 
   constructor(private invoice: InvoiceService, private router: Router, private datePipe: DatePipe, private GetOrderDetailsService_: GetOrderDetailsService, private PaybyService_: PaybyService) {
 
@@ -67,7 +68,7 @@ graphDayOrders:string="Today";
     this.payByChartrecord = [];
     this.PaybyService_.get().subscribe(PayByLists => {
       this.payByListsRecord2 = PayByLists;
-      this.payByListsRecord = this.payByListsRecord2.allTasks;
+      this.payByListsRecord = this.payByListsRecord2.data;
       this.payByChartrecord.push({
         "_id": "001Pending",
         "Paybyname": "Due",
@@ -132,8 +133,10 @@ graphDayOrders:string="Today";
 
   }
   loadtoday(loadName: string) {
-    this.GetOrderDetailsService_.loadToday().subscribe(data => {
-      this.ordersdata = data;
+    this.GetOrderDetailsService_.loadToday().subscribe(todaydata => {
+      this.ordersdata2 = todaydata;
+       this.ordersdata=this.ordersdata2.data;
+
       if (loadName == "pie")
         this.initializeDataPayByPieChart(this.ordersdata);
       else if (loadName == "graph") {
@@ -148,8 +151,10 @@ graphDayOrders:string="Today";
   loadyesterday(loadName: string) {
     // this.date =
 
-    this.GetOrderDetailsService_.loadYesterday().subscribe(data => {
-      this.ordersdata = data;
+    this.GetOrderDetailsService_.loadYesterday().subscribe(yesturdaydata => {
+      this.ordersdata2 = yesturdaydata;
+       this.ordersdata=this.ordersdata2.data;
+
       if (loadName == "pie")
         this.initializeDataPayByPieChart(this.ordersdata);
       else if (loadName == "graph") {
@@ -160,8 +165,9 @@ graphDayOrders:string="Today";
     });
   }
   loadweek(loadName: string) {
-    this.GetOrderDetailsService_.loadWeek().subscribe(data => {
-      this.ordersdata = data;
+    this.GetOrderDetailsService_.loadWeek().subscribe(weekdata => {
+      this.ordersdata2 = weekdata;
+       this.ordersdata=this.ordersdata2.data;
       if (loadName == "pie")
         this.initializeDataPayByPieChart(this.ordersdata);
       else if (loadName == "graph") {
@@ -172,11 +178,13 @@ graphDayOrders:string="Today";
     });
 
   }
+ 
   loadmonth(loadName: string) {
     //this.ordersdata = this.GetOrderDetailsService_.loadMonth();
     //  this.initializeDataforBox(this.ordersdata);   console.log(this.ordersdata);
-    this.GetOrderDetailsService_.loadMonth().subscribe(data => {
-      this.ordersdata = data;
+    this.GetOrderDetailsService_.loadMonth().subscribe(monthaOrdersdata => {
+      this.ordersdata2 = monthaOrdersdata;
+      this.ordersdata=this.ordersdata2.data;
       if (loadName == "pie")
         this.initializeDataPayByPieChart(this.ordersdata);
       else if (loadName == "graph"){
@@ -285,6 +293,7 @@ graphDayOrders:string="Today";
             if( (TimeToInt > this.graphRecord[i].startTime && TimeToInt < this.graphRecord[i].endTime)){
             this.graphRecord[i].orderMode1[0].Amount = (+ordersdata[ii].grandtotal+this.graphRecord[i].orderMode1[0].Amount);
           this.graphTotalAMount += (+ordersdata[ii].grandtotal);
+         
           }
           }
            if ((ordersdata[ii].tablename != "Pick Up" && this.graphRecord[i].orderMode2[0].orderMode != "Pick Up") && (TimeToInt > this.graphRecord[i].startTime && TimeToInt < this.graphRecord[i].endTime)) 

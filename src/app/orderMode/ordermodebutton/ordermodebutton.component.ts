@@ -74,7 +74,7 @@ loadchair(table_id:string)
   this.chairservice.getbyid(table_id).subscribe(data => {
     if (data) {
      this.IChairdata2=data;
-     this.IChairdata=this.IChairdata2.allTasks
+     this.IChairdata=this.IChairdata2.data
     //this.loadstatusofchair();
     }
   })
@@ -90,7 +90,7 @@ showdiningfun() {
 this.dineservice.get().subscribe(data => {
   if (data) {
    this.dinedata2=data;
-   this.dinedata=this.dinedata2.allTasks
+   this.dinedata=this.dinedata2.data
  
   }
   })

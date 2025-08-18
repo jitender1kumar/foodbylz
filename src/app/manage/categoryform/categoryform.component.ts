@@ -29,10 +29,7 @@ export class CategoryformComponent implements OnInit {
   error$: Observable<string | null> | undefined;
   args: any = "";
   myEditForm: FormGroup;
-  pagination = true;
-  paginationPageSize = 10;
-  paginationPageSizeSelector = [200, 500, 1000];
-
+  
   @ViewChild('f')
   categoryViewchild!: NgForm;
   @ViewChild('formupdate')
@@ -63,6 +60,10 @@ export class CategoryformComponent implements OnInit {
   valueid: any;
   modal: any;
   myAddForm: FormGroup;
+
+  pagination = true;
+  paginationPageSize = 20;
+  paginationPageSizeSelector = [20, 200, 500, 1000];
   constructor(private service: CategoryService,
      private router: Router, 
      private formedit: FormBuilder,
@@ -70,7 +71,8 @@ export class CategoryformComponent implements OnInit {
          private NameExistOrNotService_:NameExistOrNotService,
       private productservice: ProductService,
        private store: Store<{ categoryLoad: any }>, private SweetAlert2_: SweetAlert2) {
-    this.categories$ = store.select(state => state.categoryLoad.ProductCategory_.allTasks);
+        
+    this.categories$ = store.select(state => state.categoryLoad.ProductCategory_.data);
     this.loading$ = store.select(state => state.categoryLoad.loading);
     this.error$ = store.select(state => state.categoryLoad.error);
     this.display = "display:none;"
@@ -85,15 +87,16 @@ export class CategoryformComponent implements OnInit {
     });
   }
   ngOnInit(): void {
-    this.store.dispatch(loadCategories());
-  }
+    //this.store.dispatch(loadCategories());
+    this.loadcategory();
+    }
 
   add(ProductCategory_: ProductCategory): void {
     this.service.getCategoryByName(ProductCategory_.name).subscribe({
       next: (categoryName) => {
         this.categoryNameResult = categoryName;
 
-        if (!this.categoryNameResult?.allTasks?.length) {
+        if (!this.categoryNameResult?.data?.length) {
           // Add new category
           this.store.dispatch(CategoryActions.addCategory({ ProductCategory_: ProductCategory_ }));
           this.store.dispatch(CategoryActions.loadCategories());
@@ -143,20 +146,24 @@ export class CategoryformComponent implements OnInit {
     });
   }
   loadcategory() {
+    // alert("working");
+    
     this.store.dispatch(CategoryActions.loadCategories());
 
     this.categories$ = this.store.select(
-      state => state.categoryLoad?.ProductCategory_?.allTasks
+      state => state.categoryLoad.ProductCategory_.data
     );
 
     this.store.select(state => state.categoryLoad).subscribe(categoryState => {
+      
       if (categoryState.error) {
         this.SweetAlert2_.showFancyAlertFail(`Error loading categories: ${categoryState.error}`);
       }
-      else if (!categoryState.loading && categoryState.ProductCategory_?.allTasks?.length) {
+      else if (!categoryState.loading && categoryState.ProductCategory_?.data?.length) {
         // this.SweetAlert2_.showFancyAlertSuccess("Categories loaded successfully.");
       }
     });
+   
   }
 
   Update(productcategory: ProductCategory) {
@@ -219,19 +226,10 @@ export class CategoryformComponent implements OnInit {
     this.productservice.getbycategoryid(_id).subscribe({
       next: (records) => {
         this.productrecord2 = records;
-        this.productrecord = this.productrecord2?.allTasks || [];
+        this.productrecord = this.productrecord2?.getproductTask || [];
 
         if (this.productrecord.length === 0) {
           this.store.dispatch(CategoryActions.deleteCategory({ _id }));
-
-
-          // Safe selector to avoid undefined errors
-          this.categories$ = this.store.select(
-            state => state.categoryLoad?.ProductCategory_?.allTasks
-          );
-
-          // ✅ Success message
-          // this.SweetAlert2_.showFancyAlertSuccess("Category deleted successfully.");
           this.loadcategory();
         }
         else {

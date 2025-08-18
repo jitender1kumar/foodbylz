@@ -20,8 +20,8 @@ export class ChairServiceService {
     return this.http.post<any>(this.chairsRunningOrderUrl, chairsrunningorder);
 
   }
-  getbyid(createdAt: string) {
-    return this.http.get(`${this.chairsRunningOrderUrl}/${createdAt}`);
+  getbyid(receiptnumber: string) {
+    return this.http.get(`${this.chairsRunningOrderUrl}/${receiptnumber}`);
   }
   getbycreateAt2(startDate: string, createdAt: string) {
     return this.http.get(`${this.chairsRunningOrderUrl}/${createdAt}`);
@@ -32,8 +32,8 @@ export class ChairServiceService {
   get(): Observable<IChair[]> {
     return this.http.get<IChair[]>(this.chairsRunningOrderUrl);
   }
-  delete(createdAt: string) {
-    return this.http.delete(`${this.chairsRunningOrderUrl}/${createdAt}`);
+  delete(receiptnumber: string) {
+    return this.http.delete(`${this.chairsRunningOrderUrl}/${receiptnumber}`);
   }
   //   update(basetype:Basetype)
   //   {

@@ -234,27 +234,27 @@ export class HomeComponent implements OnInit {
 invoice:any;
   constructor(private service: ProductPriceService, private ProductService_: ProductService, private QuantitytypeService_: QuantitytypeService, private CategoryService_: CategoryService, private subQuantityTypeService_: subQuantityTypeService, private router: Router, private formedit: FormBuilder, private taxService: TaxService, private fb: FormBuilder, private InvoiceService_: InvoiceService, private ItemsService_: ItemsService, private dineservice: DineService, private chairservice: ChairService, private chairsrunningorderservice: ChairServiceService, private InventoryMainFoodwithProductService_: InventoryMainFoodwithProductService, private InventoryMainFoodService_: InventoryMainFoodService, private PaybyService_: PaybyService, private datePipe: DatePipe, private store: Store<{ categoryLoad: any, productPriceLoad: any, productLoad: any, quantityTypeLoad: any, subQuantityTypeLoad: any, subQuantityTypeByIdLoad: any }>, private SweetAlert2_: SweetAlert2, private CustomerService_: CustomresService,private InitializeInvoice_:InitializeInvoice) {
    this.invoice = this.InitializeInvoice_.initializeInvoiceDefault();
-    this.categorynamedata$ = this.store.select(state => state.categoryLoad.ProductCategory_.allTasks);
+    this.categorynamedata$ = this.store.select(state => state.categoryLoad.ProductCategory_.data);
     this.loading$ = this.store.select(state => state.categoryLoad.loading);
     this.error$ = this.store.select(state => state.categoryLoad.error);
 
-    this.Qtypenamedata$ = this.store.select(state => state.quantityTypeLoad.QuantityType_.allTasks);
+    this.Qtypenamedata$ = this.store.select(state => state.quantityTypeLoad.QuantityType_.data);
     this.loading$ = this.store.select(state => state.quantityTypeLoad.loading);
     this.error$ = this.store.select(state => state.quantityTypeLoad.error);
 
-    this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.allTasks);
+    this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
     this.loading$ = this.store.select(state => state.subQuantityTypeLoad.loading);
     this.error$ = this.store.select(state => state.subQuantityTypeLoad.error);
 
-    this.subQuantityTypeByIdData$ = this.store.select(state => state.subQuantityTypeByIdLoad.SubQuantityType_.allTasks);
+    this.subQuantityTypeByIdData$ = this.store.select(state => state.subQuantityTypeByIdLoad.SubQuantityType_.data);
     this.loading$ = this.store.select(state => state.subQuantityTypeByIdLoad.loading);
     this.error$ = this.store.select(state => state.subQuantityTypeByIdLoad.error);
 
-    this.Productnamedata$ = this.store.select(state => state.productLoad.Product_.allTasks);
+    this.Productnamedata$ = this.store.select(state => state.productLoad.Product_.data);
     this.loading$ = this.store.select(state => state.productLoad.loading);
     this.error$ = this.store.select(state => state.productLoad.error);
 
-    this.productPriceData$ = this.store.select(state => state.productPriceLoad.ProductPrice_.allTasks);
+    this.productPriceData$ = this.store.select(state => state.productPriceLoad.ProductPrice_.data);
     this.loading$ = this.store.select(state => state.productPriceLoad.loading);
     this.error$ = this.store.select(state => state.productPriceLoad.error);
     this.display = "display:none;"
@@ -296,9 +296,9 @@ invoice:any;
     }
   }
   loadinvoice() {
-    this.InvoiceService_.getbyid(this.invoiceid).subscribe(data => {
-      this.innvoicedata2 = data;
-      this.innvoicedata = this.innvoicedata2.allTasks;
+    this.InvoiceService_.getbyid(this.invoiceid).subscribe(invoiceData => {
+      this.innvoicedata2 = invoiceData;
+      this.innvoicedata = this.innvoicedata2.data;
       this.table_id = this.innvoicedata[0].table_id;
       this.table_name = this.innvoicedata[0].tablename;
       if (this.innvoicedata[0].customer_id != "undefined") {
@@ -337,7 +337,7 @@ invoice:any;
             this.Itemsdata2 = "";
             this.Itemsdata = "";
             this.Itemsdata2 = data2;
-            this.Itemsdata = this.Itemsdata2.allTasks;
+            this.Itemsdata = this.Itemsdata2.data;
             if (this.Itemsdata.length == 0) {
               this.refresh();
             }
@@ -376,7 +376,7 @@ invoice:any;
               this.InvoiceService_.getbyid(this.invoiceid).subscribe(getpercentval => {
                 if (getpercentval) {
                   this.getpercentvaldata2 = getpercentval;
-                  this.getpercentvaldata = this.getpercentvaldata2.allTasks
+                  this.getpercentvaldata = this.getpercentvaldata2.data
                   this.percent = this.getpercentvaldata[0].Discountperstage;
                   this.itemTotalTax = [];
                   this.itemTotalTax = this.getpercentvaldata[0].Taxes;
@@ -407,7 +407,7 @@ invoice:any;
     // this.chairservice.getbyid(this.myAddDineForm.value.table_id).subscribe(data => {
     //   if (data) {
     //    this.IChairdata2=data;
-    //    this.IChairdata=this.IChairdata2.allTasks
+    //    this.IChairdata=this.IChairdata2.data
     //   //this.loadstatusofchair();
     //   }
     // })
@@ -423,7 +423,7 @@ invoice:any;
     this.PaybyService_.get().subscribe(data => {
       if (data) {
         this.paybydata2 = data;
-        this.paybydata = this.paybydata2.allTasks;
+        this.paybydata = this.paybydata2.data;
         console.log(this.paybydata);
       }
     })
@@ -445,7 +445,7 @@ invoice:any;
         this.imfsdata2 = "";
         this.imfsdata = "";
         this.imfsdata2 = imfs;
-        this.imfsdata = this.imfsdata2.allTasks;
+        this.imfsdata = this.imfsdata2.data;
 
         // console.log(qvalue);
         console.log(imfs);
@@ -465,7 +465,7 @@ invoice:any;
         this.InventoryMainFoodService_.update(this.inventoryfoodmain).subscribe(updatefms => {
           if (updatefms) {
             this.updatefmsdata2 = updatefms;
-            this.updatefmsdata = this.updatefmsdata2.allTasks;
+            this.updatefmsdata = this.updatefmsdata2.data;
             console.log(updatefms);
           }
         }
@@ -480,13 +480,13 @@ invoice:any;
     this.chairsrunningorderservice.getbyid(this.invoiceid).subscribe(data => {
       if (data) {
         this.gettableid2 = data;
-        this.gettableid = this.gettableid2.allTasks;
+        this.gettableid = this.gettableid2.data;
         console.log("data : ");
         console.log(this.gettableid);
         this.dineservice.getbyid(this.gettableid[0].Chairsrunningorder[0].table_id).subscribe(tabldata => {
           if (tabldata) {
             this.tabledata2 = tabldata;
-            this.tabledata = this.tabledata2.allTasks;
+            this.tabledata = this.tabledata2.data;
             console.log(tabldata);
 
             this.dine = {
@@ -600,7 +600,7 @@ invoice:any;
       this.InventoryMainFoodwithProductService_.getbyid(this.RunningItems_[ii].SelectProductId, this.RunningItems_[ii].selectSubQuantityTypeID).subscribe(ifwp => {
         if (ifwp) {
           this.ifmwpdata2 = ifwp;
-          this.ifmwpdata = this.ifmwpdata2.allTasks;
+          this.ifmwpdata = this.ifmwpdata2.data;
           if (this.ifmwpdata != null) {
             // console.log(this.ifmwpdata.goodscollections);
             console.log(this.ifmwpdata);
@@ -834,7 +834,7 @@ invoice:any;
     this.taxService.get().subscribe(data => {
       if (data) {
         this.taxnamedata2 = data;
-        this.taxnamedata = this.taxnamedata2.allTasks
+        this.taxnamedata = this.taxnamedata2.data
       }
     })
   }
@@ -1099,13 +1099,13 @@ invoice:any;
   }
   loadProducts(msg: any) {
     this.store.dispatch(loadProduct());
-    this.store.select(state => state.productLoad.Product_.allTasks);
+    this.store.select(state => state.productLoad.Product_.data);
     this.store.select(state => state.productLoad.loading);
     this.store.select(state => state.productLoad.error);
   }
   loadcategory() {
     this.store.dispatch(loadCategories());
-    this.store.select(state => state.categoryLoad.ProductCategory_.allTasks);
+    this.store.select(state => state.categoryLoad.ProductCategory_.data);
     this.store.select(state => state.categoryLoad.loading);
     this.store.select(state => state.categoryLoad.error);
   }
@@ -1113,14 +1113,14 @@ invoice:any;
 
   loadQtype() {
     this.store.dispatch(loadQuantityType())
-    this.store.select(state => state.quantityTypeLoad.QuantityType_.allTasks);
+    this.store.select(state => state.quantityTypeLoad.QuantityType_.data);
     this.store.select(state => state.quantityTypeLoad.loading);
     this.store.select(state => state.quantityTypeLoad.error);
 
   }
   loadSubQuantityTypeName() {
     this.store.dispatch(loadSubQuantityType());
-    this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.allTasks);
+    this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
     this.store.select(state => state.subQuantityTypeLoad.loading);
     this.store.select(state => state.subQuantityTypeLoad.error);
 
@@ -1128,7 +1128,7 @@ invoice:any;
 
   loadProductPrices() {
     this.store.dispatch(loadProductPrice());
-    this.store.select(state => state.productPriceLoad.ProductPrice_.allTasks);
+    this.store.select(state => state.productPriceLoad.ProductPrice_.data);
     this.store.select(state => state.productPriceLoad.loading);
     this.store.select(state => state.productPriceLoad.error);
 
@@ -1136,7 +1136,7 @@ invoice:any;
 
   loadallppdata() {
 
-    this.store.select(state => state.productPriceLoad.ProductPrice_.allTasks);
+    this.store.select(state => state.productPriceLoad.ProductPrice_.data);
     this.allppdata = [];
     if (this.productPriceData$) {
       this.productPriceData$.subscribe(productPriceData => {
@@ -1171,7 +1171,7 @@ invoice:any;
 
     // if (_id != "jsk") {
     this.productsByCategoryId = [];
-    this.store.select(state => state.productLoad.Product_.allTasks);
+    this.store.select(state => state.productLoad.Product_.data);
     if (this.Productnamedata$) {
       this.Productnamedata$.subscribe(Productnamedata => {
         if (Productnamedata) {
@@ -1204,7 +1204,7 @@ invoice:any;
   getSubQuantityTypeName(id: string) {
     // getting SubQuantityType name by id
     let SubQuantityTypeName = "";
-    this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.allTasks);
+    this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
     if (this.subQuantityTypeData$) {
       this.subQuantityTypeData$.subscribe(SubQuantityTypeData => {
         if (SubQuantityTypeData) {
@@ -1221,7 +1221,7 @@ invoice:any;
   getallproducttypeprice(id: any) {
     this.priceID = [];
     this.showtype = true;
-    this.store.select(state => state.productPriceLoad.ProductPrice_.allTasks);
+    this.store.select(state => state.productPriceLoad.ProductPrice_.data);
     if (this.productPriceData$) {
       this.productPriceData$.subscribe(productPriceData => {
         if (productPriceData) {
@@ -1257,7 +1257,7 @@ invoice:any;
 
     // getting product price by id
     let productPrice = 0;
-    this.store.select(state => state.productPriceLoad.ProductPrice_.allTasks);
+    this.store.select(state => state.productPriceLoad.ProductPrice_.data);
     if (this.productPriceData$) {
       this.productPriceData$.subscribe(productPriceData => {
         if (productPriceData) {
@@ -1274,7 +1274,7 @@ invoice:any;
   getproductprice(id: string) {
     // getting product price by id
     let productPrice = 0;
-    this.store.select(state => state.productPriceLoad.ProductPrice_.allTasks);
+    this.store.select(state => state.productPriceLoad.ProductPrice_.data);
     if (this.productPriceData$) {
       this.productPriceData$.subscribe(productPriceData => {
         if (productPriceData) {
@@ -1293,7 +1293,7 @@ invoice:any;
   getproductname(_id: string) {
     // getting product name by id
     let productname = "";
-    this.store.select(state => state.productLoad.Product_.allTasks);
+    this.store.select(state => state.productLoad.Product_.data);
     if (this.Productnamedata$) {
       this.Productnamedata$.subscribe(Productnamedata => {
         if (Productnamedata) {
@@ -1311,7 +1311,7 @@ invoice:any;
   }
   getqtypnamename(id: string) {
     // getting quantityType name by id
-    this.store.select(state => state.quantityTypeLoad.QuantityType_.allTasks);
+    this.store.select(state => state.quantityTypeLoad.QuantityType_.data);
     let qtypename = "";
     if (this.Qtypenamedata$) {
       this.Qtypenamedata$.subscribe(Qtypenamedata => {
@@ -1335,7 +1335,7 @@ invoice:any;
   getcategoryname(id: string) {
     // getting Category Name by id
 
-    this.store.select(state => state.categoryLoad.ProductCategory_.allTasks);
+    this.store.select(state => state.categoryLoad.ProductCategory_.data);
     let categoryname = "";
     this.categorynamedata$?.subscribe(categorynamedata => {
       if (categorynamedata) {
@@ -1414,7 +1414,7 @@ this.InvoiceService_.getbyid(invoiceid).subscribe(getCustomerid=>{
   if(getCustomerid)
   {
      this.innvoicedata2 = getCustomerid;
-     this.innvoicedata = this.innvoicedata2.allTasks;
+     this.innvoicedata = this.innvoicedata2.data;
      this.CustomerId = this.innvoicedata.customer_id;
      alert(this.CustomerId );
 
@@ -1425,7 +1425,7 @@ this.InvoiceService_.getbyid(invoiceid).subscribe(getCustomerid=>{
 
     this.CustomerService_.getbyid(customer_id).subscribe(CustomerName => {
       this.getCustomerdata = CustomerName;
-      this.getCustomer = this.getCustomerdata.allTasks;
+      this.getCustomer = this.getCustomerdata.data;
       this.CustomerName = this.getCustomer[0].Name
       console.log(this.getCustomer);
     })

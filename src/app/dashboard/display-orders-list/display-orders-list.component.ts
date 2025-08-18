@@ -41,7 +41,7 @@ export class DisplayOrdersListComponent implements OnInit {
   }
   ordersdata: any;
   //rowData=ordersdataloaded;
-  customeralltask: any;
+  customerdata: any;
   customers: any;
   pagination = true;
   paginationPageSize = 10;
@@ -127,8 +127,8 @@ export class DisplayOrdersListComponent implements OnInit {
     // alert(this.datePipe.transform(todaydate, 'dd-MM-yyyy'));
   }
 
-// this.startdate=formattedyesterday+"T00:00:00.000+00:00";
-//    this.enddate=formattedyesterday+"T23:59:59.000+00:00";
+  // this.startdate=formattedyesterday+"T00:00:00.000+00:00";
+  //    this.enddate=formattedyesterday+"T23:59:59.000+00:00";
   todate() {
     //alert(this.to_date);
     console.log(this.to_date);
@@ -136,11 +136,12 @@ export class DisplayOrdersListComponent implements OnInit {
       alert("Please select start date by from calender.");
     }
     else {
-      this.GetOrderDetailsService_.getDataByDate(this.from_date+"T00:00:00.000+00:00", this.to_date+"T23:59:59.000+00:00").subscribe(data => {
-      this.ordersdata = data;
-      this.initializeDataforBox(this.ordersdata);
-      console.log(this.ordersdata);
-    });
+      this.GetOrderDetailsService_.getDataByDate(this.from_date + "T00:00:00.000+00:00", this.to_date + "T23:59:59.000+00:00").subscribe(data => {
+        this.ordersdata2 = data;
+        this.ordersdata = this.ordersdata2.data;
+        this.initializeDataforBox(this.ordersdata);
+        console.log(this.ordersdata);
+      });
     }
   }
 
@@ -151,11 +152,12 @@ export class DisplayOrdersListComponent implements OnInit {
 
     }
     else {
-     this.GetOrderDetailsService_.getDataByDate(this.from_date+"T00:00:00.000+00:00", this.to_date+"T23:59:59.000+00:00").subscribe(data => {
-      this.ordersdata = data;
-      this.initializeDataforBox(this.ordersdata);
-      console.log(this.ordersdata);
-    });
+      this.GetOrderDetailsService_.getDataByDate(this.from_date + "T00:00:00.000+00:00", this.to_date + "T23:59:59.000+00:00").subscribe(data => {
+        this.ordersdata2 = data;
+        this.ordersdata = this.ordersdata2.data;
+        this.initializeDataforBox(this.ordersdata);
+        console.log(this.ordersdata);
+      });
     }
   }
 
@@ -166,10 +168,12 @@ export class DisplayOrdersListComponent implements OnInit {
     this.ordersdata = this.getFilteredData();
 
   }
+  ordersdata2: any;
   loadtoday() {
 
-    this.GetOrderDetailsService_.loadToday().subscribe(data => {
-      this.ordersdata = data;
+    this.GetOrderDetailsService_.loadToday().subscribe(todayOrders => {
+      this.ordersdata2 = todayOrders;
+      this.ordersdata = this.ordersdata2.data;
       this.initializeDataforBox(this.ordersdata);
       console.log(this.ordersdata);
     });
@@ -202,14 +206,16 @@ export class DisplayOrdersListComponent implements OnInit {
     // this.date =
 
     this.GetOrderDetailsService_.loadYesterday().subscribe(data => {
-      this.ordersdata = data;
+      this.ordersdata2 = data;
+      this.ordersdata = this.ordersdata2.data;
       this.initializeDataforBox(this.ordersdata);
       console.log(this.ordersdata);
     });
   }
   loadweek() {
     this.GetOrderDetailsService_.loadWeek().subscribe(data => {
-      this.ordersdata = data;
+      this.ordersdata2 = data;
+      this.ordersdata = this.ordersdata2.data;
       this.initializeDataforBox(this.ordersdata);
       console.log(this.ordersdata);
     });
@@ -219,7 +225,8 @@ export class DisplayOrdersListComponent implements OnInit {
     //this.ordersdata = this.GetOrderDetailsService_.loadMonth();
     //  this.initializeDataforBox(this.ordersdata);   console.log(this.ordersdata);
     this.GetOrderDetailsService_.loadMonth().subscribe(data => {
-      this.ordersdata = data;
+      this.ordersdata2 = data;
+      this.ordersdata = this.ordersdata2.data;
       this.initializeDataforBox(this.ordersdata);
       console.log(this.ordersdata);
     });
@@ -237,58 +244,10 @@ export class DisplayOrdersListComponent implements OnInit {
       this.showPopUp = true;
 
       //alert("Items");
-      this.EditOrder = event.data;
-      this.ItemsService_.getbyid(event.data.RecieptNumber).subscribe(Items => {
-        this.EditOrderItems2 = Items;
-        this.EditOrderItems = this.EditOrderItems2.allTasks;
-      })
-      this.customeralltask = "";
-      this.customers = "";
-      if (event.data.customer_id != 'undefined') {
-        this.CustomresService_.getbyid(event.data.customer_id).subscribe(customer => {
-          if (customer) {
-            // 
-            // alert("inside");
-            this.customeralltask = customer;
-            console.log(this.customeralltask.allTasks);
-            if (this.customeralltask.allTasks.length > 0) {
-              this.customers = this.customeralltask.allTasks;
-              this.customersRecord = {
-                Name: this.customers[0].Name,
-                MobileNo: this.customers[0].MobileNo,
-                DOB: this.customers[0].DOB,
-                type: this.customers[0].type,
-                tag: this.customers[0].tag,
-                DueAmount: this.customers[0].DueAmount,
-                Anniversary: this.customers[0].Anniversary,
-                Paymentstatus: this.customers[0].Paymentstatus,
-                RecieptNumber: this.customers[0].RecieptNumber,
-                employee_id: this.customers[0].employee_id
-              }
-            }
-
-
-          }
-
-        }
-        );
-      }
-      else {
-        //alert("Else block");
-        this.customersRecord = {
-          Name: 'Guest',
-          MobileNo: '0000',
-          DOB: '0000',
-          type: 'undefined',
-          tag: 'undefined',
-          DueAmount: event.data.PendingAmount,
-          Anniversary: 'undefined',
-          Paymentstatus: event.data.AmountPaidstatus,
-          RecieptNumber: event.data.RecieptNumber,
-          employee_id: event.data.employee_id
-        }
-        console.log(this.customersRecord);
-      }
+      this.EditOrder = event.data;//Invoice data
+      console.log(this.EditOrder);
+      this.getItems(event.data.RecieptNumber);
+      this.getCustomersData(event.data);
       // this.myEditForm = this.formedit.group({
       //   RecieptNumber: [event.data.RecieptNumber],
       //   Orderstatus : [event.data.Orderstatus],
@@ -305,8 +264,77 @@ export class DisplayOrdersListComponent implements OnInit {
     }
 
   }
+  getCustomersData(data: any) {
+    this.customerdata = "";
+    this.customers = "";
+    if (data.customer_id != 'undefined') {
+      this.CustomresService_.getbyid(data.customer_id).subscribe(customer => {
+        if (customer) {
+          // 
+          // alert("inside");
+          this.customerdata = customer;
+          console.log(this.customerdata.data);
+          if (this.customerdata.data.length > 0) {
+            this.customers = this.customerdata.data;
+            this.customersRecord = {
+              Name: this.customers[0].Name,
+              MobileNo: this.customers[0].MobileNo,
+              DOB: this.customers[0].DOB,
+              type: this.customers[0].type,
+              tag: this.customers[0].tag,
+              DueAmount: this.customers[0].DueAmount,
+              Anniversary: this.customers[0].Anniversary,
+              Paymentstatus: this.customers[0].Paymentstatus,
+              RecieptNumber: this.customers[0].RecieptNumber,
+              employee_id: this.customers[0].employee_id
+            }
+          }
+
+
+        }
+
+      }
+      );
+    }
+    else {
+      //alert("Else block");
+      this.customersRecord = {
+        Name: 'Guest',
+        MobileNo: '0000',
+        DOB: '0000',
+        type: 'undefined',
+        tag: 'undefined',
+        DueAmount: data.PendingAmount,
+        Anniversary: 'undefined',
+        Paymentstatus: data.AmountPaidstatus,
+        RecieptNumber: data.RecieptNumber,
+        employee_id: data.employee_id
+      }
+      console.log(this.customersRecord);
+    }
+  }
+  getItems(RecieptNumber: string) {
+    this.ItemsService_.getbyid(RecieptNumber).subscribe(Items => {
+      this.EditOrderItems2 = Items;
+      this.EditOrderItems = this.EditOrderItems2.data;
+    })
+  }
   closePopUpByChild(close: any) {
 
     this.showPopUp = close;
+  }
+  EditOrderByReicepNumber: any;
+  reInitializeEditOrderInvoice(RecieptNumber: any) {
+    //this.EditOrder=data;
+    this.loadtoday();
+    this.invoice.getbyid(RecieptNumber).subscribe(EditOrderData => {
+      this.EditOrderByReicepNumber = EditOrderData;
+      this.EditOrder = this.EditOrderByReicepNumber.data[0];
+      console.log(this.EditOrder);
+      this.getCustomersData(this.EditOrder);
+    }
+    );
+    this.getItems(RecieptNumber);
+    //alert(data);
   }
 }

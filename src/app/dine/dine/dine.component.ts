@@ -110,6 +110,14 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
     });
     //  this.loadbasetype();
     this.loaddine();
+      this.loadChairs();
+  }
+   ngOnInit(): void {
+    this.loadChairs();
+    this.loadfloor()
+    this.classname = "";
+    this.loaddine();
+
   }
   refresh(params: ICellRendererParams<any, any, any>): boolean {
     throw new Error('Method not implemented.');
@@ -117,20 +125,23 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
   loadChairs() {
     //alert(selectcategoryID);
 
-    this.chairService.get().subscribe(data => {
-      if (data) {
-        this.IChairdata2 = data;
-        this.IChairdata = this.IChairdata2.allTasks
+    this.chairService.get().subscribe(chairdata => {
+      if (chairdata) {
+        this.IChairdata2 = chairdata;
+        this.IChairdata = this.IChairdata2.data
+        console.log(this.IChairdata);
+        console.log(chairdata);
+
 
       }
     })
   }
   loadfloor() {
     //alert(selectcategoryID);
-    this.floorservice.get().subscribe(data => {
-      if (data) {
-        this.Floordata2 = data;
-        this.Floordata = this.Floordata2.allTasks
+    this.floorservice.get().subscribe(floordata => {
+      if (floordata) {
+        this.Floordata2 = floordata;
+        this.Floordata = this.Floordata2.data
 
       }
     })
@@ -166,10 +177,10 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
   }
   loaddine() {
     //alert(selectcategoryID);
-    this.service.get().subscribe(data => {
-      if (data) {
-        this.dinedata2 = data;
-        this.dinedata = this.dinedata2.allTasks
+    this.service.get().subscribe(dinesdata => {
+      if (dinesdata) {
+        this.dinedata2 = dinesdata;
+        this.dinedata = this.dinedata2.data
         this.MergeFloorNameWithDine();
       }
     })
@@ -204,13 +215,7 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
     this.loaddine();
   }
 
-  ngOnInit(): void {
-    this.loadChairs();
-    this.loadfloor()
-    this.classname = "";
-    this.loaddine();
-
-  }
+ 
   createdTaskTable: any;
   dineExists = "false";
   add(dine: IDine): void {
@@ -227,13 +232,13 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
       this.service.add(dine).subscribe(res => {
         if (res) {
           this.createdTaskTable = res;
-          console.log(this.createdTaskTable.createdTask);
+          console.log(this.createdTaskTable.data);
 
           const chair: IChairDefault = {
             name: "Chair 1",
             description: 'Default Chair',
             status: true,
-            table_id: this.createdTaskTable.createdTask._id,
+            table_id: this.createdTaskTable.data._id,
             chairorderstatus: '1',
 
           }
@@ -244,6 +249,7 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
            this.args = "Record Added succefully..." + dine.name ;
          // this.SweetAlert2_.showFancyAlertSuccess("Record Added succefully..." + dine.name);
           this.loaddine();
+          this.loadChairs();
         }
       })
     }
@@ -285,13 +291,14 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
         //  alert("Successfully Updated BaseType..."+basetype.Basetypename);
         // this.loadbasetype();
         this.loaddine();
+        this.loadChairs();
       }
     })
   }
   }
   cDelete(_id: any) {
     //this.loadbasetype();
-    this.loaddine();
+   
   }
   onFormSubmit() {
     if (this.myAddForm.valid) {
@@ -333,16 +340,18 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
     this.display = "display:none;";
   }
   deletedConfirmed(id: any) {
-    alert(id)
-    console.log(this.IChairdata);
-    console.log(id);
-    alert(this.IChairdata.length);
+   // alert(id)
+     this.loadChairs();
+    // console.log(this.IChairdata);
+    // alert(this.IChairdata.length);
     for (let i = 0; i < this.IChairdata.length; i++) {
+      // console.log(this.IChairdata[i].table_id);
+      // console.log(id);
       if (this.IChairdata[i].table_id == id) {
-        alert(this.IChairdata[i]._id);
+      //  alert(this.IChairdata[i]._id);
 
         this.chairService.delete(this.IChairdata[i]._id).subscribe(deleteChair => {
-          alert("Chair deleted");
+        //  alert("Chair deleted");
         })
       }
     }
@@ -351,10 +360,12 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
       if (res) {
         this.display = "display:none;";
         this.loaddine();
+        this.loadChairs();
         this.args = " Record Deleted Successfully ";
 
       }
     })
+   // this.IChairdata=[];
   }
 
 

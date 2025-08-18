@@ -41,7 +41,7 @@ export class ProductpriceformComponent implements OnInit {
   prodata: any;
   Productname2: any;
   Productname: any;
-  addProductPriceResultallTasks: any;
+  addProductPriceResultdata: any;
   @ViewChild('f')
   ProductPriceViewchild!: NgForm;
 
@@ -96,27 +96,27 @@ export class ProductpriceformComponent implements OnInit {
   constructor(private service: ProductPriceService,
     public actions$: Actions,
     private ProductService_: ProductService, private QuantitytypeService_: QuantitytypeService, private CategoryService_: CategoryService, private subQuantityTypeService_: subQuantityTypeService, private router: Router, private formedit: FormBuilder, private store: Store<{ categoryLoad: any, productPriceLoad: any, productLoad: any, quantityTypeLoad: any, subQuantityTypeLoad: any, subQuantityTypeByIdLoad: any }>, private SweetAlert2_: SweetAlert2) {
-    this.categorynamedata$ = store.select(state => state.categoryLoad.ProductCategory_.allTasks);
+    this.categorynamedata$ = store.select(state => state.categoryLoad.ProductCategory_.data);
     this.loading$ = store.select(state => state.categoryLoad.loading);
     this.error$ = store.select(state => state.categoryLoad.error);
 
-    this.Qtypenamedata$ = store.select(state => state.quantityTypeLoad.QuantityType_.allTasks);
+    this.Qtypenamedata$ = store.select(state => state.quantityTypeLoad.QuantityType_.data);
     this.loading$ = store.select(state => state.quantityTypeLoad.loading);
     this.error$ = store.select(state => state.quantityTypeLoad.error);
 
-    this.subQuantityTypeData$ = store.select(state => state.subQuantityTypeLoad.SubQuantityType_.allTasks);
+    this.subQuantityTypeData$ = store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
     this.loading$ = store.select(state => state.subQuantityTypeLoad.loading);
     this.error$ = store.select(state => state.subQuantityTypeLoad.error);
 
-    this.subQuantityTypeByIdData$ = store.select(state => state.subQuantityTypeByIdLoad.SubQuantityType_.allTasks);
+    this.subQuantityTypeByIdData$ = store.select(state => state.subQuantityTypeByIdLoad.SubQuantityType_.data);
     this.loading$ = store.select(state => state.subQuantityTypeByIdLoad.loading);
     this.error$ = store.select(state => state.subQuantityTypeByIdLoad.error);
 
-    this.Productnamedata$ = store.select(state => state.productLoad.Product_.allTasks);
+    this.Productnamedata$ = store.select(state => state.productLoad.Product_.data);
     this.loading$ = store.select(state => state.productLoad.loading);
     this.error$ = store.select(state => state.productLoad.error);
 
-    this.productPriceData$ = store.select(state => state.productPriceLoad.ProductPrice_.allTasks);
+    this.productPriceData$ = store.select(state => state.productPriceLoad.ProductPrice_.data);
     this.loading$ = store.select(state => state.productPriceLoad.loading);
     this.error$ = store.select(state => state.productPriceLoad.error);
 
@@ -161,7 +161,7 @@ export class ProductpriceformComponent implements OnInit {
         this.Productname2 = "";
         this.Productname = "";
         this.Productname2 = data;
-        this.Productname = this.Productname2.allTasks
+        this.Productname = this.Productname2.data
         this.prodata = this.Productname;
         this.loadSubQuantityTypeByQuantityTypeID(this.prodata[0].selectQtypeID);
         alert(this.prodata[0].selectQtypeID);
@@ -181,7 +181,7 @@ export class ProductpriceformComponent implements OnInit {
   }
   loadProducts() {
     this.store.dispatch(loadProduct());
-    this.Productnamedata$ = this.store.select(state => state.productLoad.Product_.allTasks);
+    this.Productnamedata$ = this.store.select(state => state.productLoad.Product_.data);
     this.loading$ = this.store.select(state => state.productLoad.loading);
     this.error$ = this.store.select(state => state.productLoad.error);
 
@@ -189,7 +189,7 @@ export class ProductpriceformComponent implements OnInit {
   loadcategory() {
 
     this.store.dispatch(loadCategories());
-    this.categorynamedata$ = this.store.select(state => state.categoryLoad.ProductCategory_.allTasks);
+    this.categorynamedata$ = this.store.select(state => state.categoryLoad.ProductCategory_.data);
     this.loading$ = this.store.select(state => state.categoryLoad.loading);
     this.error$ = this.store.select(state => state.categoryLoad.error);
 
@@ -203,7 +203,7 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
   }
   loadSubQuantityTypeByQuantityTypeID(QuntityTypeId:string) {
      this.store.dispatch(loadSubQuantityTypeById({ selectQtypeID:QuntityTypeId }));
-     this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeByIdLoad.SubQuantityType_.allTasks);
+     this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeByIdLoad.SubQuantityType_.data);
     this.actions$.pipe(ofType(loadProductPriceSuccess)).subscribe(() => {
             
            });
@@ -216,7 +216,7 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
   loadQtype() {
 
     this.store.dispatch(loadQuantityType());
-    this.Qtypenamedata$ = this.store.select(state => state.quantityTypeLoad.QuantityType_.allTasks);
+    this.Qtypenamedata$ = this.store.select(state => state.quantityTypeLoad.QuantityType_.data);
   this.actions$.pipe(ofType(loadQuantityTypeSuccess)).subscribe(() => {
             
            });
@@ -229,14 +229,14 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
   loadSubQuantityTypeName() {
 
     this.store.dispatch(loadSubQuantityType());
-    this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.allTasks);
+    this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
     this.loading$ = this.store.select(state => state.subQuantityTypeLoad.loading);
     this.error$ = this.store.select(state => state.subQuantityTypeLoad.error);
   }
 
   loadProductPrice() {
     this.store.dispatch(loadProductPrice());
-    this.productPriceData$ = this.store.select(state => state.productPriceLoad.ProductPrice_.allTasks);
+    this.productPriceData$ = this.store.select(state => state.productPriceLoad.ProductPrice_.data);
     this.loading$ = this.store.select(state => state.productPriceLoad.loading);
     this.error$ = this.store.select(state => state.productPriceLoad.error);
 
@@ -244,8 +244,8 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
   }
   loadproductpricename() {
 
-    this.productPriceData$ = this.store.select(state => state.productPriceLoad.ProductPrice_.allTasks);
-
+    this.productPriceData$ = this.store.select(state => state.productPriceLoad.ProductPrice_.data);
+if( this.productPriceData$){
     this.productPriceData$.subscribe(productPriceData => {
       let mergAllProductRelatedTables: ProductPriceDetails[] = [];
       //alert(productPriceData.length);
@@ -270,12 +270,12 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
 
     });
 
-
+  }
 
   }
   getproductname(id: string) {
     let ProductName = "";
-    this.Productnamedata$ = this.store.select(state => state.productLoad.Product_.allTasks);
+    this.Productnamedata$ = this.store.select(state => state.productLoad.Product_.data);
     this.Productnamedata$.subscribe(Productnamedata => {
       const itemP = Productnamedata.find((item: { _id: string; }) => item._id === id);
       const indexP = Productnamedata.findIndex((item: { _id: string; }) => item._id === id);
@@ -288,7 +288,7 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
     return ProductName;
   }
   getqtypnamename(id: string) {
-    this.Qtypenamedata$ = this.store.select(state => state.quantityTypeLoad.QuantityType_.allTasks);
+    this.Qtypenamedata$ = this.store.select(state => state.quantityTypeLoad.QuantityType_.data);
     let QuantityTypeName = "";
     this.Qtypenamedata$.subscribe(Qtypenamedata => {
       const itemP = Qtypenamedata.find((item: { _id: string; }) => item._id === id);
@@ -301,7 +301,7 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
     return QuantityTypeName;
   }
   getcategoryname(id: string) {
-    this.categorynamedata$ = this.store.select(state => state.categoryLoad.ProductCategory_.allTasks);
+    this.categorynamedata$ = this.store.select(state => state.categoryLoad.ProductCategory_.data);
     let CategoryName = "";
     this.categorynamedata$.subscribe(categorynamedata => {
       const itemP = categorynamedata.find((item: { _id: string; }) => item._id === id);
@@ -316,7 +316,7 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
 
 
   getSubQuantityTypeName(id: string) {
-    this.store.select(state => state.subQuantityTypeByIdLoad.SubQuantityType_.allTasks);
+   this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeByIdLoad.SubQuantityType_.data);
 
     let SubQuantityTypeName = "";
     this.subQuantityTypeData$.subscribe(subQuantityTypeData => {
@@ -330,22 +330,24 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
     return SubQuantityTypeName;
   }
   add(ProductPrice_: ProductPrice) {
-    ProductPrice_.selectcategoryID, ProductPrice_.selectQtypeID,
+   // ProductPrice_.selectcategoryID, ProductPrice_.selectQtypeID,
+   try{
       this.service.getbyid(ProductPrice_.SelectProductId, ProductPrice_.selectSubQuantityTypeID, ProductPrice_.selectQtypeID, ProductPrice_.selectcategoryID).subscribe(result => {
         // alert(selectcategoryID)
-        this.addProductPriceResultallTasks = result;
-        console.log(result);
-        console.log(this.addProductPriceResultallTasks.allTasks);
-        console.log(this.addProductPriceResultallTasks.length);
-        if (this.addProductPriceResultallTasks.allTasks == null) {
+
+      console.log(result);
+         this.addProductPriceResultdata = result;
+        console.log(this.addProductPriceResultdata.data);
+        console.log(this.addProductPriceResultdata.length);
+        if (this.addProductPriceResultdata.data.length == 0) {
 
           this.store.dispatch(addProductPrice({ ProductPrice_ }));
           // this.SweetAlert2_.showFancyAlertSuccess(" Added.");
           // this.productpriceallname=[];  
           this.actions$.pipe(ofType(ProductPriceActions.addProductPriceSuccess)).subscribe(() => {
             this.args = "Product Price Added";
-            this.productPriceRecord = [];
-            this.refresh();
+          // 
+          
 
           });
           this.actions$.pipe(ofType(ProductPriceActions.addProductPriceFailure)).subscribe(() => {
@@ -356,10 +358,16 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
         }
         else {
           //alert("");  
-          this.SweetAlert2_.showFancyAlertSuccess("Already exists data.");
+          this.args ="Already exists data.";
         }
+     
       })
-
+    }
+    catch(error)
+    {
+      console.log(error);
+     // console.log(r);
+    }
 
   }
   onFormSubmit() {
@@ -429,6 +437,8 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
     if (this.show == true) {
       this.show = false;
     }
+      this.refresh();
+ this.productPriceRecord = [];
 
   }
   handleChildClick() {

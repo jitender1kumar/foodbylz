@@ -28,11 +28,11 @@ import { InitializeInvoice } from '../../core/commanFunction/InitializeInvoice.s
 
 export class TablesComponent implements OnInit {
   // this.router.navigate(['\Home']);
-  @Input() pickupOrder:any;
-  @Input() CancelOrder:any;
+  @Input() pickupOrder: any;
+  @Input() CancelOrder: any;
   @Output() clearCancelOrder = new EventEmitter<string>();
   @Output() clearPickupOrder = new EventEmitter<string>();
-  
+
   @Output() notifyManage3: EventEmitter<string> = new EventEmitter<string>();
   editreservedinefata: any;
   currentDateOnly: string = '';       // yyyy-MM-dd
@@ -40,12 +40,12 @@ export class TablesComponent implements OnInit {
   selectedTime: string = '';
   availableTimeSlots: string[] = [];
   pickupinvoiceid: number = 0;
-    ordersdataforToken:any;
-      get dateTimeStartControl(): FormControl {
-  return this.myAddForm.get('DateTimeStart') as FormControl;
-}
+  ordersdataforToken: any;
+  get dateTimeStartControl(): FormControl {
+    return this.myAddForm.get('DateTimeStart') as FormControl;
+  }
 
-  TokenNumber:number=0;
+  TokenNumber: number = 0;
   editreservedinefata2: any;
   isChecked = false;
   date: any; now: any = new Date('').getTime().toString();
@@ -71,7 +71,14 @@ export class TablesComponent implements OnInit {
     employee_id: this.employeeId,
     ConfirmStatus: false
   }
-
+  dine: IDine = {
+    _id: "",
+    name: "",
+    description: '',
+    status: true,
+    floor_id: '',
+    employee_id: this.employeeId,
+  }
   runningOrderLength = 0;
   myAddForm: FormGroup;
   reservedinedata: any; reservedinedata2: any;
@@ -89,17 +96,10 @@ export class TablesComponent implements OnInit {
   isCheckedStatus: any = true;
   invoiceidforpickup: number = 0;
   // invoice interface
-  invoice:any;
-  invoicepickup:any;
-  invoicedelete:any;
-  dine: IDine = {
-    _id: "",
-    name: "",
-    description: '',
-    status: true,
-    floor_id: '',
-    employee_id: this.employeeId,
-  }
+  invoice: any;
+  invoicepickup: any;
+  invoicedelete: any;
+
   chairs: any;
   chairs2: any;
   chairsbytable_id: any;
@@ -142,19 +142,20 @@ export class TablesComponent implements OnInit {
   chairsrunningorderarr: IChairsrunningorder = {
     Chairsrunningorder: [this.chair],
     tablename: "",
+    receiptnumber: '',
     tokennumber: 0
   };
   ordersdata: any;
-  constructor(private service: DineService, private QuantitytypeService_: QuantitytypeService, private router: Router, private fb: FormBuilder, private floorservice: FloorService, private chairservice: ChairService, private chairsrunningorderservice: ChairServiceService, private _InvoiceService: InvoiceService, private formedit: FormBuilder, private customerservice: CustomresService, private reservedineservice: ReserveDineService, private datePipe: DatePipe, private GetOrderDetailsService_: GetOrderDetailsService,private InitializeInvoice_:InitializeInvoice) {
-const today = new Date();
+  constructor(private service: DineService, private QuantitytypeService_: QuantitytypeService, private router: Router, private fb: FormBuilder, private floorservice: FloorService, private chairservice: ChairService, private chairsrunningorderservice: ChairServiceService, private _InvoiceService: InvoiceService, private formedit: FormBuilder, private customerservice: CustomresService, private reservedineservice: ReserveDineService, private datePipe: DatePipe, private GetOrderDetailsService_: GetOrderDetailsService, private InitializeInvoice_: InitializeInvoice) {
+    const today = new Date();
     this.currentDateOnly = today.toISOString().split('T')[0];
     this.selectedDate = this.currentDateOnly;
 
     this.generateTimeSlots();
-    this.invoicedelete = this.InitializeInvoice_.initializeInvoice("Cancelled",this.employeeId,0);
-this.invoicepickup = this.InitializeInvoice_.initializeInvoice("New Order",this.employeeId,0);
-this.invoice = this.InitializeInvoice_.initializeInvoice("Cancelled",this.employeeId,0);
-this.loadToken();
+    this.invoicedelete = this.InitializeInvoice_.initializeInvoice("Cancelled", this.employeeId, 0);
+    this.invoicepickup = this.InitializeInvoice_.initializeInvoice("New Order", this.employeeId, 0);
+    this.invoice = this.InitializeInvoice_.initializeInvoice("Cancelled", this.employeeId, 0);
+    this.loadToken();
     this.args = null;
     this.tabactive0 = "table-tab active";
     this.tabactive1 = "table-tab ";
@@ -176,7 +177,7 @@ this.loadToken();
       MobileNo: ['',],
       Paymentstatus: [false,],
       Bookingstatus: [true,],
-     
+
       BookingAmount: ['',],
       RecieptNumber: [],
 
@@ -190,7 +191,7 @@ this.loadToken();
       MobileNo: ['',],
       Paymentstatus: [false,],
       Bookingstatus: [true,],
-       ConfirmStatus:[false,],
+      ConfirmStatus: [false,],
       BookingAmount: ['',],
       RecieptNumber: [this.now,]
     });
@@ -198,67 +199,66 @@ this.loadToken();
   ngOnInit(): void {
     ////("2");
 
-   this.referesh();
-   if(this.CancelOrder!="")
-   {
-this.cancel(this.CancelOrder);
-this.clearCancelOrder.emit("");
-alert("Order Cancelled.");
-   }
-if(this.pickupOrder=="pickup")
-      {
-        this.TokenNumber=0;
-    this.GetOrderDetailsService_.loadToday().subscribe(data => {
-      this.ordersdataforToken = data;
-      if(this.ordersdataforToken.length>=0)
-      {
-        console.log(this.ordersdataforToken.length);
-        console.log(this.ordersdataforToken);
-        this.TokenNumber = this.ordersdataforToken.length+1;
-        this.pickup();
-      }else
-      {
-        const d = new Date();
-      this.TokenNumber= d.getDay() + d.getTime();
-      this.pickup();
-      }
-      
-    });
-        
-      }
+    this.referesh();
+    if (this.CancelOrder != "") {
+
+      this.cancel(this.CancelOrder);
+
+      this.clearCancelOrder.emit("");
+      // alert("Order Cancelled. "+this.CancelOrder);
+    }
+    if (this.pickupOrder == "pickup") {
+
+      this.TokenNumber = 0;
+      this.GetOrderDetailsService_.loadToday().subscribe(data => {
+        this.ordersdataforToken = data;
+        if (this.ordersdataforToken.data.length >= 0) {
+          console.log(this.ordersdataforToken.data.length);
+          console.log(this.ordersdataforToken.data);
+          this.TokenNumber = this.ordersdataforToken.data.length + 1;
+          this.pickup();
+        } else {
+          const d = new Date();
+          this.TokenNumber = d.getDay() + d.getTime();
+          this.pickup();
+        }
+
+      });
+
+    }
 
   }
-referesh()
-{
-   this.loadToken();
+  referesh() {
+    this.loadToken();
     this.datecurrent = this.gettoday();
     this.loadrunningorder();
-    this.loaddinedata();
+    this.loadReservedDineData();
     //this.loadcustomers();
     this.loadfloor()
     //this.classname="";
     this.loaddine();
     this.loadallchair();
-}
+  }
   Confirmedelete() {
     ////(this.holdreservetableid);
     if (this.holdreservetableid != 0) {
       this.reservedineservice.delete(this.holdreservetableid.toString()).subscribe(data => {
         this.reservedinedata2 = data;
-        this.reservedinedata = this.reservedinedata2.allTasks;
-        this.loaddinedata();
+        this.reservedinedata = this.reservedinedata2.data;
+        this.loadReservedDineData();
         this.deleteshow = false;
       })
     }
 
   }
+
   deletereservedine(_id: any) {
     this.args = "";
     this.deleteshow = true;
     this.holdreservetableid = _id;
 
   }
- generateTimeSlots() {
+  generateTimeSlots() {
     // Generates slots: 10:00, 12:00, 14:00 ... 22:00
     const startHour = 10;
     const endHour = 22;
@@ -296,7 +296,7 @@ referesh()
     this.reservedineservice.getbyid(_id).subscribe(data => {
       if (data) {
         this.editreservedinefata2 = data;
-        this.editreservedinefata = this.editreservedinefata2.allTasks;
+        this.editreservedinefata = this.editreservedinefata2.data;
         this.myEditForm = this.formedit.group({
           TableId: [this.editreservedinefata.TableId,],
           DateTimeStart: [this.editreservedinefata.DateTimeStart,],
@@ -401,9 +401,9 @@ referesh()
     this.reservedineservice.add(this.resevetable).subscribe(reservedine => {
       if (reservedine) {
         this.reservedinedata2 = reservedine;
-        this.reservedinedata = this.reservedinedata2.allTasks;
+        this.reservedinedata = this.reservedinedata2.data;
         this.args = "Successfully Reserved";
-        this.loaddinedata();
+        this.loadReservedDineData();
       }
     }
     )
@@ -411,12 +411,12 @@ referesh()
 
   }
 
-  loaddinedata() {
+  loadReservedDineData() {
     ////("I am here");
     this.reservedineservice.get().subscribe(data => {
       if (data) {
         this.reservedinedata2 = data;
-        this.reservedinedata = this.reservedinedata2.allTasks;
+        this.reservedinedata = this.reservedinedata2.data;
         this.reservedLength = this.reservedinedata.length;
 
       }
@@ -432,7 +432,7 @@ referesh()
     this.customerservice.get().subscribe(data => {
       if (data) {
         this.Customersnamedata2 = data;
-        this.Customersnamedata = this.Customersnamedata2.allTasks
+        this.Customersnamedata = this.Customersnamedata2.data
 
       }
     })
@@ -443,21 +443,21 @@ referesh()
   }
   getforinvoiceiddata2: any;
   getforinvoiceiddata: any;
-  async loaddine() {
+  loaddine() {
     this.service.get().subscribe(
       data => {
         if (data) {
-          this.dinedata = [];
+
           this.dinedata2 = data;
-          this.dinedata = this.dinedata2.allTasks;
+          this.dinedata = this.dinedata2.data;
           // //("loaded dine data");
         }
       }
     );
   }
-  
+
   pickup() {
-this.clearPickupOrder.emit("");
+    this.clearPickupOrder.emit("");
     this.loadchairsrunningorderselected("pickup");
   }
   tabshow(tab: number) {
@@ -495,9 +495,8 @@ this.clearPickupOrder.emit("");
     // this.loadallchair();
     // this.loadrunningorder();
   }
- 
-  cancel(InvoiceID: any) {
 
+  cancel(InvoiceID: any) {
     ////////(arg0);
     this.chairsrunningorderservice.getbyid(InvoiceID).subscribe(data => {
 
@@ -505,33 +504,56 @@ this.clearPickupOrder.emit("");
         // //////(arg0);
         this.runningorder_cancel_by_id = [];
         this.runningorder2_cancel_by_id = data;
-        this.runningorder_cancel_by_id = this.runningorder2_cancel_by_id.allTasks;
+        this.runningorder_cancel_by_id = this.runningorder2_cancel_by_id.data;
         // //(this.runningorder_cancel_by_id[0].Chairsrunningorder.length);
-        if (this.runningorder_cancel_by_id[0].Chairsrunningorder.length == 0) {
+        if (this.runningorder_cancel_by_id[0].Chairsrunningorder.length > 0) {
 
-        }
-        else {
+          // }
+          // else {
           //update table status start
           ////("tableid : "+this.runningorder_cancel_by_id[0].Chairsrunningorder[0].table_id);
-          const inde = this.dinedata.findIndex((Itm: { _id: any; }) => Itm._id == this.runningorder_cancel_by_id[0].Chairsrunningorder[0].table_id);
+         let dineUpdateRecordindex ;
+          this.service.get().subscribe(
+            data => {
+              if (data) {
 
-          this.dine.status = true;
-          this.dine._id = this.dinedata[inde]._id;
-          // //(this.dinedata[inde]._id);
-          this.dine.name = this.dinedata[inde].name;
-          this.dine.description = this.dinedata[inde].description;
-          this.dine.floor_id = this.dinedata[inde].floor_id;
-          this.service.update(this.dine).subscribe(data => {
-            if (data) {
-              this.dinedata2 = data;
-              this.dinedata = this.dinedata2.allTasks
-              this.loadallchair();
+                this.dinedata2 = data;
+                this.dinedata = this.dinedata2.data;
+                  dineUpdateRecordindex  = this.dinedata.findIndex((Itm: { _id: any; }) => Itm._id == this.runningorder_cancel_by_id[0].Chairsrunningorder[0].table_id);
+          if (dineUpdateRecordindex > 0) {
+            //  dineUpdateRecord.status = true;
+            // dineUpdateRecord._id = this.dinedata[dineUpdateRecordindex]._id;
+            // // //(this.dinedata[inde]._id);
+            // dineUpdateRecord.name = this.dinedata[dineUpdateRecordindex].name;
+            // dineUpdateRecord.description = this.dinedata[dineUpdateRecordindex].description;
+            // dineUpdateRecord.floor_id = this.dinedata[dineUpdateRecordindex].floor_id;
+            this.dine = {
+              _id: this.dinedata[dineUpdateRecordindex]._id,
+              name: this.dinedata[dineUpdateRecordindex].name,
+              description: this.dinedata[dineUpdateRecordindex].description,
+              status: true,
+              floor_id: this.dinedata[dineUpdateRecordindex].floor_id,
+              employee_id: this.employeeId
+            };
+            this.service.update(this.dine).subscribe(data => {
+              if (data) {
+                // this.dinedata2 = data;
+                // this.dinedata = this.dinedata2.data
+                this.loadallchair();
 
-              this.loadrunningorder();
+                this.loadrunningorder();
+              }
+            })
+
+            //end
+          }
+                // //("loaded dine data");
+              }
             }
-          })
+          );
+        
+         
         }
-        //end
 
         // //////(this.runningorder_cancel_by_id[0].Chairsrunningorder.length);
         for (var ii = 0; ii < this.runningorder_cancel_by_id[0].Chairsrunningorder.length; ii++) {
@@ -555,82 +577,82 @@ this.clearPickupOrder.emit("");
 
 
         //////(arg0);
+
+
         this.chairsrunningorderservice.delete(InvoiceID).subscribe(data2 => {
           if (data2) {
-            //////("deleted");
-            //  this.loadrunningorder();
-
-
-
           }
 
         })
+        this._InvoiceService.getbyid(InvoiceID).subscribe(data => {
+          if (data) {
+
+            // //("working");
+            this.getforinvoiceiddata = [];
+            this.getforinvoiceiddata2 = data;
+            this.getforinvoiceiddata = this.getforinvoiceiddata2.data;
+            console.log(this.getforinvoiceiddata);
+            //  //("length: "+this.getforinvoiceiddata.length);
+            for (var ii = 0; ii < this.getforinvoiceiddata.length; ii++) {
+              //  //(this.getforinvoiceiddata[ii].TotalTaxAmount);
+              this.invoicedelete = {
+
+                Taxes: this.getforinvoiceiddata[ii].Taxes,
+                Chairs: this.getforinvoiceiddata[ii].Chairs,
+                taxpecentRate: 0,
+                taxpercentValue: 0,
+                DiscountId: this.getforinvoiceiddata[ii].DiscountId,
+                Discountvalue: 0,
+                Discountperstage: 0,
+                AdditionaldiscountAmount: 0,
+                Totalvaue: 0,
+                grandtotal: 0,
+                RecieptNumber: this.getforinvoiceiddata[ii].RecieptNumber, //this.totalamount + this.discountvalue + d.getDate() + d.getTime() + d.getSeconds(),
+                OrderType: this.getforinvoiceiddata[ii].OrderType,
+                AmountPaidstatus: this.getforinvoiceiddata[ii].AmountPaidstatus,
+                Orderstatus: "Cancelled",
+                PaidAmount: 0,
+                PendingAmount: 0,
+                TotalTaxAmount: 0,
+                TotalItemsAmount: 0,
+                OrderTypeName: this.getforinvoiceiddata[ii].OrderTypeName,
+                paybyId: this.getforinvoiceiddata[ii].paybyId,
+                table_id: this.getforinvoiceiddata[ii].table_id,
+                customer_id: this.getforinvoiceiddata[ii].customer_id,
+                employee_id: this.getforinvoiceiddata[ii].employee_id,
+                tablename: this.getforinvoiceiddata[ii].tablename,
+                createdAt: this.getforinvoiceiddata[ii].createdAt,
+                AssistToId: this.getforinvoiceiddata[ii].AssistToId ?? '',
+                CommentId: this.getforinvoiceiddata[ii].Comment ?? '',
+                returnAmount: this.getforinvoiceiddata[ii].returnAmount ?? '',
+
+              }
+            }
+            //console.log(this.invoicedelete);
+            this._InvoiceService.update(this.invoicedelete).subscribe(updateddata => {
+              if (updateddata) {
+                ////("Updated.");
+                //     this.loadallchair();
+                //     this.loaddine();
+                // this.loadrunningorder();
+ this.referesh();
+              }
+            })
+
+            // this.loadallchair();
+            // this.loaddine();
+            // this.loadrunningorder();
+            ////(this.getforinvoiceiddata[0]._id);
+          }
+        });
       }
     })
-    this._InvoiceService.getbyid(InvoiceID).subscribe(data => {
-      if (data) {
-
-        // //("working");
-        this.getforinvoiceiddata = [];
-        this.getforinvoiceiddata2 = data;
-        this.getforinvoiceiddata = this.getforinvoiceiddata2.allTasks;
-        console.log(this.getforinvoiceiddata);
-        //  //("length: "+this.getforinvoiceiddata.length);
-        for (var ii = 0; ii < this.getforinvoiceiddata.length; ii++) {
-          //  //(this.getforinvoiceiddata[ii].TotalTaxAmount);
-          this.invoicedelete = {
-
-            Taxes: this.getforinvoiceiddata[ii].Taxes,
-            Chairs: this.getforinvoiceiddata[ii].Chairs,
-            taxpecentRate: 0,
-            taxpercentValue: 0,
-            DiscountId: this.getforinvoiceiddata[ii].DiscountId,
-            Discountvalue: 0,
-            Discountperstage: 0,
-            AdditionaldiscountAmount: 0,
-            Totalvaue: 0,
-            grandtotal: 0,
-            RecieptNumber: this.getforinvoiceiddata[ii].RecieptNumber, //this.totalamount + this.discountvalue + d.getDate() + d.getTime() + d.getSeconds(),
-            OrderType: this.getforinvoiceiddata[ii].OrderType,
-            AmountPaidstatus: this.getforinvoiceiddata[ii].AmountPaidstatus,
-            Orderstatus: "Cancelled",
-            PaidAmount: 0,
-            PendingAmount: 0,
-            TotalTaxAmount: 0,
-            TotalItemsAmount: 0,
-            OrderTypeName: this.getforinvoiceiddata[ii].OrderTypeName,
-            paybyId: this.getforinvoiceiddata[ii].paybyId,
-            table_id: this.getforinvoiceiddata[ii].table_id,
-            customer_id: this.getforinvoiceiddata[ii].customer_id,
-            employee_id: this.getforinvoiceiddata[ii].employee_id,
-            tablename: this.getforinvoiceiddata[ii].tablename,
-            createdAt: this.getforinvoiceiddata[ii].createdAt,
-            AssistToId: this.getforinvoiceiddata[ii].AssistToId ?? '',
-            CommentId: this.getforinvoiceiddata[ii].Comment ?? '',
-            returnAmount: this.getforinvoiceiddata[ii].returnAmount ?? '',
-
-          }
-        }
-        //console.log(this.invoicedelete);
-        this._InvoiceService.update(this.invoicedelete).subscribe(updateddata => {
-          if (updateddata) {
-            ////("Updated.");
-            //     this.loadallchair();
-            //     this.loaddine();
-            // this.loadrunningorder();
-          }
-        })
-        this.loadallchair();
-        this.loaddine();
-        this.loadrunningorder();
-        ////(this.getforinvoiceiddata[0]._id);
-      }
-    });
+   
   }
 
 
-  gotohome(InvoiceID: any,TokenNumber:number) {
-    this.notifyManage2.emit(InvoiceID+"jsk"+TokenNumber);
+  gotohome(InvoiceID: any, TokenNumber: number) {
+    this.notifyManage2.emit(InvoiceID + "jsk" + TokenNumber);
     ////////(arg0)
   }
   runningorder: any;
@@ -643,7 +665,7 @@ this.clearPickupOrder.emit("");
       if (data) {
         this.runningorder = [];
         this.runningorder2 = data;
-        this.runningorder = this.runningorder2.allTasks;
+        this.runningorder = this.runningorder2.data;
         // console.log(this.runningorder);
         this.runningOrderLength = this.runningorder.length;
       }
@@ -656,7 +678,7 @@ this.clearPickupOrder.emit("");
       if (data) {
         this.Floordata = [];
         this.Floordata2 = data;
-        this.Floordata = this.Floordata2.allTasks
+        this.Floordata = this.Floordata2.data
 
       }
     })
@@ -701,7 +723,7 @@ this.clearPickupOrder.emit("");
       if (data) {
         this.chairs = [];
         this.chairs2 = data;
-        this.chairs = this.chairs2.allTasks;
+        this.chairs = this.chairs2.data;
       }
     })
   }
@@ -724,32 +746,35 @@ this.clearPickupOrder.emit("");
 
   }
 
- 
+
   booktable(tablename: any) {
     ////(tableid);
     this.loadchairsrunningorderselected(tablename);
   }
-  
+
   loadchairsrunningorderselected(tablename: any) {
     //this.chairsrunningorderarr.Chairsrunningorder=[];
-  //  this.loadToken();
+    //  this.loadToken();
+    const d = new Date();
+    this.invoiceidforpickup = d.getFullYear() + d.getTime();
     if (tablename == "pickup") {
-      const d = new Date();
+
       this.invoiceidforpickup = d.getFullYear() + d.getTime();
-      
+
       this.chairsrunningorderarr = {
         Chairsrunningorder: [],
         tablename: "pickup",
-        tokennumber:this.TokenNumber
+        receiptnumber: this.invoiceidforpickup.toString(),
+        tokennumber: this.TokenNumber
       };
       this.chairsrunningorderservice.add(this.chairsrunningorderarr).subscribe(res => {
         // this.datecurrent = this.gettoday();
         // //(this.datecurrent);
         if (res) {
           this.chairs2 = res;
-          this.pickupinvoiceid = this.chairs2.createdTask.createdAt;
-         // console.log(this.invoiceid)
-         // this.invoicepickup = this.InitializeInvoice_.initializeInvoice("New Order",this.employeeId,this.pickupinvoiceid);
+          this.pickupinvoiceid = this.chairs2.data.receiptnumber;
+          // console.log(this.invoiceid)
+          // this.invoicepickup = this.InitializeInvoice_.initializeInvoice("New Order",this.employeeId,this.pickupinvoiceid);
           this.invoicepickup = {
             Taxes: [],
             Chairs: [],
@@ -776,16 +801,16 @@ this.clearPickupOrder.emit("");
             employee_id: this.employeeId,
             tablename: "Pick Up",
             AssistToId: 'undefined',
-            CommentId: 'undefined', 
+            CommentId: 'undefined',
             returnAmount: 0,
-            tokennumber:this.TokenNumber,
-           // createdAt: this.datecurrent
+            tokennumber: this.TokenNumber,
+            // createdAt: this.datecurrent
           }
 
           this._InvoiceService.add(this.invoicepickup).subscribe(inv => {
             if (inv) {
 
-              this.notifyManage2.emit(this.pickupinvoiceid.toString()+"jsk"+this.TokenNumber);
+              this.notifyManage2.emit(this.pickupinvoiceid.toString() + "jsk" + this.TokenNumber);
 
             }
           });
@@ -801,24 +826,24 @@ this.clearPickupOrder.emit("");
         if (data) {
           // console.log(data.valueOf());                                                                      
           this.chairsbytable_id = data;
-          //  console.log(this.chairsbytable_id2.allTasks.length);   
-          // this.chairsbytable_id=this.chairsbytable_id2.allTasks;
-          console.log(this.chairsbytable_id.allTasks);
+          //  console.log(this.chairsbytable_id2.data.length);   
+          // this.chairsbytable_id=this.chairsbytable_id2.data;
+          console.log(this.chairsbytable_id.data);
 
           console.log(this.chairsbytable_id);
-          for (var ii = 0; ii < this.chairsbytable_id.allTasks.length; ii++) {
-            if (this.chairsbytable_id.allTasks[ii].table_id == tablename && this.chairsbytable_id.allTasks[ii].chairorderstatus == "1") {
-              // ////this.chairsbytable_id.allTasks[ii].table_id);                                                                                             
+          for (var ii = 0; ii < this.chairsbytable_id.data.length; ii++) {
+            if (this.chairsbytable_id.data[ii].table_id == tablename && this.chairsbytable_id.data[ii].chairorderstatus == "1") {
+              // ////this.chairsbytable_id.data[ii].table_id);                                                                                             
               this.chairsrunningorderarr2.push({
-                _id: this.chairsbytable_id.allTasks[ii]._id,
-                name: this.chairsbytable_id.allTasks[ii].name,
-                description: this.chairsbytable_id.allTasks[ii].description,
+                _id: this.chairsbytable_id.data[ii]._id,
+                name: this.chairsbytable_id.data[ii].name,
+                description: this.chairsbytable_id.data[ii].description,
                 //in future status can be false
                 status: true,
-                table_id: this.chairsbytable_id.allTasks[ii].table_id,
+                table_id: this.chairsbytable_id.data[ii].table_id,
                 //in future it can be 0
                 chairorderstatus: "1",
-               
+
               }
               );
               this.chairsrunningorderarr3 = this.chairsrunningorderarr2;
@@ -835,7 +860,8 @@ this.clearPickupOrder.emit("");
         this.chairsrunningorderarr = {
           Chairsrunningorder: this.chairsrunningorderarr3,
           tablename: this.dinedata[inde].name,
-          tokennumber:this.TokenNumber
+          receiptnumber: this.invoiceidforpickup.toString(),
+          tokennumber: this.TokenNumber
         };
         // console.log("outer");
         // ////"outer");
@@ -844,15 +870,15 @@ this.clearPickupOrder.emit("");
         this.chairsrunningorderservice.add(this.chairsrunningorderarr).subscribe(res => {
           if (res) {
             let jsk = 0;
-            for (var ii = 0; ii < this.chairsbytable_id.allTasks.length; ii++) {
+            for (var ii = 0; ii < this.chairsbytable_id.data.length; ii++) {
 
-              if (this.chairsbytable_id.allTasks[ii].table_id == tablename && this.chairsbytable_id.allTasks[ii].chairorderstatus == "1") {
-                this.chair._id = this.chairsbytable_id.allTasks[ii]._id;
-                this.chair.name = this.chairsbytable_id.allTasks[ii].name;
-                this.chair.description = this.chairsbytable_id.allTasks[ii].description;
+              if (this.chairsbytable_id.data[ii].table_id == tablename && this.chairsbytable_id.data[ii].chairorderstatus == "1") {
+                this.chair._id = this.chairsbytable_id.data[ii]._id;
+                this.chair.name = this.chairsbytable_id.data[ii].name;
+                this.chair.description = this.chairsbytable_id.data[ii].description;
                 //in future status can be false
                 this.chair.status = true;
-                this.chair.table_id = this.chairsbytable_id.allTasks[ii].table_id;
+                this.chair.table_id = this.chairsbytable_id.data[ii].table_id;
                 //in future it can be 0
                 this.chair.chairorderstatus = "1";
                 this.chairservice.update(this.chair).subscribe(data => {
@@ -862,9 +888,9 @@ this.clearPickupOrder.emit("");
                     this.loadallchair();
                     this.loaddine();
                     this.loadrunningorder();
-                    ////"jsk :"+jsk+" id: "+this.invoiceid2+" lenght: "+this.chairsbytable_id.allTasks.length);                
-                    if (this.chairsbytable_id.allTasks.length == jsk) {
-                      ////"jsk :"+jsk+" id: "+this.invoiceid2+" lenght: "+this.chairsbytable_id.allTasks.length);
+                    ////"jsk :"+jsk+" id: "+this.invoiceid2+" lenght: "+this.chairsbytable_id.data.length);                
+                    if (this.chairsbytable_id.data.length == jsk) {
+                      ////"jsk :"+jsk+" id: "+this.invoiceid2+" lenght: "+this.chairsbytable_id.data.length);
                       //  this.notifyManage2.emit(this.invoiceid2);
                     }
 
@@ -874,12 +900,12 @@ this.clearPickupOrder.emit("");
                 )
 
               }
-              else if ((this.chairsbytable_id.allTasks[ii].table_id == tablename) && (this.chairsbytable_id.allTasks[ii].chairorderstatus == "2")) {
-                this.chair._id = this.chairsbytable_id.allTasks[ii]._id;
-                this.chair.name = this.chairsbytable_id.allTasks[ii].name;
-                this.chair.description = this.chairsbytable_id.allTasks[ii].description;
+              else if ((this.chairsbytable_id.data[ii].table_id == tablename) && (this.chairsbytable_id.data[ii].chairorderstatus == "2")) {
+                this.chair._id = this.chairsbytable_id.data[ii]._id;
+                this.chair.name = this.chairsbytable_id.data[ii].name;
+                this.chair.description = this.chairsbytable_id.data[ii].description;
                 this.chair.status = true;
-                this.chair.table_id = this.chairsbytable_id.allTasks[ii].table_id;
+                this.chair.table_id = this.chairsbytable_id.data[ii].table_id;
                 this.chair.chairorderstatus = "1";
 
                 this.chairservice.update(this.chair).subscribe(data => {
@@ -889,29 +915,29 @@ this.clearPickupOrder.emit("");
                     this.loaddine();
                     this.loadrunningorder();
                     jsk++;
-                    ////"jsk :"+jsk+" id: "+this.invoiceid2+" lenght: "+this.chairsbytable_id.allTasks.length);
-                    if (this.chairsbytable_id.allTasks.length == jsk) {
-                      ////"jsk :"+jsk+" id: "+this.invoiceid2+" lenght: "+this.chairsbytable_id.allTasks.length);
+                    ////"jsk :"+jsk+" id: "+this.invoiceid2+" lenght: "+this.chairsbytable_id.data.length);
+                    if (this.chairsbytable_id.data.length == jsk) {
+                      ////"jsk :"+jsk+" id: "+this.invoiceid2+" lenght: "+this.chairsbytable_id.data.length);
                       //  this.notifyManage2.emit(this.invoiceid2);
                     }
                   }
                 }
                 )
               }
-              else if (this.chairsbytable_id.allTasks[ii].table_id == tablename && this.chairsbytable_id.allTasks[ii].chairorderstatus == "0") {
+              else if (this.chairsbytable_id.data[ii].table_id == tablename && this.chairsbytable_id.data[ii].chairorderstatus == "0") {
                 jsk++;
                 this.loadallchair();
                 this.loaddine();
                 this.loadrunningorder();
-                if (this.chairsbytable_id.allTasks.length == jsk) {
+                if (this.chairsbytable_id.data.length == jsk) {
 
-                  ////"jsk :"+jsk+" id: "+this.invoiceid2+" lenght: "+this.chairsbytable_id.allTasks.length);
+                  ////"jsk :"+jsk+" id: "+this.invoiceid2+" lenght: "+this.chairsbytable_id.data.length);
                   // this.notifyManage2.emit(this.invoiceid2);
                 }
               }
             }
             this.chairs2 = res;
-            this.invoiceid = this.chairs2.createdTask.createdAt
+            this.invoiceid = this.chairs2.data.receiptnumber
             // this.datecurrent = this.gettoday();
             // //(this.datecurrent);
             console.log(this.datecurrent);
@@ -943,10 +969,10 @@ this.clearPickupOrder.emit("");
               employee_id: this.employeeId,
               tablename: this.tablename,
               AssistToId: 'undefined',
-              CommentId: 'undefined', 
+              CommentId: 'undefined',
               returnAmount: 0,
-              tokennumber:this.TokenNumber,
-             // createdAt: this.datecurrent
+              tokennumber: this.TokenNumber,
+              // createdAt: this.datecurrent
             }
             this._InvoiceService.add(this.invoice).subscribe(inv => {
               if (inv) {
@@ -959,12 +985,12 @@ this.clearPickupOrder.emit("");
                 this.service.update(this.dine).subscribe(data => {
                   if (data) {
                     // this.dinedata2 = data;
-                    // this.dinedata = this.dinedata2.allTasks
+                    // this.dinedata = this.dinedata2.data
                     this.loadallchair();
                     this.loaddine();
                     this.loadrunningorder();
                     //  //(this.invoiceid);
-                    this.notifyManage2.emit(this.invoiceid+"jsk"+this.TokenNumber);
+                    this.notifyManage2.emit(this.invoiceid + "jsk" + this.TokenNumber);
                   }
                 })
 
@@ -985,29 +1011,29 @@ this.clearPickupOrder.emit("");
 
     // const indexP = this.chairs.findIndex(item => item._id === id);
   }
- loadToken() {
-this.TokenNumber=0;
+  loadToken() {
+    this.TokenNumber = 0;
     this.GetOrderDetailsService_.loadToday().subscribe(data => {
       this.ordersdataforToken = data;
-      if(this.ordersdataforToken.length>=0)
-      {
-        console.log(this.ordersdataforToken.length);
-        console.log(this.ordersdataforToken);
-        this.TokenNumber = this.ordersdataforToken.length+1;
-      }else
-      {
+      if (this.ordersdataforToken.data.length >= 0) {
+        console.log(this.ordersdataforToken.data.length);
+        console.log(this.ordersdataforToken.data);
+        this.TokenNumber = this.ordersdataforToken.data.length + 1;
+      } else {
         const d = new Date();
-      this.TokenNumber= d.getDay() + d.getTime();
+        this.TokenNumber = d.getDay() + d.getTime();
       }
-      
+
     });
-    
+
   }
+  ordersdata2: any;
   todayBilledLists: any = [];
   loadBilled() {
     //loadBilled 
-    this.GetOrderDetailsService_.loadToday().subscribe((data: any) => {
-      this.ordersdata = data;
+    this.GetOrderDetailsService_.loadToday().subscribe((todaydata: any) => {
+      this.ordersdata2 = todaydata;
+      this.ordersdata = this.ordersdata2.data;
       this.todayBilledLists = [];
       if (this.ordersdata.length > 0) {
         for (let i = 0; i < this.ordersdata.length; i++) {

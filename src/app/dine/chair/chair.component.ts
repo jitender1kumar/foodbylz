@@ -123,7 +123,7 @@ export class ChairComponent implements OnInit, ICellRendererAngularComp {
     this.service.getbyid(this.myAddForm.value._id).subscribe(data => {
       if (data) {
         this.IChairdata2 = data;
-        this.IChairdata = this.IChairdata2.allTasks
+        this.IChairdata = this.IChairdata2.data
 
       }
     })
@@ -175,7 +175,7 @@ export class ChairComponent implements OnInit, ICellRendererAngularComp {
     this.dineservice.get().subscribe(data => {
       if (data) {
         this.dinedata2 = data;
-        this.dinedata = this.dinedata2.allTasks
+        this.dinedata = this.dinedata2.data
 
       }
     })
@@ -185,7 +185,7 @@ export class ChairComponent implements OnInit, ICellRendererAngularComp {
     this.floorservice.get().subscribe(data => {
       if (data) {
         this.Floordata2 = data;
-        this.Floordata = this.Floordata2.allTasks
+        this.Floordata = this.Floordata2.data
 
       }
     })
@@ -196,7 +196,7 @@ export class ChairComponent implements OnInit, ICellRendererAngularComp {
     this.service.get().subscribe(data => {
       if (data) {
         this.IChairdata2 = data;
-        this.IChairdata = this.IChairdata2.allTasks
+        this.IChairdata = this.IChairdata2.data
         this.loaddinename();
       }
     })

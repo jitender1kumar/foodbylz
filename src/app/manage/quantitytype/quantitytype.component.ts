@@ -70,7 +70,7 @@ export class CategorytypeformComponent implements OnInit {
     private SweetAlert2_: SweetAlert2,
     public actions$: Actions
   ) {
-    this.Qtypenamedata$ = store.select(state => state.quantityTypeLoad.QuantityType_.allTasks);
+    this.Qtypenamedata$ = store.select(state => state.quantityTypeLoad.QuantityType_.data);
     this.loading$ = store.select(state => state.quantityTypeLoad.loading);
     this.error$ = store.select(state => state.quantityTypeLoad.error);
     this.display = "display:none;"
@@ -90,7 +90,7 @@ export class CategorytypeformComponent implements OnInit {
  add(quantityType: Quantitytype): void {
   this.service.getQuantityTypeNameByName(quantityType.name).subscribe({
     next: (result: any) => {
-      const existingCount = (result?.allTasks?.length) || 0;
+      const existingCount = (result?.data?.length) || 0;
       this.quantityTypeNameResult = result;
 
       if (existingCount === 0) {
@@ -110,7 +110,7 @@ private addNewQuantityType(quantityType: Quantitytype): void {
   this.store.dispatch(addQuantityType({ QuantityType_: quantityType }));
   this.store.dispatch(loadQuantityType());
   this.Qtypenamedata$ = this.store.select(
-    state => state.quantityTypeLoad.QuantityType_.allTasks
+    state => state.quantityTypeLoad.QuantityType_.data
   );
   this.args = `Quantity Type Name: ${quantityType.name} Added`;
 }
@@ -158,7 +158,7 @@ private showDuplicateNameMessage(name: string): void {
     this.store.dispatch(loadQuantityType());
 
     this.Qtypenamedata$ = this.store.select(
-      state => state.quantityTypeLoad.QuantityType_.allTasks
+      state => state.quantityTypeLoad.QuantityType_.data
     );
     this.loading$ = this.store.select(state => state.quantityTypeLoad.loading);
     this.error$ = this.store.select(state => state.quantityTypeLoad.error);
@@ -202,8 +202,8 @@ private showDuplicateNameMessage(name: string): void {
   deletedConfirmed(_id: any): void {
   this.productPriceservice.getbyidQtypid(_id).subscribe({
     next: (records: any) => {
-      // Use type assertion to access allTasks
-      const productList = (records as { allTasks?: any[] })?.allTasks || [];
+      // Use type assertion to access data
+      const productList = (records as { data?: any[] })?.data || [];
       this.productrecord2 = records;
       this.productrecord = productList;
 
@@ -227,7 +227,7 @@ private deleteQuantityTypeAndReload(_id: any): void {
   this.store.dispatch(deleteQuantityType({ _id }));
   this.store.dispatch(loadQuantityType());
   this.Qtypenamedata$ = this.store.select(
-    state => state.quantityTypeLoad.QuantityType_.allTasks
+    state => state.quantityTypeLoad.QuantityType_.data
   );
  // this.SweetAlert2_.showFancyAlertSuccess("Record Deleted");
 }

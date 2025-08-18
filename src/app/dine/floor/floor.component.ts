@@ -120,7 +120,7 @@ export class FloorComponent implements OnInit, ICellRendererAngularComp {
     this.DineService_.get().subscribe(data => {
       if (data) {
         this.dinedata2 = data;
-        this.dinedata = this.dinedata2.allTasks
+        this.dinedata = this.dinedata2.data
 
       }
     })
@@ -130,7 +130,7 @@ export class FloorComponent implements OnInit, ICellRendererAngularComp {
     this.floorservice.get().subscribe(data => {
       if (data) {
         this.Floordata2 = data;
-        this.Floordata = this.Floordata2.allTasks
+        this.Floordata = this.Floordata2.data
 
       }
     })
@@ -173,7 +173,7 @@ export class FloorComponent implements OnInit, ICellRendererAngularComp {
 
 
   add(floor: Floor): void {
-    if (this.ValidateFloorNameExists(floor.name)) {
+    if (this.ValidateFloorNameExists(floor.name,floor.id)) {
       this.floorservice.add(floor).subscribe(res => {
         if (res) {
           // console.log(data);
@@ -195,7 +195,7 @@ export class FloorComponent implements OnInit, ICellRendererAngularComp {
 
   Update(floor: Floor) {
     // alert("works.");
-     if (this.ValidateFloorNameExists(floor.name)) {
+     if (this.ValidateFloorNameExists(floor.name,floor.id)) {
     this.floorservice.update(floor).subscribe(res => {
       if (res) {
         //this.search(id);
@@ -287,9 +287,9 @@ export class FloorComponent implements OnInit, ICellRendererAngularComp {
     }
 
   }
-  ValidateFloorNameExists(name: any) {
-    const itemP = this.Floordata.find((item: { name: string; }) => item.name === name);
-    const indexP = this.Floordata.findIndex((item: { name: string; }) => item.name === name);
+  ValidateFloorNameExists(name: any,_id:any) {
+    const itemP = this.Floordata.find((item: { name: string;_id:string }) => item.name === name && item._id!=_id);
+    const indexP = this.Floordata.findIndex((item: { name: string;_id:string }) => item.name === name  && item._id!=_id);
     console.log(name);
     console.log(itemP);
     console.log(indexP);

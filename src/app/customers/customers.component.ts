@@ -126,7 +126,7 @@ loadCustomers()
 this.customerservice.get().subscribe(data => {
 if (data) {
  this.Customersdata2=data;
- this.Customersdata=this.Customersdata2.allTasks
+ this.Customersdata=this.Customersdata2.data
  
 }
 })

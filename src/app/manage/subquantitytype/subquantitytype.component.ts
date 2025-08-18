@@ -96,21 +96,21 @@ export class SubQuantityTypeComponenet implements OnInit, ICellRendererAngularCo
     subQuantityTypeByNameLoad: any; subQuantityTypeLoad: any,
      subQuantityTypeByIdLoad: any, quantityTypeLoad: any
   }>,private SweetAlert2_:SweetAlert2) {
-    this.Qtypenamedata$ = store.select(state => state.quantityTypeLoad.QuantityType_.allTasks);
+    this.Qtypenamedata$ = store.select(state => state.quantityTypeLoad.QuantityType_.data);
     this.loading$ = store.select(state => state.quantityTypeLoad.loading);
     this.error$ = store.select(state => state.quantityTypeLoad.error);
 
 
 
-    this.subQuantityTypeData$ = store.select(state => state.subQuantityTypeLoad.SubQuantityType_.allTasks);
+    this.subQuantityTypeData$ = store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
     this.loading$ = store.select(state => state.subQuantityTypeLoad.loading);
     this.error$ = store.select(state => state.subQuantityTypeLoad.error);
 
-    this.subQuantityTypeByIdData$ = store.select(state => state.subQuantityTypeByIdLoad.SubQuantityType_.allTasks);
+    this.subQuantityTypeByIdData$ = store.select(state => state.subQuantityTypeByIdLoad.SubQuantityType_.data);
     this.loading$ = store.select(state => state.subQuantityTypeByIdLoad.loading);
     this.error$ = store.select(state => state.subQuantityTypeByIdLoad.error);
 
-    this.subQuantityTypeByNameData$ = store.select(state => state.subQuantityTypeByNameLoad.SubQuantityType_.allTasks);
+    this.subQuantityTypeByNameData$ = store.select(state => state.subQuantityTypeByNameLoad.SubQuantityType_.data);
     this.loading$ = store.select(state => state.subQuantityTypeByNameLoad.loading);
     this.error$ = store.select(state => state.subQuantityTypeByNameLoad.error);
 
@@ -166,7 +166,7 @@ export class SubQuantityTypeComponenet implements OnInit, ICellRendererAngularCo
   loadqtype() {
    
     this.store.dispatch(loadQuantityType());
-    this.Qtypenamedata$ = this.store.select(state => state.quantityTypeLoad.QuantityType_.allTasks);
+    this.Qtypenamedata$ = this.store.select(state => state.quantityTypeLoad.QuantityType_.data);
     this.loading$ = this.store.select(state => state.quantityTypeLoad.loading);
     this.error$ = this.store.select(state => state.quantityTypeLoad.error);
 
@@ -176,7 +176,7 @@ export class SubQuantityTypeComponenet implements OnInit, ICellRendererAngularCo
     const name = this.myAddForm.value.name;
     this.service.getbyname(name.trim()).subscribe(getname => {
       this.subQuantityTypeByName = getname;
-      this.subQuantityTypeByNameCheck = this.subQuantityTypeByName.allTasks;
+      this.subQuantityTypeByNameCheck = this.subQuantityTypeByName.data;
       console.log(name);
       if (this.subQuantityTypeByNameCheck.length > 0) {
         //this.args = "";
@@ -186,7 +186,7 @@ export class SubQuantityTypeComponenet implements OnInit, ICellRendererAngularCo
         this.store.dispatch(addSubQuantityType({ SubQuantityType_ }));
         this.args="Add SubQuantity Type"; 
          this.store.dispatch(loadSubQuantityType());
-    this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.allTasks);
+    this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
     
       }
     })
@@ -195,7 +195,7 @@ this.loadSubQuantityType();
 
   loadSubQuantityType() {
     this.store.dispatch(loadSubQuantityType());
-    this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.allTasks);
+    this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
     // this.loading$ = this.store.select(state => state.subQuantityTypeLoad.loading);
     // this.error$ = this.store.select(state => state.subQuantityTypeLoad.error);
  this.actions$.pipe(ofType(SubQuantityTypeAction.loadSubQuantityTypeSuccess)).subscribe(() => {
@@ -267,13 +267,13 @@ this.loadSubQuantityType();
 
     this.productPriceservice.getbybasetypeid(_id).subscribe(records => {
       this.productrecord2 = records;
-      this.productrecord = this.productrecord2.allTasks;
+      this.productrecord = this.productrecord2.data;
       console.log(this.productrecord.length);
       console.log(records);
       if (this.productrecord.length == 0) {
         this.store.dispatch(deleteSubQuantityType({ _id }));
          this.store.dispatch(loadSubQuantityType());
-    this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.allTasks);
+    this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
     
         this.display = "display:none;";
         this.loadSubQuantityType();

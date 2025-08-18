@@ -131,25 +131,25 @@ export class InventoryfoodComponent implements OnInit {
     public actions$: Actions
   ) {
     // this.getinventoryfoodmain_id="";
-    this.inventoryQuantityTypeData$ = store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
+    this.inventoryQuantityTypeData$ = store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
     this.loading$ = store.select(state => state.loadInventoryFoodQuantityType.loading);
     this.error$ = store.select(state => state.loadInventoryFoodQuantityType.error);
 
 
-    this.fooddata$ = store.select(state => state.loadAssocciatedInvtoryFood.InventoryFoodwithProduct_.allTasks);
+    this.fooddata$ = store.select(state => state.loadAssocciatedInvtoryFood.InventoryFoodwithProduct_.data);
     this.loading$ = store.select(state => state.loadAssocciatedInvtoryFood.loading);
     this.error$ = store.select(state => state.loadAssocciatedInvtoryFood.error);
 
-    this.InventoryMainFooddata$ = store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
+    this.InventoryMainFooddata$ = store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
     this.loading$ = store.select(state => state.loadInventoryMainFood.loading);
     this.error$ = store.select(state => state.loadInventoryMainFood.error);
 
-    this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.allTasks);
+    this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
     this.loading$ = this.store.select(state => state.subQuantityTypeLoad.loading);
     this.error$ = this.store.select(state => state.subQuantityTypeLoad.error);
 
 
-    this.Products$ = store.select(state => state.productLoad.Product_.allTasks);
+    this.Products$ = store.select(state => state.productLoad.Product_.data);
     this.loading$ = store.select(state => state.productLoad.loading);
     this.error$ = store.select(state => state.productLoad.error);
 
@@ -191,13 +191,13 @@ export class InventoryfoodComponent implements OnInit {
   getProduct() {
 
     this.store.dispatch(loadProduct());
-    this.store.select(state => state.productLoad.Product_.allTasks);
+    this.store.select(state => state.productLoad.Product_.data);
     this.store.select(state => state.productLoad.loading);
     this.store.select(state => state.productLoad.error);
   }
   loadInventoryMainFood() {
     this.store.dispatch(loadInventoryMainFood());
-    this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
+    this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
     this.store.select(state => state.loadInventoryMainFood.loading);
     this.store.select(state => state.loadInventoryMainFood.error);
 
@@ -209,10 +209,10 @@ export class InventoryfoodComponent implements OnInit {
       if (data) {
         console.log(data);
         this.productPrice_SubQuantityType_data2 = data;
-        this.productPrice_SubQuantityType_data = this.productPrice_SubQuantityType_data2.allTasks;
+        this.productPrice_SubQuantityType_data = this.productPrice_SubQuantityType_data2.data;
 
 
-        this.store.select(state => state.productLoad.Product_.allTasks);
+        this.store.select(state => state.productLoad.Product_.data);
 
         if (this.Products$) {
           this.Products$.subscribe(productdata => {
@@ -249,10 +249,10 @@ export class InventoryfoodComponent implements OnInit {
         console.log(data);
         this.productPrice_SubQuantityType_data = "";
         this.productPrice_SubQuantityType_data2 = data;
-        this.productPrice_SubQuantityType_data = this.productPrice_SubQuantityType_data2.allTasks;
+        this.productPrice_SubQuantityType_data = this.productPrice_SubQuantityType_data2.data;
 
 
-        this.store.select(state => state.productLoad.Product_.allTasks);
+        this.store.select(state => state.productLoad.Product_.data);
 
         if (this.Products$) {
           this.Products$.subscribe(productdata => {
@@ -283,14 +283,14 @@ export class InventoryfoodComponent implements OnInit {
 
   getSubQuantityType() {
     this.store.dispatch(loadSubQuantityType());
-    this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.allTasks);
+    this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
     this.store.select(state => state.subQuantityTypeLoad.loading);
     this.store.select(state => state.subQuantityTypeLoad.error);
   }
 
 
   addMaterialforEdit() {
-    this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
+    this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
     if (this.InventoryMainFooddata$) {
       this.InventoryMainFooddata$.subscribe(inventoryfoodmaindata => {
         const indexP = inventoryfoodmaindata.findIndex((item: { _id: any; name: any }) => item._id === this.myEditForm.value.inventoryfoodmain_id);
@@ -386,7 +386,7 @@ export class InventoryfoodComponent implements OnInit {
     //   alert(inventoryfoodmaindata[indexP]._id );
   }
   addMaterial() {
-    this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
+    this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
     if (this.InventoryMainFooddata$) {
       this.InventoryMainFooddata$.subscribe(inventoryfoodmaindata => {
         const indexP = inventoryfoodmaindata.findIndex((item: { _id: any; name: any }) => item._id === this.myAddForm.value.inventoryfoodmain_id);
@@ -455,14 +455,14 @@ export class InventoryfoodComponent implements OnInit {
   getInventoryFoodQuantityTypeName() {
     //  alert(this.myAddForm.value.inventoryfoodmain_id);
     //this.quantitytypename = this.Inventoryfoodquntitytype.find((item: { subQuantityTypeDatatype: any; }) => item.subQuantityTypeDatatype === selectedValue);
-    // this.store.select(state => state.loadInventoryFoodQuantityType..allTasks);
+    // this.store.select(state => state.loadInventoryFoodQuantityType..data);
     this.store.dispatch(loadInventoryFoodQuantityType());
-    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
+    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
     this.loading$ = this.store.select(state => state.loadInventoryFoodQuantityType.loading);
     this.error$ = this.store.select(state => state.loadInventoryFoodQuantityType.error);
     // this.loading$ = this.store.select(state => state.loadInventoryFoodQuantityType.loading);
     // this.error$ = this.store.select(state => state.loadInventoryFoodQuantityType.error);
-    this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
+    this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
     if (this.InventoryMainFooddata$) {
       this.InventoryMainFooddata$.subscribe(InventoryMainFooddata => {
         const indexInvetoryMainFood = InventoryMainFooddata.findIndex((item: { _id: any; }) => item._id === this.myAddForm.value.inventoryfoodmain_id);
@@ -489,12 +489,12 @@ export class InventoryfoodComponent implements OnInit {
   getInventoryFoodQuantityTypeNameforedit() {
     //  alert(this.myAddForm.value.inventoryfoodmain_id);
     //this.quantitytypename = this.Inventoryfoodquntitytype.find((item: { subQuantityTypeDatatype: any; }) => item.subQuantityTypeDatatype === selectedValue);
-    // this.store.select(state => state.loadInventoryFoodQuantityType..allTasks);
+    // this.store.select(state => state.loadInventoryFoodQuantityType..data);
     this.store.dispatch(loadInventoryFoodQuantityType());
-    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.allTasks);
+    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
     this.loading$ = this.store.select(state => state.loadInventoryFoodQuantityType.loading);
     this.error$ = this.store.select(state => state.loadInventoryFoodQuantityType.error);
-    this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
+    this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
     if (this.InventoryMainFooddata$) {
       this.InventoryMainFooddata$.subscribe(InventoryMainFooddata => {
         const indexInvetoryMainFood = InventoryMainFooddata.findIndex((item: { _id: any; }) => item._id === this.myEditForm.value.inventoryfoodmain_id);
@@ -520,7 +520,7 @@ export class InventoryfoodComponent implements OnInit {
     this.service.getbyid(this.myAddForm.value.ProductId, this.myAddForm.value.SubQuantityTypeID).subscribe(result => {
       this.addResult = result;
       this.args = "";
-      if (this.addResult.allTasks != null) {
+      if (this.addResult.data != null) {
         this.args = "Already Assocciated";
         this.showubelements = false;
       }
@@ -534,7 +534,7 @@ export class InventoryfoodComponent implements OnInit {
   //   this._InventoryMFoodQuantityTypeService.get().subscribe(data => {
   //     if (data) {
   //       this.Inventoryfoodquntitytype2 = data;
-  //       this.Inventoryfoodquntitytype = this.Inventoryfoodquntitytype2.allTasks
+  //       this.Inventoryfoodquntitytype = this.Inventoryfoodquntitytype2.data
   //       console.log(data);
   //       //this.search(id);
 
@@ -560,7 +560,7 @@ export class InventoryfoodComponent implements OnInit {
       this.showEdit = true;
       this.show = false;
       this.args = "";
-      this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.allTasks);
+      this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
       if (this.InventoryMainFooddata$) {
         this.InventoryMainFooddata$.subscribe(inventoryfoodmaindata => {
           console.log(inventoryfoodmaindata);
@@ -599,7 +599,7 @@ export class InventoryfoodComponent implements OnInit {
 
   loadInventoryAssocciatedFood() {
     this.store.dispatch(loadInventoryFoodwithProduct());
-    this.fooddata$ = this.store.select(state => state.loadAssocciatedInvtoryFood.InventoryFoodwithProduct_.allTasks);
+    this.fooddata$ = this.store.select(state => state.loadAssocciatedInvtoryFood.InventoryFoodwithProduct_.data);
     this.loading$ = this.store.select(state => state.loadAssocciatedInvtoryFood.loading);
     this.error$ = this.store.select(state => state.loadAssocciatedInvtoryFood.error);
   }
@@ -607,7 +607,7 @@ export class InventoryfoodComponent implements OnInit {
   this.store.dispatch(updateInventoryFoodwithProduct({ InventoryFoodwithProductForEdit_ }));
   this.store.dispatch(loadInventoryFoodwithProduct());
   this.fooddata$ = this.store.select(
-    state => state.loadAssocciatedInvtoryFood?.InventoryFoodwithProduct_?.allTasks
+    state => state.loadAssocciatedInvtoryFood?.InventoryFoodwithProduct_?.data
   );
 
   // Success notification
@@ -647,7 +647,7 @@ export class InventoryfoodComponent implements OnInit {
       this.addResult = result;
       console.log(this.addResult);
       console.log(this.b);
-      if (this.addResult.allTasks == null) {
+      if (this.addResult.data == null) {
         this.add(this._InventoryFoodwithProduct);
       }
       else {
@@ -661,7 +661,7 @@ export class InventoryfoodComponent implements OnInit {
   this.store.dispatch(addInventoryFoodwithProduct({ InventoryFoodwithProduct_ }));
   this.store.dispatch(loadInventoryFoodwithProduct());
   this.fooddata$ = this.store.select(
-    state => state.loadAssocciatedInvtoryFood?.InventoryFoodwithProduct_?.allTasks
+    state => state.loadAssocciatedInvtoryFood?.InventoryFoodwithProduct_?.data
   );
 
   // Success message
@@ -744,7 +744,7 @@ export class InventoryfoodComponent implements OnInit {
       if (data) {
         this.store.dispatch(loadInventoryFoodwithProduct());
         this.fooddata$ = this.store.select(
-          state => state.loadAssocciatedInvtoryFood?.InventoryFoodwithProduct_?.allTasks
+          state => state.loadAssocciatedInvtoryFood?.InventoryFoodwithProduct_?.data
         );
 
         this.display = "display:none;";

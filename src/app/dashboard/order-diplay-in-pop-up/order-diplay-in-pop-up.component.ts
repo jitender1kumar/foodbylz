@@ -13,10 +13,12 @@ import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
 export class OrderDiplayInPopUpComponent implements OnInit {
   @Input() customers: any;
   @Input() EditOrderInvoice: any
+  EditOrderInvoiceUpdated:any;
   @Input() EditOrderItems: any;
   @Input() closePopUp: any;
   @Input() showPopUp: any;
   @Output() closePopUpByChild = new EventEmitter<boolean>();
+  @Output() ReInitializeEditOrderInvoice = new EventEmitter<boolean>();
   myEditForm: FormGroup<any>;
   invoice: any;
   constructor(private router: Router, private formedit: FormBuilder, private InitializeInvoice_: InitializeInvoice, private InvoiceService_: InvoiceService, private SweetAlert2_: SweetAlert2) {
@@ -74,6 +76,9 @@ export class OrderDiplayInPopUpComponent implements OnInit {
       }
       this.InvoiceService_.update(this.invoice).subscribe(success => {
         if (success) {
+          this.EditOrderInvoiceUpdated=success;
+         // this.EditOrderInvoice=this.EditOrderInvoiceUpdated.data;
+          this.ReInitializeEditOrderInvoice.emit(this.EditOrderInvoice.RecieptNumber);
           this.SweetAlert2_.showFancyAlertSuccess("Updated.");
         }
       });

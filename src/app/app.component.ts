@@ -71,6 +71,7 @@ cancelOrder(event: string)
 {
    this.CancelOrder="";
   this.CancelOrder=event;
+  console.log(this.CancelOrder);
   this.router.navigate(['/tables']);
     this.showmanagebar= "tables";  
    // this.CancelOrder="";

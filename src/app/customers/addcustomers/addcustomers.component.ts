@@ -45,14 +45,14 @@ constructor( private router: Router,private formedit: FormBuilder,private Custom
 loadCustomers() {
   this.CustomersService_.get().subscribe((data: Customers[]) => {
     this.customersdata2 = data;
-    this.customersdata = this.customersdata2.allTasks;
+    this.customersdata = this.customersdata2.data;
   });
 }
   add(cutomer:Customers): void {                                              
     this.CustomersService_.add(cutomer).subscribe(addedCustomer => {
       if (addedCustomer) {
        this.customersdata2 = addedCustomer;
-    this.customersdata = this.customersdata2.createdTask;
+    this.customersdata = this.customersdata2.data;
     //poiurewpoiurewconsole.log(this.customersdata);
     this.CustomersDetail.emit(this.customersdata );
   this.close();

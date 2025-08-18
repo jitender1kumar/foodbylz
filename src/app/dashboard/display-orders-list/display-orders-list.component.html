@@ -17,7 +17,7 @@
         </div>
     </div>
     <div>
-<app-order-diplay-in-pop-up [customers]="customersRecord" [EditOrderInvoice]="EditOrder" [EditOrderItems]="EditOrderItems" [showPopUp]="showPopUp" [closePopUp]="closePopUp" (closePopUpByChild)="closePopUpByChild($event)"></app-order-diplay-in-pop-up>
+<app-order-diplay-in-pop-up [customers]="customersRecord" [EditOrderInvoice]="EditOrder" [EditOrderItems]="EditOrderItems" [showPopUp]="showPopUp" [closePopUp]="closePopUp" (closePopUpByChild)="closePopUpByChild($event)" (ReInitializeEditOrderInvoice)="reInitializeEditOrderInvoice($event)"></app-order-diplay-in-pop-up>
     </div>
 <ag-grid-angular class=" ag-theme-quartz agtable"
 style="height:500px;width: 95%;margin: auto;" 
