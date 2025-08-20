@@ -203,7 +203,8 @@ this.loadSubQuantityTypeByQuantityTypeId(this.myAddForm.value.selectQtypeID);
 
   }
   Update(Product_: Products) {
-     if(this.NameExistOrNotService_.checkNameExist(this.myEditForm.value.name,this.myEditForm.value._id,this.Products$ ))
+    console.log(this.Products$);
+     if(this.NameExistOrNotService_.checkNameExist(this.myEditForm.value.Productname,this.myEditForm.value._id,this.Products$ ))
     {
      this.args="Product Exists.";
     }

@@ -70,8 +70,7 @@ this.closePopUpByChild.emit(false);
 }
 onSelect(item: any) {
   if (this.selectedItem === item) {
-    this.selectedItem = null; // Deselect if the same item is clicked again
-  } else {
+   
     this.selectedItem = item; // Select the new item
   }
   ;

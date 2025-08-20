@@ -9,7 +9,7 @@ import { InventoryFoodQuantityType } from '../Model/crud.model';
 })
 export class InventoryMFoodQuantityTypeService {
 
-  private inventoryFoodQuantitTypeUrl: string = environment.api+"inventoryFoodQuantitType";
+  private inventoryFoodQuantitTypeUrl: string = environment.api+"inventoryFoodQuantityType";
 
   constructor(private http: HttpClient) { }
 

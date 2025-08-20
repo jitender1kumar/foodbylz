@@ -118,7 +118,7 @@ loadpayby()
   this.service.get().subscribe(data => {
     if (data) {
      this.Paybydata2=data;
-     this.Paybydata=this.Paybydata2.allTasks
+     this.Paybydata=this.Paybydata2.data;
      // console.log(data);
       //this.search(id);
       

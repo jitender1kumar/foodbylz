@@ -31,7 +31,7 @@ import { ofType, Actions } from '@ngrx/effects';
   standalone: false
 })
 export class InventoryfoodComponent implements OnInit {
-  
+
   inventoryQuantityTypeData$: Observable<any[]> | undefined;
   //lodProductCategory:ProductCategory[]=[];
   args: any = "";
@@ -204,7 +204,7 @@ export class InventoryfoodComponent implements OnInit {
   }
   getProductPriceAndSubQuantityTypeDetails() {
     //alert(this.myAddForm.value.ProductId);
-    
+    console.log(this.myAddForm.value.ProductId);
     this.ppservice.getbyproductid(this.myAddForm.value.ProductId).subscribe(data => {
       if (data) {
         console.log(data);
@@ -243,7 +243,7 @@ export class InventoryfoodComponent implements OnInit {
     })
   }
   getsubQuantityTypeDatatypeforedit(ProductId: any) {
-    
+
     this.ppservice.getbyproductid(ProductId).subscribe(data => {
       if (data) {
         console.log(data);
@@ -303,7 +303,7 @@ export class InventoryfoodComponent implements OnInit {
           //belowing block for add material if length is 0
           if (this._GoodscollectionMergename_List.length == 0) {
 
-           // alert("first: ");
+            // alert("first: ");
             //   this._Goodscollection_List.push({
             //     IventoryFoodMainId:this.inventoryfoodmaindata[indexP]._id,
             //     quantiyval: this.myAddForm.value.quantitytypevalue
@@ -398,7 +398,7 @@ export class InventoryfoodComponent implements OnInit {
           this.args = "";
           if (this._GoodscollectionMergename_List.length == 0) {
 
-           // alert("first: ");
+            // alert("first: ");
             //   this._Goodscollection_List.push({
             //     IventoryFoodMainId:inventoryfoodmaindata[indexP]._id,
             //     quantiyval: this.myAddForm.value.quantitytypevalue
@@ -517,17 +517,40 @@ export class InventoryfoodComponent implements OnInit {
   }
   showubelement() {
 
-    this.service.getbyid(this.myAddForm.value.ProductId, this.myAddForm.value.SubQuantityTypeID).subscribe(result => {
-      this.addResult = result;
-      this.args = "";
-      if (this.addResult.data != null) {
-        this.args = "Already Assocciated";
-        this.showubelements = false;
-      }
-      else {
-        this.showubelements = true;
-      }
+    this.service.getbyid(this.myAddForm.value.ProductId, this.myAddForm.value.SubQuantityTypeID).subscribe({
+      // result => {
 
+      // this.addResult = result;
+      // console.log(result);
+      // console.log(this.addResult);
+      // this.args = "";
+      // if (this.addResult.data != null) {
+      //   this.args = "Already Assocciated";
+      //   this.showubelements = false;
+      // }
+      // else {
+      //   this.showubelements = true;
+      // }
+      next: (result) => {
+        console.log(result);
+
+        this.addResult = result;
+        console.log(result);
+        console.log(this.addResult);
+        this.args = "";
+        if (this.addResult.data != null) {
+          this.args = "Already Assocciated";
+          this.showubelements = false;
+        }
+        else {
+          this.showubelements = true;
+        }
+      },
+      error: (err) => {
+        console.log(err.status);
+        if (err.status == "404")
+          this.showubelements = true;
+      }
     })
   }
   // loadinventoeryfoodquantitytype() {
@@ -541,7 +564,7 @@ export class InventoryfoodComponent implements OnInit {
   //     }
   //   })
   // }
- 
+
   onCellClick(event: any) {
 
     if (event.colDef.field == 'Delete') {
@@ -567,7 +590,7 @@ export class InventoryfoodComponent implements OnInit {
           for (var ii = 0; ii < event.data.goodscollections.length; ii++) {
 
             const index = inventoryfoodmaindata.findIndex((item: { _id: any; }) => item._id === event.data.goodscollections[ii].IventoryFoodMainId);
-           // alert(index);
+            // alert(index);
             //console.log(Object.isFrozen(inventoryfoodmaindata)); // Returns true if the array is frozen
             let newArray = inventoryfoodmaindata.slice(); // Make a copy
             newArray.splice(index, 1);
@@ -603,25 +626,25 @@ export class InventoryfoodComponent implements OnInit {
     this.loading$ = this.store.select(state => state.loadAssocciatedInvtoryFood.loading);
     this.error$ = this.store.select(state => state.loadAssocciatedInvtoryFood.error);
   }
- Update(InventoryFoodwithProductForEdit_: InventoryFoodwithProductforEdit) {
-  this.store.dispatch(updateInventoryFoodwithProduct({ InventoryFoodwithProductForEdit_ }));
-  this.store.dispatch(loadInventoryFoodwithProduct());
-  this.fooddata$ = this.store.select(
-    state => state.loadAssocciatedInvtoryFood?.InventoryFoodwithProduct_?.data
-  );
+  Update(InventoryFoodwithProductForEdit_: InventoryFoodwithProductforEdit) {
+    this.store.dispatch(updateInventoryFoodwithProduct({ InventoryFoodwithProductForEdit_ }));
+    this.store.dispatch(loadInventoryFoodwithProduct());
+    this.fooddata$ = this.store.select(
+      state => state.loadAssocciatedInvtoryFood?.InventoryFoodwithProduct_?.data
+    );
 
-  // Success notification
-  this.actions$.pipe(ofType(updateInventoryFoodwithProductSuccess)).subscribe(() => {
-   this.args ='Inventory updated successfully!';
-    this.loadInventoryAssocciatedFood();
-  });
+    // Success notification
+    this.actions$.pipe(ofType(updateInventoryFoodwithProductSuccess)).subscribe(() => {
+      this.args = 'Inventory updated successfully!';
+      this.loadInventoryAssocciatedFood();
+    });
 
-  // Error notification
-  this.actions$.pipe(ofType(updateInventoryFoodwithProductFailure)).subscribe(({ error }: { error: any }) => {
-    this.args ='Failed to update inventory: ' + error;
-  });
- 
-}
+    // Error notification
+    this.actions$.pipe(ofType(updateInventoryFoodwithProductFailure)).subscribe(({ error }: { error: any }) => {
+      this.args = 'Failed to update inventory: ' + error;
+    });
+
+  }
   cDelete(_id: any) {
 
   }
@@ -643,37 +666,43 @@ export class InventoryfoodComponent implements OnInit {
     this.b = this._InventoryFoodwithProduct2List[indexsubQuantityTypeDatatype].SubQuantityTypeID;
 
     //console.log( this._InventoryFoodwithProduct);
-    this.service.getbyid(this.a, this.b).subscribe(result => {
-      this.addResult = result;
-      console.log(this.addResult);
-      console.log(this.b);
-      if (this.addResult.data == null) {
-        this.add(this._InventoryFoodwithProduct);
-      }
-      else {
-        this.args = "Already Assocciated with this Product.";
+    this.service.getbyid(this.a, this.b).subscribe({
+      next: (result) => {
+        this.addResult = result;
+        console.log(this.addResult);
+        console.log(this.b);
+        if (this.addResult.data == null) {
+          this.add(this._InventoryFoodwithProduct);
+        }
+        else {
+          this.args = "Already Assocciated with this Product.";
+        }
+      },
+      error: (err) => {
+        console.log(err.status);
+        if (err.status == "404")
+          this.add(this._InventoryFoodwithProduct);
       }
     })
-
   }
-   add(InventoryFoodwithProduct_: InventoryFoodwithProduct): void {
-  console.log(InventoryFoodwithProduct_);
-  this.store.dispatch(addInventoryFoodwithProduct({ InventoryFoodwithProduct_ }));
-  this.store.dispatch(loadInventoryFoodwithProduct());
-  this.fooddata$ = this.store.select(
-    state => state.loadAssocciatedInvtoryFood?.InventoryFoodwithProduct_?.data
-  );
+  add(InventoryFoodwithProduct_: InventoryFoodwithProduct): void {
+    console.log(InventoryFoodwithProduct_);
+    this.store.dispatch(addInventoryFoodwithProduct({ InventoryFoodwithProduct_ }));
+    this.store.dispatch(loadInventoryFoodwithProduct());
+    this.fooddata$ = this.store.select(
+      state => state.loadAssocciatedInvtoryFood?.InventoryFoodwithProduct_?.data
+    );
 
-  // Success message
-  this.actions$.pipe(ofType(addInventoryFoodwithProductSuccess)).subscribe(() => {
-    this.args='Inventory item added successfully!';
-  });
+    // Success message
+    this.actions$.pipe(ofType(addInventoryFoodwithProductSuccess)).subscribe(() => {
+      this.args = 'Inventory item added successfully!';
+    });
 
-  // Error message
-  this.actions$.pipe(ofType(addInventoryFoodwithProductFailure)).subscribe(({ error }) => {
-    this.args='Failed to add inventory item: ' + error;
-  });
-}
+    // Error message
+    this.actions$.pipe(ofType(addInventoryFoodwithProductFailure)).subscribe(({ error }) => {
+      this.args = 'Failed to add inventory item: ' + error;
+    });
+  }
   show: any = false;
   showEdit: any = false;
   shows() {
@@ -738,50 +767,50 @@ export class InventoryfoodComponent implements OnInit {
   handleChildClick() {
     this.display = "display:none;";
   }
- deletedConfirmed(id: any) {
-  this.service.delete(id).subscribe({
-    next: (data) => {
-      if (data) {
-        this.store.dispatch(loadInventoryFoodwithProduct());
-        this.fooddata$ = this.store.select(
-          state => state.loadAssocciatedInvtoryFood?.InventoryFoodwithProduct_?.data
-        );
+  deletedConfirmed(id: any) {
+    this.service.delete(id).subscribe({
+      next: (data) => {
+        if (data) {
+          this.store.dispatch(loadInventoryFoodwithProduct());
+          this.fooddata$ = this.store.select(
+            state => state.loadAssocciatedInvtoryFood?.InventoryFoodwithProduct_?.data
+          );
 
+          this.display = "display:none;";
+          this.args = "Record Deleted Successfully";
+        } else {
+          this.display = "display:none;";
+          this.args = "Failed to delete record (no response from server)";
+        }
+      },
+      error: (err) => {
+        console.error("Delete failed", err);
         this.display = "display:none;";
-        this.args = "Record Deleted Successfully";
-      } else {
-        this.display = "display:none;";
-        this.args = "Failed to delete record (no response from server)";
+        this.args = `Error deleting record: ${err.message || err}`;
       }
-    },
-    error: (err) => {
-      console.error("Delete failed", err);
-      this.display = "display:none;";
-      this.args = `Error deleting record: ${err.message || err}`;
-    }
-  });
-}
+    });
+  }
 
   // deleterawitems(arg0: String) {
   //   const index = this._GoodscollectionMergename_List.findIndex(item => item.IventoryFoodMainId === arg0);
   //   this._GoodscollectionMergename_List.splice(index, 1);
   // }
-    deleteRawItem(id: String) {
-     
-//   const index = this._GoodscollectionMergename_List.findIndex(
-//     item => item.IventoryFoodMainId === id
-//   );
-// console.log(index);
-//   if (index !== -1) {
-//     this._GoodscollectionMergename_List.splice(index, 1);
-//   }
-this._GoodscollectionMergename_List = [...this._GoodscollectionMergename_List];
-const index = this._GoodscollectionMergename_List.findIndex(
-  item => item.IventoryFoodMainId === id
-);
-if (index !== -1) {
-  this._GoodscollectionMergename_List.splice(index, 1);
-}
+  deleteRawItem(id: String) {
 
-}
+    //   const index = this._GoodscollectionMergename_List.findIndex(
+    //     item => item.IventoryFoodMainId === id
+    //   );
+    // console.log(index);
+    //   if (index !== -1) {
+    //     this._GoodscollectionMergename_List.splice(index, 1);
+    //   }
+    this._GoodscollectionMergename_List = [...this._GoodscollectionMergename_List];
+    const index = this._GoodscollectionMergename_List.findIndex(
+      item => item.IventoryFoodMainId === id
+    );
+    if (index !== -1) {
+      this._GoodscollectionMergename_List.splice(index, 1);
+    }
+
+  }
 }

@@ -106,7 +106,7 @@
           <div class="col">
             <select id="selectSubQuantityTypeID"  formControlName="selectSubQuantityTypeID"  class="lbl">
               <option class="lbl">Select  Sub Quantity Type Name</option>
-              <option class="lbl" *ngFor="let d of subQuantityTypeByIdData$ | async index as i" [selected]="d._id===popdata2.selectSubQuantityTypeID" value="{{d._id}}" >{{d.name}}</option>
+              <option class="lbl" *ngFor="let d of subQuntities index as i" [selected]="d._id===popdata2.selectSubQuantityTypeID" value="{{d._id}}" >{{d.name}}</option>
             </select>
           </div>
         </div>

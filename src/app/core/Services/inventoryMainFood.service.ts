@@ -9,7 +9,7 @@ import { InventoryMainFood } from '../Model/crud.model';
 })
 export class InventoryMainFoodService {
 
-  private inventoryFoodMainUrl: string = environment.api+"inventoryFoodMain";
+  private inventoryFoodMainUrl: string = environment.api+"inventoryMainFood";
 
   constructor(private http: HttpClient) { }
 

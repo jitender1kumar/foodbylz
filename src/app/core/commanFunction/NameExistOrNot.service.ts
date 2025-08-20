@@ -27,10 +27,10 @@ return this.NameExistOrNot = false;
     }
     return this.NameExistOrNot;
   }
-  checkNameExist(checkName: string, _id: string, Data$: any) {
-
+  checkNameExist(Productname: string, _id: string, Data$: any) {
+console.log(Productname);
     Data$?.subscribe((getName: any[]) => {
-      const NameExist = getName.find((item: { name: string; _id: string }) => item.name === checkName && item._id != _id);
+      const NameExist = getName.find((item: { Productname: string; _id: string }) => item.Productname === Productname && item._id != _id);
       if (NameExist) {
         //console.log("if"+NameExist);
         console.log(NameExist);

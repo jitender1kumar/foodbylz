@@ -44,7 +44,7 @@ export class ProductpriceformComponent implements OnInit {
   addProductPriceResultdata: any;
   @ViewChild('f')
   ProductPriceViewchild!: NgForm;
-
+subQuntities:any=[];
   categorynamedata2: any
   subQuantityTypeData2: any;
 
@@ -195,8 +195,32 @@ export class ProductpriceformComponent implements OnInit {
 
 
   }
-    loadSubQuantityTypeByEdit() {
-    this.loadSubQuantityTypeByQuantityTypeID(this.myEditForm.value.selectQtypeID); 
+    loadSubQuantityTypeByEdit(selectQtypeID:string) {
+    //this.loadSubQuantityTypeByQuantityTypeID(this.myEditForm.value.selectQtypeID); 
+    this.subQuntities=[];
+    //this.store.dispatch(loadSubQuantityType());
+    this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
+
+   this.subQuantityTypeData$.subscribe(subQuantityData=>{
+  
+    for(let ii = 0; ii<subQuantityData.length; ii++)
+    {
+      if(subQuantityData[ii].selectQtypeID==selectQtypeID)
+      {
+        this.subQuntities.push({"_id":subQuantityData[ii]._id,"name":subQuantityData[ii].name,"selectQtypeID":subQuantityData[ii].selectQtypeID});
+      }
+    }
+    console.log(this.subQuntities);
+// const itemSubQuantity = subQuantityData.find((item: { selectQtypeID: string; })=>item.selectQtypeID===QuntityTypeId);
+//        if(itemSubQuantity)
+//        {
+// this.subQuntities.push({itemSubQuantity});
+// console.log(this.subQuntities);
+//        }
+   
+       
+       
+   });
   }
   loadSubQuantityTypeByAdd() {
 this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID); 
@@ -249,6 +273,7 @@ if( this.productPriceData$){
     this.productPriceData$.subscribe(productPriceData => {
       let mergAllProductRelatedTables: ProductPriceDetails[] = [];
       //alert(productPriceData.length);
+      //console.log(productPriceData);
       for (let ii = 0; ii < productPriceData.length; ii++) {
         const mergeProducts: ProductPriceDetails = {
           _id: productPriceData[ii]._id,
@@ -316,7 +341,7 @@ if( this.productPriceData$){
 
 
   getSubQuantityTypeName(id: string) {
-   this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeByIdLoad.SubQuantityType_.data);
+   this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
 
     let SubQuantityTypeName = "";
     this.subQuantityTypeData$.subscribe(subQuantityTypeData => {
@@ -405,7 +430,8 @@ if( this.productPriceData$){
     }
     if (event.colDef.field == 'Edit') {
       this.popdata2 = event.data;
-      this.loadSubQuantityTypeByQuantityTypeID(event.data.selectQtypeID);
+      this.loadSubQuantityTypeByEdit(event.data.selectQtypeID);
+    //  this.loadSubQuantityTypeByQuantityTypeID(event.data.selectQtypeID);
       this.showEdit = true;
       this.show = false;
       this.args = "";

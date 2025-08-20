@@ -40,7 +40,7 @@ import { JsonpClientBackend } from '@angular/common/http';
 })
 export class HomeComponent implements OnInit {
   @Input() invoiceid: any;
-  @Input() TokenNumber:any;
+  @Input() TokenNumber: any;
   @Output() valueChanged = new EventEmitter<string>();
   @Output() cancelOrder = new EventEmitter<string>();
   showCustomerPopUp = false;
@@ -231,9 +231,9 @@ export class HomeComponent implements OnInit {
   searchQuery: any;
   selectedType: any;
 
-invoice:any;
-  constructor(private service: ProductPriceService, private ProductService_: ProductService, private QuantitytypeService_: QuantitytypeService, private CategoryService_: CategoryService, private subQuantityTypeService_: subQuantityTypeService, private router: Router, private formedit: FormBuilder, private taxService: TaxService, private fb: FormBuilder, private InvoiceService_: InvoiceService, private ItemsService_: ItemsService, private dineservice: DineService, private chairservice: ChairService, private chairsrunningorderservice: ChairServiceService, private InventoryMainFoodwithProductService_: InventoryMainFoodwithProductService, private InventoryMainFoodService_: InventoryMainFoodService, private PaybyService_: PaybyService, private datePipe: DatePipe, private store: Store<{ categoryLoad: any, productPriceLoad: any, productLoad: any, quantityTypeLoad: any, subQuantityTypeLoad: any, subQuantityTypeByIdLoad: any }>, private SweetAlert2_: SweetAlert2, private CustomerService_: CustomresService,private InitializeInvoice_:InitializeInvoice) {
-   this.invoice = this.InitializeInvoice_.initializeInvoiceDefault();
+  invoice: any;
+  constructor(private service: ProductPriceService, private ProductService_: ProductService, private QuantitytypeService_: QuantitytypeService, private CategoryService_: CategoryService, private subQuantityTypeService_: subQuantityTypeService, private router: Router, private formedit: FormBuilder, private taxService: TaxService, private fb: FormBuilder, private InvoiceService_: InvoiceService, private ItemsService_: ItemsService, private dineservice: DineService, private chairservice: ChairService, private chairsrunningorderservice: ChairServiceService, private InventoryMainFoodwithProductService_: InventoryMainFoodwithProductService, private InventoryMainFoodService_: InventoryMainFoodService, private PaybyService_: PaybyService, private datePipe: DatePipe, private store: Store<{ categoryLoad: any, productPriceLoad: any, productLoad: any, quantityTypeLoad: any, subQuantityTypeLoad: any, subQuantityTypeByIdLoad: any }>, private SweetAlert2_: SweetAlert2, private CustomerService_: CustomresService, private InitializeInvoice_: InitializeInvoice) {
+    this.invoice = this.InitializeInvoice_.initializeInvoiceDefault();
     this.categorynamedata$ = this.store.select(state => state.categoryLoad.ProductCategory_.data);
     this.loading$ = this.store.select(state => state.categoryLoad.loading);
     this.error$ = this.store.select(state => state.categoryLoad.error);
@@ -440,40 +440,7 @@ invoice:any;
   }
 
   updatemainfood(IventoryFoodMainId: any, qvalue: any) {
-    this.InventoryMainFoodService_.getbyid(IventoryFoodMainId).subscribe(imfs => {
-      if (imfs) {
-        this.imfsdata2 = "";
-        this.imfsdata = "";
-        this.imfsdata2 = imfs;
-        this.imfsdata = this.imfsdata2.data;
 
-        // console.log(qvalue);
-        console.log(imfs);
-        //  alert(imfs);
-        this.inventoryfoodmain = {
-          _id: IventoryFoodMainId,
-          name: this.imfsdata[0].name,
-          description: this.imfsdata[0].description,
-          quantitytypeID: this.imfsdata[0].quantitytypeID,
-          quantitytypename: this.imfsdata[0].quantitytypename,
-          quantitytypevalue: +this.imfsdata[0].quantitytypevalue - qvalue,
-          employee_id: this.employeeId,
-          createdAt: this.imfsdata[0].createdAt
-        }
-        console.log(this.inventoryfoodmain);
-
-        this.InventoryMainFoodService_.update(this.inventoryfoodmain).subscribe(updatefms => {
-          if (updatefms) {
-            this.updatefmsdata2 = updatefms;
-            this.updatefmsdata = this.updatefmsdata2.data;
-            console.log(updatefms);
-          }
-        }
-        )
-
-      }
-    }
-    )
   }
 
   removerunningOrder() {
@@ -515,7 +482,8 @@ invoice:any;
   }
   genrateOrder() {
     if (this.paybyId != "none") {
-      if (this.paidamount >= 0 && this.paidamount!="") {
+      if (this.paidamount >= 0 && this.paidamount != "") {
+        this.RunningItems_2 = this.RunningItems_;
         const d = new Date();
         this.getinvoiceid2 = "";
         this.getinvoiceid = "";
@@ -528,7 +496,7 @@ invoice:any;
         this.updateInvoice(invoice);
         this.close2();
         this.removerunningOrder();
-        this.ClearSomeVariable();
+
       }
       else {
         alert("Paid amount should be greater than or equal to 0.");
@@ -538,6 +506,7 @@ invoice:any;
     else {
       this.SweetAlert2_.showFancyAlertFail("Select Pay Mode for further proceed.");
     }
+    this.ClearSomeVariable();
   }
   ClearSomeVariable() {
     this.ordermode = "";
@@ -557,7 +526,7 @@ invoice:any;
       }
     })
   }
-  
+
   genrateInvoice(): Invoice {
     this.invoice = {
       Taxes: this.getTax(),
@@ -575,41 +544,89 @@ invoice:any;
       AmountPaidstatus: (this.discountvalue - this.paidamount) > 0 ? false : true,
       Orderstatus: "Done",
       PaidAmount: this.paidamount,
-      PendingAmount: (this.paidamount-this.discountvalue)<0?(this.discountvalue-this.paidamount):0,//Math.fround(this.discountvalue),
+      PendingAmount: (this.paidamount - this.discountvalue) < 0 ? (this.discountvalue - this.paidamount) : 0,//Math.fround(this.discountvalue),
       TotalTaxAmount: this.totaltax,
       TotalItemsAmount: this.totalamount,
       OrderTypeName: this.chardata[0],
       paybyId: this.paybyId,
       table_id: this.table_id,
       tablename: (this.table_name) == "" ? "Pick Up" : this.table_name,
-      customer_id: (this.CustomerId)=="undefined"?this.getCustomerID(this.invoiceid):this.CustomerId,
+      customer_id: (this.CustomerId) == "undefined" ? this.getCustomerID(this.invoiceid) : this.CustomerId,
       employee_id: this.employeeId,
-     // createdAt:this.InitializeInvoice_.gettoday(),
+      // createdAt:this.InitializeInvoice_.gettoday(),
       AssistToId: 'undefined',
-     returnAmount: (this.paidamount-this.discountvalue)>0?(this.paidamount-this.discountvalue):0,
+      returnAmount: (this.paidamount - this.discountvalue) > 0 ? (this.paidamount - this.discountvalue) : 0,
       CommentId: 'undefined',
-      tokennumber:this.TokenNumber // Add a default value or set as needed
+      tokennumber: this.TokenNumber // Add a default value or set as needed
     }
     return this.invoice;
   }
+  RunningItems_2: any = [];
+  goodsCollectionsRecord: any;
   inventoryFoodCalculation() {
     //get by productid data from inventorywithproduct start
-    for (var ii = 0; ii < this.RunningItems_.length; ii++) {
-      console.log(this.RunningItems_);
+    for (var ii = 0; ii < this.RunningItems_2.length; ii++) {
 
-      this.InventoryMainFoodwithProductService_.getbyid(this.RunningItems_[ii].SelectProductId, this.RunningItems_[ii].selectSubQuantityTypeID).subscribe(ifwp => {
+      console.log(this.RunningItems_2);
+      this.InventoryMainFoodwithProductService_.getbyid(this.RunningItems_2[ii].SelectProductId, this.RunningItems_2[ii].selectSubQuantityTypeID).subscribe(ifwp => {
         if (ifwp) {
           this.ifmwpdata2 = ifwp;
           this.ifmwpdata = this.ifmwpdata2.data;
+          this.goodsCollectionsRecord = this.ifmwpdata.goodscollections;
           if (this.ifmwpdata != null) {
-            // console.log(this.ifmwpdata.goodscollections);
-            console.log(this.ifmwpdata);
-            let indexidqvalue = this.RunningItems_.findIndex(qvalue => qvalue.SelectProductId === this.ifmwpdata.ProductId && qvalue.selectSubQuantityTypeID === this.ifmwpdata.SubQuantityTypeID)
-            if (this.ifmwpdata.goodscollections.length > 0) {
-              for (var pp = 0; pp < this.ifmwpdata.goodscollections.length; pp++) {
-                let qval = this.RunningItems_[indexidqvalue].qvalue * this.ifmwpdata.goodscollections[pp].quantiyval;
-                this.updatemainfood(this.ifmwpdata.goodscollections[pp].IventoryFoodMainId, qval);
+            //console.log(this.goodsCollectionsRecord.data);
+            console.log(this.goodsCollectionsRecord);
+            // console.log(this.ifmwpdata);
+            // console.log(this.ifmwpdata.ProductId);
+            //    console.log(this.ifmwpdata.SubQuantityTypeID);
+            const indexidqvalue = this.RunningItems_2.findIndex((items: { SelectProductId: string; selectSubQuantityTypeID: string; }) => items.SelectProductId == this.ifmwpdata.ProductId && items.selectSubQuantityTypeID == this.ifmwpdata.SubQuantityTypeID)
+            //  console.log(indexidqvalue);
+            // console.log(ii);
+            // console.log(this.RunningItems_2 );
+            if (this.goodsCollectionsRecord.length > 0) {
+              for (var pp = 0; pp < this.goodsCollectionsRecord.length;pp++) {
+                console.log(this.RunningItems_2);
+                let qval = +this.RunningItems_2[indexidqvalue].qvalue * this.goodsCollectionsRecord[pp].quantiyval;
+                // this.updatemainfood(this.ifmwpdata.goodscollections[pp].IventoryFoodMainId, +qval);
+                console.log(pp);
+                if (this.goodsCollectionsRecord[pp].IventoryFoodMainId) {
+                  this.InventoryMainFoodService_.getbyid(this.goodsCollectionsRecord[pp].IventoryFoodMainId).subscribe(imfs => {
+                    if (imfs) {
+                      this.imfsdata2 = "";
+                      this.imfsdata = "";
+                      this.imfsdata2 = imfs;
+                      this.imfsdata = this.imfsdata2.data;
+                      console.log(qval);
+                      // console.log(qvalue);
+                      console.log(imfs);
+                      console.log(this.imfsdata);
+                      //  alert(imfs);
+                      this.inventoryfoodmain = {
+                        _id: this.imfsdata[0]._id,
+                        name: this.imfsdata[0].name,
+                        description: this.imfsdata[0].description,
+                        quantitytypeID: this.imfsdata[0].quantitytypeID,
+                        quantitytypename: this.imfsdata[0].quantitytypename,
+                        quantitytypevalue: (+this.imfsdata[0].quantitytypevalue - qval),
+                        employee_id: this.employeeId,
+                        createdAt: this.imfsdata[0].createdAt
+                      }
+                      console.log(this.inventoryfoodmain);
 
+                      this.InventoryMainFoodService_.update(this.inventoryfoodmain).subscribe(updatefms => {
+                        if (updatefms) {
+                          this.updatefmsdata2 = updatefms;
+                          this.updatefmsdata = this.updatefmsdata2.data;
+                          console.log(updatefms);
+                          
+                        }
+                      }
+                      )
+
+                    }
+                  }
+                  )
+                }
               }
 
             }
@@ -618,6 +635,7 @@ invoice:any;
         }
       })
     }
+
     //end
   }
   getTax(): ITax[] {
@@ -639,7 +657,7 @@ invoice:any;
     }
     return this.itaxarr;
   }
-  
+
 
   discountChange() {
     const inpercentorrupees = this.myDiscountForm.value.discount;
@@ -1408,19 +1426,17 @@ invoice:any;
     // console.log(CustomerDetail);
     // this.CustomerName = CustomerDetail.Name;
   }
-getCustomerID(invoiceid:string)
-{
-this.InvoiceService_.getbyid(invoiceid).subscribe(getCustomerid=>{
-  if(getCustomerid)
-  {
-     this.innvoicedata2 = getCustomerid;
-     this.innvoicedata = this.innvoicedata2.data;
-     this.CustomerId = this.innvoicedata.customer_id;
-     alert(this.CustomerId );
+  getCustomerID(invoiceid: string) {
+    this.InvoiceService_.getbyid(invoiceid).subscribe(getCustomerid => {
+      if (getCustomerid) {
+        this.innvoicedata2 = getCustomerid;
+        this.innvoicedata = this.innvoicedata2.data;
+        this.CustomerId = this.innvoicedata.customer_id;
+        alert(this.CustomerId);
 
+      }
+    });
   }
-});
-}
   getCustomerName(customer_id: string) {
 
     this.CustomerService_.getbyid(customer_id).subscribe(CustomerName => {
@@ -1439,6 +1455,6 @@ this.InvoiceService_.getbyid(invoiceid).subscribe(getCustomerid=>{
     //alert();
     this.cancelOrder.emit(this.invoiceid);
     // this.Table.cancel(this.invoiceid);
-     this.ClearSomeVariable();
+    this.ClearSomeVariable();
   }
 }
