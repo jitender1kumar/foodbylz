@@ -15,7 +15,7 @@
       </div>
       <div class="form-group row">
         <div class="col"><label class="lbl" for="name" id="name" > Name :</label></div>
-        <div class="col"><input class="lbl" type="text" formControlName="name" ngModel  id="nametxt"/></div>
+        <div class="col"><input class="lbl" type="text" formControlName="name"   id="nametxt"/></div>
         <div class="col">@if (myAddForm.get('name')?.invalid) {
           <div>
           Name is required.</div>
@@ -24,7 +24,7 @@
     </div>
     <div class="form-group row">
       <div class="col"><label class="lbl" for="description" id="description" > Description :</label></div>
-      <div class="col"><input class="lbl" type="text" formControlName="description" ngModel  id="description"/></div>
+      <div class="col"><input class="lbl" type="text" formControlName="description"   id="description"/></div>
     </div>
     <p>{{args}}</p>
     <div class="row">
@@ -75,7 +75,7 @@
 
   <ag-grid-angular class="box ag-theme-quartz"
     style="height:500px;"
-    [rowData]="Floordata"
+    [rowData]="Floordata$ | async"
     [columnDefs]="colDefs"
     [pagination]="pagination"
     [paginationPageSize]="paginationPageSize"

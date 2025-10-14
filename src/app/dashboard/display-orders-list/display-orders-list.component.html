@@ -12,7 +12,7 @@
                 <button class="tab" (click)="loadweek()">This Week(7days)</button>
                 <button class="tab" (click)="loadmonth()">This Month</button>
                | From: <input class="tab" type="date" (click)="validate()" (change)="fromdate()" max="{{currentDateTime}}" [(ngModel)]="from_date" id="f">| To:
-                <input class="tab" type="date" (change)="todate()" (click)="validateto()"  [(ngModel)]="to_date" id="t">
+                <input class="tab" type="date" [ngModel]="dateValue" (ngModelChange)="dateValue = $event" (change)="todate()" (click)="validateto()"  [(ngModel)]="to_date" id="t">
             </div>
         </div>
     </div>

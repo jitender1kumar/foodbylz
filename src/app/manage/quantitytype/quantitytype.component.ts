@@ -12,7 +12,7 @@ import { Store } from '@ngrx/store';
 import { addQuantityType, deleteQuantityType, loadQuantityType, updateQuantityType, updateQuantityTypeFailure, updateQuantityTypeSuccess } from '../ManageStore/quntityTypeStore/quntityType.actions';
 import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
 import { ofType, Actions } from '@ngrx/effects';
-import { NameExistOrNotService } from '../../core/commanFunction/NameExistOrNot.service';
+import {  ValidationService } from '../../core/commanFunction/Validation.service';
 @Component({
   selector: 'app-categorytypeform',
   templateUrl: './quantitytype.component.html',
@@ -63,7 +63,7 @@ export class CategorytypeformComponent implements OnInit {
   constructor(
     private service: QuantitytypeService,
     private router: Router,
-    private NameExistOrNotService_:NameExistOrNotService,
+    private ValidationService_:ValidationService,
     private formedit: FormBuilder,
     private productPriceservice: ProductPriceService,
     private store: Store<{ quantityTypeLoad: any }>,
@@ -129,7 +129,7 @@ private showDuplicateNameMessage(name: string): void {
   ];
   pagination = true;
   paginationPageSize = 10;
-  paginationPageSizeSelector = [200, 500, 1000];
+  paginationPageSizeSelector = [10,200, 500, 1000];
   onCellClick(event: any) {
 
     if (event.colDef.field == 'Delete') {
@@ -241,7 +241,7 @@ private showDeleteBlockedMessage(): void {
     this.update(this.myEditForm.value);
   }
   update(quantityType: Quantitytype): void {
-     if(this.NameExistOrNotService_.checkNameExist(this.myEditForm.value.name,this.myEditForm.value._id,this.Qtypenamedata$ ))
+     if(this.ValidationService_.checkNameExist(this.myEditForm.value.name,this.myEditForm.value._id,this.Qtypenamedata$ ))
     {
      this.args = `Quantity Type Name: ${this.myEditForm.value.name} Exists. Please create another name.`;
     }

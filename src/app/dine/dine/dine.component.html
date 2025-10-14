@@ -17,7 +17,7 @@
         <div class="col"><label class="lbl" for="dinedata" id="dinedata" >Select Floor :</label></div>
         <div class="col">
           <select class="lbl" formControlName="floor_id">
-            @for (d of Floordata; track d) {
+            @for (d of Floordata$ | async; track d) {
               <option  class="lbl" value="{{d._id}}" >{{d.name}}</option>
             }
           </select>
@@ -64,7 +64,7 @@
         <div class="col"><label class="lbl" for="floor_id" id="floor_id" >Select Category Name :</label></div>
         <div class="col">
           <select class="lbl" formControlName="floor_id">
-            <option  class="lbl" *ngFor="let d of Floordata index as i" [selected]="d._id===popdata2.floor_id" value="{{d._id}}" >{{d.name}}</option>
+            <option  class="lbl" *ngFor="let d of Floordata$ | async index as i" [selected]="d._id===popdata2.floor_id" value="{{d._id}}" >{{d.name}}</option>
           </select>
         </div>
       </div>

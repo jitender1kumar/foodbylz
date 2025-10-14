@@ -1,0 +1,14 @@
+<td class="category-sidebar">
+    <div class="category-card">
+      <div class="category-header">
+        <h5>Categories</h5>
+      </div>
+      <ul class="category-list">
+        <li *ngFor="let category of categorynamedata$ | async">
+          <button class="category-button" (click)="getproductbycategory(category._id)">
+            {{ category.name }}
+          </button>
+        </li>
+      </ul>
+    </div>
+  </td>

@@ -4,7 +4,7 @@ import { BrowserModule, provideClientHydration } from '@angular/platform-browser
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideHttpClient } from '@angular/common/http';
-import { NavbarComponent } from './shared/navbars/navbar/navbar.component';
+import { NavbarComponent } from './core/shared/navbar/navbar.component';
 import { RouterModule, Routes } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AgGridAngular } from 'ag-grid-angular';
@@ -14,15 +14,14 @@ import 'ag-grid-community/styles/ag-grid.css';
 import { ReactiveFormsModule } from '@angular/forms'; // Import ReactiveFormsModule
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
-import { PopupCrudComponent } from "../../projects/popup-crud/src/lib/popup-crud.component";
 import { PopupmodelComponent} from './popupmodel/popupmodel.component';
 //import { HomeComponent } from './home/home.component';
-import { PickupComponent } from './orderMode/pickup/pickup.component';
-import { OnlinedeliveryComponent } from './orderMode/onlinedelivery/onlinedelivery.component';
-import { ManagefoodnavbarComponent } from './shared/navbars/managefoodnavbar/managefoodnavbar.component';
-import { RunningordersComponent } from '../../userend/crud/runningorders/runningorders.component';
-import { GoodscollectionComponent } from '../../userend/crud/goodscollection/goodscollection.component';
-import { PaybymanageComponent } from '../../userend/crud/paybymanage/paybymanage.component';
+// import { PickupComponent } from './orderMode/pickup/pickup.component';
+// import { OnlinedeliveryComponent } from './orderMode/onlinedelivery/onlinedelivery.component';
+import { ManagefoodnavbarComponent } from './core/shared/managefoodnavbar/managefoodnavbar.component';
+// import { RunningordersComponent } from './dine/runningorders/runningorders.component';
+// import { GoodscollectionComponent } from '../../userend/crud/goodscollection/goodscollection.component';
+import { PaybymanageComponent } from './manage/paybymanage/paybymanage.component';
 import { InventoryModule } from './inventory/inventory.module';
 import { DineModule } from './dine/dine.module';
 import { CompanyModule } from './company/company.module';
@@ -54,14 +53,27 @@ import { DashboardComponent } from './dashboard/dashboard/dashboard.component';
 import { HomeComponent } from './home/home.component';
 import { CustomersModule } from './customers/customers.module';
 import { HomeModule } from './home/home.module';
+import { FloorEffects } from './dine/dineStore/floorStore/floor.effects';
+import { floorAddReducer, floorDeleteReducer, floorLoadReducer, floorUpdateReducer } from './dine/dineStore/floorStore/floor.reducer';
+import { dineTableReducer } from './dine/dineStore/dinetableStore/dinetable.reducer';
+import { DineEffects } from './dine/dineStore/dinetableStore/dinetable.effects';
+import { invoiceReducer } from './core/store/invoiceStor/invoice.reducers';
+import { InvoiceEffects } from './core/store/invoiceStor/invoice.effects';
+import { customersReducer } from './customers/customersStore/customers.reducer';
+import { CustomersEffects } from './customers/customersStore/customers.effects';
+import { addOnProductEditReducer, addOnProductReducer, getAddOnProductByIdReducer, getByProductIdSubQTypeIDAddOnProductsReducer, loadAddOnProductReducer } from './manage/ManageStore/addOnProductStore/addOnProduct.reducer';
+import { AddOnProductEffects } from './manage/ManageStore/addOnProductStore/addOnProduct.effects';
+import { productItemReducer } from './home/homeStore/productItemStore/productItem.reducers';
+import { ProductItemEffects } from './home/homeStore/productItemStore/productItem.effects';
+import { runningItemReducer } from './home/homeStore/runningItemStore/runningItem.reducers';
 
 const routes: Routes = [
  
-  {path:'popup',component:PopupmodelComponent},
-  {path:'',component:HomeComponent},
-  {path:'dashboard',component:DashboardComponent},
+  { path: 'popup', component: PopupmodelComponent },
+  { path: '', component: HomeComponent },
+  { path: 'dashboard', component: DashboardComponent },
   
-  {path:'runningorder',component:RunningordersComponent},
+  // {path:'runningorder',component:RunningordersComponent},
   {path:'Payby',component:PaybymanageComponent},
   {path:'manage',component:ManageComponent},
 ];
@@ -69,11 +81,8 @@ const routes: Routes = [
   declarations: [
     AppComponent,
     NavbarComponent,
-    PickupComponent,
-    OnlinedeliveryComponent,
     ManagefoodnavbarComponent,
-    RunningordersComponent,
-    GoodscollectionComponent,
+    // RunningordersComponent,
     PaybymanageComponent,
     ShowbuttonComponent,
   ],
@@ -82,19 +91,72 @@ const routes: Routes = [
     FormsModule, AgGridAngular,
     AppRoutingModule,CompanyModule,ManageModule,DashboardModule,
     DineModule,BrowserAnimationsModule,CustomersModule,HomeModule,
-    InventoryModule,PopupmodelComponent,PopupCrudComponent
-    ,StoreModule.forRoot({ categoryLoad: categoryLoadReducer,categoryAdd: categoryAddReducer,categoryUpdate: categoryUpdateReducer,categoryDelete: categoryDeleteReducer,
-              productPriceLoad: productPriceLoadReducer,productPriceAdd: productPriceAddReducer,productPriceUpdate: productPriceUpdateReducer,productPriceDelete: productPriceDeleteReducer,
-              productLoad: ProductLoadReducer,productAdd: ProductAddReducer,productUpdate: ProductUpdateReducer,productDelete: ProductDeleteReducer,productByIdLoad:ProductByIdLoadReducer,
-              quantityTypeLoad: QuantityTypeLoadReducer,quantityTypeAdd: QuantityTypeAddReducer,quantityTypeUpdate: QuantityTypeUpdateReducer,quantityTypeDelete: QuantityTypeDeleteReducer,
-             subQuantityTypeByNameLoad:SubQuantityTypeByNameLoadReducer, subQuantityTypeLoad: SubQuantityTypeLoadReducer,subQuantityTypeAdd: SubQuantityTypeAddReducer,subQuantityTypeUpdate: SubQuantityTypeUpdateReducer,subQuantityTypeDelete: SubQuantityTypeDeleteReducer,subQuantityTypeByIdLoad:SubQuantityTypeByIdLoadReducer,
-              taxLoad: TaxLoadReducer,taxAdd: TaxAddReducer,taxUpdate: TaxUpdateReducer,taxDelete: TaxDeleteReducer
-              //end manage module
-            ,loadInventoryFoodQuantityType:InventoryFoodQuantityTypeLoadReducer
-            ,loadInventoryMainFood:InventoryMainFoodLoadReducer
-          ,loadAssocciatedInvtoryFood:InventoryFoodwithProductLoadReducer}),// Register reducer
-    EffectsModule.forRoot([ProductCategoryEffects,ProductPriceEffects,ProductEffects,ProductQuantityTypeEffects,ProductSubQuantityTypeEffects,ProductTaxEffects,ProductInventoryFoodQuantityTypeEffects,
-      ProductInventoryMainFoodEffects,ProductInventoryFoodwithProductEffects
+    InventoryModule,PopupmodelComponent
+    ,StoreModule.forRoot({ 
+        categoryLoad: categoryLoadReducer,
+        categoryAdd: categoryAddReducer,
+        categoryUpdate: categoryUpdateReducer,
+        categoryDelete: categoryDeleteReducer,
+        productPriceLoad: productPriceLoadReducer,
+        productPriceAdd: productPriceAddReducer,
+        productPriceUpdate: productPriceUpdateReducer,
+        productPriceDelete: productPriceDeleteReducer,
+        productLoad: ProductLoadReducer,
+        productAdd: ProductAddReducer,
+        productUpdate: ProductUpdateReducer,
+        productDelete: ProductDeleteReducer,
+        productByIdLoad: ProductByIdLoadReducer,
+        quantityTypeLoad: QuantityTypeLoadReducer,
+        quantityTypeAdd: QuantityTypeAddReducer,
+        quantityTypeUpdate: QuantityTypeUpdateReducer,
+        quantityTypeDelete: QuantityTypeDeleteReducer,
+        subQuantityTypeByNameLoad: SubQuantityTypeByNameLoadReducer,
+        subQuantityTypeLoad: SubQuantityTypeLoadReducer,
+        subQuantityTypeAdd: SubQuantityTypeAddReducer,
+        subQuantityTypeUpdate: SubQuantityTypeUpdateReducer,
+        subQuantityTypeDelete: SubQuantityTypeDeleteReducer,
+        subQuantityTypeByIdLoad: SubQuantityTypeByIdLoadReducer,
+        taxLoad: TaxLoadReducer,
+        taxAdd: TaxAddReducer,
+        taxUpdate: TaxUpdateReducer,
+        taxDelete: TaxDeleteReducer,
+        //end manage module
+        loadInventoryFoodQuantityType: InventoryFoodQuantityTypeLoadReducer,
+        loadInventoryMainFood: InventoryMainFoodLoadReducer,
+        loadAssocciatedInvtoryFood: InventoryFoodwithProductLoadReducer,
+        // floor reducer
+       LoadFloor:floorLoadReducer,
+        AddFloor:floorAddReducer,
+        UpdateFloor:floorDeleteReducer,
+        DeleteFloor:floorUpdateReducer,
+        dineTableReducer_:dineTableReducer,
+        invoiceReducer_:invoiceReducer,
+        customersReducer_:customersReducer,
+        addOnProductReducer_:addOnProductReducer,
+        loadAddOnProductReducer_:loadAddOnProductReducer,
+        addOnProductEditReducer_:addOnProductEditReducer,
+        productItemReducer_:productItemReducer,
+        getByProductIdSubQTypeIDAddOnProductsReducer_:getByProductIdSubQTypeIDAddOnProductsReducer,
+        getAddOnProductByIdReducer_:getAddOnProductByIdReducer,
+        runningItemReducer_:runningItemReducer
+      }), // Register reducer
+    EffectsModule.forRoot([
+      ProductCategoryEffects,
+      ProductPriceEffects,
+      ProductEffects,
+      ProductQuantityTypeEffects,
+      ProductSubQuantityTypeEffects,
+      ProductTaxEffects,
+      ProductInventoryFoodQuantityTypeEffects,
+      ProductInventoryMainFoodEffects,
+      ProductInventoryFoodwithProductEffects,
+      // floor effects
+      FloorEffects,
+      DineEffects,
+      InvoiceEffects,
+      CustomersEffects,
+      AddOnProductEffects,
+      ProductItemEffects
     ])          
       
     

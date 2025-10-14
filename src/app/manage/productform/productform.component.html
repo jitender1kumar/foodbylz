@@ -9,13 +9,16 @@
 }
 <button class="bt1n btnbox" id="show" (click)="shows()">+Add Product</button>
 
-@if (show) {
+@if (this.popupenvironments.show$ | async) {
   <div class="comman" >
     <div class="row box">
       <!-- left col -->
       <form (ngSubmit)="onFormSubmit()"[formGroup]="myAddForm" class="col lbl2" >
         <button  class="close" (click)="close()">Close</button>
-        <div class="row lbl"><h4>Add Products </h4></div>
+        <div class="row lbl"><h4>Add Products 
+          <p>{{this.popupenvironments.args$ | async}}</p>
+        </h4></div>
+        
         <div class="row">
           <div class="col">  <label>
             <input type="checkbox"  formControlName="availablity"/>
@@ -34,8 +37,8 @@
     </div>
   </div>
   <div class="row">
-    <div class="col"><label class="lbl" for="Productname" id="Productyname" >Product Name :</label></div>
-    <div class="col"><input class="lbl" type="text"  formControlName="Productname" id="Productnametxt"/></div>
+    <div class="col"><label class="lbl" for="name" id="Productyname" >Product Name :</label></div>
+    <div class="col"><input class="lbl" type="text"  formControlName="name" id="nametxt"/></div>
   </div>
   <div class="row">
     <div class="col"><label class="lbl" for="categorydesc" id="Productdesc" >Product Description :</label></div>
@@ -82,7 +85,7 @@
     <div class="col"></div>
     <div class="col"></div>
   </div>
-  <p>{{args}}</p>
+  
   <div class="row">
     <div class="col"><button class="bt1n" [disabled]="myAddForm.invalid" type="submit">Add Product</button>
   </div>
@@ -92,7 +95,7 @@
 </div>
 }
 <!-- right col -->
-@if (showEdit) {
+@if (this.popupenvironments.showEdit$ | async) {
   <div class=" comman">
     <div class="row box">
       <form [formGroup]="myEditForm" (ngSubmit)="onEditForm()" #f="ngForm" class="col lbl2">
@@ -100,7 +103,7 @@
         <div class="row form-group">
           <div class="col"><h2 ><b>Edit</b></h2></div>
         </div>
-        <p>{{args}}</p>
+        <p>{{this.popupenvironments.args$ | async}}</p>
         <div class="row">
           <div class="col">  <label>
             <input type="checkbox"  formControlName="availablity"/>
@@ -119,8 +122,8 @@
     </div>
   </div>
   <div class="row form-group">
-    <div class="col"><label class="lbl" for="Productname" id="Productname" >Name :</label></div>
-    <div class="col"> <input style="width: 114px; margin: 3px;" type="text" formControlName="Productname">
+    <div class="col"><label class="lbl" for="name" id="name" >Name :</label></div>
+    <div class="col"> <input style="width: 114px; margin: 3px;" type="text" formControlName="name">
     </div></div>
     <div class="row form-group">
       <div class="col"><label class="lbl" for="Description" id="Description" >Description :</label></div>
@@ -155,7 +158,7 @@
       </div>
     </div>
     <div class="row form-group">
-      <div class="col"> <button class="bt1n" style=" margin: 3px;" id="b{{popdata2._id}}" >Update</button>
+      <div class="col"> <button class="bt1n" style=" margin: 3px;" id="b{{this.popupenvironments.popdata2$._id | async}}" >Update</button>
     </div>
   </div>
 </form>
@@ -174,5 +177,5 @@
   (cellClicked)="onCellClick($event)"
   />
 <div >
-  <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()"  [style]="display" [tabname]="tablename" [data]="valueid" [modal]="modal"></app-popupmodel>
+  <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()"  [style]="this.popupenvironments.display$ | async" [tabname]="this.popupenvironments.tablename$ | async" [data]="this.popupenvironments.valueid$ | async" [modal]="this.popupenvironments.modal$ | async"></app-popupmodel>
 </div>

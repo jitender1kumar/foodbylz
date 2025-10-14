@@ -50,6 +50,7 @@ splitToken:any[]=[];
     this.invoiceid="";
     this.TokenNumber=0;
    //alert("wor");
+   console.log(this.splitToken);
    this.TokenNumber=this.splitToken[1];
     this.invoiceid=this.splitToken[0];    
     this.router.navigate(['/Home']);

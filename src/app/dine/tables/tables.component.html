@@ -101,15 +101,42 @@
       <div class="table-layout">
         <div *ngFor="let d of reservedinedata index as ii">
           <b>{{d.TableName}}</b>
-          @if (d.Bookingstatus) {
+         
           <div>
-            <a (click)="booktable(d._id)" class="table">
-              <p style="font-size:small;"> {{d.DateTimeStart.split('T')}}
-                <br> Mobile No: {{d.MobileNo}}
-              </p>
+            
+            <a  class="table">
+              <div style="font-size:small;"> {{d.DateTimeStart.split('T')}}
+                <br>
+                <!-- {{currentTime.split(':')[0]}}
+                <br>
+                {{d.DateTimeStart.split('T')[1].split(':')[0]}}
+                <br > -->
+                {{(d.DateTimeStart.split('T')[0]=== currentDateOnly)}} 
+                {{(d.DateTimeStart.split('T')[1].split(':')[0]===currentTime.split(':')[0])}} 
+                {{d.DateTimeStart.split('T')[1].split(':')[0]}}
+                {{currentTime.split(':')[0]}}
+                {{(+1+(+d.DateTimeStart.split('T')[1].split(':')[0].trim())) }}
+                <br>
+                <b *ngIf="d.MobileNo"> Mobile No: {{d.MobileNo}}</b>
+                <br>
+                <!-- (d.DateTimeStart.split('T')[1].split(':')[0]}=== currentDateOnly.split(':'[0]))&& (d.DateTimeStart.split('T')[1].split(':')[0]}===currentTime.split(:)[0]) -->
+                <div *ngIf="(d.DateTimeStart.split('T')[0]=== currentDateOnly) && (d.DateTimeStart.split('T')[1].split(':')[0].trim()===currentTime.split(':')[0].trim() || ((+1+(+d.DateTimeStart.split('T')[1].split(':')[0].trim())))===(+currentTime.split(':')[0].trim()))">
+                 
+                 
+                      <!-- <div>
+                      <button class="btn-primary" (click)="gotohome(runningorder_.receiptnumber,runningorder_.tokennumber)">goToHome</button>
+                    </div> -->
+                  
+                    @if (d.Bookingstatus) {
+                      <button class="btn-primary" (click)="redirectto_gotohome(d.RecieptNumber)">goToMenu</button>
+                    }@else{
+                      <button class="btn-primary" (click)="confirmReserveDine(d._id)">Confirme</button>
+                    }
+                </div>
+              </div>
               <div>
                 <!-- chair booking status 0-booked 1-booking available 2-booking available but do want book -->
-                <div class="circle top-left"></div>
+                <!-- <div class="circle top-left"></div> -->
                 <div class="circle top-right"></div>
                 <div class="circle bottom-left">
                 </div>
@@ -118,7 +145,7 @@
               </div>
             </a>
           </div>
-          }
+          
           <b>{{d.Name}}</b>
           <a (click)="deletereservedine(d._id)">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill"
@@ -127,7 +154,7 @@
                 d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
             </svg>
           </a>
-          <a (click)="editreservedine(d._id)">
+          <a (click)="editReserveDine2(d._id)">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
               <path
                 d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
@@ -169,7 +196,7 @@
             <div class="order-actions">
               <button class="btn-danger" (click)="cancel(runningorder_.receiptnumber)">🗑️</button>
               <button class="btn-primary"
-                (click)="gotohome(runningorder_.receiptnumber,runningorder_.tokennumber)">Go</button>
+                (click)="gotohome(runningorder_.receiptnumber,runningorder_.tokennumber)">goToMenu</button>
 
             </div>
           </div>
@@ -229,8 +256,8 @@
           </div>
           <div class="col">
             <select id="TableId" formControlName="TableId" class="form-control">
-              @for (table of dinedata; track table) {
-              <option [value]="table._id">{{ table.name }}</option>
+              @for (table of FloorWithDineData; track table) {
+              <option [value]="table._id">{{ table.FloorName }}/ {{ table.name }}</option>
               }
             </select>
           </div>
@@ -261,7 +288,7 @@
         </div>
 
         <!-- Hidden field bound to the form's DateTimeStart -->
-        <input type="hidden" [formControl]="dateTimeStartControl" />
+        <input type="hidden" id="dateTimeStartControl" name="dateTimeStartControl" [formControl]="dateTimeStartControl" />
 
 
         <!-- Customer Selection -->
@@ -270,13 +297,24 @@
             <label for="CustomerId">Select Customer:</label>
           </div>
           <div class="col">
-            <select id="CustomerId" formControlName="CustomerId" class="form-control" (click)="bindcustomer()">
+            <!-- <select id="CustomerId" formControlName="CustomerId" class="form-control" (click)="bindcustomer()">
               <option value="">None</option>
               @for (customer of Customersnamedata; track customer) {
               <option [value]="customer._id">{{ customer.Name }}</option>
               }
-            </select>
+            </select> -->
+            <input type="hidden" id="CustomerId" formControlName="CustomerId"/>
+            <a
+            (click)="showCustomersPopUp()"
+            class="bg-gradient-to-r from-indigo-500 to-purple-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
+          >
+            +Customer
+          </a>
           </div>
+           <!-- <button (click)="showCustomersPopUp()" 
+              class="bg-gradient-to-r from-indigo-500 to-purple-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition">
+              +Customer
+            </button> -->
         </div>
 
         <!-- Customer Name -->
@@ -285,7 +323,7 @@
             <label for="Name">Name:</label>
           </div>
           <div class="col">
-            <input id="Name" type="text" formControlName="Name" class="form-control" />
+            <input id="Name"  type="text" formControlName="Name" class="form-control" />
           </div>
         </div>
 
@@ -295,7 +333,7 @@
             <label for="MobileNo">Mobile No:</label>
           </div>
           <div class="col">
-            <input id="MobileNo" type="tel" formControlName="MobileNo" class="form-control" pattern="[0-9]{10,20}"
+            <input id="MobileNo"  type="number" formControlName="MobileNo" minlength="10" maxlength="20"  pattern="[0-9]{10,20}"
               title="Enter valid mobile number (10 to 20 digits)" />
           </div>
         </div>
@@ -346,73 +384,135 @@
 
   <!-- reserve edit start -->
   @if (editshow) {
-  <div class="comman">
+  <div class="comman" *ngIf="editreservedinefata">
     <div class="row box">
       <form [formGroup]="myEditForm" (ngSubmit)="onFormEditSubmit()" class="col lbl2">
-        <button class="close" (click)="close()">Close</button>
+         <!-- Close Button -->
+        <button class="close" type="button" (click)="close()">Close</button>
+
+        <!-- Header -->
         <div class="row lbl">
-          <h4>Edit Reserve a Dine (Validity for 2 hour.)</h4>
+          <h4>Reserve a Dine (Validity for 2 hour)</h4>
         </div>
+
+        <!-- Table Selection -->
         <div class="form-group row">
-          <div class="col"><label class="lbl" for="TableId" id="TableId">Select Table :</label>
+          <div class="col">
+            <label for="TableId">Select Table:</label>
           </div>
           <div class="col">
             <select class="lbl" formControlName="TableId">
-              <option class="lbl" *ngFor="let d of dinedata index as i"
-                [selected]="d._id===editreservedinefata[0].TableId">{{d.name}}</option>
+              <option class="lbl" *ngFor="let d of FloorWithDineData index as i"
+                [selected]="d._id===editreservedinefata[0].TableId">{{d.FloorName}}/ {{d.name}}</option>
             </select>
           </div>
         </div>
+
+        <!-- Date & Time Picker -->
+        <!-- Date Picker -->
         <div class="form-group row">
-          <div class="col"><label class="lbl" for="DateTimeStart" id="DateTimeStart"> Pick Date :</label></div>
-          <div class="col"><input class="lbl" name="ordinary" type="datetime-local"
-              [(ngModel)]="editreservedinefata[0].DateTimeStart" (change)="selectdateandtime()" (click)="checkdate()"
-              formControlName="DateTimeStart" id="DateTimeStarttxt" min="{{currentdate}}" /></div>
           <div class="col">
+            <label for="DateOnly">Pick Date:</label>
+          </div>
+          <div class="col">
+            <input id="DateOnly" type="date" class="form-control" [min]="currentDateOnly" [value]="selectedDate"
+              (change)="onDateChange($event)" />
           </div>
         </div>
-        <!-- <div class="form-group row">
-      <div class="col"><label class="lbl" for="DateTimeEnd" id="DateTimeEnd"> Pick Time :</label></div>
-      <div class="col"><input class="lbl" type="time"  (change)="selecttime()" formControlName="DateTimeEnd" ngModel
-      id="DateTimeEndtxt" /></div>
-      <div class="col">
-      </div>
-    </div> -->
+
+        <!-- Time Dropdown -->
         <div class="form-group row">
-          <!-- <div class="col"><label class="lbl" for="CustomerId" id="CustomerId"> Search by Customer :</label></div>
-      <div class="col"><input class="lbl" type="text" multiple="true" value="{{serchbynamecustomer}}" (keypress)="searchCustomer()" formControlName="CustomerId" ngModel
-      id="CustomerIdtxt" /></div> -->
-          <div class="col"><label class="lbl" for="TableId" id="TableId">Select Customer :</label>
+          <div class="col">
+            <label for="TimeOnly">Pick Time (2 hour slots):</label>
           </div>
-          <select class="lbl" formControlName="CustomerId" (click)="bindcustomer()">
-            <option class="lbl">none</option>
-            <option class="lbl" *ngFor="let d of Customersnamedata index as i"
-              [selected]="d._id===editreservedinefata[0].CustomerId" value="{{d._id}}">{{d.Name}}</option>
-          </select>
+          <div class="col">
+            <!--[value]="selectedTimeforEdit"-->
+            <select id="TimeOnly" class="form-control" [value]="selectedTime" (change)="onTimeChange($event)">
+              <option *ngFor="let time of availableTimeSlots index as i"  [value]="selectedTimeforEdit" [selected]="selectedTimeforEdit.trim()==availableTimeSlots[i] || (1+selectedTimeforEdit.trim())==(1-(+availableTimeSlots[i]))" >{{ time  }}</option>
+            </select>
+          </div>
         </div>
+
+        <!-- Hidden field bound to the form's DateTimeStart -->
+        <!-- <input type="hidden" id="dateTimeStartControl" name="dateTimeStartControl" [formControl]="dateTimeStartControl" /> -->
+
+
+        <!-- Customer Selection -->
         <div class="form-group row">
-          <div class="col"><label class="lbl" for="Name" id="Name"> Name :</label></div>
-          <div class="col"><input class="lbl" type="text" [(ngModel)]="editreservedinefata[0].Name"
-              value="{{editreservedinefata[0].Name}}" formControlName="Name" id="Nametxt" /></div>
+          <div class="col">
+            <label for="CustomerId">Select Customer:</label>
+          </div>
+          <div class="col">
+            <!-- <select id="CustomerId" formControlName="CustomerId" class="form-control" (click)="bindcustomer()">
+              <option value="">None</option>
+              @for (customer of Customersnamedata; track customer) {
+              <option [value]="customer._id">{{ customer.Name }}</option>
+              }
+            </select> -->
+            <input type="hidden" id="CustomerId" formControlName="CustomerId"/>
+            <a
+            (click)="showCustomersPopUp()"
+            class="bg-gradient-to-r from-indigo-500 to-purple-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
+          >
+            +Customer
+          </a>
+          </div>
+           <!-- <button (click)="showCustomersPopUp()" 
+              class="bg-gradient-to-r from-indigo-500 to-purple-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition">
+              +Customer
+            </button> -->
         </div>
+
+        <!-- Customer Name -->
         <div class="form-group row">
-          <div class="col"><label class="lbl" for="MobileNo" id="MobileNo"> MobileNo :</label></div>
-          <div class="col"><input class="lbl" type="number" [(ngModel)]="editreservedinefata[0].MobileNo" minlength="10"
-              maxlength="20" formControlName="MobileNo" ngModel id="MobileNotxt" /></div>
+          <div class="col">
+            <label for="Name">Name:</label>
+          </div>
+          <div class="col">
+            <input id="Name" type="text"  formControlName="Name" class="form-control" [value]="editreservedinefata[0].Name" />
+          </div>
         </div>
+
+        <!-- Mobile Number -->
         <div class="form-group row">
-          <div class="col"><label class="lbl" for="BookingAmount" id="BookingAmount"> BookingAmount :</label></div>
-          <div class="col"><input class="lbl" type="number" [(ngModel)]="editreservedinefata[0].BookingAmount"
-              maxlength="10" formControlName="BookingAmount" ngModel id="BookingAmounttxt" /></div>
+          <div class="col">
+            <label for="MobileNo">Mobile No:</label>
+          </div>
+          <div class="col">
+            <input id="MobileNo"  type="number" formControlName="MobileNo" minlength="10" maxlength="20"  pattern="[0-9]{10,20}"
+              title="Enter valid mobile number (10 to 20 digits)" [value]="editreservedinefata[0].MobileNo" />
+          </div>
         </div>
+
+        <!-- Booking Amount -->
         <div class="form-group row">
-          <div class="col"><label class="lbl" for="Paymentstatus" id="Paymentstatus"> Paymentstatus :</label></div>
-          <div class="col"><input class="lbl" type="checkbox" [(ngModel)]="editreservedinefata[0].Paymentstatus"
-              formControlName="Paymentstatus" id="Paymentstatustxt" /></div>
+          <div class="col">
+            <label for="BookingAmount">Booking Amount:</label>
+          </div>
+          <div class="col">
+            <input id="BookingAmount" type="number" formControlName="BookingAmount" [value]="editreservedinefata[0].BookingAmount" class="form-control" min="0" />
+          </div>
         </div>
-        <p>{{args}}</p>
-        <div class="row">
-          <div class="col"><button style="border: solid black; padding: 10px;" [disabled]="myAddForm.invalid "
+
+        <!-- Payment Status -->
+        <div class="form-group row">
+          <div class="col">
+            <label for="Paymentstatus">Payment Status:</label>
+          </div>
+          <div class="col">
+            <input id="Paymentstatus" type="checkbox" formControlName="Paymentstatus" [value]="editreservedinefata[0].Paymentstatus" class="form-check-input" />
+          </div>
+        </div>
+
+        <!-- Error or Info Message -->
+        <div class="form-group row">
+          <div class="col">
+            <p class="text-danger">{{ args }}</p>
+          </div>
+        </div>
+
+     <div class="form-group row">
+          <div class="col"><button style="border: solid black; padding: 10px;" [disabled]="myEditForm.invalid "
               class="bt1n" type="submit">Update</button>
           </div>
         </div>
@@ -443,3 +543,14 @@
   </div>
   }
   <!-- end  -->
+
+  <!-- add customer -->
+<!-- <app-addcustomers [showPopUp]="showCustomerPopUp" [closePopUp]="closePopUp"
+  (closePopUpByChild)="closePopUpByChild($event)" (CustomersDetail)="initializeCustomer($event)"></app-addcustomers> -->
+  <!-- end -->
+  <app-addcustomers
+  [showPopUp]="showCustomerPopUp"
+  [closePopUp]="closePopUp"
+  (closePopUpByChild)="closePopUpByChild($event)"
+  (CustomersDetail)="initializeCustomer($event)"
+></app-addcustomers>

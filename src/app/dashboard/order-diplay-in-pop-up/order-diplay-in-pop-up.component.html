@@ -1,6 +1,6 @@
 @if(showPopUp){
   <div class="comman">
-  <div class="popupbox">
+  <div class="popupbox" id="printable-section-order">
    <!-- Header -->
 <div class="flex justify-between bg-white items-center  from-white to-wheat-800 text-black font-semibold py-4 px-6 rounded shadow mb-0">
   <h2 class="text-xl font-bold">Invoice Details</h2>
@@ -14,7 +14,7 @@
 <!-- Customer Name -->
 <!-- <div *ngIf="customers?.Name" class="bg-gradient-to-r from-blue-600 to-green-600 text-white font-semibold py-2 px-4 rounded mb-4 shadow">
   
-</div> -->
+</div> -->  
 
 <!-- Order Items -->
 <div *ngIf="EditOrderItems?.length" class="space-y-4">
@@ -28,7 +28,9 @@
       <div><strong>Item Amount:</strong> ₹{{ item.itemamount }}</div>
       <div><strong>Total:</strong> ₹{{ item.totalquantityamount }}</div>
     </div>
+    <hr/>
   </div>
+<hr/>
 </div>
 
 <!-- Invoice Summary -->
@@ -38,9 +40,9 @@
     <div><strong>Table:</strong> {{ EditOrderInvoice.tablename }}</div>
     <div><strong>Total Items Amount:</strong> ₹{{ EditOrderInvoice.TotalItemsAmount }}</div>
     <div><strong>Tax:</strong> ₹{{ EditOrderInvoice.TotalTaxAmount }}</div>
-    <div><strong>Total Value:</strong> ₹{{ EditOrderInvoice.Totalvaue }}</div>
-    <div><strong>Grand Total:</strong> ₹{{ EditOrderInvoice.grandtotal }}</div>
+    <div><strong>Total Amount:</strong> ₹{{ EditOrderInvoice.Totalvaue }}</div>
     <div><strong>Discount:</strong> {{ EditOrderInvoice.Discountperstage }}% (₹{{ EditOrderInvoice.Discountvalue }})</div>
+    <div><strong>Grand Total:</strong> ₹{{ EditOrderInvoice.grandtotal }}</div>
     <div><strong>Paid:</strong> ₹{{ EditOrderInvoice.PaidAmount }}</div>
     <div><strong>Pending:</strong> ₹{{ EditOrderInvoice.PendingAmount }}</div>
     <div><strong>Created At:</strong> {{ EditOrderInvoice.createdAt }}</div>

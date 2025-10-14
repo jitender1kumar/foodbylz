@@ -22,19 +22,19 @@
         <div class="row lbl"><h4>Add Cutomer</h4></div>
         <div class="form-group row">
           <div class="col"><label class="lbl" for="Name" id="Name" > Name :</label></div>
-          <div class="col"><input class="lbl" type="text" formControlName="Name" ngModel  id="nametxt"/></div>
+          <div class="col"><input class="lbl" type="text" formControlName="name"   id="nametxt"/></div>
         </div>
         <div class="form-group row">
           <div class="col"><label class="lbl" for="mob" id="mob" > Mobile No. :</label></div>
-          <div class="col"><input class="lbl" type="text "minlength="10" maxlength="20" formControlName="MobileNo" ngModel  id="mobtxt"/></div>
+          <div class="col"><input class="lbl"  class="lbl" type="number" minlength="10" maxlength="20" formControlName="MobileNo" pattern="[0-9]{10,20}"   id="mobtxt"/></div>
         </div>
         <div class="form-group row">
           <div class="col"><label class="lbl" for="dob" id="dob" > Data Of Birth :</label></div>
-          <div class="col"><input class="lbl" type="date" formControlName="DOB" ngModel  id="dobtxt"/></div>
+          <div class="col"><input class="lbl" type="date" formControlName="DOB"   id="dobtxt"/></div>
         </div>
         <div class="form-group row">
           <div class="col"><label class="lbl" for="tag" id="tag" > Tag :</label></div>
-          <div class="col"><input class="lbl" type="text" formControlName="tag" ngModel  id="tagtxt"/></div>
+          <div class="col"><input class="lbl" type="text" formControlName="tag"   id="tagtxt"/></div>
         </div>
         <p>{{args}}</p>
         <div class="row">
@@ -57,27 +57,27 @@
         <p>{{args}}</p>
         <div class="form-group row">
           <div class="col"><label class="lbl" for="Name" id="Name" > Name :</label></div>
-          <div class="col"><input class="lbl" type="text"  id="nametxt" formControlName="Name" value="{{popdata2.Name}}"/></div>
+          <div class="col"><input class="lbl" type="text"  id="nametxt" formControlName="name" /></div>
         </div>
         <div class="form-group row">
           <div class="col"><label class="lbl" for="mob" id="mob" > Mobile No. :</label></div>
-          <div class="col"><input class="lbl" type="TEXT"minlength="10" maxlength="20" formControlName="MobileNo"   id="mobtxt"  value="{{popdata2.MobileNo}}"/></div>
+          <div class="col"><input class="lbl" class="lbl" type="number" minlength="10" maxlength="20" formControlName="MobileNo" pattern="[0-9]{10,20}"  id="mobtxt"  (changetext)="changeMobileNumber()"/></div>
         </div>
         <div class="form-group row">
           <div class="col"><label class="lbl" for="dob" id="dob" > Data Of Birth :</label></div>
-          <div class="col"><input class="lbl" type="date" formControlName="DOB"   id="dobtxt"  value="{{popdata2.DOB}}"/></div>
+          <div class="col"><input class="lbl" type="date" formControlName="DOB"   id="dobtxt"  /></div>
         </div>
         <div class="form-group row">
           <div class="col"><label class="lbl" for="tag" id="tag" > Tag :</label></div>
-          <div class="col"><input class="lbl" type="text" formControlName="tag"   id="tagtxt"  value="{{popdata2.tag}}"/></div>
+          <div class="col"><input class="lbl" type="text" formControlName="tag"   id="tagtxt"  /></div>
         </div>
         <div class="form-group row">
           <div class="col"><label class="lbl" for="DueAmount" id="DueAmount" > Due Amount :</label></div>
-          <div class="col"><input class="lbl" type="text" formControlName="DOB"   id="DueAmounttxt"  value="{{popdata2.DueAmount}}"/></div>
+          <div class="col"><input class="lbl" type="text" formControlName="DOB"   id="DueAmounttxt"  /></div>
         </div>
         <div class="form-group row">
           <div class="col"><label class="lbl" for="Anniversary" id="tag" > Anniversary :</label></div>
-          <div class="col"><input class="lbl" type="date" formControlName="Anniversary"   id="Anniversarytxt"  value="{{popdata2.Anniversary}}"/></div>
+          <div class="col"><input class="lbl" type="date" formControlName="Anniversary"   id="Anniversarytxt"  /></div>
         </div>
         <div class="row">
           <div class="col">
@@ -91,7 +91,7 @@
 
 <ag-grid-angular class="box ag-theme-quartz"
   style="height:500px;"
-  [rowData]="Customersdata"
+  [rowData]="Customersdata$ | async"
   [columnDefs]="colDefs"
   [pagination]="pagination"
   [paginationPageSize]="paginationPageSize"

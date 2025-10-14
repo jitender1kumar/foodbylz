@@ -1,6 +1,9 @@
+import { AddOnProductEdit, IAddOnItems } from "../core/Model/crud.model";
+
 export interface RunningItems
 {
     _idPP:string;
+    AddOnItems:IAddOnItems[];
     ProductPrice: string;
     SelectProductId:string;
     ProductName:string;

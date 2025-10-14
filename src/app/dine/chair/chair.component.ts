@@ -1,8 +1,8 @@
-import { Component, Injectable, OnInit, ViewChild } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
 import { QuantitytypeService } from '../../core/Services/quantitytype.service';
 import { Router } from '@angular/router';
 import { IChair, IChairMergeDineName } from '../../core/Model/crud.model';
-import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
 import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
@@ -10,7 +10,7 @@ import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { ChairService } from '../../core/Services/chair.service';
 import { DineService } from '../../core/Services/dine.service';
 import { FloorService } from '../../core/Services/floor.service';
-import { NameExistOrNotService } from '../../core/commanFunction/NameExistOrNot.service';
+import {  ValidationService } from '../../core/commanFunction/Validation.service';
 
 @Component({
   selector: 'app-chair',
@@ -20,44 +20,23 @@ import { NameExistOrNotService } from '../../core/commanFunction/NameExistOrNot.
 })
 @Injectable({ providedIn: 'root' })
 export class ChairComponent implements OnInit, ICellRendererAngularComp {
-  args: any = null;
+  args: string | null = null;
   myEditForm: FormGroup;
-  qid: any;
-  id: any; basedata: any;
-  popdata2: any;
-  popdataId: any;
-  popdataBasetypedesc: any;
-  popdataBasetypeName: any;
-  popdataQuntityId: any;
-  src: any;
-  alt: any;
-  Floordata2: any;
-  Floordata: any;
-  content: any;
-  classname: any;
-  style: any;
-  modal: any;
-  display: any;
-  id01: any;
-  valueid: any;
-  tablename: any;
-  isCheckedStatus: any = true;
   myAddForm: FormGroup;
-  dinedata2: any;
-  dinedata: any;
-  dinenamearr: IChairMergeDineName[] = [];
-  dinename: any[] = [];
-  agInit(params: ICellRendererParams): void {
-    this.id = params.data._id;
-  }
+  display: string = "display:none;";
+  show: boolean = false;
+  showEdit: boolean = false;
+  classname: string = "";
+  modal: string = "";
+  valueid: string | null = null;
+  tablename: string = "";
+  dinedata: any[] = [];
+  Floordata: any[] = [];
+  IChairdata: any[] = [];
+  dinename: IChairMergeDineName[] = [];
+  popdata2: any = null;
 
-  // Column Definitions: Defines the columns to be displayed.
-  chairrow: IChair[] = [];
-  pagination = true;
-  paginationPageSize = 10;
-  paginationPageSizeSelector = [50, 500, 1000];
-
-
+  // AG Grid
   colDefs: ColDef[] = [
     { field: "FloorName" },
     { field: "DineTable" },
@@ -65,8 +44,11 @@ export class ChairComponent implements OnInit, ICellRendererAngularComp {
     { field: "description", flex: 2 },
     { field: "Delete", cellRenderer: BasetypDeleteButtun },
     { field: "Edit", cellRenderer: BasetypEditButtun }
-
   ];
+  pagination = true;
+  paginationPageSize = 10;
+  paginationPageSizeSelector = [10,50, 500, 1000];
+
   chair: IChair = {
     _id: "",
     name: "",
@@ -74,301 +56,230 @@ export class ChairComponent implements OnInit, ICellRendererAngularComp {
     status: true,
     table_id: '',
     chairorderstatus: '1'
-  }
-
-  IChairnamedata: any;
-  IChairnamedata2: any
-  IChairdata2: any;
-  IChairdata: any;
-  static myGlobalVariable: any;
-  exampleModal: any;
-  qname = "";
-  constructor(private service: ChairService,
-    private NameExistOrNotService_:NameExistOrNotService,
-    private floorservice: FloorService, private QuantitytypeService_: QuantitytypeService, private router: Router, private formedit: FormBuilder, private dineservice: DineService) {
-    this.display = "display:none;"
-    this.args = null;
-    this.myEditForm = this.formedit.group({
+  };
+  dinedata2: any;
+Floordata2: any;
+  constructor(
+    private chairService: ChairService,
+    private ValidationService_: ValidationService,
+    private floorService: FloorService,
+    private quantityTypeService: QuantitytypeService,
+    private router: Router,
+    private fb: FormBuilder,
+    private dineService: DineService
+  ) {
+    this.myEditForm = this.fb.group({
       _id: [''],
       name: ['', Validators.required],
       description: [''],
-      status: [true],
-      table_id: [''],
-      chairorderstatus: ['1']
+      status: [true, Validators.required],
+      table_id: ['', Validators.required],
+      chairorderstatus: ['1', Validators.required]
     });
-    this.myAddForm = this.formedit.group({
-
+    this.myAddForm = this.fb.group({
       name: ['', Validators.required],
       description: [''],
-      status: [true],
-      table_id: [''],
-      chairorderstatus: ['1']
+      status: [true, Validators.required],
+      table_id: ['', Validators.required],
+      chairorderstatus: ['1', Validators.required]
     });
-    //  this.loadbasetype();
-
   }
+
   ngOnInit(): void {
-
     this.classname = "";
-    this.loadfloor();
+    this.loadFloors();
     this.loadChairs();
-
   }
 
-  refresh(params: ICellRendererParams<any, any, any>): boolean {
+  agInit(params: ICellRendererParams): void {
+    // Not used in this context, but required by interface
+  }
+
+  refresh(params: ICellRendererParams): boolean {
     throw new Error('Method not implemented.');
   }
-  loadchair() {
-    //alert(selectcategoryID);
-    this.service.getbyid(this.myAddForm.value._id).subscribe(data => {
-      if (data) {
-        this.IChairdata2 = data;
-        this.IChairdata = this.IChairdata2.data
 
-      }
-    })
+  private loadFloors(): void {
+    this.floorService.get().subscribe(data => {
+      this.Floordata2 = data || [];
+       this.Floordata = this.Floordata2.data || [];
+    });
   }
-  loaddinename() {
 
-    for (var ii = 0; ii < this.IChairdata.length; ii++) {
-      this.dinenamearr.push({
-        _id: this.IChairdata[ii]._id,
-        DineTable: this.getdinename(this.IChairdata[ii].table_id),
-        name: this.IChairdata[ii].name,
-        description: this.IChairdata[ii].description,
-        table_id: this.IChairdata[ii].table_id,
-        status: this.IChairdata[ii].status,
-        FloorName: this.getFloorName(this.IChairdata[ii].table_id)
+  private loadDines(): void {
+    this.dineService.get().subscribe(data => {
+      this.dinedata2 = data;
+      this.dinedata = this.dinedata2.data || [];
+    });
+  }
 
-      })
+  private loadChairs(): void {
+    this.loadDines();
+    this.chairService.get().subscribe((data: IChair[] | { data: IChair[] }) => {
+      // If the response is an array, use it directly; if it's an object with a 'data' property, use that.
+      if (Array.isArray(data)) {
+        this.IChairdata = data;
+        console.log(this.IChairdata);
+      } else if (data && Array.isArray((data as any).data)) {
+        this.IChairdata = (data as any).data;
+        console.log(this.IChairdata);
+      } else {
+        this.IChairdata = [];
+      }
+      this.populateChairDisplayData();
+    });
+  }
+
+  private populateChairDisplayData(): void {
+    this.dinename = this.IChairdata.map((chair: IChair) => ({
+      _id: chair._id,
+      DineTable: this.getDineName(chair.table_id),
+      name: chair.name,
+      description: chair.description,
+      table_id: chair.table_id,
+      status: chair.status,
+      FloorName: this.getFloorName(chair.table_id)
+    }));
+  }
+
+  private getFloorName(tableId: string): string {
+    const dine = this.dinedata.find((item: { _id: string }) => item._id === tableId);
+    if (dine) {
+      const floor = this.Floordata.find((item: { _id: string }) => item._id === dine.floor_id);
+      return floor ? floor.name : '';
     }
-    this.dinename = this.dinenamearr;
-
+    return '';
   }
-  getFloorName(Tableid: string) {
-    const itemDine = this.dinedata.find((item: { _id: string; }) => item._id === Tableid);
-    const indexDine = this.dinedata.findIndex((item: { _id: string; }) => item._id === Tableid);
 
-    if (itemDine?._id) {
-
-      const itemP = this.Floordata.find((item: { _id: string; }) => item._id === this.dinedata[indexDine].floor_id);
-      const indexP = this.Floordata.findIndex((item: { _id: string; }) => item._id === this.dinedata[indexDine].floor_id);
-      //console.log()
-      if (itemP?._id) {
-        return this.Floordata[indexP].name;
-
-      }
+  private getDineName(id: string) {
+    if(id){
+    const dine = this.dinedata.find((item: { _id: string }) => item._id === id);
+    if(dine){
+    return dine ? dine.name : '';
     }
   }
-  getdinename(id: string) {
-    const itemP = this.dinedata.find((item: { _id: string; }) => item._id === id);
-    const indexP = this.dinedata.findIndex((item: { _id: string; }) => item._id === id);
-    console.log()
-    if (itemP._id) {
-      return this.dinedata[indexP].name;
-
-    }
-
   }
-  loadDine() {
-    //alert(selectcategoryID);
-    this.dineservice.get().subscribe(data => {
-      if (data) {
-        this.dinedata2 = data;
-        this.dinedata = this.dinedata2.data
 
-      }
-    })
-  }
-  loadfloor() {
-    //alert(selectcategoryID);
-    this.floorservice.get().subscribe(data => {
-      if (data) {
-        this.Floordata2 = data;
-        this.Floordata = this.Floordata2.data
-
-      }
-    })
-  }
-  loadChairs() {
-    //alert(selectcategoryID);
-    this.loadDine();
-    this.service.get().subscribe(data => {
-      if (data) {
-        this.IChairdata2 = data;
-        this.IChairdata = this.IChairdata2.data
-        this.loaddinename();
-      }
-    })
-  }
-  onCellClick(event: any) {
-
-    if (event.colDef.field == 'Delete') {
+  onCellClick(event: any): void {
+    if (event.colDef.field === 'Delete') {
       this.modal = "modal";
-      this.display = "display:block;"
+      this.display = "display:block;";
       this.valueid = event.data._id;
       this.tablename = "dine";
-      // alert(this.valueid);
-      //    if(PopupmodelComponent.delete==true)
-      //    {
-      // this.service.delete(event.data._id).subscribe(res => {
-      //   alert("Successfully Delete BaseType...");
-      //     // this.args="Successfully Deleted "+event.data.Basetypename;
-      //    })
-      //    }
-
-
-    }
-    if (event.colDef.field == 'Edit') {
-      this.loadDine();
+    } else if (event.colDef.field === 'Edit') {
+      this.loadDines();
       this.popdata2 = event.data;
       this.showEdit = true;
       this.show = false;
       this.args = null;
-      this.myEditForm = this.formedit.group({
+      this.myEditForm = this.fb.group({
         _id: [event.data._id],
         name: [event.data.name, Validators.required],
         description: [event.data.description],
-        status: [event.data.status, [Validators.required]],
-        table_id: [event.data.table_id, [Validators.required]],
-        chairorderstatus: [event.data.chairorderstatus, [Validators.required]]
+        status: [event.data.status, Validators.required],
+        table_id: [event.data.table_id, Validators.required],
+        chairorderstatus: [event.data.chairorderstatus, Validators.required]
       });
-
     }
     this.loadChairs();
   }
-
-
 
   add(chair: IChair): void {
-  if(this.NameExistOrNotService_.checkChairNameExist(this.myEditForm.value.name,this.IChairdata,this.dinedata,this.Floordata ))
-    {
-     this.args="Chair Exists.";
-    }
-    else
-    {
-    this.service.add(chair).subscribe(res => {
-      if (res) {
-        // console.log(data);
-        //this.search(id);
-        this.args = "Record Added succefully..." + chair.name;
-        // alert("Basetype inserted succefully.");
-        // this.loadbasetype()
-        
-      }
-    })
-this.loadChairs();
-  }
-  }
-
-
-
-  Update(chair: IChair) {
-    //alert(basetype._id);
-      if(this.NameExistOrNotService_.checkChairNameExist(this.myEditForm.value.name,this.IChairdata,this.dinedata,this.Floordata ))
-    {
-     this.args="Chair Exists.";
-    }
-    else
-    {
-    this.service.update(chair).subscribe(res => {
-      if (res) {
-        //this.search(id);
-
-        // this.args=null;
-        this.args = "Successfully Updated..." + chair.name;
-        //  alert("Successfully Updated BaseType..."+basetype.Basetypename);
-        // this.loadbasetype();
+    if (this.ValidationService_.checkChairNameExist(
+      this.myAddForm.value.name,
+      this.IChairdata,
+      this.dinedata,
+      this.Floordata
+    )) {
+      this.args = "Chair Exists.";
+    } else {
+      this.chairService.add(chair).subscribe(res => {
+        if (res) {
+          this.args = "Record Added successfully..." + chair.name;
+        }
         this.loadChairs();
-      }
-    })
+      });
+    }
   }
+
+  update(chair: IChair): void {
+    if (this.ValidationService_.checkChairNameExist(
+      this.myEditForm.value.name,
+      this.IChairdata,
+      this.dinedata,
+      this.Floordata
+    )) {
+      this.args = "Chair Exists.";
+    } else {
+      this.chairService.update(chair).subscribe(res => {
+        if (res) {
+          this.args = "Successfully Updated..." + chair.name;
+          this.loadChairs();
+        }
+      });
+    }
   }
-  cDelete(_id: any) {
-    //this.loadbasetype();
+
+  cDelete(_id: string): void {
     this.loadChairs();
   }
-  onFormSubmit() {
+
+  onFormSubmit(): void {
     if (this.myAddForm.valid) {
       this.add(this.myAddForm.value);
     }
   }
-  onFormEdit() {
+
+  onFormEdit(): void {
     if (this.myEditForm.valid) {
-      console.log(this.myEditForm.value);
-      // alert(this.myEditForm.value);
-      this.Update(this.myEditForm.value);
+      this.update(this.myEditForm.value);
     }
   }
 
-
-  //show addbasetype
-  show: any = false;
-  showEdit: any = false;
-  shows() {
-    this.loadDine();
+  shows(): void {
+    this.loadDines();
     this.classname = "";
     this.show = true;
     this.showEdit = false;
     this.args = null;
   }
-  close() {
-    //alert(arg0)
-    if (this.showEdit == true) {
+
+  close(): void {
+    if (this.showEdit) {
       this.showEdit = false;
     }
-    if (this.show == true) {
+    if (this.show) {
       this.show = false;
     }
-
   }
-  handleChildClick() {
+
+  handleChildClick(): void {
     this.display = "display:none;";
   }
-  deletedConfirmed(id: any) {
-    if (this.NotDeleteIfChairIsOne(id)) {
-      this.service.delete(id).subscribe(res => {
+
+  deletedConfirmed(id: string): void {
+    if (this.canDeleteChair(id)) {
+      this.chairService.delete(id).subscribe(res => {
         if (res) {
           this.display = "display:none;";
-          
-          this.args = " Record Deleted Successfully ";
+          this.args = "Record Deleted Successfully";
           alert("deleted");
         }
-      })
-    }
-    else {
+        this.loadChairs();
+      });
+    } else {
       this.display = "display:none;";
       alert("can't delete");
+      this.loadChairs();
     }
-    this.loadChairs();
   }
 
-  NotDeleteIfChairIsOne(id: string) {
-
-    let QuantityOfChair = 0;
-    const itemChair = this.dinename.find((item: { _id: string; }) => item._id === id);
-    const indexChair = this.dinename.findIndex((item: { _id: string; }) => item._id === id);
-    console.log(itemChair);
+  private canDeleteChair(id: string): boolean {
+    const itemChair = this.dinename.find((item: { _id: string }) => item._id === id);
     if (itemChair?._id) {
-
-      for (let i = 0; i < this.IChairdata.length; i++) {
-        if (this.IChairdata[i].table_id === itemChair.table_id) {
-          QuantityOfChair = QuantityOfChair + 1;
-        }
-      }
-      if (QuantityOfChair > 1) {
-
-        return true;
-      }
-      else {
-        return false;
-      }
+      const count = this.IChairdata.filter((c: IChair) => c.table_id === itemChair.table_id).length;
+      return count > 1;
     }
-    else
-    {
-      return false;
-    }
+    return false;
   }
-
-
 }

@@ -4,285 +4,271 @@ import { InventoryMainFood } from '../../core/Model/crud.model';
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
 import { ColDef } from 'ag-grid-community';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
-import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
 import { InventoryMainFoodService } from '../../core/Services/inventoryMainFood.service';
 import { InventoryMFoodQuantityTypeService } from '../../core/Services/inventoryFoodQuantityType.service';
-import { Observable } from 'rxjs';
+import {  Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { loadInventoryFoodQuantityType } from '../inventoryStore/inventoryFoodQuantityTypeStore/inventoryFoodQuantityType.actions';
 import { addInventoryMainFood, deleteInventoryMainFood, loadInventoryMainFood, updateInventoryMainFood } from '../inventoryStore/inventoryMainFoodStore/inventoryMainFood.actions';
+import { popupenvironment } from '../../environment/popupEnvironment';
+import * as InventoryMainFoodActions from '../inventoryStore/inventoryMainFoodStore/inventoryMainFood.actions';
+import { Actions, ofType } from '@ngrx/effects';
 
 @Injectable({ providedIn: 'root' })
-
-
 @Component({
-    selector: 'app-inventorymainfood',
-    templateUrl: './inventorymainfood.component.html',
-    styleUrl: './inventorymainfood.component.css',
-    standalone: false
+  selector: 'app-inventorymainfood',
+  templateUrl: './inventorymainfood.component.html',
+  styleUrl: './inventorymainfood.component.css',
+  standalone: false
 })
 export class InventorymainfoodComponent implements OnInit {
-  //lodProductCategory:ProductCategory[]=[];
-  args: any = null;
-  myEditForm: FormGroup;
-  employeeId = "JSK";
-  pagination = true;
-  paginationPageSize = 10;
-  paginationPageSizeSelector = [200, 500, 1000];
-  @ViewChild('f')
-  categoryViewchild!: NgForm;
-  @ViewChild('formupdate')
-  formupdate!: NgForm;
-  data2: any;
-  InventoryMainFooddata$: Observable<any[]> | undefined;
-  inventoryQuantityTypeData$: Observable<any[]> | undefined;
-  loading$: Observable<boolean> | undefined;
-  error$: Observable<string | null> | undefined;
-  Inventoryfoodquntitytype2: any;
-  //Inventoryfoodquntitytype:any;
-  productrecord: any;
-  productrecord2: any;
-  quantitytypename: string = "";
-  _InventoryFoodMain: InventoryMainFood = {
-    name: "",
-    description: "",
-    quantitytypeID: "",
-    quantitytypename: "",
-    quantitytypevalue: 0,
-    employee_id: "undefined",
-    _id: undefined
-  };
+  @ViewChild('f') categoryViewchild!: NgForm;
+  @ViewChild('formupdate') formupdate!: NgForm;
+  popupenvironments:any;
+  myAddForm!: FormGroup;
+  myEditForm!: FormGroup;
+  employeeId: string = "JSK";
+
+  InventoryMainFooddata$!: Observable<any[]>;
+  inventoryQuantityTypeData$!: Observable<any[]>;
+  loading$!: Observable<boolean>;
+  error$!: Observable<string | null>;
+
   colDefs: ColDef[] = [
     { field: "name" },
     { field: "quantitytypename" },
     { field: "quantitytypevalue" },
-    { field: "discription", flex: 2 },
-    { field: "Delete", cellRenderer: BasetypDeleteButtun },
+    { field: "description", flex: 2 },
     { field: "Edit", cellRenderer: BasetypEditButtun }
-
   ];
-  discription: any;
-  name: any;
-  popdata2: any;
-  display: any;
-  tablename: any;
-  valueid: any;
-  modal: any;
-  myAddForm: FormGroup;
-  constructor(private service: InventoryMainFoodService, private router: Router, private formedit: FormBuilder, private _InventoryMFoodQuantityTypeService: InventoryMFoodQuantityTypeService, private store: Store<{ loadInventoryFoodQuantityType: any, loadInventoryMainFood: any }>) {
-    this.inventoryQuantityTypeData$ = store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
-    this.loading$ = store.select(state => state.loadInventoryFoodQuantityType.loading);
-    this.error$ = store.select(state => state.loadInventoryFoodQuantityType.error);
+  // Common pagination properties
+  pagination = true;
+  paginationPageSize = 10;
+  paginationPageSizeSelector = [10,200, 500, 1000];
 
-    this.InventoryMainFooddata$ = store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
-    this.loading$ = store.select(state => state.loadInventoryMainFood.loading);
-    this.error$ = store.select(state => state.loadInventoryMainFood.error);
+  // Common UI state properties
+ 
 
-    this.display = "display:none;"
-    this.myEditForm = this.formedit.group({
+  // Data helpers
+  quantitytypename: string = "";
+  
+  constructor(
+    private service: InventoryMainFoodService,
+    private router: Router,public actions$: Actions,
+    private fb: FormBuilder,
+    private _InventoryMFoodQuantityTypeService: InventoryMFoodQuantityTypeService,
+    private store: Store<{ loadInventoryFoodQuantityType: any, loadInventoryMainFood: any }>
+  ) {
+    this.initForms();
+    this.initSelectors();
+  }
+
+  ngOnInit(): void {
+    this.popupenvironments=popupenvironment;
+    this.loadInventoryMainFoods();
+    this.loadInventoryFoodQuantityTypes();
+  }
+
+  private initForms() {
+    this.myAddForm = this.fb.group({
+      name: ['', Validators.required],
+      description: [''],
+      quantitytypeID: ['', Validators.required],
+      quantitytypename: [''],
+      quantitytypevalue: [''],
+      employee_id: this.employeeId
+    });
+
+    this.myEditForm = this.fb.group({
       _id: [''],
       name: ['', Validators.required],
-      discription: [''],
-      quantitytypeID: ['', Validators.required],
-      quantitytypename: [''],
-      quantitytypevalue: [''],
-      employee_id: this.employeeId
-
-    });
-    this.myAddForm = this.formedit.group({
-      name: ['', Validators.required],
-      discription: [''],
+      description: [''],
       quantitytypeID: ['', Validators.required],
       quantitytypename: [''],
       quantitytypevalue: [''],
       employee_id: this.employeeId
     });
   }
-  ngOnInit(): void {
 
-    this.loadInventoryMainFoods();
-    this.loadinventoeryfoodquantitytype();
-  }
-    getInventoryFoodQuantityTypeName() {
-  this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
+  private initSelectors() {
+    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
     this.loading$ = this.store.select(state => state.loadInventoryFoodQuantityType.loading);
     this.error$ = this.store.select(state => state.loadInventoryFoodQuantityType.error);
-  this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
-    if (this.inventoryQuantityTypeData$) {
-      this.inventoryQuantityTypeData$.subscribe(inventoryQuantityTypeData => {
-        const indexInvetoryMainFood = inventoryQuantityTypeData.findIndex((item: { _id: any; }) => item._id === this.myAddForm.value.quantitytypeID);
-        this.quantitytypename = inventoryQuantityTypeData[indexInvetoryMainFood].name;
-        console.log(indexInvetoryMainFood);
-        console.log(inventoryQuantityTypeData);
-})
-    }
 
+    this.InventoryMainFooddata$ = this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
+    // loading$ and error$ for main food can be overwritten if needed
   }
-    getInventoryFoodQuantityTypeNameforEdit() {
-  this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
-    this.loading$ = this.store.select(state => state.loadInventoryFoodQuantityType.loading);
-    this.error$ = this.store.select(state => state.loadInventoryFoodQuantityType.error);
-  this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
-    if (this.inventoryQuantityTypeData$) {
-      this.inventoryQuantityTypeData$.subscribe(inventoryQuantityTypeData => {
-        const indexInvetoryMainFood = inventoryQuantityTypeData.findIndex((item: { _id: any; }) => item._id === this.myEditForm.value.quantitytypeID);
-        this.quantitytypename = inventoryQuantityTypeData[indexInvetoryMainFood].name;
-      // this.myEditForm.value.quantitytypeID=inventoryQuantityTypeData[indexInvetoryMainFood].quantitytypeID;
-       // alert(this.myEditForm.value.quantitytypeID);
- this.myEditForm = this.formedit.group({
-        _id: [this.myEditForm.value._id],
-        name: [this.myEditForm.value.name, Validators.required],
-        discription: [this.myEditForm.value.description],
-        //quantitytypeID: [inventoryQuantityTypeData[indexInvetoryMainFood].quantitytypeID, Validators.required],
-       quantitytypeID: [this.myEditForm.value.quantitytypeID, Validators.required],
-        quantitytypename: [this.quantitytypename],
-        quantitytypevalue: [this.myEditForm.value.quantitytypevalue]
 
-      });
-})
-    }
-
-  }
-  getqtname() {
-  this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
-     if (this.inventoryQuantityTypeData$) {
-      this.inventoryQuantityTypeData$.subscribe(inventoryQuantityTypeData => {
-        const itemP = inventoryQuantityTypeData.find((item: { _id: string; }) => item._id === this.myAddForm.value.quantitytypeID);
-        const indexP = inventoryQuantityTypeData.findIndex((item: { _id: any; }) => item._id === this.myAddForm.value.quantitytypeID);
-
-        if (itemP && itemP._id) {
-          this.quantitytypename = inventoryQuantityTypeData[indexP].name;
-
-        }
-      });
-    }
-   
-  }
-  loadinventoeryfoodquantitytype() {
+  loadInventoryFoodQuantityTypes() {
     this.store.dispatch(loadInventoryFoodQuantityType());
-     this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
-    this.store.select(state => state.loadInventoryFoodQuantityType.loading);
-    this.store.select(state => state.loadInventoryFoodQuantityType.error);
-
+    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
   }
-  add(InventoryMainFood_: InventoryMainFood): void {
-    let Index = 1;
-    this.InventoryMainFooddata$?.subscribe(getname => {
-      Index = getname.findIndex((item: { name: string; }) => item.name === this.myAddForm.value.name);
-     
-    })
-    if (Index == -1) {
-      this.store.dispatch(addInventoryMainFood({ InventoryMainFood_ }));
-      this.args = this.myAddForm.value.quantitytypevalue + " " + this.myAddForm.value.quantitytypename + " " + this.myAddForm.value.name + " Added";
-    }
-    else {
-      this.args = "Exist name";
-    }
-     this.store.dispatch(loadInventoryMainFood());
-   this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
-   
-  }
-  onCellClick(event: any) {
 
-    if (event.colDef.field == 'Delete') {
-
-      this.modal = "modal";
-      this.display = "display:block"
-      this.valueid = event.data._id;
-      this.tablename = "cate";
-
-
-    }
-    if (event.colDef.field == 'Edit') {
-     this.loadinventoeryfoodquantitytype()
-      this.popdata2 = event.data;
-      this.showEdit = true;
-      this.show = false;
-      this.args = null;
-      this.quantitytypename = event.data.quantitytypename;
-
-      this.myEditForm = this.formedit.group({
-        _id: [event.data._id],
-        name: [event.data.name, Validators.required],
-        discription: [event.data.description],
-        quantitytypeID: [event.data.quantitytypeID, Validators.required],
-        quantitytypename: [event.data.quantitytypename],
-        quantitytypevalue: [event.data.quantitytypevalue]
-
-      });
-    }
-  }
-changeQuantityTypeName()
-{
-// alert(this.myEditForm.value.quantitytypeID);
-//  this.myEditForm = this.formedit.group({
-//         _id: [this.myEditForm.value._id],
-//         name: [this.myEditForm.value.name, Validators.required],
-//         discription: [this.myEditForm.value.description],
-//         quantitytypeID: [this.myEditForm.value.quantitytypeID, Validators.required],
-//         quantitytypename: [this.myEditForm.value.quantitytypename],
-//         quantitytypevalue: [this.myEditForm.value.quantitytypevalue]
-
-//       });
-}
   loadInventoryMainFoods() {
     this.store.dispatch(loadInventoryMainFood());
-  this.InventoryMainFooddata$ =  this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
-   this.store.select(state => state.loadInventoryMainFood.loading);
-     this.store.select(state => state.loadInventoryMainFood.error);
+    this.InventoryMainFooddata$ = this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
+    this.actions$.pipe(ofType(InventoryMainFoodActions.loaInventoryMainFoodByIdSuccess)).subscribe(() => {
+      this.popupenvironments.args$.next("Successfully to loaded.");
+      // this.loadcategory();
+    });
+    this.actions$.pipe(ofType(InventoryMainFoodActions.loadInventoryMainFoodFailure)).subscribe(() => {
+    
+      this.popupenvironments.args$.next(" Failed to load.");
+      
+    });
   }
+
+  getInventoryFoodQuantityTypeName() {
+    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
+    this.inventoryQuantityTypeData$.subscribe(inventoryQuantityTypeData => {
+      const found = inventoryQuantityTypeData.find((item: any) => item._id === this.myAddForm.value.quantitytypeID);
+      console.log(found);
+      this.quantitytypename = found ? found.name : '';
+      this.myAddForm.patchValue({
+        quantitytypename: this.quantitytypename,
+    
+      });
+    });
+  }
+
+  getInventoryFoodQuantityTypeNameforEdit() {
+    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
+    this.inventoryQuantityTypeData$.subscribe(inventoryQuantityTypeData => {
+      const found = inventoryQuantityTypeData.find((item: any) => item._id === this.myEditForm.value.quantitytypeID);
+      this.quantitytypename = found ? found.name : '';
+      this.myEditForm.patchValue({
+        quantitytypename: this.quantitytypename
+      });
+    });
+  }
+
+  getqtname() {
+    this.inventoryQuantityTypeData$.subscribe(inventoryQuantityTypeData => {
+      const found = inventoryQuantityTypeData.find((item: any) => item._id === this.myAddForm.value.quantitytypeID);
+      this.quantitytypename = found ? found.name : '';
+    });
+  }
+
+  add(InventoryMainFood_: InventoryMainFood): void {
+    let nameExists = false;
+    this.InventoryMainFooddata$ = this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
+    this.InventoryMainFooddata$?.subscribe(data => {
+      nameExists = data.some((item: any) => item.name === this.myAddForm.value.name);
+    }).unsubscribe?.();
+
+    if (!nameExists) {
+      this.store.dispatch(addInventoryMainFood({ InventoryMainFood_ }));
+      this.actions$.pipe(ofType(InventoryMainFoodActions.addInventoryMainFoodSuccess)).subscribe(() => {
+        this.popupenvironments.args$.next(InventoryMainFood_.name+" Addedd.");
+        this.loadInventoryMainFoods();
+        // this.loadcategory();
+      });
+      this.actions$.pipe(ofType(InventoryMainFoodActions.addInventoryMainFoodFailure)).subscribe(() => {
+      
+        this.popupenvironments.args$.next(InventoryMainFood_.name+" Failed to Add.");
+        
+      });
+     // this.popupenvironments.args$.next(`${this.myAddForm.value.quantitytypevalue} ${this.myAddForm.value.quantitytypename} ${this.myAddForm.value.name} Added`);
+     
+    } else {
+      this.popupenvironments.args$.next("Exist name");
+    }
+    //this.InventoryMainFooddata$ = this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
+   // this.loadInventoryMainFoods();
+  }
+  loadinventoeryfoodquantitytype() {
+    throw new Error('Method not implemented.');
+  }
+
+  onCellClick(event: any) {
+    if (event.colDef.field === 'Delete') {
+      this.popupenvironments.modal$.next("modal");
+      this.popupenvironments.display$.next("display:block");
+      this.popupenvironments.valueid$.next(event.data._id);
+      this.popupenvironments.tablename$.next("cate");
+    }
+
+    if (event.colDef.field === 'Edit') {
+      
+      this.initForms();
+      this.loadInventoryFoodQuantityTypes();
+      console.log(event.data);
+      this.popupenvironments.popdata2$.next(event.data);
+      console.log(this.popupenvironments.popdata2$.value);
+      
+      this.popupenvironments.showEdit$.next(true);
+      this.popupenvironments.show$.next(false);
+      this.popupenvironments.args$.next(null);
+      this.quantitytypename = event.data.quantitytypename;
+
+      this.myEditForm.patchValue({
+        _id: event.data._id,
+        name: event.data.name,
+        description: event.data.description,
+        quantitytypeID: event.data.quantitytypeID,
+        quantitytypename: event.data.quantitytypename,
+        quantitytypevalue: event.data.quantitytypevalue,
+        employee_id: this.employeeId
+      });
+      
+    }
+  }
+
+  changeQuantityTypeName() {
+    // Placeholder for future logic if needed
+  }
+
   Update(InventoryMainFood_: InventoryMainFood) {
-
-    this.store.dispatch(updateInventoryMainFood({ InventoryMainFood_ }));
-    this.args="Updated";
-    this.loadInventoryMainFoods();
-  //     this.store.dispatch(loadInventoryMainFood());
-  //  this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
+    try {
+      this.store.dispatch(updateInventoryMainFood({ InventoryMainFood_ }));
+      this.popupenvironments.args$.next("Record updated successfully.");
+      this.loadInventoryMainFoods();
+    } catch (error) {
+      console.error('Error updating InventoryMainFood:', error);
+      this.popupenvironments.args$.next("Error updating record. Please try again.");
+      return;
+    }
    
-
   }
+
   cDelete(_id: any) {
-
+    // Placeholder for future logic if needed
   }
+
   onFormSubmit() {
     if (this.myAddForm.valid) {
       this.add(this.myAddForm.value);
     }
+  }
 
-  }
-  show: any = false;
-  showEdit: any = false;
   shows() {
-    this.loadinventoeryfoodquantitytype();
-    this.show = true;
-    this.showEdit = false;
-    this.args = null;
+    this.quantitytypename='';
+    this.initForms();
+    this.loadInventoryFoodQuantityTypes();
+    this.popupenvironments.show$.next(true);
+    this.popupenvironments.showEdit$.next(false);
+    this.popupenvironments.args$.next(null);
   }
+
   onEditForm() {
     if (this.myEditForm.valid) {
       this.Update(this.myEditForm.value);
     }
   }
+
   close() {
-    //alert(arg0)
-    if (this.showEdit == true) {
-      this.showEdit = false;
-    }
-    if (this.show == true) {
-      this.show = false;
-    }
-
+    this.popupenvironments.showEdit$.next(false);
+    this.popupenvironments.show$.next(false);
   }
+
   handleChildClick() {
-    this.display = "display:none;";
+    this.popupenvironments.display$.next("display:none;");
   }
-  deletedConfirmed(_id: any) {
 
+  deletedConfirmed(_id: any) {
     this.store.dispatch(deleteInventoryMainFood({ _id }));
-     this.display = "display:none;";
-        this.args = " Record Deleted Successfully ";
-     this.store.dispatch(loadInventoryMainFood());
-   this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
-   
+    this.popupenvironments.display$.next("display:none;");
+    this.popupenvironments.args$.next(" Record Deleted Successfully ");
+    this.loadInventoryMainFoods();
   }
 }

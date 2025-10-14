@@ -1,4 +1,4 @@
-import { Action, createReducer, on } from "@ngrx/store";
+import {  createReducer, on } from "@ngrx/store";
 import { initialState } from "./itemquantity.state";
 import { itemQminus, itmeQplus } from "./itemquantity.action";
 const _itemsReducer = createReducer(

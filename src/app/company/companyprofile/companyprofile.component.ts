@@ -50,7 +50,7 @@ export class CompanyprofileComponent  implements OnInit, ICellRendererAngularCom
   //lodbastype: basetyperowData[] = [];
   pagination = true;
   paginationPageSize = 10;
-  paginationPageSizeSelector = [200, 500, 1000];
+  paginationPageSizeSelector = [10,200, 500, 1000];
 
   colDefs: ColDef[] = [
     { field: "name" },
@@ -206,7 +206,7 @@ this.display="display:none;"
     this.service.get().subscribe(data => {
       if (data) {
         this.companyprofiledata2 = data;
-        this.companyprofiledata = this.companyprofiledata2.allTasks;
+        this.companyprofiledata = this.companyprofiledata2.data;
         
       }
     })

@@ -10,7 +10,7 @@ import { ProductPrice, ProductPriceDetails, Products } from '../../core/Model/cr
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
 import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
-import { Observable } from 'rxjs';
+import { Observable, takeUntil } from 'rxjs';
 import { Store } from '@ngrx/store';
 import * as ProductPriceActions from '../ManageStore/productPriceStore/productPrice.actions';
 import { loadProduct } from '../ManageStore/productStore/product.actions';
@@ -172,7 +172,7 @@ subQuntities:any=[];
           selectQtypeID: [this.prodata[0].selectQtypeID, [Validators.required]],
           selectSubQuantityTypeID: [this.prodata[0].selectSubQuantityTypeID, [Validators.required]]
         });
-        alert(this.prodata[0].Productname);
+      //  alert(this.prodata[0].Productname);
         console.log(this.prodata);
         //this.search(id);
 
@@ -201,15 +201,18 @@ subQuntities:any=[];
     //this.store.dispatch(loadSubQuantityType());
     this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
 
-   this.subQuantityTypeData$.subscribe(subQuantityData=>{
-  
-    for(let ii = 0; ii<subQuantityData.length; ii++)
-    {
-      if(subQuantityData[ii].selectQtypeID==selectQtypeID)
-      {
-        this.subQuntities.push({"_id":subQuantityData[ii]._id,"name":subQuantityData[ii].name,"selectQtypeID":subQuantityData[ii].selectQtypeID});
+   const subQuantityTypeDataSub = this.subQuantityTypeData$.subscribe(subQuantityData => {
+    for (let ii = 0; ii < subQuantityData.length; ii++) {
+      if (subQuantityData[ii].selectQtypeID == selectQtypeID) {
+        this.subQuntities.push({
+          "_id": subQuantityData[ii]._id,
+          "name": subQuantityData[ii].name,
+          "selectQtypeID": subQuantityData[ii].selectQtypeID
+        });
       }
     }
+    subQuantityTypeDataSub.unsubscribe();
+   
     console.log(this.subQuntities);
 // const itemSubQuantity = subQuantityData.find((item: { selectQtypeID: string; })=>item.selectQtypeID===QuntityTypeId);
 //        if(itemSubQuantity)
@@ -226,14 +229,17 @@ subQuntities:any=[];
 this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID); 
   }
   loadSubQuantityTypeByQuantityTypeID(QuntityTypeId:string) {
-     this.store.dispatch(loadSubQuantityTypeById({ selectQtypeID:QuntityTypeId }));
+     this.store.dispatch(loadSubQuantityTypeById({ selectQtypeID: QuntityTypeId }));
      this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeByIdLoad.SubQuantityType_.data);
-    this.actions$.pipe(ofType(loadProductPriceSuccess)).subscribe(() => {
-            
-           });
-        this.actions$.pipe(ofType(ProductPriceActions.addProductPriceFailure)).subscribe(() => {
-            this.args="Unable to Load Product Price";
-           });
+
+     const loadProductPriceSuccessSub = this.actions$.pipe(ofType(loadProductPriceSuccess)).subscribe(() => {
+         loadProductPriceSuccessSub.unsubscribe();
+     });
+
+     const addProductPriceFailureSub = this.actions$.pipe(ofType(ProductPriceActions.addProductPriceFailure)).subscribe(() => {
+         this.args = "Unable to Load Product Price";
+         addProductPriceFailureSub.unsubscribe();
+     });
      // this.loading$ = this.store.select(state => state.subQuantityTypeByIdLoad.loading);
     // this.error$ = this.store.select(state => state.subQuantityTypeByIdLoad.error);
   }
@@ -241,12 +247,15 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
 
     this.store.dispatch(loadQuantityType());
     this.Qtypenamedata$ = this.store.select(state => state.quantityTypeLoad.QuantityType_.data);
-  this.actions$.pipe(ofType(loadQuantityTypeSuccess)).subscribe(() => {
-            
-           });
-        this.actions$.pipe(ofType(loadQuantityTypeFailure)).subscribe(() => {
-            this.args="Unable to Load QuantityType";
-           });
+
+    const loadQuantityTypeSuccessSub = this.actions$.pipe(ofType(loadQuantityTypeSuccess)).subscribe(() => {
+        loadQuantityTypeSuccessSub.unsubscribe();
+    });
+
+    const loadQuantityTypeFailureSub = this.actions$.pipe(ofType(loadQuantityTypeFailure)).subscribe(() => {
+        this.args = "Unable to Load QuantityType";
+        loadQuantityTypeFailureSub.unsubscribe();
+    });
     // this.loading$ = this.store.select(state => state.quantityTypeLoad.loading);
     // this.error$ = this.store.select(state => state.quantityTypeLoad.error);
   }
@@ -267,155 +276,168 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
     this.loadproductpricename();
   }
   loadproductpricename() {
-
     this.productPriceData$ = this.store.select(state => state.productPriceLoad.ProductPrice_.data);
-if( this.productPriceData$){
-    this.productPriceData$.subscribe(productPriceData => {
-      let mergAllProductRelatedTables: ProductPriceDetails[] = [];
-      //alert(productPriceData.length);
-      //console.log(productPriceData);
-      for (let ii = 0; ii < productPriceData.length; ii++) {
-        const mergeProducts: ProductPriceDetails = {
-          _id: productPriceData[ii]._id,
-          ProductPrice: productPriceData[ii].ProductPrice,
-          ProductName: this.getproductname(productPriceData[ii].SelectProductId),
-          categoryName: this.getcategoryname(productPriceData[ii].selectcategoryID),
-          QtypeName: this.getqtypnamename(productPriceData[ii].selectQtypeID),
-          SubQuantityTypeName: this.getSubQuantityTypeName(productPriceData[ii].selectSubQuantityTypeID),
-          SelectProductId: productPriceData[ii].SelectProductId,
-          selectcategoryID: productPriceData[ii].selectcategoryID,
-          selectQtypeID: productPriceData[ii].selectQtypeID,
-          selectSubQuantityTypeID: productPriceData[ii].selectSubQuantityTypeID,
-          quntityvalue: 0,
-          veg_nonveg: productPriceData[ii].veg_nonveg
-        };
-        mergAllProductRelatedTables.push(mergeProducts);
-      }
-      this.productPriceRecord = mergAllProductRelatedTables;
 
-    });
+    if (this.productPriceData$) {
+    //const productPriceData = 
+     this.productPriceData$    
+        .subscribe(productPriceData => {
+          let mergAllProductRelatedTables: ProductPriceDetails[] = [];
+          //alert(productPriceData.length);
+          console.log(productPriceData);
 
+          if (productPriceData == undefined) return;
+          for (let ii = 0; ii < productPriceData.length; ii++) {
+            if (productPriceData.length > 0 && productPriceData.length != undefined) {
+              // console.log(productPriceData[ii]);
+              const mergeProducts: ProductPriceDetails = {
+                _id: productPriceData[ii]._id,
+                ProductPrice: productPriceData[ii].ProductPrice,
+                ProductName: this.getproductname(productPriceData[ii].SelectProductId),
+                categoryName: this.getcategoryname(productPriceData[ii].selectcategoryID),
+                QtypeName: this.getqtypnamename(productPriceData[ii].selectQtypeID),
+                SubQuantityTypeName: this.getSubQuantityTypeName(productPriceData[ii].selectSubQuantityTypeID),
+                SelectProductId: productPriceData[ii].SelectProductId,
+                selectcategoryID: productPriceData[ii].selectcategoryID,
+                selectQtypeID: productPriceData[ii].selectQtypeID,
+                selectSubQuantityTypeID: productPriceData[ii].selectSubQuantityTypeID,
+                quntityvalue: 0,
+                veg_nonveg: productPriceData[ii].veg_nonveg
+              };
+              mergAllProductRelatedTables.push(mergeProducts);
+            }
+          }
+          this.productPriceRecord = mergAllProductRelatedTables;
+        });
+       //  productPriceData.unsubscribe();
+    }
+   
   }
+ 
 
-  }
-  getproductname(id: string) {
+  getproductname(_id: string) {
     let ProductName = "";
     this.Productnamedata$ = this.store.select(state => state.productLoad.Product_.data);
-    this.Productnamedata$.subscribe(Productnamedata => {
-      const itemP = Productnamedata.find((item: { _id: string; }) => item._id === id);
-      const indexP = Productnamedata.findIndex((item: { _id: string; }) => item._id === id);
+  const Productnamedata =   this.Productnamedata$?.subscribe(Productnamedata => {
+      console.log(Productnamedata);
+      const itemP = Productnamedata.find((item: { _id: string; }) => item._id === _id);
+      const indexP = Productnamedata.findIndex((item: { _id: string; }) => item._id === _id);
 
-      if (itemP._id) {
-        ProductName = Productnamedata[indexP].Productname;
+      if (itemP && itemP._id) {
+        ProductName = Productnamedata[indexP].name;
+        
       }
-
-    })
+     
+    });
+     Productnamedata.unsubscribe();
     return ProductName;
+   
   }
-  getqtypnamename(id: string) {
+
+  getqtypnamename(_id: string) {
     this.Qtypenamedata$ = this.store.select(state => state.quantityTypeLoad.QuantityType_.data);
     let QuantityTypeName = "";
-    this.Qtypenamedata$.subscribe(Qtypenamedata => {
-      const itemP = Qtypenamedata.find((item: { _id: string; }) => item._id === id);
-      const indexP = Qtypenamedata.findIndex((item: { _id: string; }) => item._id === id);
+  const Qtypenamedata =  this.Qtypenamedata$.subscribe(Qtypenamedata => {
+      const itemP = Qtypenamedata.find((item: { _id: string; }) => item._id === _id);
+      const indexP = Qtypenamedata.findIndex((item: { _id: string; }) => item._id === _id);
 
-      if (itemP._id) {
+      if (itemP && itemP._id) { 
         QuantityTypeName = Qtypenamedata[indexP].name;
       }
-    })
+    });
+    Qtypenamedata.unsubscribe();
     return QuantityTypeName;
   }
+
   getcategoryname(id: string) {
     this.categorynamedata$ = this.store.select(state => state.categoryLoad.ProductCategory_.data);
     let CategoryName = "";
-    this.categorynamedata$.subscribe(categorynamedata => {
+  const categorynamedata =  this.categorynamedata$.subscribe(categorynamedata => {
       const itemP = categorynamedata.find((item: { _id: string; }) => item._id === id);
       const indexP = categorynamedata.findIndex((item: { _id: string; }) => item._id === id);
 
-      if (itemP._id) {
+      if (itemP && itemP._id) {
         CategoryName = categorynamedata[indexP].name;
       }
-    })
+    });
+    categorynamedata.unsubscribe();
     return CategoryName;
   }
 
-
   getSubQuantityTypeName(id: string) {
-   this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
+    this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
 
     let SubQuantityTypeName = "";
-    this.subQuantityTypeData$.subscribe(subQuantityTypeData => {
+  const subQuantityTypeData =  this.subQuantityTypeData$.subscribe(subQuantityTypeData => {
       const itemP = subQuantityTypeData.find((item: { _id: string; }) => item._id === id);
       const indexP = subQuantityTypeData.findIndex((item: { _id: string; }) => item._id === id);
 
-      if (itemP._id == id) {
+      if (itemP && itemP._id == id) {
         SubQuantityTypeName = subQuantityTypeData[indexP].name;
       }
-    })
+    });
+    subQuantityTypeData.unsubscribe();
     return SubQuantityTypeName;
   }
+
   add(ProductPrice_: ProductPrice) {
-   // ProductPrice_.selectcategoryID, ProductPrice_.selectQtypeID,
-   try{
-      this.service.getbyid(ProductPrice_.SelectProductId, ProductPrice_.selectSubQuantityTypeID, ProductPrice_.selectQtypeID, ProductPrice_.selectcategoryID).subscribe(result => {
-        // alert(selectcategoryID)
+    // ProductPrice_.selectcategoryID, ProductPrice_.selectQtypeID,
+    try {
+      this.service.getbyid(ProductPrice_.SelectProductId, ProductPrice_.selectSubQuantityTypeID, ProductPrice_.selectQtypeID, ProductPrice_.selectcategoryID)
+        
+        .subscribe(result => {
+          // alert(selectcategoryID)
 
-      console.log(result);
-         this.addProductPriceResultdata = result;
-        console.log(this.addProductPriceResultdata.data);
-        console.log(this.addProductPriceResultdata.length);
-        if (this.addProductPriceResultdata.data.length == 0) {
+          console.log(result);
+          this.addProductPriceResultdata = result;
+          console.log(this.addProductPriceResultdata.data);
+          console.log(this.addProductPriceResultdata.length);
+          if (this.addProductPriceResultdata.data.length == 0) {
 
-          this.store.dispatch(addProductPrice({ ProductPrice_ }));
-          // this.SweetAlert2_.showFancyAlertSuccess(" Added.");
-          // this.productpriceallname=[];  
-          this.actions$.pipe(ofType(ProductPriceActions.addProductPriceSuccess)).subscribe(() => {
-            this.args = "Product Price Added";
-          // 
-          
+            this.store.dispatch(addProductPrice({ ProductPrice_ }));
+            // this.SweetAlert2_.showFancyAlertSuccess(" Added.");
+            // this.productpriceallname=[];  
+            this.actions$.pipe(ofType(ProductPriceActions.addProductPriceSuccess)).subscribe(() => {
+              this.args = "Product Price Added";
+              // 
+            });
+            this.actions$.pipe(ofType(ProductPriceActions.addProductPriceFailure)).subscribe(() => {
+              this.args = "Something went wrong with Product Price";
+            });
 
-          });
-          this.actions$.pipe(ofType(ProductPriceActions.addProductPriceFailure)).subscribe(() => {
-            this.args = "Something went wrong with Product Price";
+          }
+          else {
+            //alert("");  
+            this.args = "Already exists data.";
+          }
 
-          });
-
-        }
-        else {
-          //alert("");  
-          this.args ="Already exists data.";
-        }
-     
-      })
+        });
     }
-    catch(error)
-    {
+    catch (error) {
       console.log(error);
-     // console.log(r);
+      // console.log(r);
     }
-
   }
+
   onFormSubmit() {
     if (this.myAddForm.valid) {
       this.add(this.myAddForm.value);
     }
-
   }
+
   onFormUpdateSubmit() {
     this.Update(this.myEditForm.value);
   }
-  Update(ProductPrice_: ProductPrice) {
 
+  Update(ProductPrice_: ProductPrice) {
     this.store.dispatch(updateProductPrice({ ProductPrice_ }));
     this.actions$.pipe(ofType(ProductPriceActions.updateProductPriceSuccess)).subscribe(() => {
       this.args = "Product Price Updated";
       // this.productPriceRecord = [];
       this.refresh();
-
     });
     this.actions$.pipe(ofType(ProductPriceActions.updateProductPriceFailure)).subscribe(() => {
       this.args = "Something went wrong with Product Price";
-
     });
   }
 
@@ -426,12 +448,11 @@ if( this.productPriceData$){
       this.display = "display:block;";
       this.valueid = event.data._id;
       this.tablename = "prodpric";
-
     }
     if (event.colDef.field == 'Edit') {
       this.popdata2 = event.data;
       this.loadSubQuantityTypeByEdit(event.data.selectQtypeID);
-    //  this.loadSubQuantityTypeByQuantityTypeID(event.data.selectQtypeID);
+      //  this.loadSubQuantityTypeByQuantityTypeID(event.data.selectQtypeID);
       this.showEdit = true;
       this.show = false;
       this.args = "";
@@ -442,12 +463,10 @@ if( this.productPriceData$){
         selectcategoryID: [event.data.selectcategoryID, [Validators.required]],
         selectQtypeID: [event.data.selectQtypeID, [Validators.required]],
         selectSubQuantityTypeID: [event.data.selectSubQuantityTypeID, [Validators.required]]
-
       });
-
     }
-
   }
+
   show: any = false;
   showEdit: any = false;
   shows() {
@@ -463,9 +482,8 @@ if( this.productPriceData$){
     if (this.show == true) {
       this.show = false;
     }
-      this.refresh();
- this.productPriceRecord = [];
-
+    this.refresh();
+    this.productPriceRecord = [];
   }
   handleChildClick() {
     this.display = "display:none;";
@@ -477,8 +495,8 @@ if( this.productPriceData$){
       this.refresh();
     });
     this.actions$.pipe(ofType(ProductPriceActions.deleteProductPriceFailure)).subscribe(() => {
-     // this.args = "Something went wrong with Product Price";
-this.SweetAlert2_.showFancyAlertFail("Something went wrong with Product Price.");
+      // this.args = "Something went wrong with Product Price";
+      this.SweetAlert2_.showFancyAlertFail("Something went wrong with Product Price.");
     });
   }
 }

@@ -1,22 +1,20 @@
-import { Component, EventEmitter, Injectable, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Injectable, Input, OnInit, Output } from '@angular/core';
 import { QuantitytypeService } from '../../core/Services/quantitytype.service';
-import { Router, RouterLink } from '@angular/router';
-import { IChair, IChairsrunningorder, IDine, Invoice, ReserveDine } from '../../core/Model/crud.model';
-import { FormGroup, FormBuilder, Validators, NgForm, FormArray, FormControl } from '@angular/forms';
-import { ColDef, ICellRendererParams } from 'ag-grid-community';
-// import { BasetypEditButtun } from ' ../../../userend/crud/editbutton/editbuttoncomponent';
-// import { BasetypDeleteButtun } from '../../../userend/crud/deletebutton/deletbasetypebutton';
+import { Router } from '@angular/router';
+import { IChair, IChairsrunningorder, IDine, IFloorMergeWithDine, ReserveDine, ReserveDineEdit } from '../../core/Model/crud.model';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { ICellRendererParams } from 'ag-grid-community';
 import { DineService } from '../../core/Services/dine.service';
 import { FloorService } from '../../core/Services/floor.service';
 import { ChairService } from '../../core/Services/chair.service';
 import { ChairServiceService } from '../../core/Services/chairsrunningorders.serivce';
-import { DatePipe, JsonPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { InvoiceService } from '../../core/Services/invoice.service';
-import { min } from 'rxjs';
 import { CustomresService } from '../../core/Services/customers.service';
 import { ReserveDineService } from '../../core/Services/reserveDine.service';
 import { GetOrderDetailsService } from '../../core/commanFunction/getOrderDetails.service';
 import { InitializeInvoice } from '../../core/commanFunction/InitializeInvoice.service';
+
 @Component({
   selector: 'app-tables',
   templateUrl: './tables.component.html',
@@ -25,30 +23,31 @@ import { InitializeInvoice } from '../../core/commanFunction/InitializeInvoice.s
   standalone: false
 })
 @Injectable({ providedIn: 'root' })
-
 export class TablesComponent implements OnInit {
-  // this.router.navigate(['\Home']);
   @Input() pickupOrder: any;
   @Input() CancelOrder: any;
   @Output() clearCancelOrder = new EventEmitter<string>();
   @Output() clearPickupOrder = new EventEmitter<string>();
-
   @Output() notifyManage3: EventEmitter<string> = new EventEmitter<string>();
-  editreservedinefata: any;
-  currentDateOnly: string = '';       // yyyy-MM-dd
-  selectedDate: string = '';
-  selectedTime: string = '';
-  availableTimeSlots: string[] = [];
-  pickupinvoiceid: number = 0;
-  ordersdataforToken: any;
-  get dateTimeStartControl(): FormControl {
-    return this.myAddForm.get('DateTimeStart') as FormControl;
-  }
+  @Output() notifyManage2: EventEmitter<string> = new EventEmitter<string>();
 
-  TokenNumber: number = 0;
+  // State variables
+  MergeFloorNameWithDineList: IFloorMergeWithDine[] = [];
+  FloorWithDineData: IFloorMergeWithDine[] = [];
+  selectedTimeforEdit: any;
+  currentTime: any;
+  editreservedinefata: any;
   editreservedinefata2: any;
+  currentDateOnly = '';
+  selectedDate = '';
+  selectedTime = '';
+  availableTimeSlots: string[] = [];
+  pickupinvoiceid = 0;
+  ordersdataforToken: any;
+  TokenNumber = 0;
   isChecked = false;
-  date: any; now: any = new Date('').getTime().toString();
+  date: any;
+  now: any = new Date('').getTime().toString();
   distanceday: any;
   currentdatetime = new Date();
   currentdate: any;
@@ -56,32 +55,9 @@ export class TablesComponent implements OnInit {
   days: any;
   months: any;
   employeeId = "JSK";
-  resevetable: ReserveDine = {
-    TableId: "undefined",
-    DateTimeStart: this.now,
-    DateTimeEnd: "",
-    CustomerId: "undefined",
-    Name: "undefined",
-    MobileNo: "undefined",
-    BookingAmount: 0,
-    Paymentstatus: false,
-    RecieptNumber: "",
-    Bookingstatus: true,
-    TableName: "undefined",
-    employee_id: this.employeeId,
-    ConfirmStatus: false
-  }
-  dine: IDine = {
-    _id: "",
-    name: "",
-    description: '',
-    status: true,
-    floor_id: '',
-    employee_id: this.employeeId,
-  }
   runningOrderLength = 0;
-  myAddForm: FormGroup;
-  reservedinedata: any; reservedinedata2: any;
+  reservedinedata: any;
+  reservedinedata2: any;
   editshow = false;
   deleteshow = false;
   holdreservetableid = 0;
@@ -90,24 +66,22 @@ export class TablesComponent implements OnInit {
   reservedLength = 0;
   button: any;
   invoiceid: string = "";
-  public invoiceid2 = "";
+  invoiceid2 = "";
   args: any = null;
-  tab: number = 0;
+  tab = 0;
   isCheckedStatus: any = true;
-  invoiceidforpickup: number = 0;
-  // invoice interface
+  invoiceidforpickup = 0;
   invoice: any;
   invoicepickup: any;
   invoicedelete: any;
-
   chairs: any;
   chairs2: any;
   chairsbytable_id: any;
   chairsbytable_id2: any;
   Floordata2: any;
-  Floordata: any
+  Floordata: any;
   dinenamedata: any;
-  dinenamedata2: any
+  dinenamedata2: any;
   dinedata2: any;
   dinedata: any;
   static myGlobalVariable: any;
@@ -118,103 +92,184 @@ export class TablesComponent implements OnInit {
   tabactive2: any;
   tabactive3: any;
   Customersnamedata: any;
-  Customersnamedata2: any
-  myEditForm: FormGroup<{ TableId: FormControl<string | null>; DateTimeStart: FormControl<string | null>; DateTimeEnd: FormControl<string | null>; CustomerId: FormControl<string | null>; Name: FormControl<string | null>; MobileNo: FormControl<string | null>; Paymentstatus: FormControl<boolean | null>; Bookingstatus: FormControl<boolean | null>; BookingAmount: FormControl<string | null>; RecieptNumber: FormControl<any>; }>;
-  date2: string = '';
+  Customersnamedata2: any;
+  date2 = '';
   chairsrunningorderarr2: IChair[] = [];
   chairsrunningorderarr3: IChair[] = [];
-  chair: IChair = {
-    _id: "",
-    name: "",
-    description: '',
-    status: true,
-    table_id: '',
-    chairorderstatus: '1'
-  }
-  chair2: IChair = {
-    _id: "",
-    name: "",
-    description: '',
-    status: true,
-    table_id: '',
-    chairorderstatus: '1'
-  }
-  chairsrunningorderarr: IChairsrunningorder = {
-    Chairsrunningorder: [this.chair],
-    tablename: "",
-    receiptnumber: '',
-    tokennumber: 0
-  };
   ordersdata: any;
-  constructor(private service: DineService, private QuantitytypeService_: QuantitytypeService, private router: Router, private fb: FormBuilder, private floorservice: FloorService, private chairservice: ChairService, private chairsrunningorderservice: ChairServiceService, private _InvoiceService: InvoiceService, private formedit: FormBuilder, private customerservice: CustomresService, private reservedineservice: ReserveDineService, private datePipe: DatePipe, private GetOrderDetailsService_: GetOrderDetailsService, private InitializeInvoice_: InitializeInvoice) {
+  showCustomerPopUp = false;
+  closePopUp = false;
+  show = false;
+  splittime = ";";
+  serchbynamecustomer = "";
+  getforinvoiceiddata2: any;
+  getforinvoiceiddata: any;
+  runningorder: any;
+  runningorder2: any;
+  runningorder_cancel_by_id: any;
+  runningorder2_cancel_by_id: any;
+  ordersdata2: any;
+  todayBilledLists: any = [];
+  CustomerId = "";
+
+  // Form groups
+  myAddForm: FormGroup;
+  myEditForm: FormGroup<{
+    _id: FormControl<string | null>;
+    TableId: FormControl<string | null>;
+    DateTimeStart: FormControl<string | null>;
+    DateTimeEnd: FormControl<string | null>;
+    CustomerId: FormControl<string | null>;
+    Name: FormControl<string | null>;
+    MobileNo: FormControl<string | null>;
+    Paymentstatus: FormControl<boolean | null>;
+    Bookingstatus: FormControl<boolean | null>;
+    BookingAmount: FormControl<string | null>;
+    RecieptNumber: FormControl<any>;
+  }>;
+
+  // Models
+  reserveTableEdit: ReserveDineEdit | undefined;
+  resevetable: ReserveDine;
+  dine: IDine;
+  chair: IChair;
+  chair2: IChair;
+  chairsrunningorderarr: IChairsrunningorder;
+  checkbox: any | null;
+
+  constructor(
+    private service: DineService,
+    private quantitytypeService: QuantitytypeService,
+    private router: Router,
+    private fb: FormBuilder,
+    private floorservice: FloorService,
+    private chairservice: ChairService,
+    private chairsrunningorderservice: ChairServiceService,
+    private invoiceService: InvoiceService,
+    private formedit: FormBuilder,
+    private customerservice: CustomresService,
+    private reservedineservice: ReserveDineService,
+    private datePipe: DatePipe,
+    private getOrderDetailsService: GetOrderDetailsService,
+    private initializeInvoice: InitializeInvoice
+  ) {
     const today = new Date();
+    this.currentTime = (today.getHours() > 12 ? today.getHours() - 12 : today.getHours()) + ":" + today.getMinutes() + ":" + today.getSeconds();
     this.currentDateOnly = today.toISOString().split('T')[0];
     this.selectedDate = this.currentDateOnly;
-
     this.generateTimeSlots();
-    this.invoicedelete = this.InitializeInvoice_.initializeInvoice("Cancelled", this.employeeId, 0);
-    this.invoicepickup = this.InitializeInvoice_.initializeInvoice("New Order", this.employeeId, 0);
-    this.invoice = this.InitializeInvoice_.initializeInvoice("Cancelled", this.employeeId, 0);
+
+    this.invoicedelete = this.initializeInvoice.initializeInvoice("Cancelled", this.employeeId, 0);
+    this.invoicepickup = this.initializeInvoice.initializeInvoice("New Order", this.employeeId, 0);
+    this.invoice = this.initializeInvoice.initializeInvoice("Cancelled", this.employeeId, 0);
+
     this.loadToken();
     this.args = null;
     this.tabactive0 = "table-tab active";
     this.tabactive1 = "table-tab ";
     this.tabactive2 = "table-tab ";
     this.tabactive3 = "table-tab ";
-    //this.now=new Date().toString();
-    //  this.loadbasetype();
-    // this.loaddine2();
-    // this.loaddine();
-    // this.loadallchair();
-    // this.loadrunningorder();
 
     this.myEditForm = this.formedit.group({
-      TableId: ['',],
-      DateTimeStart: ['',],
-      DateTimeEnd: ['',],
-      CustomerId: ['',],
-      Name: ['',],
-      MobileNo: ['',],
-      Paymentstatus: [false,],
-      Bookingstatus: [true,],
-
-      BookingAmount: ['',],
-      RecieptNumber: [],
-
+      _id: [''],
+      TableId: [''],
+      DateTimeStart: [''],
+      DateTimeEnd: [''],
+      CustomerId: [''],
+      Name: ['',new FormControl({value: '', disabled: true})],
+      MobileNo: ['',new FormControl({value: '', disabled: true})],
+      Paymentstatus: [false],
+      Bookingstatus: [false],
+      BookingAmount: [''],
+      RecieptNumber: []
     });
+
     this.myAddForm = this.formedit.group({
-      TableId: ['',],
+      TableId: [''],
       DateTimeStart: new FormControl('', Validators.required),
-      DateTimeEnd: ['',],
-      CustomerId: ['',],
-      Name: ['',],
-      MobileNo: ['',],
-      Paymentstatus: [false,],
-      Bookingstatus: [true,],
-      ConfirmStatus: [false,],
-      BookingAmount: ['',],
-      RecieptNumber: [this.now,]
+      DateTimeEnd: [''],
+      CustomerId: [''],
+      Name: ['',new FormControl({value: '', disabled: true})],
+      MobileNo: ['',new FormControl({value: '', disabled: true})],
+      Paymentstatus: [false],
+      Bookingstatus: [false],
+      ConfirmStatus: [false],
+      BookingAmount: [''],
+      RecieptNumber: [this.now]
     });
+
+    this.reserveTableEdit = {
+      _id: '',
+      TableId: '',
+      DateTimeStart: '',
+      DateTimeEnd: '',
+      CustomerId: '',
+      Name: '',
+      MobileNo: '',
+      Paymentstatus: false,
+      Bookingstatus: false,
+      BookingAmount: 0,
+      RecieptNumber: '',
+      TableName: '',
+      employee_id: this.employeeId,
+      ConfirmStatus: false
+    };
+
+    this.resevetable = {
+      TableId: "undefined",
+      DateTimeStart: this.now,
+      DateTimeEnd: "",
+      CustomerId: "undefined",
+      Name: "undefined",
+      MobileNo: "undefined",
+      BookingAmount: 0,
+      Paymentstatus: false,
+      RecieptNumber: "",
+      Bookingstatus: false,
+      TableName: "undefined",
+      employee_id: this.employeeId,
+      ConfirmStatus: false
+    };
+
+    this.dine = {
+      _id: "",
+      name: "",
+      description: '',
+      status: true,
+      floor_id: '',
+      employee_id: this.employeeId
+    };
+
+    this.chair = {
+      _id: "",
+      name: "",
+      description: '',
+      status: true,
+      table_id: '',
+      chairorderstatus: '1'
+    };
+
+    this.chair2 = { ...this.chair };
+
+    this.chairsrunningorderarr = {
+      Chairsrunningorder: [this.chair],
+      tablename: "",
+      receiptnumber: '',
+      tokennumber: 0
+    };
   }
+
   ngOnInit(): void {
-    ////("2");
-
     this.referesh();
-    if (this.CancelOrder != "") {
-
+    if (this.CancelOrder) {
       this.cancel(this.CancelOrder);
-
       this.clearCancelOrder.emit("");
-      // alert("Order Cancelled. "+this.CancelOrder);
     }
-    if (this.pickupOrder == "pickup") {
-
+    if (this.pickupOrder === "pickup") {
       this.TokenNumber = 0;
-      this.GetOrderDetailsService_.loadToday().subscribe(data => {
+      this.getOrderDetailsService.loadToday().subscribe(data => {
         this.ordersdataforToken = data;
         if (this.ordersdataforToken.data.length >= 0) {
-          console.log(this.ordersdataforToken.data.length);
-          console.log(this.ordersdataforToken.data);
           this.TokenNumber = this.ordersdataforToken.data.length + 1;
           this.pickup();
         } else {
@@ -222,48 +277,47 @@ export class TablesComponent implements OnInit {
           this.TokenNumber = d.getDay() + d.getTime();
           this.pickup();
         }
-
       });
-
     }
-
   }
+
+  get dateTimeStartControl(): FormControl {
+    return this.myAddForm.get('DateTimeStart') as FormControl;
+  }
+
   referesh() {
     this.loadToken();
     this.datecurrent = this.gettoday();
     this.loadrunningorder();
     this.loadReservedDineData();
-    //this.loadcustomers();
-    this.loadfloor()
-    //this.classname="";
+    this.loadfloor();
     this.loaddine();
     this.loadallchair();
   }
+
   Confirmedelete() {
-    ////(this.holdreservetableid);
-    if (this.holdreservetableid != 0) {
+    // deleting reserved table of customer 
+    if (this.holdreservetableid !== 0) {
       this.reservedineservice.delete(this.holdreservetableid.toString()).subscribe(data => {
         this.reservedinedata2 = data;
         this.reservedinedata = this.reservedinedata2.data;
         this.loadReservedDineData();
         this.deleteshow = false;
-      })
+      });
     }
-
   }
 
   deletereservedine(_id: any) {
     this.args = "";
     this.deleteshow = true;
     this.holdreservetableid = _id;
-
   }
+
   generateTimeSlots() {
-    // Generates slots: 10:00, 12:00, 14:00 ... 22:00
+    // genrating time slots 
     const startHour = 10;
     const endHour = 22;
     this.availableTimeSlots = [];
-
     for (let hour = startHour; hour <= endHour; hour += 2) {
       const hourStr = hour.toString().padStart(2, '0');
       this.availableTimeSlots.push(`${hourStr}:00`);
@@ -272,8 +326,6 @@ export class TablesComponent implements OnInit {
 
   onDateChange(event: any) {
     this.selectedDate = event.target.value;
-    console.log(this.selectedDate);
-    console.log(event.target.value);
     this.updateDateTime();
   }
 
@@ -288,8 +340,38 @@ export class TablesComponent implements OnInit {
       this.myAddForm.get('DateTimeStart')?.setValue(combined);
     }
   }
+  editReserveDine2(_id: any) {
+    this.loadfloor();
+    this.loaddine();
+    this.mergeFloorNameWithDine();
+    this.editreservedine(_id);
+
+  }
+  loadfloor() {
+    // loading floors
+    this.floorservice.get().subscribe(data => {
+      if (data) {
+        this.Floordata = [];
+        this.Floordata2 = data;
+        this.Floordata = this.Floordata2.data;
+      }
+    });
+  }
+  loaddine() {
+    //getting all tables data
+    this.service.get().subscribe(data => {
+      if (data) {
+        this.dinedata2 = data;
+        this.dinedata = this.dinedata2.data;
+       // this.mergeFloorNameWithDine();
+      }
+    });
+  }
 
   editreservedine(_id: any) {
+    // for manupulating reservedine
+
+    // this.mergeFloorNameWithDine();
     this.args = "";
     this.editshow = true;
     this.holdreservetableid = _id;
@@ -297,308 +379,330 @@ export class TablesComponent implements OnInit {
       if (data) {
         this.editreservedinefata2 = data;
         this.editreservedinefata = this.editreservedinefata2.data;
+        //editreservedine
+        const splitTime = this.editreservedinefata[0].DateTimeStart.split('T');
+        console.log(splitTime);
+        console.log(this.editreservedinefata[0].DateTimeStart);
+        console.log(splitTime[0] + "," + splitTime[1]);
+        const selectedDatepart = this.datePipe.transform(splitTime[0], 'yyyy-MM-dd')?.toString();
+        this.selectedDate = selectedDatepart || '';
+        const selectedTimepart = splitTime[1].split(":");
+        this.selectedTimeforEdit = selectedTimepart[0] + ":00";
+        console.log(this.selectedTimeforEdit.trim());
         this.myEditForm = this.formedit.group({
-          TableId: [this.editreservedinefata.TableId,],
-          DateTimeStart: [this.editreservedinefata.DateTimeStart,],
-          DateTimeEnd: [this.editreservedinefata.DateTimeEnd,],
-          CustomerId: [this.editreservedinefata.CustomerId,],
-          Name: [this.editreservedinefata.Name,],
-          MobileNo: [this.editreservedinefata.MobileNo,],
-          Paymentstatus: [this.editreservedinefata.Paymentstatus,],
-          Bookingstatus: [this.editreservedinefata.Bookingstatus,],
-          BookingAmount: [this.editreservedinefata.BookingAmount,],
-          RecieptNumber: [this.editreservedinefata.RecieptNumber,]
+          _id: [_id],
+          TableId: [this.editreservedinefata[0].TableId],
+          DateTimeStart: [this.editreservedinefata[0].DateTimeStart],
+          DateTimeEnd: [this.editreservedinefata[0].DateTimeEnd],
+          CustomerId: [this.editreservedinefata[0].CustomerId],
+          Name: [this.editreservedinefata[0].Name],
+          MobileNo: [this.editreservedinefata[0].MobileNo],
+          Paymentstatus: [this.editreservedinefata[0].Paymentstatus],
+          Bookingstatus: [this.editreservedinefata[0].Bookingstatus],
+          BookingAmount: [this.editreservedinefata[0].BookingAmount],
+          RecieptNumber: [this.editreservedinefata[0].RecieptNumber]
         });
-        // //(this.editreservedinefata[0]._id)
       }
-    })
+    });
+    this.loadfloor();
+    this.loaddine();
   }
+
+  showCustomersPopUp() {
+    this.showCustomerPopUp = true;
+  }
+
+  closePopUpByChild(close: any) {
+    this.showCustomerPopUp = close;
+  }
+
+  initializeCustomer(CustomerDetail: any) {
+    this.CustomerId = CustomerDetail._id;
+    this.getCustomerName(this.CustomerId);
+    alert(this.CustomerId);
+  }
+  patchCustomer: any;
+  getCustomerName(customer_id: string) {
+    this.customerservice.getbyid(customer_id).subscribe(CustomerName => {
+      this.patchCustomer = CustomerName;
+      console.log(CustomerName);
+      if (this.show) {
+        this.myAddForm.patchValue({
+          CustomerId: customer_id,
+          Name: this.patchCustomer.data[0].name,
+          MobileNo: this.patchCustomer.data[0].MobileNo
+        })
+      }
+      if (this.editshow) {
+        this.myEditForm.patchValue({
+          CustomerId: customer_id,
+          Name: this.patchCustomer.data[0].name,
+          MobileNo: this.patchCustomer.data[0].MobileNo
+        })
+      }
+    });
+  }
+
   bindcustomer() {
+    // Placeholder for future customer binding logic
+  }
+  reserveCustomer: any;
+  confirmReserveDine(_id: string) {
+    this.reserveCustomer = this.reservedinedata.find((item: { _id: string; }) => item._id === _id);
+    // let index = this.reservedinedata.findIndex((item: { _id: string; })=>item._id===_id);
+    console.log(this.reserveCustomer);
+    this.myEditForm.patchValue({
+      _id: _id,
+      TableId: this.reserveCustomer.TableId,
+      DateTimeStart: this.reserveCustomer.DateTimeStart,
+      DateTimeEnd: this.reserveCustomer.DateTimeEnd,
+      CustomerId: this.reserveCustomer.CustomerId,
+      Name: this.reserveCustomer.Name,
+      MobileNo: this.reserveCustomer.MobileNo,
+      Paymentstatus: this.reserveCustomer.Paymentstatus,
+      Bookingstatus: true,
+      BookingAmount: this.reserveCustomer.BookingAmount,
+      RecieptNumber: this.reserveCustomer.RecieptNumber
+    });
+    this.reserveTableEdit = {
+      ...this.myEditForm.value,
+      _id: this.reserveCustomer._id ?? '',
+      TableId: this.reserveCustomer.TableId ?? '',
+      DateTimeStart: this.reserveCustomer.DateTimeStart ?? '',
+      DateTimeEnd: this.reserveCustomer.DateTimeEnd ?? '',
+      CustomerId: this.reserveCustomer.CustomerId ?? '',
+      Name: this.reserveCustomer.Name ?? '',
+      MobileNo: this.reserveCustomer.MobileNo ?? '',
+      Paymentstatus: this.reserveCustomer.Paymentstatus ?? '',
+      Bookingstatus: true,
+      BookingAmount: this.reserveCustomer.BookingAmount ?? '',
+      RecieptNumber: this.reserveCustomer.RecieptNumber ?? '',
+      TableName: this.reserveCustomer.TableName ?? '',
+      employee_id: this.reserveCustomer.employee_id ?? '',
+      ConfirmStatus: true
+    };
+
+    //   Paymentstatus: this.reserveCustomer.Paymentstatus,
+    //   RecieptNumber: this.reserveCustomer.RecieptNumber,
+    //   Bookingstatus: true,
+    //   TableName: this.reserveCustomer.TableName,
+    //   employee_id: this.reserveCustomer.employee_id,
+    //   ConfirmStatus: true
+    // };
+    if (this.reserveCustomer) {
+      this.reservedineservice.update(this.reserveTableEdit).subscribe(reservedUpdated => {
+        if (reservedUpdated) {
+          console.log("Reserved Dine Updated");
+          this.booktable(this.reserveCustomer.TableId)
+          this.loadReservedDineData();
+        }
+      });
 
 
-  } splittime: string = ";"
-  serchbynamecustomer = "";
+    }
+    // console.log(index);
+
+  }
   searchCustomer() {
 
-    this.myAddForm.value.CustomerId;
-    const index = this.Customersnamedata.findIndex((item: { Name: any; }) => item.Name === this.myAddForm.value.CustomerId);
-    console.log(this.Customersnamedata);
-    console.log(index);
+    const index = this.Customersnamedata.findIndex((item: { name: any; }) => item.name === this.myAddForm.value.CustomerId);
     if (index > 0) {
-      this.serchbynamecustomer = this.Customersnamedata[index].Name;
-      console.log(this.Customersnamedata[index].Name);
+      this.serchbynamecustomer = this.Customersnamedata[index].name;
     }
   }
-
-
 
   checkdate() {
-    this.days = this.currentdatetime.getDate();
+
+    this.days = +this.currentdatetime.getDate();
     if (this.days < 10) {
-      this.days = "0" + this.days
+      this.days = "0" + this.days;
+      this.months = +this.currentdatetime.getMonth();
     }
-    this.months = this.currentdatetime.getMonth();
     if (this.months < 10) {
       this.months = "0" + (+this.months + 1);
+      this.currentdate = `${this.currentdatetime.getFullYear()}-${this.months}-${this.days}T${this.currentdatetime.getHours()}:${this.currentdatetime.getMinutes()}`;
     }
-    this.currentdate = this.currentdatetime.getFullYear() + "-" + this.months + "-" + this.days + "T" + this.currentdatetime.getHours() + ":" + this.currentdatetime.getMinutes();
-    console.log(this.currentdate);
   }
   selectdateandtime() {
+    // for reserve table end date
     this.date = new Date(this.myAddForm.value.DateTimeStart).getTime();
-    // const x = setInterval(()=>{
     this.now = new Date();
-    var distance = this.date - this.now;
-    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-    this.distanceday = days + "d " + hours + "h " + minutes + "m " + seconds + "s";
-
-    // console.log(this.distanceday);
-
-    //wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww })
-    console.log(this.distanceday);
-
-    console.log(this.myAddForm.value.DateTimeStart);
+    const distance = this.date - this.now;
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    this.distanceday = `${days}d ${hours}h ${minutes}m ${seconds}s`;
   }
+
   showreserveDine() {
     this.loaddine();
+    this.mergeFloorNameWithDine();
     this.show = true;
   }
-  show: boolean = false;
-  onFormEditSubmit() {
 
+  onFormEditSubmit() {
+    alert();
+    // Placeholder for edit form submission logic
   }
+
   onFormSubmit() {
-    // var hours = Math.floor((this.myAddForm.value.DateTimeStart+(1000*60*60*24))/(1000*60*60));
-    let index = this.dinedata.findIndex((item: { _id: any; }) => item._id === this.myAddForm.value.TableId);
-    // //(this.date[0])
+    // this function used for reserving customers table 
+    const index = this.dinedata.findIndex((item: { _id: any; }) => item._id === this.myAddForm.value.TableId);
     this.myAddForm.value.TableName = this.dinedata[index].name;
 
     this.date = new Date(this.myAddForm.value.DateTimeStart).toLocaleString().split(',');
     this.now = new Date();
-    var distance = this.splittime.split('T');
     const date = this.date[0].split('/');
-
     const time = this.date[1].split(':');
-    this.myAddForm.value.DateTimeStart = date[2] + "-" + date[0] + "-" + date[1] + "T" + time[0] + ":" + time[1] + ":" + time[2];
-    this.myAddForm.value.DateTimeEnd = date[2] + "-" + date[0] + "-" + date[1] + "T" + (+time[0] + 1) + ":" + time[1] + ":" + time[2];
+    this.myAddForm.value.DateTimeStart = `${date[2] < 10 ? "0" + date[2] : date[2]}-${date[0] < 10 ? "0" + date[0] : date[0]}-${date[1] < 10 ? "0" + date[1] : date[1]}T${time[0]}:${time[1]}:${time[2]}`;
+    this.myAddForm.value.DateTimeEnd = `${date[2] < 10 ? "0" + date[2] : date[2]}-${date[0] < 10 ? "0" + date[0] : date[0]}-${date[1] < 10 ? "0" + date[1] : date[1]}T${+time[0] + 2}:${time[1]}:${time[2]}`;
 
     const d = new Date();
     this.myAddForm.value.RecieptNumber = d.getFullYear() + d.getTime();
     this.resevetable = this.myAddForm.value;
-    // //(this.myAddForm.value.DateTimeEnd);
-    console.log(this.resevetable);
-    const DateTimeStart = this.myAddForm.value.DateTimeStart;
-    const DateTimeEnd = this.myAddForm.value.DateTimeEnd;
-    // this.reservedineservice.getReservedEndTime(DateTimeStart,DateTimeEnd).subscribe(result=>{
-    //   if(result)
-    //   {
-    //     console.log(result);
-    //   }
-    // })
+
     this.reservedineservice.add(this.resevetable).subscribe(reservedine => {
       if (reservedine) {
-        this.reservedinedata2 = reservedine;
-        this.reservedinedata = this.reservedinedata2.data;
+        // this.reservedinedata2 = reservedine;
+        // this.reservedinedata = this.reservedinedata2.data;
         this.args = "Successfully Reserved";
         this.loadReservedDineData();
       }
-    }
-    )
-
-
+    });
   }
 
   loadReservedDineData() {
-    ////("I am here");
+    // load reserved Tables
     this.reservedineservice.get().subscribe(data => {
       if (data) {
         this.reservedinedata2 = data;
         this.reservedinedata = this.reservedinedata2.data;
         this.reservedLength = this.reservedinedata.length;
-
+        this.checkReservedOrderDone();
       }
-    })
+    });
+  }
+  invoiceRecords: any;
+  checkReservedOrderDone() {
+    for (let i = 0; i < this.reservedinedata.length; i++) {
+      this.invoiceService.getbyid(this.reservedinedata[i].RecieptNumber).subscribe(invoiceRecord => {
+        if (invoiceRecord) {
+          this.invoiceRecords = invoiceRecord;
+          console.log(this.invoiceRecords);
+         // console.log(this.invoiceRecords.data[0].Orderstatus);
+          if(this.invoiceRecords.data.length>0){
+          if (this.invoiceRecords.data[0].Orderstatus == 'Done') {
+            this.reservedineservice.delete(this.reservedinedata[i]._id).subscribe(ReservedDineDeleted => {
+              if (ReservedDineDeleted) {
+                this.loadReservedDineData();
+              }
+            })
+          }
+        }
+        }
+      });
+    }
   }
   close() {
+    // close popup
     this.show = false;
     this.deleteshow = false;
     this.editshow = false;
   }
 
   loadcustomers() {
+    // load all customers
     this.customerservice.get().subscribe(data => {
       if (data) {
         this.Customersnamedata2 = data;
-        this.Customersnamedata = this.Customersnamedata2.data
-
+        this.Customersnamedata = this.Customersnamedata2.data;
       }
-    })
+    });
   }
 
   refresh(params: ICellRendererParams<any, any, any>): boolean {
     throw new Error('Method not implemented.');
   }
-  getforinvoiceiddata2: any;
-  getforinvoiceiddata: any;
-  loaddine() {
-    this.service.get().subscribe(
-      data => {
-        if (data) {
 
-          this.dinedata2 = data;
-          this.dinedata = this.dinedata2.data;
-          // //("loaded dine data");
-        }
-      }
-    );
-  }
 
   pickup() {
+    // clicking pickup button on orders page and then redirect to table to home page
     this.clearPickupOrder.emit("");
     this.loadchairsrunningorderselected("pickup");
   }
+
   tabshow(tab: number) {
+
     this.tab = tab;
-
-    if (tab == 0) {
-      this.tabactive0 = "table-tab active";
-      this.tabactive1 = "table-tab ";
-      this.tabactive2 = "table-tab ";
-      this.tabactive3 = "table-tab ";
-    }
-    if (tab == 1) {
-      this.tabactive0 = "table-tab ";
-      this.tabactive1 = "table-tab active";
-      this.tabactive2 = "table-tab ";
-      this.tabactive3 = "table-tab ";
-      //this.loaddinedata();
-
-    }
-    if (tab == 2) {
-      this.tabactive0 = "table-tab ";
-      this.tabactive1 = "table-tab ";
-      this.tabactive2 = "table-tab active";
-      this.tabactive3 = "table-tab ";
-
-    }
-    if (tab == 3) {
-      this.tabactive0 = "table-tab ";
-      this.tabactive1 = "table-tab ";
-      this.tabactive2 = "table-tab ";
-      this.tabactive3 = "table-tab active";
+    this.tabactive0 = "table-tab ";
+    this.tabactive1 = "table-tab ";
+    this.tabactive2 = "table-tab ";
+    this.tabactive3 = "table-tab ";
+    if (tab === 0) this.tabactive0 += "active";
+    if (tab === 1) this.tabactive1 += "active";
+    if (tab === 2) this.tabactive2 += "active";
+    if (tab === 3) {
+      this.tabactive3 += "active";
       this.loadBilled();
     }
-    // this.loaddine();
-    // this.loadallchair();
-    // this.loadrunningorder();
   }
 
   cancel(InvoiceID: any) {
-    ////////(arg0);
+    //cancelling running order
     this.chairsrunningorderservice.getbyid(InvoiceID).subscribe(data => {
-
       if (data) {
-        // //////(arg0);
         this.runningorder_cancel_by_id = [];
         this.runningorder2_cancel_by_id = data;
         this.runningorder_cancel_by_id = this.runningorder2_cancel_by_id.data;
-        // //(this.runningorder_cancel_by_id[0].Chairsrunningorder.length);
         if (this.runningorder_cancel_by_id[0].Chairsrunningorder.length > 0) {
-
-          // }
-          // else {
-          //update table status start
-          ////("tableid : "+this.runningorder_cancel_by_id[0].Chairsrunningorder[0].table_id);
-         let dineUpdateRecordindex ;
-          this.service.get().subscribe(
-            data => {
-              if (data) {
-
-                this.dinedata2 = data;
-                this.dinedata = this.dinedata2.data;
-                  dineUpdateRecordindex  = this.dinedata.findIndex((Itm: { _id: any; }) => Itm._id == this.runningorder_cancel_by_id[0].Chairsrunningorder[0].table_id);
-          if (dineUpdateRecordindex > 0) {
-            //  dineUpdateRecord.status = true;
-            // dineUpdateRecord._id = this.dinedata[dineUpdateRecordindex]._id;
-            // // //(this.dinedata[inde]._id);
-            // dineUpdateRecord.name = this.dinedata[dineUpdateRecordindex].name;
-            // dineUpdateRecord.description = this.dinedata[dineUpdateRecordindex].description;
-            // dineUpdateRecord.floor_id = this.dinedata[dineUpdateRecordindex].floor_id;
-            this.dine = {
-              _id: this.dinedata[dineUpdateRecordindex]._id,
-              name: this.dinedata[dineUpdateRecordindex].name,
-              description: this.dinedata[dineUpdateRecordindex].description,
-              status: true,
-              floor_id: this.dinedata[dineUpdateRecordindex].floor_id,
-              employee_id: this.employeeId
-            };
-            this.service.update(this.dine).subscribe(data => {
-              if (data) {
-                // this.dinedata2 = data;
-                // this.dinedata = this.dinedata2.data
-                this.loadallchair();
-
-                this.loadrunningorder();
-              }
-            })
-
-            //end
-          }
-                // //("loaded dine data");
+          let dineUpdateRecordindex;
+          this.service.get().subscribe(data => {
+            if (data) {
+              this.dinedata2 = data;
+              this.dinedata = this.dinedata2.data;
+              dineUpdateRecordindex = this.dinedata.findIndex((Itm: { _id: any; }) => Itm._id == this.runningorder_cancel_by_id[0].Chairsrunningorder[0].table_id);
+              if (dineUpdateRecordindex > 0) {
+                this.dine = {
+                  _id: this.dinedata[dineUpdateRecordindex]._id,
+                  name: this.dinedata[dineUpdateRecordindex].name,
+                  description: this.dinedata[dineUpdateRecordindex].description,
+                  status: true,
+                  floor_id: this.dinedata[dineUpdateRecordindex].floor_id,
+                  employee_id: this.employeeId
+                };
+                this.service.update(this.dine).subscribe(data => {
+                  if (data) {
+                    this.loadallchair();
+                    this.loadrunningorder();
+                  }
+                });
               }
             }
-          );
-        
-         
+          });
         }
 
-        // //////(this.runningorder_cancel_by_id[0].Chairsrunningorder.length);
-        for (var ii = 0; ii < this.runningorder_cancel_by_id[0].Chairsrunningorder.length; ii++) {
+        for (let ii = 0; ii < this.runningorder_cancel_by_id[0].Chairsrunningorder.length; ii++) {
           this.chair2._id = this.runningorder_cancel_by_id[0].Chairsrunningorder[ii]._id;
           this.chair2.name = this.runningorder_cancel_by_id[0].Chairsrunningorder[ii].name;
           this.chair2.description = this.runningorder_cancel_by_id[0].Chairsrunningorder[ii].description;
           this.chair2.status = true;
           this.chair2.table_id = this.runningorder_cancel_by_id[0].Chairsrunningorder[ii].table_id;
           this.chair2.chairorderstatus = "1";
-          this.chairservice.update(this.chair2).subscribe(data2 => {
-            if (data2) {
-              //////("updated");
-              // this.loadallchair();
-
-            }
-
-          }
-          )
+          this.chairservice.update(this.chair2).subscribe();
         }
 
-
-
-        //////(arg0);
-
-
-        this.chairsrunningorderservice.delete(InvoiceID).subscribe(data2 => {
-          if (data2) {
-          }
-
-        })
-        this._InvoiceService.getbyid(InvoiceID).subscribe(data => {
+        this.chairsrunningorderservice.delete(InvoiceID).subscribe();
+        this.invoiceService.getbyid(InvoiceID).subscribe(data => {
           if (data) {
-
-            // //("working");
             this.getforinvoiceiddata = [];
             this.getforinvoiceiddata2 = data;
             this.getforinvoiceiddata = this.getforinvoiceiddata2.data;
-            console.log(this.getforinvoiceiddata);
-            //  //("length: "+this.getforinvoiceiddata.length);
-            for (var ii = 0; ii < this.getforinvoiceiddata.length; ii++) {
-              //  //(this.getforinvoiceiddata[ii].TotalTaxAmount);
+            for (let ii = 0; ii < this.getforinvoiceiddata.length; ii++) {
               this.invoicedelete = {
-
                 Taxes: this.getforinvoiceiddata[ii].Taxes,
                 Chairs: this.getforinvoiceiddata[ii].Chairs,
+                AddOnItems:[],
                 taxpecentRate: 0,
                 taxpercentValue: 0,
                 DiscountId: this.getforinvoiceiddata[ii].DiscountId,
@@ -607,7 +711,7 @@ export class TablesComponent implements OnInit {
                 AdditionaldiscountAmount: 0,
                 Totalvaue: 0,
                 grandtotal: 0,
-                RecieptNumber: this.getforinvoiceiddata[ii].RecieptNumber, //this.totalamount + this.discountvalue + d.getDate() + d.getTime() + d.getSeconds(),
+                RecieptNumber: this.getforinvoiceiddata[ii].RecieptNumber,
                 OrderType: this.getforinvoiceiddata[ii].OrderType,
                 AmountPaidstatus: this.getforinvoiceiddata[ii].AmountPaidstatus,
                 Orderstatus: "Cancelled",
@@ -625,142 +729,113 @@ export class TablesComponent implements OnInit {
                 AssistToId: this.getforinvoiceiddata[ii].AssistToId ?? '',
                 CommentId: this.getforinvoiceiddata[ii].Comment ?? '',
                 returnAmount: this.getforinvoiceiddata[ii].returnAmount ?? '',
-
-              }
+              };
             }
-            //console.log(this.invoicedelete);
-            this._InvoiceService.update(this.invoicedelete).subscribe(updateddata => {
+            this.invoiceService.update(this.invoicedelete).subscribe(updateddata => {
               if (updateddata) {
-                ////("Updated.");
-                //     this.loadallchair();
-                //     this.loaddine();
-                // this.loadrunningorder();
- this.referesh();
+                this.referesh();
               }
-            })
-
-            // this.loadallchair();
-            // this.loaddine();
-            // this.loadrunningorder();
-            ////(this.getforinvoiceiddata[0]._id);
+            });
           }
         });
       }
-    })
-   
+    });
   }
+  redirectto_gotohome(RecieptNumber: string) {
 
-
+    console.log(RecieptNumber);
+    console.log(this.runningorder[0].receiptnumber);
+    const reservedTable = this.runningorder.find((item: { receiptnumber: string }) => item.receiptnumber === RecieptNumber);
+    console.log(reservedTable);
+    if (reservedTable) {
+      this.gotohome(reservedTable.receiptnumber, reservedTable.tokennumber);
+      // console.log(reservedTable);
+    }
+  }
   gotohome(InvoiceID: any, TokenNumber: number) {
+    // redirect to home page with Invoice ID and TokenNumber and jsk use for split by jsk
     this.notifyManage2.emit(InvoiceID + "jsk" + TokenNumber);
-    ////////(arg0)
   }
-  runningorder: any;
-  runningorder2: any;
-  runningorder_cancel_by_id: any;
-  runningorder2_cancel_by_id: any;
 
   loadrunningorder() {
+    // loading chairs for using data in another functions
     this.chairsrunningorderservice.get().subscribe(data => {
       if (data) {
         this.runningorder = [];
         this.runningorder2 = data;
         this.runningorder = this.runningorder2.data;
-        // console.log(this.runningorder);
         this.runningOrderLength = this.runningorder.length;
       }
-    })
-
+    });
   }
-  loadfloor() {
-    //////selectcategoryID);
-    this.floorservice.get().subscribe(data => {
-      if (data) {
-        this.Floordata = [];
-        this.Floordata2 = data;
-        this.Floordata = this.Floordata2.data
 
-      }
-    })
+
+  mergeFloorNameWithDine(): void {
+    this.MergeFloorNameWithDineList = this.dinedata.map((dine: { _id: any; floor_id: any; name: any; description: any; status: any; }) => ({
+      _id: String(dine._id),
+      FloorName: this.getFloorName(String(dine.floor_id)),
+      name: String(dine.name),
+      description: String(dine.description),
+      status: dine.status,
+      floor_id: dine.floor_id
+    }));
+    this.FloorWithDineData = this.MergeFloorNameWithDineList;
   }
-  checkbox: any
+
+  getFloorName(floor_id: string): string {
+    const floor = this.Floordata.find((item: { _id: string }) => item._id === floor_id);
+    return floor ? floor.name : '';
+  }
   chairstatus(e: any, name: string, description: string, table_id: string) {
-    this.checkbox = document.getElementById(e)
-    //////  this.checkbox.checked );
+    // checking chair status for selecting chairs .. this further use coding
+    this.checkbox = document.getElementById(e);
     if (!this.checkbox.checked) {
-      //////"in false");
       this.chairstatusupdate(e, "2", true, name, description, table_id);
-    }
-    else if (this.checkbox.checked) {
-      // ////"in true");
+    } else if (this.checkbox.checked) {
       this.chairstatusupdate(e, "1", this.checkbox.checked, name, description, table_id);
     }
   }
 
-
   chairstatusupdate(id: any, chairorderstatusvalue: any, status: boolean, name: string, description: string, table_id: string) {
+    // updating chair status for selecting chairs .. this further use coding
     this.chair._id = id;
     this.chair.name = name;
     this.chair.description = description;
     this.chair.status = status;
     this.chair.table_id = table_id;
     this.chair.chairorderstatus = chairorderstatusvalue;
-    this.chairservice.update(this.chair).subscribe(res => {
-      if (res) {
-        //this.search(id);
-        //  ////"Done");
-        // this.args=null;
-        // this.args="Successfully Updated...";
-        //  ////"Successfully Updated BaseType..."+basetype.Basetypename);
-        // this.loadbasetype();
-        // this.loadchair2();
-      }
-    })
+    this.chairservice.update(this.chair).subscribe();
   }
-  loadallchair() {
 
+  loadallchair() {
     this.chairservice.get().subscribe(data => {
       if (data) {
         this.chairs = [];
         this.chairs2 = data;
         this.chairs = this.chairs2.data;
       }
-    })
+    });
   }
+
   loadchair(table_id: string) {
-
-
+    // Placeholder for loading a single chair by table_id
   }
 
-
-  @Output() notifyManage2: EventEmitter<string> = new EventEmitter<string>();
   getchair(arg0: any) {
-    //  this.loadchair(arg0);     
-    ////"this.invoiceid: "+this.invoiceid2);
-
-
-
-
-    // this.notifyManage2.emit(this.invoiceid2);                                                                    
-    // this.router.navigate(['\Home']);
-
+    // Placeholder for getchair logic
   }
-
 
   booktable(tablename: any) {
-    ////(tableid);
+    //call function booking table by table of pickup
     this.loadchairsrunningorderselected(tablename);
   }
 
   loadchairsrunningorderselected(tablename: any) {
-    //this.chairsrunningorderarr.Chairsrunningorder=[];
-    //  this.loadToken();
+    //receive function booking table by table of pickup
     const d = new Date();
     this.invoiceidforpickup = d.getFullYear() + d.getTime();
-    if (tablename == "pickup") {
-
+    if (tablename === "pickup") {
       this.invoiceidforpickup = d.getFullYear() + d.getTime();
-
       this.chairsrunningorderarr = {
         Chairsrunningorder: [],
         tablename: "pickup",
@@ -768,16 +843,13 @@ export class TablesComponent implements OnInit {
         tokennumber: this.TokenNumber
       };
       this.chairsrunningorderservice.add(this.chairsrunningorderarr).subscribe(res => {
-        // this.datecurrent = this.gettoday();
-        // //(this.datecurrent);
         if (res) {
           this.chairs2 = res;
           this.pickupinvoiceid = this.chairs2.data.receiptnumber;
-          // console.log(this.invoiceid)
-          // this.invoicepickup = this.InitializeInvoice_.initializeInvoice("New Order",this.employeeId,this.pickupinvoiceid);
           this.invoicepickup = {
             Taxes: [],
             Chairs: [],
+            AddOnItems:[],
             taxpecentRate: 0,
             taxpercentValue: 0,
             DiscountId: "",
@@ -804,148 +876,95 @@ export class TablesComponent implements OnInit {
             CommentId: 'undefined',
             returnAmount: 0,
             tokennumber: this.TokenNumber,
-            // createdAt: this.datecurrent
-          }
-
-          this._InvoiceService.add(this.invoicepickup).subscribe(inv => {
+          };
+          this.invoiceService.add(this.invoicepickup).subscribe(inv => {
             if (inv) {
-
               this.notifyManage2.emit(this.pickupinvoiceid.toString() + "jsk" + this.TokenNumber);
-
             }
           });
-          //  //(this.invoiceidforpickup);
-
-
-
         }
       });
-      ////("pickup");
     } else {
       this.chairservice.getbytable_id(tablename).subscribe(data => {
         if (data) {
-          // console.log(data.valueOf());                                                                      
           this.chairsbytable_id = data;
-          //  console.log(this.chairsbytable_id2.data.length);   
-          // this.chairsbytable_id=this.chairsbytable_id2.data;
-          console.log(this.chairsbytable_id.data);
-
-          console.log(this.chairsbytable_id);
-          for (var ii = 0; ii < this.chairsbytable_id.data.length; ii++) {
+          for (let ii = 0; ii < this.chairsbytable_id.data.length; ii++) {
             if (this.chairsbytable_id.data[ii].table_id == tablename && this.chairsbytable_id.data[ii].chairorderstatus == "1") {
-              // ////this.chairsbytable_id.data[ii].table_id);                                                                                             
               this.chairsrunningorderarr2.push({
                 _id: this.chairsbytable_id.data[ii]._id,
                 name: this.chairsbytable_id.data[ii].name,
                 description: this.chairsbytable_id.data[ii].description,
-                //in future status can be false
                 status: true,
                 table_id: this.chairsbytable_id.data[ii].table_id,
-                //in future it can be 0
                 chairorderstatus: "1",
-
-              }
-              );
+              });
               this.chairsrunningorderarr3 = this.chairsrunningorderarr2;
-              console.log(this.chairsrunningorderarr2);
-              console.log(this.chairsrunningorderarr3);
-
             }
-
           }
-
         }
         const inde = this.dinedata.findIndex((Itm: { _id: any; }) => Itm._id == tablename);
-        this.tablename = this.dinedata[inde].name
+        this.tablename = this.dinedata[inde].name;
         this.chairsrunningorderarr = {
           Chairsrunningorder: this.chairsrunningorderarr3,
           tablename: this.dinedata[inde].name,
-          receiptnumber: this.invoiceidforpickup.toString(),
+          receiptnumber: this.reserveCustomer != undefined ? this.reserveCustomer.RecieptNumber : this.invoiceidforpickup.toString(),
           tokennumber: this.TokenNumber
         };
-        // console.log("outer");
-        // ////"outer");
-        console.log(this.chairsrunningorderarr);
-        //  console.log(this.chairsrunningorderarr2);
         this.chairsrunningorderservice.add(this.chairsrunningorderarr).subscribe(res => {
           if (res) {
             let jsk = 0;
-            for (var ii = 0; ii < this.chairsbytable_id.data.length; ii++) {
-
+            for (let ii = 0; ii < this.chairsbytable_id.data.length; ii++) {
               if (this.chairsbytable_id.data[ii].table_id == tablename && this.chairsbytable_id.data[ii].chairorderstatus == "1") {
                 this.chair._id = this.chairsbytable_id.data[ii]._id;
                 this.chair.name = this.chairsbytable_id.data[ii].name;
                 this.chair.description = this.chairsbytable_id.data[ii].description;
-                //in future status can be false
                 this.chair.status = true;
                 this.chair.table_id = this.chairsbytable_id.data[ii].table_id;
-                //in future it can be 0
                 this.chair.chairorderstatus = "1";
                 this.chairservice.update(this.chair).subscribe(data => {
                   if (data) {
-                    ////"done");            
                     jsk++;
                     this.loadallchair();
                     this.loaddine();
                     this.loadrunningorder();
-                    ////"jsk :"+jsk+" id: "+this.invoiceid2+" lenght: "+this.chairsbytable_id.data.length);                
-                    if (this.chairsbytable_id.data.length == jsk) {
-                      ////"jsk :"+jsk+" id: "+this.invoiceid2+" lenght: "+this.chairsbytable_id.data.length);
-                      //  this.notifyManage2.emit(this.invoiceid2);
-                    }
-
                   }
-
-                }
-                )
-
-              }
-              else if ((this.chairsbytable_id.data[ii].table_id == tablename) && (this.chairsbytable_id.data[ii].chairorderstatus == "2")) {
+                });
+              } else if (this.chairsbytable_id.data[ii].table_id == tablename && this.chairsbytable_id.data[ii].chairorderstatus == "2") {
                 this.chair._id = this.chairsbytable_id.data[ii]._id;
                 this.chair.name = this.chairsbytable_id.data[ii].name;
                 this.chair.description = this.chairsbytable_id.data[ii].description;
                 this.chair.status = true;
                 this.chair.table_id = this.chairsbytable_id.data[ii].table_id;
                 this.chair.chairorderstatus = "1";
-
                 this.chairservice.update(this.chair).subscribe(data => {
                   if (data) {
-                    ////"done");
                     this.loadallchair();
                     this.loaddine();
                     this.loadrunningorder();
                     jsk++;
-                    ////"jsk :"+jsk+" id: "+this.invoiceid2+" lenght: "+this.chairsbytable_id.data.length);
-                    if (this.chairsbytable_id.data.length == jsk) {
-                      ////"jsk :"+jsk+" id: "+this.invoiceid2+" lenght: "+this.chairsbytable_id.data.length);
-                      //  this.notifyManage2.emit(this.invoiceid2);
-                    }
                   }
-                }
-                )
-              }
-              else if (this.chairsbytable_id.data[ii].table_id == tablename && this.chairsbytable_id.data[ii].chairorderstatus == "0") {
+                });
+              } else if (this.chairsbytable_id.data[ii].table_id == tablename && this.chairsbytable_id.data[ii].chairorderstatus == "0") {
                 jsk++;
                 this.loadallchair();
                 this.loaddine();
                 this.loadrunningorder();
-                if (this.chairsbytable_id.data.length == jsk) {
-
-                  ////"jsk :"+jsk+" id: "+this.invoiceid2+" lenght: "+this.chairsbytable_id.data.length);
-                  // this.notifyManage2.emit(this.invoiceid2);
-                }
               }
             }
+            console.log(this.reserveCustomer);
             this.chairs2 = res;
-            this.invoiceid = this.chairs2.data.receiptnumber
-            // this.datecurrent = this.gettoday();
-            // //(this.datecurrent);
-            console.log(this.datecurrent);
-            //adding invoice id in invoice table start
-            this.invoice = {
+            if (this.reserveCustomer != undefined) {
+              this.invoiceid = this.reserveCustomer.RecieptNumber;
+            }
+            else {
+              this.invoiceid = this.chairs2.data.receiptnumber;
+            }
 
+
+            this.invoice = {
               Taxes: [],
               Chairs: [],
+              AddOnItems:[],
               taxpecentRate: 0,
               taxpercentValue: 0,
               DiscountId: "",
@@ -964,19 +983,17 @@ export class TablesComponent implements OnInit {
               TotalItemsAmount: 0,
               paybyId: 'undefined',
               OrderTypeName: "",
-              table_id: tablename,
-              customer_id: "undefined",
+              table_id: this.reserveCustomer != undefined ? this.reserveCustomer.TableId : tablename,
+              customer_id: this.reserveCustomer != undefined ? this.reserveCustomer.CustomerId : "undefined",
               employee_id: this.employeeId,
-              tablename: this.tablename,
+              tablename: this.reserveCustomer != undefined ? this.reserveCustomer.TableName : this.tablename,
               AssistToId: 'undefined',
               CommentId: 'undefined',
               returnAmount: 0,
               tokennumber: this.TokenNumber,
-              // createdAt: this.datecurrent
-            }
-            this._InvoiceService.add(this.invoice).subscribe(inv => {
+            };
+            this.invoiceService.add(this.invoice).subscribe(inv => {
               if (inv) {
-                //  //("done.");
                 this.dine.status = false;
                 this.dine._id = tablename;
                 this.dine.name = this.dinedata[inde].name;
@@ -984,54 +1001,38 @@ export class TablesComponent implements OnInit {
                 this.dine.floor_id = this.dinedata[inde].floor_id;
                 this.service.update(this.dine).subscribe(data => {
                   if (data) {
-                    // this.dinedata2 = data;
-                    // this.dinedata = this.dinedata2.data
                     this.loadallchair();
                     this.loaddine();
                     this.loadrunningorder();
-                    //  //(this.invoiceid);
                     this.notifyManage2.emit(this.invoiceid + "jsk" + this.TokenNumber);
                   }
-                })
-
-
+                });
               }
             });
-            //adding invoice id in invoice table end
-
             this.invoiceid2 = this.invoiceid.toString();
-            ////this.invoiceid2);
-            console.log(this.invoiceid);
           }
-
         });
-
-      })
+      });
     }
-
-    // const indexP = this.chairs.findIndex(item => item._id === id);
   }
+
   loadToken() {
+    // this function is resposible for making token number
     this.TokenNumber = 0;
-    this.GetOrderDetailsService_.loadToday().subscribe(data => {
+    this.getOrderDetailsService.loadToday().subscribe(data => {
       this.ordersdataforToken = data;
       if (this.ordersdataforToken.data.length >= 0) {
-        console.log(this.ordersdataforToken.data.length);
-        console.log(this.ordersdataforToken.data);
         this.TokenNumber = this.ordersdataforToken.data.length + 1;
       } else {
         const d = new Date();
         this.TokenNumber = d.getDay() + d.getTime();
       }
-
     });
-
   }
-  ordersdata2: any;
-  todayBilledLists: any = [];
+
   loadBilled() {
-    //loadBilled 
-    this.GetOrderDetailsService_.loadToday().subscribe((todaydata: any) => {
+    // this is loading by today date all sattled bill
+    this.getOrderDetailsService.loadToday().subscribe((todaydata: any) => {
       this.ordersdata2 = todaydata;
       this.ordersdata = this.ordersdata2.data;
       this.todayBilledLists = [];
@@ -1049,23 +1050,17 @@ export class TablesComponent implements OnInit {
             });
           }
         }
-        console.log(this.ordersdata);
       }
-
     });
-
   }
+
   gettoday(): Date {
     const today = new Date();
     const yesterday = new Date(today);
-    yesterday.setDate(today.getDate()); // Subtract one day
-    console.log(yesterday.toISOString().split('T')[0]);
+    yesterday.setDate(today.getDate());
     this.date = yesterday.toISOString().split('T')[0];
-    console.log(this.datePipe.transform(this.date, 'yyyy-MM-dd'));
     const formattedyesterday = this.datePipe.transform(this.date, 'yyyy-MM-dd');
-
-    const createdAt = formattedyesterday + "T" + today.getHours().toString() + ":" + today.getMinutes().toString() + ":" + today.getSeconds().toString() + "Z"
-    ////(createdAt);
+    const createdAt = `${formattedyesterday}T${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}Z`;
     return new Date(createdAt);
   }
 

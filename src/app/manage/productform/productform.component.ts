@@ -20,7 +20,9 @@ import { addProduct, addProductSuccess, deleteProduct, deleteProductSuccess, loa
 import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
 import { ProductPriceService } from '../../core/Services/productprice.service';
 import { Actions, ofType } from '@ngrx/effects';
-import { NameExistOrNotService } from '../../core/commanFunction/NameExistOrNot.service';
+import { ValidationService } from '../../core/commanFunction/Validation.service';
+import { ManageDataEnvironment } from '../../environment/dataEnvironment';
+import { popupenvironment } from '../../environment/popupEnvironment';
 @Component({
   selector: 'app-productform',
   templateUrl: './productform.component.html',
@@ -29,8 +31,10 @@ import { NameExistOrNotService } from '../../core/commanFunction/NameExistOrNot.
 })
 @Injectable({ providedIn: 'root' })
 export class ProductformComponent implements OnInit {
+  ManageDataEnvironments:any;
+  popupenvironments:any;
   isChecked = false;
-  args: any = null;
+ 
   myEditForm: FormGroup;
   employeeId = "JSK";
   @ViewChild('f')
@@ -42,11 +46,10 @@ export class ProductformComponent implements OnInit {
   subQuantityTypeByIdData$: Observable<any[]> | undefined;
   Qtypenamedata$: Observable<any[]> | undefined;
   Products$: Observable<any[]> | undefined;
-  ProductName: any;
-  Productnamedata2: any;
+  popdata2:any;
   products: Products = {
     _id: '',
-    Productname: '',
+    name: '',
     Productdesc: '',
     selectcategoryID: '',
     selectQtypeID: '',
@@ -56,23 +59,19 @@ export class ProductformComponent implements OnInit {
     Status: true,
     employee_id: "undefined"
   }
-  Productname: any;
+  name: any;
   Productdesc: any;
   selectcategoryID: any;
   selectQtypeID: any;
   selectSubQuantityTypeID: any;
-  popdata2: any;
-  display: any;
-  tablename: any;
-  valueid: any;
-  modal: any;
+  
   myAddForm: FormGroup;
   isCheckedveg_nonveg: any = false;
   isCheckedavailablity: any = true;
   isCheckedStatus: any = true;
   
   colDefs: ColDef[] = [
-    { field: "Productname" },
+    { field: "name" },
     { field: "Productdesc", flex: 2 },
     { field: "Delete", cellRenderer: BasetypDeleteButtun },
     { field: "Edit", cellRenderer: BasetypEditButtun }
@@ -80,11 +79,11 @@ export class ProductformComponent implements OnInit {
   ];
   pagination = true;
   paginationPageSize = 10;
-  paginationPageSizeSelector = [200, 500, 1000];
+  paginationPageSizeSelector = [10,200, 500, 1000];
 
 
   constructor(private service: ProductService, public actions$: Actions,
-    private NameExistOrNotService_:NameExistOrNotService,
+    private ValidationService_:ValidationService,
     private ProductPriceService_: ProductPriceService, private QuantitytypeService_: QuantitytypeService, private CategoryService_: CategoryService, private subQuantityTypeService_: subQuantityTypeService, private router: Router, private formedit: FormBuilder, private store: Store<{ categoryLoad: any, productLoad: any, quantityTypeLoad: any, subQuantityTypeLoad: any, subQuantityTypeByIdLoad: any }>, private SweetAlert2_: SweetAlert2) {
 
     this.subQuantityTypeData$ = store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
@@ -107,10 +106,15 @@ export class ProductformComponent implements OnInit {
     this.Products$ = store.select(state => state.productLoad.Product_.data);
     this.loading$ = store.select(state => state.productLoad.loading);
     this.error$ = store.select(state => state.productLoad.error);
-    this.display = "display:none;"
+    
+
+    this.ManageDataEnvironments=ManageDataEnvironment;
+    this.popupenvironments=popupenvironment;
+    this.popupenvironments.display$.next("display:none;");
+
     this.myEditForm = this.formedit.group({
       _id: [''],
-      Productname: ['', Validators.required],
+      name: ['', Validators.required],
       Productdesc: [''],
       selectcategoryID: ['', [Validators.required]],
       selectQtypeID: ['', [Validators.required]],
@@ -121,7 +125,7 @@ export class ProductformComponent implements OnInit {
       employee_id: this.employeeId
     });
     this.myAddForm = this.formedit.group({
-      Productname: ['', Validators.required],
+      name: ['', Validators.required],
       Productdesc: [''],
       selectcategoryID: ['', [Validators.required]],
       selectQtypeID: ['', [Validators.required]],
@@ -178,41 +182,54 @@ this.loadSubQuantityTypeByQuantityTypeId(this.myAddForm.value.selectQtypeID);
   }
   add(Product_: Products): void {
     // console.log(products);
-    // console.log(products.Productname);
-    this.service.getbyname(Product_.Productname).subscribe(data => {
-      this.Productnamedata2 = data;
-      this.ProductName = this.Productnamedata2.data
-      if (this.ProductName.length == 0) {
+    // console.log(products.name);
+    const valid = this.ValidationService_.checkNameExistforProductAddForm(this.myAddForm.value.name,this.Products$ );
+    console.log(valid);
+    console.log(valid.value);
+    // this.service.getbyname(Product_.name).subscribe(data => {
+    //   this.namedata2 = data;
+    //   this.name = this.namedata2.data
+      if (!valid.value) {
         this.store.dispatch(addProduct({ Product_ }));
           this.actions$.pipe(ofType(addProductSuccess)).subscribe(() => {
-                 this.args="Product Updated";
+                // this.args="Product Updated";
+                 this.popupenvironments.args$.next("Product Added");
                   this.loadProducts();
                 });
              this.actions$.pipe(ofType(ProductActions.addProductFailure)).subscribe(() => {
-                 this.args="Something went wrong for adding Product";
+                 
+                 this.popupenvironments.args$.next("Failed to add Product");
+                 
                 });
         // this.loadProducts();
-        // this.args="Product " + Product_.Productname + " added.";
+        // this.args="Product " + Product_.name + " added.";
         // this.Products$ = this.store.select(state => state.productLoad.Product_.data);
       }
-      else if (this.ProductName.length > 0) {
-        this.args="Item already exist and add another Item "+Product_.Productname;
-       // this.SweetAlert2_.showFancyAlertFail("Item already exist and add another Item " + Product_.Productname);
+      else if (valid.value) {
+        //this.args="Item already exist and add another Item "+Product_.name;
+        this.popupenvironments.args$.next("Item already exist and add another Item ");
+        // +Product_.name
+       // this.SweetAlert2_.showFancyAlertFail("Item already exist and add another Item " + Product_.name);
       }
-    })
+   // })
 
   }
   Update(Product_: Products) {
     console.log(this.Products$);
-     if(this.NameExistOrNotService_.checkNameExist(this.myEditForm.value.Productname,this.myEditForm.value._id,this.Products$ ))
+    const valid = this.ValidationService_.checkNameExist(this.myEditForm.value.name,this.myEditForm.value._id,this.Products$ )
+   console.log(valid.value);
+    if(valid.value)
     {
-     this.args="Product Exists.";
+    
+     this.popupenvironments.args$.next("Product Exists.");
     }
     else
     {
     this.store.dispatch(updateProduct({ Product_ }));
      this.actions$.pipe(ofType(updateProductSuccess)).subscribe(() => {
-                 this.args="Record Updated";
+                
+                 this.popupenvironments.args$.next("Record Updated");
+                
                   this.loadProducts();
                 });
              this.actions$.pipe(ofType(ProductActions.updateProductFailure)).subscribe(() => {
@@ -222,7 +239,7 @@ this.loadSubQuantityTypeByQuantityTypeId(this.myAddForm.value.selectQtypeID);
               }
     // this.store.dispatch(loadProduct());
     // this.Products$ = this.store.select(state => state.productLoad.Product_.data);
-    // this.SweetAlert2_.showFancyAlertSuccess("Product " + Product_.Productname + " updated.");
+    // this.SweetAlert2_.showFancyAlertSuccess("Product " + Product_.name + " updated.");
   }
   cDelete(_id: any) {
 
@@ -232,18 +249,21 @@ this.loadSubQuantityTypeByQuantityTypeId(this.myAddForm.value.selectQtypeID);
 
     if (event.colDef.field == 'Delete') {
       alert("working body");
-      this.modal = "modal";
-      this.display = "display:block"
-      this.valueid = event.data._id;
-      this.tablename = "prod";
+      this.popupenvironments.modal$.next("modal");
+      this.popupenvironments.display$.next("display:block;");
+      this.popupenvironments.valueid$.next(event.data._id);
+      this.popupenvironments.tablename$.next("prod");
+      
     }
     if (event.colDef.field == 'Edit') {
-      this.popdata2 = event.data;
-      this.args = null;
-
+      
+      this.popupenvironments.popdata2$.next(event.data);
+      this.popdata2=event.data;
+      this.popupenvironments.args$.next(null);
+      
       this.myEditForm = this.formedit.group({
         _id: [event.data._id],
-        Productname: [event.data.Productname, Validators.required],
+        name: [event.data.name, Validators.required],
         Productdesc: [event.data.Productdesc],
         selectcategoryID: [event.data.selectcategoryID, [Validators.required]],
         selectQtypeID: [event.data.selectQtypeID, [Validators.required]],
@@ -253,56 +273,56 @@ this.loadSubQuantityTypeByQuantityTypeId(this.myAddForm.value.selectQtypeID);
         Status: [event.data.Status]
       });
       this.loadSubQuantityTypeByQuantityTypeId(event.data.selectQtypeID);
-
-      this.showEdit = true;
-      this.show = false;
+      this.popupenvironments.showEdit$.next(true);
+      this.popupenvironments.show$.next(false);
+     
     }
 
   }
-  show: any = false;
-  showEdit: any = false;
+  
   shows() {
-    this.show = true;
-    this.showEdit = false;
-    this.args = null;
+    this.popupenvironments.show$.next(true);
+    this.popupenvironments.showEdit$.next(false);
+    this.popupenvironments.args$.next(null);
+    
+    
   }
 
   close() {
     //alert(arg0)
-    if (this.showEdit == true) {
-      this.showEdit = false;
-    }
-    if (this.show == true) {
-      this.show = false;
-    }
-
+    this.popupenvironments.show$.next(false);
+    this.popupenvironments.showEdit$.next(false);
   }
   handleChildClick() {
-    this.display = "display:none;";
+   
+    this.popupenvironments.display$.next("display:none;");
+    
   }
   ProductIdExistData: any;
   deletedConfirmed(_id: any) {
     this.ProductPriceService_.getbyproductid(_id).subscribe(ProductIdExist => {
-      this.ProductIdExistData = ProductIdExist;
-
-      console.log(this.ProductIdExistData.data.length);
-      if (this.ProductIdExistData.data.length == 0) {
+     // this.ProductIdExistData = ProductIdExist;
+     this.ManageDataEnvironments.Product$.next(ProductIdExist);
+      console.log(this.ManageDataEnvironments.Product$.value.data.length);
+      if (this.ManageDataEnvironments.Product$.value.data.length === 0) {
         this.store.dispatch(deleteProduct({ _id }));
         this.actions$.pipe(ofType(deleteProductSuccess)).subscribe(() => {
                  //this.args="Product Updated";
                   this.loadProducts();
                 });
              this.actions$.pipe(ofType(ProductActions.deleteProductFailure)).subscribe(() => {
-                 this.SweetAlert2_.showFancyAlertFail("Something went wrong for adding Product");
+                 this.SweetAlert2_.showFancyAlertFail("Failed to delete");
                 });
         // this.store.dispatch(loadProduct());
         // this.Products$ = this.store.select(state => state.productLoad.Product_.data);
         //this.SweetAlert2_.showFancyAlertSuccess("Deleted.");
-        this.display = "display:none;";
+       
+        this.popupenvironments.display$.next("display:none;");
       }
       else {
         this.SweetAlert2_.showFancyAlertFail("Assocciated with Product Price. Can't Delete");
-        this.display = "display:none;";
+       
+        this.popupenvironments.display$.next("display:none;");
       }
     });
 

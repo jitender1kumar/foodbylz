@@ -80,7 +80,7 @@ export const InventoryFoodwithProductAddReducer = createReducer(
   }))
 );
 export const InventoryFoodwithProductUpdateReducer = createReducer(
-  initialState,
+  initialState2,
   on(InventoryFoodwithProductActions.updateInventoryFoodwithProduct, (state) => ({
     ...state,
     loading: true,
@@ -88,8 +88,8 @@ export const InventoryFoodwithProductUpdateReducer = createReducer(
 
   on(InventoryFoodwithProductActions.updateInventoryFoodwithProductSuccess, (state, { InventoryFoodwithProductForEdit_ }) => ({
     ...state,
-    InventoryFoodwithProduct: state.InventoryFoodwithProduct_.map((InventoryFoodwithProduct_) =>
-      InventoryFoodwithProductForEdit_._id === InventoryFoodwithProductForEdit_._id ? InventoryFoodwithProduct_ : InventoryFoodwithProduct_
+    InventoryFoodwithProductForEdit_: state.InventoryFoodwithProductForEdit_.map((InventoryFoodwithProductForEdit_) =>
+      InventoryFoodwithProductForEdit_._id === InventoryFoodwithProductForEdit_._id ? InventoryFoodwithProductForEdit_ : InventoryFoodwithProductForEdit_
     ),
     loading: false,
   })),

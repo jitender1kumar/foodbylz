@@ -9,11 +9,11 @@ import { Customers } from '../Model/crud.model';
 })
 export class CustomresService {
 
-  private customersUrl: string = environment.api+"customers";
-
+  private customersUrl: string = environment.api + "customers";
+  private customerByMobileNumberUrl: string = environment.api + "customersByMobileNumber";
   constructor(private http: HttpClient) { }
 
-  
+
   add(customer: Customers): Observable<Customers> {
 
     //return this.http.post(this.url+ '/users', {id,name,email,pass});
@@ -23,14 +23,16 @@ export class CustomresService {
   getbyid(_id: string) {
     return this.http.get(`${this.customersUrl}/${_id}`);
   }
-
+  getbyMobileNumber(MobileNo: string) {
+    return this.http.get(`${this.customerByMobileNumberUrl}/${MobileNo}`);
+  }
   get(): Observable<Customers[]> {
     return this.http.get<Customers[]>(this.customersUrl);
   }
   delete(_id: string) {
     return this.http.delete(`${this.customersUrl}/${_id}`);
   }
-  update(cutomer: Customers) {
-    return this.http.put(this.customersUrl, { cutomer });
+  update(customer: Customers) {
+    return this.http.put(this.customersUrl, { customer });
   }
 }                                                                                                                              

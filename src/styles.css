@@ -48,25 +48,44 @@
   
   /* Fade-in effect */
 }
-.comman * {
-  margin: 3px 0;
-  line-height: 1.4;
-}
 .comman {
-  position: fixed; /* fixed so it stays in view */
-  z-index: 5;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(164, 211, 176, 0.85);
-  /* Center the box inside */
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(164, 211, 176, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Fade-in effect */
-  /* animation: fadeIn 0.3s ease-in-out; */
+  animation: fadeIn 0.03s ease-in-out;
 }
+
+.comman {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  padding: 2rem 2.5rem;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  margin: 0 auto;
+}
+
+.comman * {
+  margin: 0.5em 0;
+  line-height: 1.5;
+}
+@media print {
+  body * {
+    display: none;
+  }
+
+  #printable-section {
+    display: block;
+  }
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; }

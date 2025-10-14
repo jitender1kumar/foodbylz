@@ -29,6 +29,7 @@ import { ProductEffects } from './ManageStore/productStore/product.effects';
 import { ProductQuantityTypeEffects } from './ManageStore/quntityTypeStore/quntityType.effects';
 import { ProductSubQuantityTypeEffects } from './ManageStore/subQuantityTypeStore/subQuantityType.effects';
 import { ProductTaxEffects } from './ManageStore/taxStore/tax.effects';
+import { AddOnProductComponent } from './add-on-product/add-on-product.component';
 
 const routes: Routes = [
   {path:'category',component:CategoryformComponent},
@@ -48,7 +49,8 @@ const routes: Routes = [
       ProductpriceformComponent,
       SubQuantityTypeComponenet,
       TaxComponent,
-      ManageComponent,],
+      ManageComponent,
+      AddOnProductComponent,],
   imports: [
      CommonModule, AgGridAngular, BrowserModule, ReactiveFormsModule, RouterModule.forRoot(routes),
         FormsModule,PopupmodelComponent,

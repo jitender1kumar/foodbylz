@@ -11,6 +11,9 @@ import { Store } from '@ngrx/store';
 import * as InveroryFoodQuantityTypeActions from '../inventoryStore/inventoryFoodQuantityTypeStore/inventoryFoodQuantityType.actions';
 import { addInventoryFoodQuantityType, deleteInventoryFoodQuantityType, loadInventoryFoodQuantityType, updateInventoryFoodQuantityType } from '../inventoryStore/inventoryFoodQuantityTypeStore/inventoryFoodQuantityType.actions';
 import { Actions, ofType } from '@ngrx/effects';
+import { popupenvironment } from '../../environment/popupEnvironment';
+import { Validationenvironment } from '../../environment/validtionEnvironment';
+import { ValidationService } from '../../core/commanFunction/Validation.service';
 
 
 @Injectable({ providedIn: 'root' })
@@ -23,48 +26,46 @@ import { Actions, ofType } from '@ngrx/effects';
 })
 export class InventoryfoodquntitytypeComponent implements OnInit {
   //lodProductCategory:ProductCategory[]=[];
-  args: any = null;
+  Validationenvironments :any;
+ 
+  popupenvironments:any;
   myEditForm: FormGroup;
   pagination = true;
   paginationPageSize = 10;
-  paginationPageSizeSelector = [200, 500, 1000];
+  paginationPageSizeSelector = [10,200, 500, 1000];
   @ViewChild('f')
   categoryViewchild!: NgForm;
   @ViewChild('formupdate')
   formupdate!: NgForm;
-  data2: any;
-  data: any;
   inventoryQuantityTypeData$: Observable<any[]> | undefined;
   loading$: Observable<boolean> | undefined;
   error$: Observable<string | null> | undefined;
   _InventoryFoodQuantityType: InventoryFoodQuantityType = {
     name: "",
-    discription: "",
+    description: "",
     _id: "undefined"
   };
   colDefs: ColDef[] = [
     { field: "name" },
-    { field: "discription", flex: 2 },
+    { field: "description", flex: 2 },
     { field: "Delete", cellRenderer: BasetypDeleteButtun },
     { field: "Edit", cellRenderer: BasetypEditButtun }
 
   ];
-  discription: any;
-  name: any;
-  popdata2: any;
-  display: any;
-  tablename: any;
-  valueid: any;
-  modal: any;
+ 
+  
   myAddForm: FormGroup;
   constructor(private service: InventoryMFoodQuantityTypeService,
+    private ValidationService_:ValidationService,
     public actions$: Actions,
     private router: Router, private formedit: FormBuilder, private store: Store<{ loadInventoryFoodQuantityType: any }>) {
     this.inventoryQuantityTypeData$ = store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
     this.loading$ = store.select(state => state.loadInventoryFoodQuantityType.loading);
     this.error$ = store.select(state => state.loadInventoryFoodQuantityType.error);
-
-    this.display = "display:none;"
+    
+    this.popupenvironments=popupenvironment;
+    this.popupenvironments.display$.next("display:none;");
+   
     this.myEditForm = this.formedit.group({
       _id: [''],
       name: ['', Validators.required],
@@ -76,39 +77,66 @@ export class InventoryfoodquntitytypeComponent implements OnInit {
     });
   }
   ngOnInit(): void {
+    this.Validationenvironments=  Validationenvironment;
     this.loadinventoeryfoodquantitytype();
   }
-  InventoryNameExist = false;
-  checkNameExist(checkName: string) {
+ 
 
-    this.inventoryQuantityTypeData$?.subscribe(getName => {
-      const NameExist = getName.find(item => item.name === checkName);
-      if (NameExist) {
-        //alert("if"+NameExist);
-        return this.InventoryNameExist = true;
-      }
-      else {
-        //  alert("else"+NameExist);
-        return this.InventoryNameExist = false;
-      }
-    });
-    return this.InventoryNameExist;
-  }
+  // checkAddNameExist(checkName: string) {
+   
+  //   this.inventoryQuantityTypeData$?.subscribe(getName => {
+  //     const NameExist = getName.find(item => item.name === checkName);
+  //     if (NameExist) {
+  //      this.Validationenvironments.nameExists$.next(true);
+  //      // return this.InventoryNameExist = true;
+  //     }
+  //     else {
+  //       //  alert("else"+NameExist);
+  //         this.Validationenvironments.nameExists$.next(false);
+  //     //  return this.InventoryNameExist = false;
+  //     }
+  //   });
+  //    return  this.Validationenvironments.nameExists$;
+  //  // return this.InventoryNameExist;
+  // }
+  // checkUpdateNameExist(checkName: string) {
+   
+  //   this.inventoryQuantityTypeData$?.subscribe(getName => {
+  //     const NameExist = getName.find(item => item.name === checkName);
+  //     if (NameExist) {
+  //      this.Validationenvironments.nameExists$.next(true);
+  //      // return this.InventoryNameExist = true;
+  //     }
+  //     else {
+  //       //  alert("else"+NameExist);
+  //         this.Validationenvironments.nameExists$.next(false);
+  //     //  return this.InventoryNameExist = false;
+  //     }
+  //   });
+  //    return  this.Validationenvironments.nameExists$;
+  //  // return this.InventoryNameExist;
+  // }
   add(InventoryFoodQuantityType_: InventoryFoodQuantityType): void {
-    if (this.checkNameExist(this.myAddForm.value.name)) {
-      this.args = "Inventory Name Already Exist";
+    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
+    const valid  = this.ValidationService_.checkNameExistforAddForm(this.myAddForm.value.name,this.inventoryQuantityTypeData$);
+    console.log(valid.value);
+    if (valid.value) {
+     
+      this.popupenvironments.args$.next("Inventory Name Already Exists");
     }
     else {
       this.store.dispatch(addInventoryFoodQuantityType({ InventoryFoodQuantityType_ }));
       this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.addInventoryFoodQuantityTypeSuccess)).subscribe(() => {
-      //  this.args = " added";
-        this.args = "Successfully Added Category..." + InventoryFoodQuantityType_.name;
-      
+     
+        this.popupenvironments.args$.next("Successfully Added Category..." + InventoryFoodQuantityType_.name);
+        
         // this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
         this.loadinventoeryfoodquantitytype();
       });
       this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.addInventoryFoodQuantityTypeFailure)).subscribe(() => {
-        this.args = "Something went wrong.";
+       
+        this.popupenvironments.args$.next("Something went wrong.");
+        
       });
     }
 
@@ -117,22 +145,26 @@ export class InventoryfoodquntitytypeComponent implements OnInit {
 
     if (event.colDef.field == 'Delete') {
 
-      this.modal = "modal";
-      this.display = "display:block"
-      this.valueid = event.data._id;
-      this.tablename = "cate";
+      this.popupenvironments.modal$.next("modal");
+      this.popupenvironments.display$.next("display:block");
+      this.popupenvironments.valueid$.next(event.data._id);
+      this.popupenvironments.tablename$.next("cate");
+     
+      
 
 
     }
     if (event.colDef.field == 'Edit') {
-      this.popdata2 = event.data;
-      this.showEdit = true;
-      this.show = false;
-      this.args = null;
+      this.popupenvironments.popdata2$.next(event.data);
+      this.popupenvironments.showEdit$.next(true);
+      this.popupenvironments.show$.next(false);
+      this.popupenvironments.args$.next(null);
+      
+      
       this.myEditForm = this.formedit.group({
         _id: [event.data._id],
         name: [event.data.name, Validators.required],
-        categorydesc: [event.data.categorydesc]
+        description: [event.data.categorydesc]
 
       });
     }
@@ -148,15 +180,23 @@ export class InventoryfoodquntitytypeComponent implements OnInit {
       // this.loadcategory();
     });
     this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.loadInventoryFoodQuantityTypeFailure)).subscribe(() => {
-      this.args = "Something went wrong.";
+      
+      this.popupenvironments.args$.next("Something went wrong.");
+      
+      
     });
     // this.loading$ = this.store.select(state => state.loadInventoryFoodQuantityType.loading);
     // this.error$ = this.store.select(state => state.loadInventoryFoodQuantityType.error);
 
   }
   Update(InventoryFoodQuantityType_: InventoryFoodQuantityType) {
-    if (this.checkNameExist(this.myEditForm.value.name)) {
-      this.args = "Inventory Name Already Exist";
+    const valid  = this.ValidationService_.checkNameExist(this.myEditForm.value.name,InventoryFoodQuantityType_._id,this.inventoryQuantityTypeData$)
+    console.log(valid.value);
+    if (valid.value) {
+      
+      this.popupenvironments.args$.next("Inventory Name Already Exist");
+     
+     
     }
     else {
       this.store.dispatch(updateInventoryFoodQuantityType({ InventoryFoodQuantityType_ }));
@@ -164,12 +204,14 @@ export class InventoryfoodquntitytypeComponent implements OnInit {
       //  this.store.dispatch(loadInventoryFoodQuantityType());
       this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
       this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.updateInventoryFoodQuantityTypeSuccess)).subscribe(() => {
-        this.args = " Updated";
+        this.popupenvironments.args$.next(" Updated");
         this.loadinventoeryfoodquantitytype();
         // this.loadcategory();
       });
       this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.updateInventoryFoodQuantityTypeFailure)).subscribe(() => {
-        this.args = "Something went wrong.";
+      
+        this.popupenvironments.args$.next("Failed to Update.");
+        
       });
     }
   }
@@ -182,12 +224,14 @@ export class InventoryfoodquntitytypeComponent implements OnInit {
     }
 
   }
-  show: any = false;
-  showEdit: any = false;
+  
+  
   shows() {
-    this.show = true;
-    this.showEdit = false;
-    this.args = null;
+    this.popupenvironments.show$.next(true);
+    this.popupenvironments.showEdit$.next(false);
+    this.popupenvironments.args$.next(null);
+    
+   
   }
   onEditForm() {
     if (this.myEditForm.valid) {
@@ -196,16 +240,14 @@ export class InventoryfoodquntitytypeComponent implements OnInit {
   }
   close() {
     //alert(arg0)
-    if (this.showEdit == true) {
-      this.showEdit = false;
-    }
-    if (this.show == true) {
-      this.show = false;
-    }
-
+   
+    this.popupenvironments.showEdit$.next(false);
+    this.popupenvironments.show$.next(false);
+   
   }
   handleChildClick() {
-    this.display = "display:none;";
+    this.popupenvironments.display$.next("display:none;");
+   
   }
   deletedConfirmed(_id: any) {
 
@@ -217,9 +259,11 @@ export class InventoryfoodquntitytypeComponent implements OnInit {
       // this.loadcategory();
     });
     this.actions$.pipe(ofType(InveroryFoodQuantityTypeActions.deleteInventoryFoodQuantityTypeFailure)).subscribe(() => {
-      this.args = "Something went wrong.";
+      
+      this.popupenvironments.args$.next("Failed to delete");
     });
-    this.display = "display:none;";
+    
+    this.popupenvironments.ardisplaygs$.next("display:none;");
     //     this.args = " Record Deleted Successfully ";
 
   }

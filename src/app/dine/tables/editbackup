@@ -1,0 +1,72 @@
+  <button class="close" (click)="close()">Close</button>
+        <div class="row lbl">
+          <h4>Edit Reserve a Dine (Validity for 2 hour.)</h4>
+        </div>
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="TableId" id="TableId">Select Table :</label>
+          </div>
+          <div class="col">
+            <select class="lbl" formControlName="TableId">
+              <option class="lbl" *ngFor="let d of dinedata index as i"
+                [selected]="d._id===editreservedinefata[0].TableId">{{d.name}}</option>
+            </select>
+          </div>
+        </div>
+        <!-- [(ngModel)]="editreservedinefata[0].DateTimeStart" -->
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="DateTimeStart" id="DateTimeStart"> Pick Date :</label></div>
+          <div class="col"><input class="lbl" name="ordinary" type="datetime-local"
+              [value]="editreservedinefata[0].DateTimeStart" (change)="selectdateandtime()" (click)="checkdate()"
+              formControlName="DateTimeStart" id="DateTimeStarttxt" min="{{currentdate}}" /></div>
+          <div class="col">
+          </div>
+        </div>
+        <!-- <div class="form-group row">
+      <div class="col"><label class="lbl" for="DateTimeEnd" id="DateTimeEnd"> Pick Time :</label></div>
+      <div class="col"><input class="lbl" type="time"  (change)="selecttime()" formControlName="DateTimeEnd" ngModel
+      id="DateTimeEndtxt" /></div>
+      <div class="col">
+      </div>
+    </div> -->
+        <div class="form-group row">
+          <!-- <div class="col"><label class="lbl" for="CustomerId" id="CustomerId"> Search by Customer :</label></div>
+      <div class="col"><input class="lbl" type="text" multiple="true" value="{{serchbynamecustomer}}" (keypress)="searchCustomer()" formControlName="CustomerId" ngModel
+      id="CustomerIdtxt" /></div> -->
+          <div class="col"><label class="lbl" for="TableId" id="TableId">Select Customer :</label>
+          </div>
+          <!-- <button (click)="showCustomersPopUp()" 
+              class="bg-gradient-to-r from-indigo-500 to-purple-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition">
+              +Customer
+            </button> -->
+          <select class="lbl" formControlName="CustomerId" (click)="bindcustomer()">
+            <option class="lbl">none</option>
+            <option class="lbl" *ngFor="let d of Customersnamedata index as i"
+              [selected]="d._id===editreservedinefata[0].CustomerId" value="{{d._id}}">{{d.Name}}</option>
+          </select>
+        </div>
+        <!-- [(ngModel)]="editreservedinefata[0].Name" -->
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="Name" id="Name"> Name :</label></div>
+          <div class="col"><input class="lbl" type="text" [value]="editreservedinefata[0].Name"
+              value="{{editreservedinefata[0].Name}}" formControlName="Name" id="Nametxt" /></div>
+        </div>
+        <!-- [(ngModel)]="editreservedinefata[0].MobileNo" -->
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="MobileNo" id="MobileNo"> MobileNo :</label></div>
+          <div class="col"><input class="lbl" type="number" [value]="editreservedinefata[0].MobileNo" minlength="10"
+              maxlength="20" formControlName="MobileNo" ngModel id="MobileNotxt" /></div>
+        </div>
+        <!-- [(ngModel)]="editreservedinefata[0].BookingAmount" -->
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="BookingAmount" id="BookingAmount"> BookingAmount :</label></div>
+          <div class="col"><input class="lbl" type="number" [value]="editreservedinefata[0].BookingAmount"
+              maxlength="10" formControlName="BookingAmount" ngModel id="BookingAmounttxt" /></div>
+        </div>
+        <!-- [(ngModel)]="editreservedinefata[0].Paymentstatus" -->
+        <div class="form-group row">
+          <div class="col"><label class="lbl" for="Paymentstatus" id="Paymentstatus"> Paymentstatus :</label></div>
+          <div class="col"><input class="lbl" type="checkbox" [value]="editreservedinefata[0].Paymentstatus"
+              formControlName="Paymentstatus" id="Paymentstatustxt" /></div>
+        </div>
+        <p>{{args}}</p>
+        <div class="row">

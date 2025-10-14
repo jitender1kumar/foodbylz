@@ -1,6 +1,12 @@
 import { Component, Injectable, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { InventoryFoodwithProduct, Goodscollection, InventoryFoodwithProduct2, GoodscollectionMergename, InventoryFoodwithProductforEdit } from '../../core/Model/crud.model';
+import {
+  InventoryFoodwithProduct,
+  Goodscollection,
+  InventoryFoodwithProduct2,
+  GoodscollectionMergename,
+  InventoryFoodwithProductforEdit
+} from '../../core/Model/crud.model';
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
 import { ColDef } from 'ag-grid-community';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
@@ -11,19 +17,24 @@ import { ProductPriceService } from '../../core/Services/productprice.service';
 import { ProductService } from '../../core/Services/product.service';
 import { subQuantityTypeService } from '../../core/Services/subQuantityType.service';
 import { InventoryMainFoodService } from '../../core/Services/inventoryMainFood.service';
-import { itemQminus } from '../../home/state/itemqunatity/itemquantity.action';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { addInventoryFoodwithProduct, addInventoryFoodwithProductFailure, addInventoryFoodwithProductSuccess, loadInventoryFoodwithProduct, updateInventoryFoodwithProduct, updateInventoryFoodwithProductFailure, updateInventoryFoodwithProductSuccess } from '../inventoryStore/inventoryFoodwithProductStore/inventoryFoodwithProduct.actions';
+import {
+  addInventoryFoodwithProduct,  
+  loadInventoryFoodwithProduct,
+  updateInventoryFoodwithProduct,
+  updateInventoryFoodwithProductFailure,
+  updateInventoryFoodwithProductSuccess
+} from '../inventoryStore/inventoryFoodwithProductStore/inventoryFoodwithProduct.actions';
 import { loadProduct } from '../../manage/ManageStore/productStore/product.actions';
 import { loadInventoryMainFood } from '../inventoryStore/inventoryMainFoodStore/inventoryMainFood.actions';
 import { loadSubQuantityType } from '../../manage/ManageStore/subQuantityTypeStore/subQuantityType.actions';
 import { loadInventoryFoodQuantityType } from '../inventoryStore/inventoryFoodQuantityTypeStore/inventoryFoodQuantityType.actions';
 import { ofType, Actions } from '@ngrx/effects';
-
+import { popupenvironment } from '../../environment/popupEnvironment';
+import * as InventoryFoodwithProductActions from '../inventoryStore/inventoryFoodwithProductStore/inventoryFoodwithProduct.actions';
 
 @Injectable({ providedIn: 'root' })
-
 @Component({
   selector: 'app-inventoryfood',
   templateUrl: './inventoryFoodwithProduct.component.html',
@@ -31,132 +42,87 @@ import { ofType, Actions } from '@ngrx/effects';
   standalone: false
 })
 export class InventoryfoodComponent implements OnInit {
+  // Observables for data
+  popupenvironments: any;
+  inventoryQuantityTypeData$?: Observable<any[]>;
+  InventoryMainFooddata$?: Observable<any[]>;
+  fooddata$?: Observable<any[]>;
+  loading$?: Observable<boolean>;
+  error$?: Observable<string | null>;
+  Products$?: Observable<any[]>;
+  subQuantityTypeData$: any;
 
-  inventoryQuantityTypeData$: Observable<any[]> | undefined;
-  //lodProductCategory:ProductCategory[]=[];
-  args: any = "";
+  // Forms
   myEditForm: FormGroup;
-  pagination = true;
-  paginationPageSize = 10;
-  paginationPageSizeSelector = [200, 500, 1000];
-  @ViewChild('f')
-  categoryViewchild!: NgForm;
-  @ViewChild('formupdate')
-  formupdate!: NgForm;
-  fooddata2: any;
-  //fooddata: any;
-  InventoryMainFooddata$: Observable<any[]> | undefined;
-  fooddata$: Observable<any[]> | undefined;
-  loading$: Observable<boolean> | undefined;
-  error$: Observable<string | null> | undefined;
+  myAddForm: FormGroup;
 
+  // UI State
+
+  showubelements = false;
+
+
+
+  // Data
+  _GoodscollectionMergename_List: GoodscollectionMergename[] = [];
+  _InventoryFoodwithProduct2List: InventoryFoodwithProduct2[] = [];
+  _InventoryFoodwithProduct: InventoryFoodwithProduct;
+  _InventoryFoodwithProductforEdit: InventoryFoodwithProductforEdit;
   productPrice_SubQuantityType_data: any;
   productPrice_SubQuantityType_data2: any;
-  quantitytypename: string = "";
-  getinventoryfoodmain_id: any = "";
-  _Goodscollection_List: Goodscollection[] = [];
-  _GoodscollectionMergename_List: GoodscollectionMergename[] = [];
-  _Goodscollection: Goodscollection = {
-    IventoryFoodMainId: "",
-    quantiyval: 0
-  }
-  _GoodscollectionMergename: GoodscollectionMergename = {
-    IventoryFoodMainId: "",
-    Name: "",
-    quantiyval: 0
-  }
-  _InventoryFoodwithProduct2List: InventoryFoodwithProduct2[] = [];
-  _InventoryFoodwithProduct2: InventoryFoodwithProduct2 = {
-    ProductId: "",
-    ProductPrcieId: "",
-    ProductName: "",
-    SubQuantityTypeID: "",
-    SubQuantityTypeName: ""
-  };
-  _InventoryFoodwithProduct: InventoryFoodwithProduct = {
-    ProductId: "",
-    ProductPrcieId: "",
-    ProductName: "",
-    SubQuantityTypeID: "",
-    SubQuantityTypeName: "",
-    goodscollections: this._GoodscollectionMergename_List,
+  quantitytypename: string = '';
+  getinventoryfoodmain_id: any = '';
+  inventoryfoodmaindata: any;
+  addResult: any;
+  a: any;
+  b: any;
 
-  };
-  _InventoryFoodwithProductforEdit: InventoryFoodwithProductforEdit = {
-    _id: "",
-    ProductId: "",
-    ProductPrcieId: "",
-    ProductName: "",
-    SubQuantityTypeID: "",
-    SubQuantityTypeName: "",
-    goodscollections: this._GoodscollectionMergename_List,
-    employee_id: "undefined"
-  };
+  // Table
   colDefs: ColDef[] = [
     { field: "ProductName" },
     { field: "SubQuantityTypeName" },
     { field: "discription", flex: 2 },
     { field: "Delete", cellRenderer: BasetypDeleteButtun },
     { field: "Edit", cellRenderer: BasetypEditButtun }
-
   ];
-  discription: any;
-  name: any;
-  popdata2: any;
-  display: any;
-  tablename: any;
-  valueid: any;
-  modal: any;
-  productPriceData2: any;
-  inventoryfoodmaindata: any;
-  inventoryfoodmaindata2: any;
-  // productdata: any;
-  // productdata2: any;
-  Products$: Observable<any[]> | undefined;
-  subQuantityTypeData$: any;
-  subQuantityTypeDatatypedata2: any;
-  showubelements: boolean = false;
-  myAddForm: FormGroup;
+  pagination = true;
+  paginationPageSize = 10;
+  paginationPageSizeSelector = [10,200, 500, 1000];
+
+  // ViewChilds
+  @ViewChild('f') categoryViewchild!: NgForm;
+  @ViewChild('formupdate') formupdate!: NgForm;
+
+  // Misc
   employeeId = "JSK";
+
   constructor(
     private service: InventoryMainFoodwithProductService,
     private router: Router,
-    private formedit: FormBuilder,
+    private fb: FormBuilder,
     private _InventoryMFoodQuantityTypeService: InventoryMFoodQuantityTypeService,
     private ppservice: ProductPriceService,
     private productservice: ProductService,
     private subQuantityTypeService_: subQuantityTypeService,
     private inventoryfoodmainservice: InventoryMainFoodService,
-    private store: Store<{ loadInventoryFoodQuantityType: any, loadInventoryMainFood: any, loadAssocciatedInvtoryFood: any, productLoad: any, subQuantityTypeLoad: any }>,
+    private store: Store<{
+      loadInventoryFoodQuantityType: any,
+      loadInventoryMainFood: any,
+      loadAssocciatedInvtoryFood: any,
+      productLoad: any,
+      subQuantityTypeLoad: any
+    }>,
     public actions$: Actions
   ) {
-    // this.getinventoryfoodmain_id="";
-    this.inventoryQuantityTypeData$ = store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
-    this.loading$ = store.select(state => state.loadInventoryFoodQuantityType.loading);
-    this.error$ = store.select(state => state.loadInventoryFoodQuantityType.error);
-
-
-    this.fooddata$ = store.select(state => state.loadAssocciatedInvtoryFood.InventoryFoodwithProduct_.data);
-    this.loading$ = store.select(state => state.loadAssocciatedInvtoryFood.loading);
-    this.error$ = store.select(state => state.loadAssocciatedInvtoryFood.error);
-
-    this.InventoryMainFooddata$ = store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
-    this.loading$ = store.select(state => state.loadInventoryMainFood.loading);
-    this.error$ = store.select(state => state.loadInventoryMainFood.error);
-
+    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
+    this.InventoryMainFooddata$ = this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
+    this.fooddata$ = this.store.select(state => state.loadAssocciatedInvtoryFood.InventoryFoodwithProduct_.data);
+    this.Products$ = this.store.select(state => state.productLoad.Product_.data);
     this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
-    this.loading$ = this.store.select(state => state.subQuantityTypeLoad.loading);
-    this.error$ = this.store.select(state => state.subQuantityTypeLoad.error);
 
+    this.loading$ = this.store.select(state => state.loadInventoryFoodQuantityType.loading);
+    this.error$ = this.store.select(state => state.loadInventoryFoodQuantityType.error);
 
-    this.Products$ = store.select(state => state.productLoad.Product_.data);
-    this.loading$ = store.select(state => state.productLoad.loading);
-    this.error$ = store.select(state => state.productLoad.error);
-
-    this.display = "display:none;"
-    this.showubelements = false;
-    this.args = "";
-    this.myEditForm = this.formedit.group({
+    this.myEditForm = this.fb.group({
       _id: [''],
       quantitytypevalue: [''],
       ProductId: [''],
@@ -167,10 +133,9 @@ export class InventoryfoodComponent implements OnInit {
       SubQuantityTypeName: ['', Validators.required],
       goodscollections: [''],
       employee_id: this.employeeId
-
     });
-    this.myAddForm = this.formedit.group({
 
+    this.myAddForm = this.fb.group({
       SubQuantityTypeID: [''],
       inventoryfoodmain_id: [''],
       ProductId: [''],
@@ -180,431 +145,258 @@ export class InventoryfoodComponent implements OnInit {
       quantitytypevalue: [''],
       employee_id: this.employeeId
     });
+
+    this._InventoryFoodwithProduct = {
+      ProductId: "",
+      ProductPrcieId: "",
+      ProductName: "",
+      SubQuantityTypeID: "",
+      SubQuantityTypeName: "",
+      goodscollections: this._GoodscollectionMergename_List
+    };
+
+    this._InventoryFoodwithProductforEdit = {
+      _id: "",
+      ProductId: "",
+      ProductPrcieId: "",
+      ProductName: "",
+      SubQuantityTypeID: "",
+      SubQuantityTypeName: "",
+      goodscollections: this._GoodscollectionMergename_List,
+      employee_id: "undefined"
+    };
   }
+
   ngOnInit(): void {
-    this.args = "";
+    this.popupenvironments = popupenvironment;
+    this.popupenvironments.args$.next(null);
     this.loadInventoryMainFood();
     this.getSubQuantityType();
     this.getProduct();
     this.loadInventoryAssocciatedFood();
   }
-  getProduct() {
 
+  getProduct() {
     this.store.dispatch(loadProduct());
-    this.store.select(state => state.productLoad.Product_.data);
-    this.store.select(state => state.productLoad.loading);
-    this.store.select(state => state.productLoad.error);
   }
+
   loadInventoryMainFood() {
     this.store.dispatch(loadInventoryMainFood());
-    this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
-    this.store.select(state => state.loadInventoryMainFood.loading);
-    this.store.select(state => state.loadInventoryMainFood.error);
-
   }
+
   getProductPriceAndSubQuantityTypeDetails() {
-    //alert(this.myAddForm.value.ProductId);
-    console.log(this.myAddForm.value.ProductId);
-    this.ppservice.getbyproductid(this.myAddForm.value.ProductId).subscribe(data => {
+    this._GoodscollectionMergename_List = [];
+    this.productPrice_SubQuantityType_data="";
+    this._InventoryFoodwithProduct2List=[];
+    const productId = this.myAddForm.value.ProductId;
+    this.ppservice.getbyproductid(productId).subscribe(data => {
       if (data) {
-        console.log(data);
         this.productPrice_SubQuantityType_data2 = data;
         this.productPrice_SubQuantityType_data = this.productPrice_SubQuantityType_data2.data;
-
-
-        this.store.select(state => state.productLoad.Product_.data);
-
         if (this.Products$) {
           this.Products$.subscribe(productdata => {
-            const productindex = productdata.findIndex((item: { _id: any; }) => item._id === this.myAddForm.value.ProductId);
-            // alert(productindex);
+            const productindex = productdata.findIndex((item: { _id: any; }) => item._id === productId);
             this._InventoryFoodwithProduct2List = [];
-            for (var ii = 0; ii < this.productPrice_SubQuantityType_data.length; ii++) {
+            for (let ii = 0; ii < this.productPrice_SubQuantityType_data.length; ii++) {
               this.subQuantityTypeData$.subscribe((subQuantityTypeData: any) => {
-                const subQuantityTypeIndex = subQuantityTypeData.findIndex((item: { _id: any; }) => item._id === this.productPrice_SubQuantityType_data[ii].selectSubQuantityTypeID);
-                //alert(subQuantityTypeIndex);
-                console.log(this.subQuantityTypeData$);
+                const subQuantityTypeIndex = subQuantityTypeData.findIndex((item: { _id: any; }) =>
+                  item._id === this.productPrice_SubQuantityType_data[ii].selectSubQuantityTypeID
+                );
                 this._InventoryFoodwithProduct2List.push({
-                  ProductId: this.myAddForm.value.ProductId,
+                  ProductId: productId,
                   ProductPrcieId: this.productPrice_SubQuantityType_data[ii]._id,
-                  ProductName: productdata[productindex].Productname,
+                  ProductName: productdata[productindex].name,
                   SubQuantityTypeID: this.productPrice_SubQuantityType_data[ii].selectSubQuantityTypeID,
                   SubQuantityTypeName: subQuantityTypeData[subQuantityTypeIndex].name
                 });
               });
-
             }
-            console.log(this._InventoryFoodwithProduct2List)
-          })
-        }
-
-      }
-
-    })
-  }
-  getsubQuantityTypeDatatypeforedit(ProductId: any) {
-
-    this.ppservice.getbyproductid(ProductId).subscribe(data => {
-      if (data) {
-        console.log(data);
-        this.productPrice_SubQuantityType_data = "";
-        this.productPrice_SubQuantityType_data2 = data;
-        this.productPrice_SubQuantityType_data = this.productPrice_SubQuantityType_data2.data;
-
-
-        this.store.select(state => state.productLoad.Product_.data);
-
-        if (this.Products$) {
-          this.Products$.subscribe(productdata => {
-            const productindex = productdata.findIndex((item: { _id: any; }) => item._id === ProductId);
-            // alert(productindex);
-            this._InventoryFoodwithProduct2List = [];
-            for (var ii = 0; ii < this.productPrice_SubQuantityType_data.length; ii++) {
-              this.subQuantityTypeData$.subscribe((subQuantityTypeData: any) => {
-                const subQuantityTypeIndex = subQuantityTypeData.findIndex((item: { _id: any; }) => item._id === this.productPrice_SubQuantityType_data[ii].selectSubQuantityTypeID);
-                //alert(subQuantityTypeIndex);
-                this._InventoryFoodwithProduct2List.push({
-                  ProductId: ProductId,
-                  ProductPrcieId: this.productPrice_SubQuantityType_data[ii]._id,
-                  ProductName: productdata[productindex].Productname,
-                  SubQuantityTypeID: this.productPrice_SubQuantityType_data[ii].selectSubQuantityTypeID,
-                  SubQuantityTypeName: subQuantityTypeData[subQuantityTypeIndex].name
-                });
-              });
-
-            }
-            console.log(this._InventoryFoodwithProduct2List)
-
           });
         }
       }
-    })
+    });
+  }
+
+  getsubQuantityTypeDatatypeforedit(ProductId: any) {
+    this.ppservice.getbyproductid(ProductId).subscribe(data => {
+      if (data) {
+        this.productPrice_SubQuantityType_data2 = data;
+        this.productPrice_SubQuantityType_data = this.productPrice_SubQuantityType_data2.data;
+        if (this.Products$) {
+          this.Products$.subscribe(productdata => {
+            const productindex = productdata.findIndex((item: { _id: any; }) => item._id === ProductId);
+            this._InventoryFoodwithProduct2List = [];
+            for (let ii = 0; ii < this.productPrice_SubQuantityType_data.length; ii++) {
+              this.subQuantityTypeData$.subscribe((subQuantityTypeData: any) => {
+                const subQuantityTypeIndex = subQuantityTypeData.findIndex((item: { _id: any; }) =>
+                  item._id === this.productPrice_SubQuantityType_data[ii].selectSubQuantityTypeID
+                );
+                this._InventoryFoodwithProduct2List.push({
+                  ProductId: ProductId,
+                  ProductPrcieId: this.productPrice_SubQuantityType_data[ii]._id,
+                  ProductName: productdata[productindex].name,
+                  SubQuantityTypeID: this.productPrice_SubQuantityType_data[ii].selectSubQuantityTypeID,
+                  SubQuantityTypeName: subQuantityTypeData[subQuantityTypeIndex].name
+                });
+              });
+            }
+          });
+        }
+      }
+    });
   }
 
   getSubQuantityType() {
     this.store.dispatch(loadSubQuantityType());
-    this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
-    this.store.select(state => state.subQuantityTypeLoad.loading);
-    this.store.select(state => state.subQuantityTypeLoad.error);
   }
 
+  private findInventoryMainFoodIndex(inventoryfoodmaindata: any[], id: any): number {
+    return inventoryfoodmaindata.findIndex((item: { _id: any; }) => item._id === id);
+  }
+
+  private updateGoodsCollectionList(
+    inventoryfoodmaindata: any[],
+    indexP: number,
+    quantitytypevalue: number,
+    isEdit: boolean
+  ) {
+    if (quantitytypevalue > 0 && inventoryfoodmaindata[indexP].quantitytypevalue > quantitytypevalue) {
+      this.popupenvironments.args$.next(null);
+      const mainFoodId = inventoryfoodmaindata[indexP]._id;
+      const mainFoodName = inventoryfoodmaindata[indexP].name;
+      let foundIndex = this._GoodscollectionMergename_List.findIndex(
+        item => item.IventoryFoodMainId === mainFoodId
+      );
+      if (foundIndex !== -1) {
+        // Update existing
+        this._GoodscollectionMergename_List[foundIndex] = {
+          IventoryFoodMainId: mainFoodId,
+          Name: mainFoodName,
+          quantiyval: quantitytypevalue
+        };
+        this.popupenvironments.args$.next("Material Updated  Successfully");
+
+      } else {
+        // Add new
+        this._GoodscollectionMergename_List.push({
+          IventoryFoodMainId: mainFoodId,
+          Name: mainFoodName,
+          quantiyval: quantitytypevalue
+        });
+        this.popupenvironments.args$.next("Material Added  Successfully");
+
+      }
+    } else {
+      this.popupenvironments.args$.next("Quantity value can not greater than Inventory stored product and can't be negative or null");
+
+    }
+  }
 
   addMaterialforEdit() {
-    this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
     if (this.InventoryMainFooddata$) {
       this.InventoryMainFooddata$.subscribe(inventoryfoodmaindata => {
-        const indexP = inventoryfoodmaindata.findIndex((item: { _id: any; name: any }) => item._id === this.myEditForm.value.inventoryfoodmain_id);
+        const indexP = this.findInventoryMainFoodIndex(inventoryfoodmaindata, this.myEditForm.value.inventoryfoodmain_id);
         this.inventoryfoodmaindata = inventoryfoodmaindata;
-        // alert(this.inventoryfoodmaindata[indexP].quantitytypevalue);
-        // alert(this.myEditForm.value.quantitytypevalue);
-        // alert(this._GoodscollectionMergename_List.length);
-        if (this.myEditForm.value.quantitytypevalue > 0 && this.inventoryfoodmaindata[indexP].quantitytypevalue > this.myEditForm.value.quantitytypevalue) {
-          this.args = "";
-          //belowing block for add material if length is 0
-          if (this._GoodscollectionMergename_List.length == 0) {
-
-            // alert("first: ");
-            //   this._Goodscollection_List.push({
-            //     IventoryFoodMainId:this.inventoryfoodmaindata[indexP]._id,
-            //     quantiyval: this.myAddForm.value.quantitytypevalue
-            //  });
-            this._GoodscollectionMergename_List = [
-              ...this._GoodscollectionMergename_List,
-              {
-                IventoryFoodMainId: this.inventoryfoodmaindata[indexP]._id,
-                Name: this.inventoryfoodmaindata[indexP].name,
-                quantiyval: this.myEditForm.value.quantitytypevalue
-              }
-            ];
-            // this._GoodscollectionMergename_List.push({
-            //   IventoryFoodMainId: this.inventoryfoodmaindata[indexP]._id,
-            //   Name: this.inventoryfoodmaindata[indexP].name,
-            //   quantiyval: this.myEditForm.value.quantitytypevalue
-            // });
-            this.args = "Material Added  Successfully";
-          }
-          //belowing block for update material
-          else if (this._GoodscollectionMergename_List.length > 0) {
-            let indexgoodcollection2 = 0;
-            for (var ii = 0; ii < this._GoodscollectionMergename_List.length; ii++) {
-              this.getinventoryfoodmain_id = this._GoodscollectionMergename_List[ii].IventoryFoodMainId;
-              // alert(this._GoodscollectionMergename_List);
-              // alert(this._Goodscollection_List[ii].IventoryFoodMainId);
-              if (this.getinventoryfoodmain_id == this.inventoryfoodmaindata[indexP]._id) {
-                indexgoodcollection2 = ii;
-                // alert(this.getinventoryfoodmain_id);
-                break;
-              }
-              //findIndex(item=>item.IventoryFoodMainId===this.inventoryfoodmaindata[indexP]._id);
-            }
-
-            //   alert(this.getinventoryfoodmain_id + "==" + this.inventoryfoodmaindata[indexP]._id);
-            if (this.getinventoryfoodmain_id == this.inventoryfoodmaindata[indexP]._id) {
-
-              //   alert("in indexgoodcollection: " + this.getinventoryfoodmain_id);
-              this._GoodscollectionMergename_List = [
-                ...this._GoodscollectionMergename_List.slice(0, indexgoodcollection2),
-                {
-                  IventoryFoodMainId: this.inventoryfoodmaindata[indexP]._id,
-                  Name: this.inventoryfoodmaindata[indexP].name,
-                  quantiyval: this.myEditForm.value.quantitytypevalue
-                },
-                ...this._GoodscollectionMergename_List.slice(indexgoodcollection2 + 1)
-              ];
-
-              // this._GoodscollectionMergename_List[indexgoodcollection2].IventoryFoodMainId = this.inventoryfoodmaindata[indexP]._id;
-              // this._GoodscollectionMergename_List[indexgoodcollection2].Name = this.inventoryfoodmaindata[indexP].name;
-              // this._GoodscollectionMergename_List[indexgoodcollection2].quantiyval = this.myEditForm.value.quantitytypevalue;
-              this.args = "Material Updated  Successfully";
-            }
-            //belowing block for material if material > 0
-            else {
-              this._GoodscollectionMergename_List = [
-                ...this._GoodscollectionMergename_List,
-                {
-                  IventoryFoodMainId: this.inventoryfoodmaindata[indexP]._id,
-                  Name: this.inventoryfoodmaindata[indexP].name,
-                  quantiyval: this.myEditForm.value.quantitytypevalue
-                }
-              ];
-              // this._GoodscollectionMergename_List.push({
-              //   IventoryFoodMainId: this.inventoryfoodmaindata[indexP]._id,
-              //   Name: this.inventoryfoodmaindata[indexP].name,
-              //   quantiyval: this.myEditForm.value.quantitytypevalue
-              // });
-              this.args = "Material Added Successfully";
-            }
-          }
-        }
-        else {
-          this.args = "Quantity value can not greater than Inventory stored product and can't be negative";
-        }
-        console.log(this._GoodscollectionMergename_List);
-      })
+        this.updateGoodsCollectionList(
+          inventoryfoodmaindata,
+          indexP,
+          this.myEditForm.value.quantitytypevalue,
+          true
+        );
+      });
     }
-    //this.quantitytypename = inventoryfoodmaindata[indexP]._id ;
-    //   alert(inventoryfoodmaindata[indexP]._id );
   }
+
   addMaterial() {
-    this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
     if (this.InventoryMainFooddata$) {
       this.InventoryMainFooddata$.subscribe(inventoryfoodmaindata => {
-        const indexP = inventoryfoodmaindata.findIndex((item: { _id: any; name: any }) => item._id === this.myAddForm.value.inventoryfoodmain_id);
-        console.log(inventoryfoodmaindata[indexP].quantitytypevalue);
-        console.log(this.myAddForm.value.inventoryfoodmain_id);
-        console.log(inventoryfoodmaindata);
-        console.log(indexP);
-        if (this.myAddForm.value.quantitytypevalue > 0 && inventoryfoodmaindata[indexP].quantitytypevalue > this.myAddForm.value.quantitytypevalue) {
-          this.args = "";
-          if (this._GoodscollectionMergename_List.length == 0) {
-
-            // alert("first: ");
-            //   this._Goodscollection_List.push({
-            //     IventoryFoodMainId:inventoryfoodmaindata[indexP]._id,
-            //     quantiyval: this.myAddForm.value.quantitytypevalue
-            //  });
-            this._GoodscollectionMergename_List.push({
-              IventoryFoodMainId: inventoryfoodmaindata[indexP]._id,
-              Name: inventoryfoodmaindata[indexP].name,
-              quantiyval: this.myAddForm.value.quantitytypevalue
-            });
-            this.args = "Material Added  Successfully";
-          }
-          else if (this._GoodscollectionMergename_List.length > 0) {
-            let indexgoodcollection2 = 0;
-            for (var ii = 0; ii < this._GoodscollectionMergename_List.length; ii++) {
-              this.getinventoryfoodmain_id = this._GoodscollectionMergename_List[ii].IventoryFoodMainId;
-              // alert(this._GoodscollectionMergename_List);
-              // alert(this._Goodscollection_List[ii].IventoryFoodMainId);
-              if (this.getinventoryfoodmain_id == inventoryfoodmaindata[indexP]._id) {
-                indexgoodcollection2 = ii;
-                // alert(this.getinventoryfoodmain_id);
-                break;
-              }
-              //findIndex(item=>item.IventoryFoodMainId===inventoryfoodmaindata[indexP]._id);
-            }
-
-            //   alert(this.getinventoryfoodmain_id + "==" + inventoryfoodmaindata[indexP]._id);
-            if (this.getinventoryfoodmain_id == inventoryfoodmaindata[indexP]._id) {
-
-              //   alert("in indexgoodcollection: " + this.getinventoryfoodmain_id);
-              this._GoodscollectionMergename_List[indexgoodcollection2].IventoryFoodMainId = inventoryfoodmaindata[indexP]._id;
-              this._GoodscollectionMergename_List[indexgoodcollection2].Name = inventoryfoodmaindata[indexP].name;
-              this._GoodscollectionMergename_List[indexgoodcollection2].quantiyval = this.myAddForm.value.quantitytypevalue;
-              this.args = "Material Updated  Successfully";
-            }
-            else {
-              this._GoodscollectionMergename_List.push({
-                IventoryFoodMainId: inventoryfoodmaindata[indexP]._id,
-                Name: inventoryfoodmaindata[indexP].name,
-                quantiyval: this.myAddForm.value.quantitytypevalue
-              });
-              this.args = "Material Added Successfully";
-            }
-          }
-        }
-        else {
-          this.args = "Quantity value can not greater than Inventory stored product and can't be negative";
-        }
-        console.log(this._GoodscollectionMergename_List);
-      })
+        const indexP = this.findInventoryMainFoodIndex(inventoryfoodmaindata, this.myAddForm.value.inventoryfoodmain_id);
+        this.updateGoodsCollectionList(
+          inventoryfoodmaindata,
+          indexP,
+          this.myAddForm.value.quantitytypevalue,
+          false
+        );
+      });
     }
-    //this.quantitytypename = inventoryfoodmaindata[indexP]._id ;
-    //   alert(inventoryfoodmaindata[indexP]._id );
   }
+
   getInventoryFoodQuantityTypeName() {
-    //  alert(this.myAddForm.value.inventoryfoodmain_id);
-    //this.quantitytypename = this.Inventoryfoodquntitytype.find((item: { subQuantityTypeDatatype: any; }) => item.subQuantityTypeDatatype === selectedValue);
-    // this.store.select(state => state.loadInventoryFoodQuantityType..data);
     this.store.dispatch(loadInventoryFoodQuantityType());
-    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
-    this.loading$ = this.store.select(state => state.loadInventoryFoodQuantityType.loading);
-    this.error$ = this.store.select(state => state.loadInventoryFoodQuantityType.error);
-    // this.loading$ = this.store.select(state => state.loadInventoryFoodQuantityType.loading);
-    // this.error$ = this.store.select(state => state.loadInventoryFoodQuantityType.error);
-    this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
     if (this.InventoryMainFooddata$) {
       this.InventoryMainFooddata$.subscribe(InventoryMainFooddata => {
-        const indexInvetoryMainFood = InventoryMainFooddata.findIndex((item: { _id: any; }) => item._id === this.myAddForm.value.inventoryfoodmain_id);
-        // const index = this.Inventoryfoodquntitytype
-        console.log(indexInvetoryMainFood);
-        console.log(InventoryMainFooddata);
-
-        if (this.inventoryQuantityTypeData$) { //quantitytypeID
+        const indexInvetoryMainFood = this.findInventoryMainFoodIndex(InventoryMainFooddata, this.myAddForm.value.inventoryfoodmain_id);
+        if (this.inventoryQuantityTypeData$) {
           this.inventoryQuantityTypeData$.subscribe(inventoryQuantityTypeData => {
-            console.log(inventoryQuantityTypeData);
-            const indexP = inventoryQuantityTypeData.findIndex((item: { _id: any; }) => item._id === InventoryMainFooddata[indexInvetoryMainFood].quantitytypeID);
-            // const index = this.Inventoryfoodquntitytype
-            console.log(indexP);
-            console.log(inventoryQuantityTypeData);
-            this.quantitytypename = inventoryQuantityTypeData[indexP].name;
-          })
+            const indexP = inventoryQuantityTypeData.findIndex(
+              (item: { _id: any; }) => item._id === InventoryMainFooddata[indexInvetoryMainFood].quantitytypeID
+            );
+            this.quantitytypename = inventoryQuantityTypeData[indexP]?.name || '';
+          });
         }
-        // InventoryMainFooddata[indexInvetoryMainFood].quantitytypeID;
-      })
+      });
     }
-
-    // alert(this.quantitytypename);
   }
+
   getInventoryFoodQuantityTypeNameforedit() {
-    //  alert(this.myAddForm.value.inventoryfoodmain_id);
-    //this.quantitytypename = this.Inventoryfoodquntitytype.find((item: { subQuantityTypeDatatype: any; }) => item.subQuantityTypeDatatype === selectedValue);
-    // this.store.select(state => state.loadInventoryFoodQuantityType..data);
     this.store.dispatch(loadInventoryFoodQuantityType());
-    this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
-    this.loading$ = this.store.select(state => state.loadInventoryFoodQuantityType.loading);
-    this.error$ = this.store.select(state => state.loadInventoryFoodQuantityType.error);
-    this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
     if (this.InventoryMainFooddata$) {
       this.InventoryMainFooddata$.subscribe(InventoryMainFooddata => {
-        const indexInvetoryMainFood = InventoryMainFooddata.findIndex((item: { _id: any; }) => item._id === this.myEditForm.value.inventoryfoodmain_id);
-        // const index = this.Inventoryfoodquntitytype
-        console.log(indexInvetoryMainFood);
-        console.log(InventoryMainFooddata);
-        if (this.inventoryQuantityTypeData$) { //quantitytypeID
+        const indexInvetoryMainFood = this.findInventoryMainFoodIndex(InventoryMainFooddata, this.myEditForm.value.inventoryfoodmain_id);
+        if (this.inventoryQuantityTypeData$) {
           this.inventoryQuantityTypeData$.subscribe(inventoryQuantityTypeData => {
-            const indexP = inventoryQuantityTypeData.findIndex((item: { _id: any; }) => item._id === InventoryMainFooddata[indexInvetoryMainFood].quantitytypeID);
-            // const index = this.Inventoryfoodquntitytype
-            console.log(indexP);
-            console.log(inventoryQuantityTypeData);
-            this.quantitytypename = inventoryQuantityTypeData[indexP].name;
-          })
+            const indexP = inventoryQuantityTypeData.findIndex(
+              (item: { _id: any; }) => item._id === InventoryMainFooddata[indexInvetoryMainFood].quantitytypeID
+            );
+            this.quantitytypename = inventoryQuantityTypeData[indexP]?.name || '';
+          });
         }
-        // InventoryMainFooddata[indexInvetoryMainFood].quantitytypeID;
-      })
+      });
     }
-    // alert(this.quantitytypename);
   }
+
   showubelement() {
-
     this.service.getbyid(this.myAddForm.value.ProductId, this.myAddForm.value.SubQuantityTypeID).subscribe({
-      // result => {
-
-      // this.addResult = result;
-      // console.log(result);
-      // console.log(this.addResult);
-      // this.args = "";
-      // if (this.addResult.data != null) {
-      //   this.args = "Already Assocciated";
-      //   this.showubelements = false;
-      // }
-      // else {
-      //   this.showubelements = true;
-      // }
       next: (result) => {
-        console.log(result);
-
         this.addResult = result;
-        console.log(result);
-        console.log(this.addResult);
-        this.args = "";
+        this.popupenvironments.args$.next(null);
+
         if (this.addResult.data != null) {
-          this.args = "Already Assocciated";
+          this.popupenvironments.args$.next("Already Assocciated");
+
           this.showubelements = false;
-        }
-        else {
+        } else {
           this.showubelements = true;
         }
       },
       error: (err) => {
-        console.log(err.status);
-        if (err.status == "404")
-          this.showubelements = true;
+        if (err.status == "404") this.showubelements = true;
       }
-    })
+    });
   }
-  // loadinventoeryfoodquantitytype() {
-  //   this._InventoryMFoodQuantityTypeService.get().subscribe(data => {
-  //     if (data) {
-  //       this.Inventoryfoodquntitytype2 = data;
-  //       this.Inventoryfoodquntitytype = this.Inventoryfoodquntitytype2.data
-  //       console.log(data);
-  //       //this.search(id);
-
-  //     }
-  //   })
-  // }
 
   onCellClick(event: any) {
+    if (event.colDef.field === 'Delete') {
+      this.popupenvironments.modal$.next("modal");
+      this.popupenvironments.display$.next("display:block");
+      this.popupenvironments.valueid$.next(event.data._id);
+      this.popupenvironments.tablename$.next("cate");
 
-    if (event.colDef.field == 'Delete') {
-
-      this.modal = "modal";
-      this.display = "display:block"
-      this.valueid = event.data._id;
-      this.tablename = "cate";
     }
-    if (event.colDef.field == 'Edit') {
-      //alert('Cell clicked'+event.colDef.field);
-      //console.log('Custom function triggered with event:', event);
+    if (event.colDef.field === 'Edit') {
       this.getProduct();
       this.getsubQuantityTypeDatatypeforedit(event.data.ProductId);
-      this.popdata2 = event.data;
-      this.showEdit = true;
-      this.show = false;
-      this.args = "";
-      this.store.select(state => state.loadInventoryMainFood.InventoryMainFood_.data);
+      this.popupenvironments.popdata2$.next(event.data);
+      this.popupenvironments.showEdit$.next(true);
+      this.popupenvironments.show$.next(false);
+      this.popupenvironments.args$.next(null);
       if (this.InventoryMainFooddata$) {
         this.InventoryMainFooddata$.subscribe(inventoryfoodmaindata => {
-          console.log(inventoryfoodmaindata);
-          for (var ii = 0; ii < event.data.goodscollections.length; ii++) {
-
-            const index = inventoryfoodmaindata.findIndex((item: { _id: any; }) => item._id === event.data.goodscollections[ii].IventoryFoodMainId);
-            // alert(index);
-            //console.log(Object.isFrozen(inventoryfoodmaindata)); // Returns true if the array is frozen
-            let newArray = inventoryfoodmaindata.slice(); // Make a copy
-            newArray.splice(index, 1);
-
-            // inventoryfoodmaindata.splice(index, 1);
-          }
-          console.log(inventoryfoodmaindata);
-        })
+          // No-op: code was only splicing, not used
+        });
       }
-      this._GoodscollectionMergename_List = [];
-      this._GoodscollectionMergename_List = event.data.goodscollections;
-      console.log(event.data.goodscollections);
-      console.log(this.popdata2);
-      this.myEditForm = this.formedit.group({
+      this._GoodscollectionMergename_List = [...event.data.goodscollections];
+      this.myEditForm = this.fb.group({
         _id: [event.data._id],
         ProductId: [event.data.ProductId],
         ProductPrcieId: [event.data.ProductPrcieId],
@@ -617,7 +409,6 @@ export class InventoryfoodComponent implements OnInit {
         quantitytypevalue: [event.data.quantitytypevalue]
       });
     }
-    // this.loadcategory();
   }
 
   loadInventoryAssocciatedFood() {
@@ -626,147 +417,155 @@ export class InventoryfoodComponent implements OnInit {
     this.loading$ = this.store.select(state => state.loadAssocciatedInvtoryFood.loading);
     this.error$ = this.store.select(state => state.loadAssocciatedInvtoryFood.error);
   }
+
   Update(InventoryFoodwithProductForEdit_: InventoryFoodwithProductforEdit) {
     this.store.dispatch(updateInventoryFoodwithProduct({ InventoryFoodwithProductForEdit_ }));
     this.store.dispatch(loadInventoryFoodwithProduct());
     this.fooddata$ = this.store.select(
       state => state.loadAssocciatedInvtoryFood?.InventoryFoodwithProduct_?.data
     );
-
-    // Success notification
     this.actions$.pipe(ofType(updateInventoryFoodwithProductSuccess)).subscribe(() => {
-      this.args = 'Inventory updated successfully!';
+
+      this.popupenvironments.args$.next('Inventory updated successfully!');
       this.loadInventoryAssocciatedFood();
     });
-
-    // Error notification
     this.actions$.pipe(ofType(updateInventoryFoodwithProductFailure)).subscribe(({ error }: { error: any }) => {
-      this.args = 'Failed to update inventory: ' + error;
+
+      this.popupenvironments.args$.next('Failed to update inventory: ' + error);
+
     });
-
   }
+
   cDelete(_id: any) {
-
+    // Not implemented
   }
-  a: any;
-  b: any;
-  addResult: any;
-  onFormSubmit() {
-    const indexsubQuantityTypeDatatype = this._InventoryFoodwithProduct2List.findIndex(item => item.SubQuantityTypeID === this.myAddForm.value.SubQuantityTypeID);
-    this._InventoryFoodwithProduct = {
 
-      ProductId: this._InventoryFoodwithProduct2List[indexsubQuantityTypeDatatype].ProductId,
-      ProductPrcieId: this._InventoryFoodwithProduct2List[indexsubQuantityTypeDatatype].ProductPrcieId,
-      ProductName: this._InventoryFoodwithProduct2List[indexsubQuantityTypeDatatype].ProductName,
-      SubQuantityTypeID: this._InventoryFoodwithProduct2List[indexsubQuantityTypeDatatype].SubQuantityTypeID,
-      SubQuantityTypeName: this._InventoryFoodwithProduct2List[indexsubQuantityTypeDatatype].SubQuantityTypeName,
+  onFormSubmit() {
+    const indexsubQuantityTypeDatatype = this._InventoryFoodwithProduct2List.findIndex(
+      item => item.SubQuantityTypeID === this.myAddForm.value.SubQuantityTypeID
+    );
+    const selected = this._InventoryFoodwithProduct2List[indexsubQuantityTypeDatatype];
+    this._InventoryFoodwithProduct = {
+      ProductId: selected.ProductId,
+      ProductPrcieId: selected.ProductPrcieId,
+      ProductName: selected.ProductName,
+      SubQuantityTypeID: selected.SubQuantityTypeID,
+      SubQuantityTypeName: selected.SubQuantityTypeName,
       goodscollections: this._GoodscollectionMergename_List
     };
-    this.a = this._InventoryFoodwithProduct2List[indexsubQuantityTypeDatatype].ProductId;
-    this.b = this._InventoryFoodwithProduct2List[indexsubQuantityTypeDatatype].SubQuantityTypeID;
+    this.a = selected.ProductId;
+    this.b = selected.SubQuantityTypeID;
 
-    //console.log( this._InventoryFoodwithProduct);
     this.service.getbyid(this.a, this.b).subscribe({
       next: (result) => {
         this.addResult = result;
-        console.log(this.addResult);
-        console.log(this.b);
-        if (this.addResult.data == null) {
-          this.add(this._InventoryFoodwithProduct);
+    
+        if (!result) {
+          // No record at all
+          this.popupenvironments.args$.next("No record found.");
+          return;
         }
-        else {
-          this.args = "Already Assocciated with this Product.";
+    
+        if (! this.addResult.data ||  this.addResult.data.length === 0) {
+          // Record exists but no data inside
+          // this.add(this._InventoryFoodwithProduct);
+          console.log("No data inside result");
+        } else {
+          // Data exists
+          this.popupenvironments.args$.next("Already Associated with this Product.");
         }
       },
       error: (err) => {
-        console.log(err.status);
-        if (err.status == "404")
-          this.add(this._InventoryFoodwithProduct);
+       
+        
+        if (err.status === 404) {
+         // this.popupenvironments.args$.next("Record not found (404).");
+         this.add(this._InventoryFoodwithProduct);
+        } else if (err.status === 500) {
+          this.popupenvironments.args$.next("Server error (500). Try again later.");
+        } else {
+          this.popupenvironments.args$.next("Unexpected error: " + err.message);
+        }
+       // this.popupenvironments.args$.next("Something went wrong while fetching record.");
       }
-    })
+    });
+    
+      //error: (err) => {
+      //   if (err.status == "404") 
+      //     {
+      //       console.log("I m in Error box");
+      //     //  this.add(this._InventoryFoodwithProduct);
+            
+      //     }
+      // }
+   // });
   }
+
   add(InventoryFoodwithProduct_: InventoryFoodwithProduct): void {
-    console.log(InventoryFoodwithProduct_);
     this.store.dispatch(addInventoryFoodwithProduct({ InventoryFoodwithProduct_ }));
-    this.store.dispatch(loadInventoryFoodwithProduct());
+   // this.store.dispatch(loadInventoryFoodwithProduct());
     this.fooddata$ = this.store.select(
       state => state.loadAssocciatedInvtoryFood?.InventoryFoodwithProduct_?.data
     );
+    this.actions$.pipe(ofType(InventoryFoodwithProductActions.addInventoryFoodwithProductSuccess)).subscribe(() => {
 
-    // Success message
-    this.actions$.pipe(ofType(addInventoryFoodwithProductSuccess)).subscribe(() => {
-      this.args = 'Inventory item added successfully!';
+      this.popupenvironments.args$.next('Inventory item added successfully!');
+
+
     });
+    this.actions$.pipe(ofType(InventoryFoodwithProductActions.addInventoryFoodwithProductFailure)).subscribe(({ error }) => {
 
-    // Error message
-    this.actions$.pipe(ofType(addInventoryFoodwithProductFailure)).subscribe(({ error }) => {
-      this.args = 'Failed to add inventory item: ' + error;
+      this.popupenvironments.args$.next('Failed to add inventory item: ' + error);
+
     });
   }
-  show: any = false;
-  showEdit: any = false;
+
   shows() {
     this.getProduct();
-    //this.loadinventoeryfoodquantitytype();
-    this.show = true;
-    this.showEdit = false;
-    this.args = "";
+    
+    
+    this.popupenvironments.show$.next(true);
+    this.popupenvironments.showEdit$.next(false);
+    this.popupenvironments.args$.next(null);
+
     this._GoodscollectionMergename_List = [];
+    this.productPrice_SubQuantityType_data="";
+    this._InventoryFoodwithProduct2List=[];
   }
+
   onEditForm() {
     if (this.myEditForm.valid) {
-      // console.log(this.myEditForm.value);
-      // alert(this.myEditForm.value);
-      const indexsubQuantityTypeDatatype = this._InventoryFoodwithProduct2List.findIndex(item => item.SubQuantityTypeID === this.myEditForm.value.SubQuantityTypeID);
+      const indexsubQuantityTypeDatatype = this._InventoryFoodwithProduct2List.findIndex(
+        item => item.SubQuantityTypeID === this.myEditForm.value.SubQuantityTypeID
+      );
+      const selected = this._InventoryFoodwithProduct2List[indexsubQuantityTypeDatatype];
       this._InventoryFoodwithProductforEdit = {
         _id: this.myEditForm.value._id,
-        ProductId: this._InventoryFoodwithProduct2List[indexsubQuantityTypeDatatype].ProductId,
-        ProductPrcieId: this._InventoryFoodwithProduct2List[indexsubQuantityTypeDatatype].ProductPrcieId,
-        ProductName: this._InventoryFoodwithProduct2List[indexsubQuantityTypeDatatype].ProductName,
-        SubQuantityTypeID: this._InventoryFoodwithProduct2List[indexsubQuantityTypeDatatype].SubQuantityTypeID,
-        SubQuantityTypeName: this._InventoryFoodwithProduct2List[indexsubQuantityTypeDatatype].SubQuantityTypeName,
+        ProductId: selected.ProductId,
+        ProductPrcieId: selected.ProductPrcieId,
+        ProductName: selected.ProductName,
+        SubQuantityTypeID: selected.SubQuantityTypeID,
+        SubQuantityTypeName: selected.SubQuantityTypeName,
         goodscollections: this._GoodscollectionMergename_List,
-        employee_id: "undefined",
+        employee_id: "undefined"
       };
-      console.log(this._InventoryFoodwithProductforEdit);
       this.Update(this._InventoryFoodwithProductforEdit);
     }
   }
+
   close() {
-    //alert(arg0)
-    if (this.showEdit == true) {
-      this.showEdit = false;
-    }
-    if (this.show == true) {
-      this.show = false;
-    }
-    this.myEditForm = this.formedit.group({
-      _id: [''],
-      quantitytypevalue: [''],
-      ProductId: [''],
-      ProductPrcieId: [''],
-      ProductName: [''],
-      SubQuantityTypeID: [''],
-      SubQuantityTypeName: ['', Validators.required],
-      goodscollections: [''],
-      employee_id: this.employeeId
+    this.popupenvironments.showEdit$.next(false);
+    this.popupenvironments.show$.next(false);
 
-    });
-    this.myAddForm = this.formedit.group({
-
-      SubQuantityTypeID: [''],
-      inventoryfoodmain_id: [''],
-      ProductId: [''],
-      discription: [''],
-      quantitytypeID: ['', Validators.required],
-      quantitytypename: [''],
-      quantitytypevalue: [''],
-      employee_id: this.employeeId
-    });
+    this._GoodscollectionMergename_List = [];
+    this.productPrice_SubQuantityType_data="";
+    this._InventoryFoodwithProduct2List=[];
   }
+
   handleChildClick() {
-    this.display = "display:none;";
+    this.popupenvironments.display$.next("display:none;");
   }
+
   deletedConfirmed(id: any) {
     this.service.delete(id).subscribe({
       next: (data) => {
@@ -775,42 +574,27 @@ export class InventoryfoodComponent implements OnInit {
           this.fooddata$ = this.store.select(
             state => state.loadAssocciatedInvtoryFood?.InventoryFoodwithProduct_?.data
           );
+          this.popupenvironments.display$.next("display:none;");
+          this.popupenvironments.args$.next("Record Deleted Successfully");
 
-          this.display = "display:none;";
-          this.args = "Record Deleted Successfully";
         } else {
-          this.display = "display:none;";
-          this.args = "Failed to delete record (no response from server)";
+          this.popupenvironments.display$.next("display:none;");
+          this.popupenvironments.args$.next("Failed to delete record (no response from server)");
         }
       },
       error: (err) => {
-        console.error("Delete failed", err);
-        this.display = "display:none;";
-        this.args = `Error deleting record: ${err.message || err}`;
+        this.popupenvironments.display$.next("display:none;");
+        this.popupenvironments.args$.next(`Error deleting record: ${err.message || err}`);
       }
     });
   }
 
-  // deleterawitems(arg0: String) {
-  //   const index = this._GoodscollectionMergename_List.findIndex(item => item.IventoryFoodMainId === arg0);
-  //   this._GoodscollectionMergename_List.splice(index, 1);
-  // }
   deleteRawItem(id: String) {
-
-    //   const index = this._GoodscollectionMergename_List.findIndex(
-    //     item => item.IventoryFoodMainId === id
-    //   );
-    // console.log(index);
-    //   if (index !== -1) {
-    //     this._GoodscollectionMergename_List.splice(index, 1);
-    //   }
-    this._GoodscollectionMergename_List = [...this._GoodscollectionMergename_List];
     const index = this._GoodscollectionMergename_List.findIndex(
       item => item.IventoryFoodMainId === id
     );
     if (index !== -1) {
       this._GoodscollectionMergename_List.splice(index, 1);
     }
-
   }
 }

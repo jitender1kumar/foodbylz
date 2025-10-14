@@ -1,0 +1,183 @@
+<h4 class="titleh4">AddOn Product Management</h4>
+
+<!-- Loading and Error States -->
+<div *ngIf="loading$ | async">Loading...</div>
+<div *ngIf="error$ | async as error" style="color:red">{{ error }}</div>
+
+<!-- Add Button -->
+<button class="bt1n btnbox" id="show" (click)="shows()">+Add AddOn Product</button>
+
+<!-- Add Form Modal -->
+<div *ngIf="popupenvironments.show$ | async" class="comman">
+  <div class="row box">
+    <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" class="col lbl2">
+      <button class="close" type="button" (click)="close()">Close</button>
+      <div class="row lbl">
+        <h4>Insert AddOn Product Records (Souce, Extrat chees)</h4>
+      </div>
+     
+      <div class="form-group row">
+        <div class="col">
+          <label class="lbl" for="SelectProductId">Select  Product :</label>
+        </div>
+        <div class="col">
+          <select class="lbl" id="SelectProductId" formControlName="SelectProductId" (change)="loadSubQuantityTypeAdd()">
+            <option *ngFor="let d of Products$ | async; " [value]="d._id">{{ d.name }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col">
+          <label class="lbl" for="SubQuantityTypeID">Select Product Sub Quantity Type:</label>
+        </div>
+        <div class="col">
+          <select class="lbl" id="SubQuantityTypeID" formControlName="SubQuantityTypeID">
+            <option *ngFor="let d of subQuantityTypeDatabyId$ | async; " [value]="d._id">{{ d.name }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col">
+          <label class="lbl" for="nametxt">Name :</label>
+        </div>
+        <div class="col">
+          <input class="lbl" id="nametxt" type="text" minlength="0" maxlength="200" formControlName="name" />
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col">
+          <label class="lbl" for="descriptiontxt">Description :</label>
+        </div>
+        <div class="col">
+          <input class="lbl" id="descriptiontxt" type="text" minlength="0" maxlength="200" formControlName="description" />
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col">
+          <label class="lbl" for="descriptiontxt">Price :</label>
+        </div>
+        <div class="col">
+          <input class="lbl" id="Pricetxt" type="number" minlength="0" maxlength="20000" formControlName="Price" />
+        </div>
+      </div>
+      <p>{{ popupenvironments.args$ | async }}</p>
+      <div class="row">
+        <div class="col">
+          <button class="bt1n" type="submit" style="border: solid black; padding: 10px;" [disabled]="myAddForm.invalid">+</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Form Modal -->
+<div *ngIf="popupenvironments.showEdit$ | async" class="comman">
+  <div class="row box">
+    <form [formGroup]="myEditForm" (ngSubmit)="onFormEdit()" class="col lbl2">
+      <button class="close" type="button" (click)="close()">Close</button>
+      <div class="row">
+        <div class="col">
+          <h2><b>Edit</b></h2>
+        </div>
+      </div>
+      <p>{{ popupenvironments.args$ | async }}</p>
+      <div class="form-group row">
+        <div class="col">
+          <label class="lbl" for="selectedit">Select AddOn Product :</label>
+        </div>
+        <div class="col">
+            <!-- [selected]="d._id === popdata2?.SelectProductId" -->
+          <select id="selectedit" formControlName="SelectProductId" (change)="loadSubQuantityTypeAddEdit()">
+            <option value="">Select Options</option>
+            <option *ngFor="let d of Products$ | async" [value]="d._id" [selected]="d._id === (myEditForm.get('SelectProductId')?.value)">
+              {{ d.name }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col">
+          <label class="lbl" for="SubQuantityTypeID">Select Product Sub Quantity Type:</label>
+        </div>
+        <div class="col">
+          <select class="lbl" id="SubQuantityTypeID" formControlName="SubQuantityTypeID">
+            <option *ngFor="let d of subQuantityTypeDatabyId$ | async" [value]="d._id" [selected]="d._id === (myEditForm.get('SubQuantityTypeID')?.value)">
+              {{ d.name }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col">
+          <label class="lbl" for="editname">Name :</label>
+        </div>
+        <div class="col">
+          <input
+            id="editname"
+            style="width: 114px; margin: 3px;"
+            minlength="0"
+            maxlength="200"
+            formControlName="name"
+            type="text"
+          />
+          <div *ngIf="myEditForm.get('Name')?.invalid && myEditForm.get('Name')?.touched">
+            Name is required.
+          </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col">
+          <label class="lbl" for="editdescription">Description :</label>
+        </div>
+        <div class="col">
+          <input
+            id="editdescription"
+            style="width: 250px; margin: 3px;"
+            minlength="0"
+            maxlength="200"
+            formControlName="description"
+            type="text"
+            aria-multiline="true"
+          />
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col">
+          <label class="lbl" for="descriptiontxt">Price :</label>
+        </div>
+        <div class="col">
+          <input class="lbl" id="Pricetxt" type="number" minlength="0" maxlength="20000" formControlName="Price" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <button class="bt1n" style="margin: 3px;" id="baseb" [disabled]="myEditForm.invalid">Update</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Data Table -->
+<ag-grid-angular
+  class="box ag-theme-quartz"
+  style="height:500px;"
+  [rowData]="addOnDataArray"
+  [columnDefs]="colDefs"
+  [pagination]="pagination"
+  [paginationPageSize]="paginationPageSize"
+  [paginationPageSizeSelector]="paginationPageSizeSelector"
+  (cellClicked)="onCellClick($event)"
+></ag-grid-angular>
+
+<!-- Popup Modal -->
+<div>
+  <app-popupmodel
+    (deletedconfirmedclicked)="deletedConfirmed($event)"
+    (clicked)="handleChildClick()"
+    [style]="popupenvironments.display$ | async"
+    [tabname]="popupenvironments.tablename$ | async"
+    [data]="popupenvironments.valueid$ | async"
+    [modal]="popupenvironments.modal$ | async"
+  ></app-popupmodel>
+</div>

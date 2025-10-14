@@ -14,6 +14,7 @@ export class InitializeInvoice {
 invoice: Invoice = {
     Taxes: this.itaxarr,
     Chairs: this.ichar,
+    AddOnItems:[],
     taxpecentRate: 0,
     taxpercentValue: 0,
     DiscountId: "",
@@ -49,6 +50,7 @@ this.datecurrent=this.gettoday();
         this.invoice = {
             Taxes: this.itaxarr,
             Chairs: this.ichar,
+            AddOnItems:[],
             taxpecentRate: 0,
             taxpercentValue: 0,
             DiscountId: "",
@@ -81,6 +83,7 @@ this.datecurrent=this.gettoday();
         this.invoice = {
             Taxes: this.itaxarr,
             Chairs: this.ichar,
+            AddOnItems:[],
             taxpecentRate: 0,
             taxpercentValue: 0,
             DiscountId: "",
@@ -113,6 +116,7 @@ initializeInvoiceData(InitializeInvoiceData:Invoice) {
         this.invoice = {
             Taxes: InitializeInvoiceData.Taxes,
             Chairs: InitializeInvoiceData.Chairs,
+            AddOnItems:[],
             taxpecentRate: InitializeInvoiceData.taxpecentRate,
             taxpercentValue: InitializeInvoiceData.taxpercentValue,
             DiscountId: InitializeInvoiceData.DiscountId,

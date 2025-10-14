@@ -18,7 +18,7 @@ id:any;
 
     agInit(params: ICellRendererParams): void {
       this.id= params.data._id;
-      console.log(params);
+     // console.log(params);
     }
     refresh(params: ICellRendererParams) {
     

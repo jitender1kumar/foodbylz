@@ -19,16 +19,19 @@ import { Customers } from '../../core/Model/crud.model';
   standalone: false
 })
 export class DisplayOrdersListComponent implements OnInit {
+  dateValue: string = new Date().toISOString().split('T')[0]; // "2025-09-03"
+
   t_element: any;
   showPopUp = false;
   closePopUp = false;
   EditOrderItems: any;
   EditOrderItems2: any;
-  backupstoredataforsearch: any = ""; from_date: string;
-  to_date: string;
+  backupstoredataforsearch: any = ""; 
+  from_date: string= new Date().toISOString().split('T')[0];
+  to_date: string= new Date().toISOString().split('T')[0];
   EditOrder: any;
   customersRecord: Customers = {
-    Name: 'Guest',
+    name: 'Guest',
     MobileNo: '0000',
     DOB: '0000',
     type: 'undefined',
@@ -39,13 +42,14 @@ export class DisplayOrdersListComponent implements OnInit {
     RecieptNumber: 0,
     employee_id: 'undefined'
   }
+  
   ordersdata: any;
   //rowData=ordersdataloaded;
   customerdata: any;
   customers: any;
   pagination = true;
   paginationPageSize = 10;
-  paginationPageSizeSelector = [200, 500, 1000];
+  paginationPageSizeSelector = [10,200, 500, 1000];
   colDefs: ColDef[] = [
     { field: "RecieptNumber", maxWidth: 170 },
     ///  { field: "OrderTypeName" ,maxWidth:100},
@@ -85,8 +89,8 @@ export class DisplayOrdersListComponent implements OnInit {
 
 
     });
-    this.from_date = "0";
-    this.to_date = "0";
+    // this.from_date = "0";
+    // this.to_date = "0";
   }
   ngOnInit(): void {
 
@@ -277,7 +281,7 @@ export class DisplayOrdersListComponent implements OnInit {
           if (this.customerdata.data.length > 0) {
             this.customers = this.customerdata.data;
             this.customersRecord = {
-              Name: this.customers[0].Name,
+              name: this.customers[0].name,
               MobileNo: this.customers[0].MobileNo,
               DOB: this.customers[0].DOB,
               type: this.customers[0].type,
@@ -299,7 +303,7 @@ export class DisplayOrdersListComponent implements OnInit {
     else {
       //alert("Else block");
       this.customersRecord = {
-        Name: 'Guest',
+        name: 'Guest',
         MobileNo: '0000',
         DOB: '0000',
         type: 'undefined',

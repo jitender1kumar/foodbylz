@@ -4,7 +4,9 @@ import { PaybyService } from '../../core/Services/paybymanage.service';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { GetOrderDetailsService } from '../../core/commanFunction/getOrderDetails.service';
-
+import  * as InvoiceActions from '../../core/store/invoiceStor/invoice.actions';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/internal/Observable';
 @Component({
     selector: 'app-ordersgraphs',
     templateUrl: './ordersgraphs.component.html',
@@ -18,8 +20,9 @@ export class OrdersgraphsComponent implements OnInit {
   t_element: any;
   backupstoredataforsearch: any = ""; from_date: string;
   to_date: string;
-graphDayOrders:string="Today";
+  graphDayOrders:string="Today";
   ordersdata: any;
+  ordersdata2:any
   //rowData=ordersdataloaded;
   payByChartrecord: any = [];
   graphRecord: any = [];
@@ -27,10 +30,10 @@ graphDayOrders:string="Today";
   payByListsRecord: any;
   payByListsRecord2: any;
   currentDateTime: string = "";
-   ordersdata2:any
+  invoice$?: Observable<any[]>;
   //orderstatus 1 for new order 2 pending 3 running 
-  constructor(private invoice: InvoiceService, private router: Router, private datePipe: DatePipe, private GetOrderDetailsService_: GetOrderDetailsService, private PaybyService_: PaybyService) {
-
+  constructor(private invoice: InvoiceService, private router: Router, private datePipe: DatePipe, private GetOrderDetailsService_: GetOrderDetailsService, private PaybyService_: PaybyService,private store: Store<{invoiceReducer_:any}>) {
+    this.invoice$ = this.store.select(state => state.invoiceReducer_.invoice.data);
 
 
     this.from_date = "0";
@@ -49,7 +52,7 @@ graphDayOrders:string="Today";
   totaldiscountamount = 0;
   totalpendingamount = 0;
   getFilteredData() {
-    return this.ordersdata.filter((item: { [s: string]: unknown; } | ArrayLike<unknown>) => {
+    return this.ordersdata.data.filter((item: { [s: string]: unknown; } | ArrayLike<unknown>) => {
       return Object.values(item).some(val =>
         String(val).toLowerCase().includes(this.searchdata.toLowerCase())
       );
@@ -77,7 +80,7 @@ graphDayOrders:string="Today";
       for (let i = 0; i < this.payByListsRecord.length; i++) {
         this.payByChartrecord.push({
           "_id": this.payByListsRecord[i]._id,
-          "Paybyname": this.payByListsRecord[i].Paybyname,
+          "Paybyname": this.payByListsRecord[i].name,
           "Amount": 0
         });
       }
@@ -134,13 +137,13 @@ graphDayOrders:string="Today";
   }
   loadtoday(loadName: string) {
     this.GetOrderDetailsService_.loadToday().subscribe(todaydata => {
-      this.ordersdata2 = todaydata;
-       this.ordersdata=this.ordersdata2.data;
+      this.ordersdata = todaydata;
+      // this.ordersdata=this.ordersdata2.data;
 
       if (loadName == "pie")
-        this.initializeDataPayByPieChart(this.ordersdata);
+        this.initializeDataPayByPieChart(this.ordersdata.data);
       else if (loadName == "graph") {
-         this.initializeGraphsForTime(this.ordersdata);
+         this.initializeGraphsForTime(this.ordersdata.data);
          this.graphDayOrders="Today";
       }
     });
@@ -152,13 +155,13 @@ graphDayOrders:string="Today";
     // this.date =
 
     this.GetOrderDetailsService_.loadYesterday().subscribe(yesturdaydata => {
-      this.ordersdata2 = yesturdaydata;
-       this.ordersdata=this.ordersdata2.data;
+      this.ordersdata = yesturdaydata;
+      // this.ordersdata=this.ordersdata2.data;
 
       if (loadName == "pie")
-        this.initializeDataPayByPieChart(this.ordersdata);
+        this.initializeDataPayByPieChart(this.ordersdata.data);
       else if (loadName == "graph") {
-         this.initializeGraphsForTime(this.ordersdata);
+         this.initializeGraphsForTime(this.ordersdata.data);
          this.graphDayOrders="Yesderday";
       }
       // console.log(this.ordersdata);
@@ -166,12 +169,12 @@ graphDayOrders:string="Today";
   }
   loadweek(loadName: string) {
     this.GetOrderDetailsService_.loadWeek().subscribe(weekdata => {
-      this.ordersdata2 = weekdata;
-       this.ordersdata=this.ordersdata2.data;
+      this.ordersdata = weekdata;
+     //  this.ordersdata=this.ordersdata2.data;
       if (loadName == "pie")
-        this.initializeDataPayByPieChart(this.ordersdata);
+        this.initializeDataPayByPieChart(this.ordersdata.data);
       else if (loadName == "graph") {
-         this.initializeGraphsForTime(this.ordersdata);
+         this.initializeGraphsForTime(this.ordersdata.data);
          this.graphDayOrders="Week";
       }
       //  console.log(this.ordersdata);
@@ -183,12 +186,12 @@ graphDayOrders:string="Today";
     //this.ordersdata = this.GetOrderDetailsService_.loadMonth();
     //  this.initializeDataforBox(this.ordersdata);   console.log(this.ordersdata);
     this.GetOrderDetailsService_.loadMonth().subscribe(monthaOrdersdata => {
-      this.ordersdata2 = monthaOrdersdata;
-      this.ordersdata=this.ordersdata2.data;
+      this.ordersdata = monthaOrdersdata;
+     // this.ordersdata=this.ordersdata2.data;
       if (loadName == "pie")
-        this.initializeDataPayByPieChart(this.ordersdata);
+        this.initializeDataPayByPieChart(this.ordersdata.data);
       else if (loadName == "graph"){
-         this.initializeGraphsForTime(this.ordersdata);
+         this.initializeGraphsForTime(this.ordersdata.data);
          this.graphDayOrders="Month";
       }
       //  console.log(this.ordersdata);

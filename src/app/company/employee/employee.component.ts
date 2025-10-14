@@ -52,7 +52,7 @@ export class EmployeeComponent implements OnInit, ICellRendererAngularComp {
   //lodbastype: basetyperowData[] = [];
   pagination = true;
   paginationPageSize = 10;
-  paginationPageSizeSelector = [200, 500, 1000];
+  paginationPageSizeSelector = [10,200, 500, 1000];
 
   colDefs: ColDef[] = [
     { field: "name" },
@@ -183,7 +183,7 @@ this.display="display:none;"
     this.service.get().subscribe(data => {
       if (data) {
         this.employeedata2 = data;
-        this.employeedata = this.employeedata2.allTasks;
+        this.employeedata = this.employeedata2.data;
       //  console.log();
       }
     })

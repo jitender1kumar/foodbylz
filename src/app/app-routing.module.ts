@@ -11,6 +11,7 @@ import { ChairComponent } from './dine/chair/chair.component';
 import { DineComponent } from './dine/dine/dine.component';
 import { TablesComponent } from './dine/tables/tables.component';
 import { HomeComponent } from './home/home.component';
+import { AddOnProductComponent } from './manage/add-on-product/add-on-product.component';
 const routes: Routes = [
   {path:'category',component:CategoryformComponent},
   {path:'Quantitytype',component:CategorytypeformComponent},
@@ -24,6 +25,7 @@ const routes: Routes = [
   {path:'dine',component:DineComponent},
   {path:'chair',component:ChairComponent},
   {path:'tables',component:TablesComponent},
+  {path:'AddOn',component:AddOnProductComponent},
 ];
 
 @NgModule({

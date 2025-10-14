@@ -11,31 +11,31 @@ export class EmployeeService {
 
   constructor(private http: HttpClient) { }
 
-  private url2: string = environment.api;
+  private employee: string = environment.api+"employee";
   private url3: string = environment.api;
   
 add(employee: Employee): Observable<Employee> {
     
     //return this.http.post(this.url+ '/users', {id,name,email,pass});
-    return this.http.post<Employee>(this.url2, employee);
+    return this.http.post<Employee>(this.employee, employee);
 
   }
   getbyid(_id:any)
   {
-    return this.http.get(`${this.url2}/${_id}`);
+    return this.http.get(`${this.employee}/${_id}`);
   }
   
   getfromcore(): Observable<any[]> {
     return this.http.get<any[]>(this.url3);
   }
   get(): Observable<any[]> {
-    return this.http.get<any[]>(this.url2);
+    return this.http.get<any[]>(this.employee);
   }
   delete(_id:any){
-    return this.http.delete(`${this.url2}/${_id}`);
+    return this.http.delete(`${this.employee}/${_id}`);
   }                                
   update(employee:Employee)
   {
-    return this.http.put(this.url2 ,{employee});
+    return this.http.put(this.employee ,{employee});
   }
 }

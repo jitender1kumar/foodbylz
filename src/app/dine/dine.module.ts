@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DineComponent } from './dine/dine.component';
 import { ChairComponent } from './chair/chair.component';
-import { DinetableComponent } from '../orderMode/dinetable/dinetable.component';
-import { OrdermodebuttonComponent } from '../orderMode/ordermodebutton/ordermodebutton.component';
 import { FloorComponent } from './floor/floor.component';
 import { TablesComponent } from './tables/tables.component';
 import { RouterModule, Routes } from '@angular/router';
@@ -13,6 +11,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PopupCrudComponent } from 'popup-crud';
 import { PopupmodelComponent } from '../popupmodel/popupmodel.component';
 import { QRCodeComponent } from 'angularx-qrcode';
+import { AddcustomersComponent } from '../customers/addcustomers/addcustomers.component';
+import { RunningordersComponent } from './runningorders/runningorders.component';
+import { HomeModule } from '../home/home.module';
 const routes: Routes = [
   {path:'dine',component:DineComponent},
   {path:'chair',component:ChairComponent},
@@ -23,25 +24,25 @@ const routes: Routes = [
   declarations: [
     DineComponent,
     ChairComponent,
-    DinetableComponent,
-    OrdermodebuttonComponent,
     FloorComponent,
-    TablesComponent
+    TablesComponent,
+    RunningordersComponent,
+    
     
   ],
 
   imports: [
     CommonModule, AgGridAngular, BrowserModule, ReactiveFormsModule, RouterModule.forRoot(routes),
     FormsModule,PopupmodelComponent,
-    PopupCrudComponent,QRCodeComponent
+    PopupCrudComponent,QRCodeComponent,HomeModule
     
 ],
   exports:[DineComponent,
     ChairComponent,
-    DinetableComponent,
-    OrdermodebuttonComponent,
     FloorComponent,
     TablesComponent,
-  QRCodeComponent]
+    RunningordersComponent,
+  QRCodeComponent,
+  ]
 })
 export class DineModule { }

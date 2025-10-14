@@ -12,7 +12,7 @@ import { Store } from '@ngrx/store';
 import { addTax, deleteTax, deleteTaxSuccess, loadTax } from '../ManageStore/taxStore/tax.actions';
 import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
 import { ofType } from '@ngrx/effects';
-import { NameExistOrNotService } from '../../core/commanFunction/NameExistOrNot.service';
+import { ValidationService } from '../../core/commanFunction/Validation.service';
 @Component({
   selector: 'app-tax',
   templateUrl: './tax.component.html',
@@ -43,7 +43,7 @@ export class TaxComponent implements OnInit {
   ];
   pagination = true;
   paginationPageSize = 10;
-  paginationPageSizeSelector = [200, 500, 1000];
+  paginationPageSizeSelector = [10, 200, 500, 1000];
   actions$: any;
 
   @ViewChild('f')
@@ -63,7 +63,7 @@ export class TaxComponent implements OnInit {
   Desc: any;
   myAddForm: FormGroup;
   constructor(private service: TaxService,
-    private NameExistOrNotService_: NameExistOrNotService,
+    private ValidationService_: ValidationService,
     private router: Router, private formedit: FormBuilder, private store: Store<{ taxLoad: any }>, private SweetAlert2_: SweetAlert2) {
     this.tax$ = store.select(state => state.taxLoad.Tax_.data);
     this.loading$ = store.select(state => state.taxLoad.loading);
@@ -84,8 +84,21 @@ export class TaxComponent implements OnInit {
     });
   }
   ngOnInit(): void {
-    this.loadTax();
+    this.loadTaxFunction();
 
+
+  }
+  loadTaxFunction() {
+    this.store.dispatch(loadTax());
+    this.tax$ = this.store.select(state => state.taxLoad.Tax_.data);
+    // this.actions$.pipe(ofType(loadTaxSuccess)).subscribe(() => {
+    //   // this.args="Successfully Added Tax: " + Tax_.name;
+    //   //   this.loadTax();
+    // });
+    // this.actions$.pipe(ofType(TaxAction.loadTaxFailure)).subscribe(() => {
+    //   this.args = "Something went wrong";
+
+    // });
 
   }
   onFormSubmit() {
@@ -97,14 +110,14 @@ export class TaxComponent implements OnInit {
     this.Update(this.myEditForm.value);
   }
   Update(Tax_: Tax) {
-    if (this.NameExistOrNotService_.checkNameExist(this.myEditForm.value.name, this.myEditForm.value._id, this.tax$)) {
+    if (this.ValidationService_.checkNameExist(this.myEditForm.value.name, this.myEditForm.value._id, this.tax$)) {
       this.args = `Tax Name: ${this.myEditForm.value.name} Exists. Please create another name.`;
     }
     else {
       this.store.dispatch(TaxAction.updateTax({ Tax_ }));
       this.actions$.pipe(ofType(TaxAction.updateTaxSuccess)).subscribe(() => {
         this.args = "Successfully Updated Tax: " + Tax_.name;
-        this.loadTax();
+        this.loadTaxFunction();
       });
       this.actions$.pipe(ofType(TaxAction.updateTaxFailure)).subscribe(() => {
         this.args = "Something went wrong";
@@ -128,24 +141,25 @@ export class TaxComponent implements OnInit {
   }
 
   add(Tax_: Tax): void {
-
-
     //alert("Successfully Created quantity types...");
-    if (this.NameExistOrNotService_.checkNameExistforAddForm(this.myAddForm.value.name, this.tax$)) {
-      this.args = `Tax Name: ${this.myAddForm.value.name} Exists. Please create another name.`;
-    }
-    else {
-      this.store.dispatch(addTax({ Tax_:Tax_ }));
+    const valid = this.ValidationService_.checkNameExistforAddForm(this.myAddForm.value.name, this.tax$);
+    console.log(valid.value);
+    if (!valid.value) {
+      this.store.dispatch(addTax({ Tax_: Tax_ }));
       // this.args = "Successfully Added quantity types..." + Tax_.name;
 
       this.actions$.pipe(ofType(TaxAction.addTaxSuccess)).subscribe(() => {
         this.args = "Successfully Added Tax: " + Tax_.name;
-        this.loadTax();
+        this.loadTaxFunction();
       });
       this.actions$.pipe(ofType(TaxAction.addTaxFailure)).subscribe(() => {
         this.args = "Something went wrong";
 
       });
+    }
+    else {
+      this.args = `Tax Name: ${this.myAddForm.value.name} Exists. Please create another name.`;
+
     }
   }
 
@@ -173,19 +187,7 @@ export class TaxComponent implements OnInit {
     }
   }
 
-  loadTax() {
-    this.store.dispatch(loadTax());
-    this.tax$ = this.store.select(state => state.taxLoad.Tax_.data);
-    this.actions$.pipe(ofType(TaxAction.loadTaxSuccess)).subscribe(() => {
-      // this.args="Successfully Added Tax: " + Tax_.name;
-      //   this.loadTax();
-    });
-    this.actions$.pipe(ofType(TaxAction.loadTaxFailure)).subscribe(() => {
-      this.args = "Something went wrong";
 
-    });
-
-  }
   show: any = false;
   showEdit: any = false;
   shows() {
@@ -216,24 +218,22 @@ export class TaxComponent implements OnInit {
   deletedConfirmed(_id: any) {
     console.log(_id);
     this.store.dispatch(deleteTax({ _id }));
-    // this.store.select(state => state.taxLoad.error)
-    // .pipe(filter(error => !!error))
-    // .subscribe(error => {
-    //   console.error('Delete failed:', error);
-    //   this.SweetAlert2_.showFancyAlertError('Failed to delete record.');
+    this.loadTaxFunction();
+    this.display = 'display:none;';
+    // this.actions$.pipe(
+    //   ofType(TaxAction.deleteTaxFailure)
+    // ).subscribe(() => {
+    //   this.SweetAlert2_.showFancyAlertFail('Something went wrong.');
+      
     // });
-    this.actions$.pipe(
-      ofType(TaxAction.deleteTaxFailure)
-    ).subscribe(() => {
-      this.SweetAlert2_.showFancyAlertFail('Something went wrong.');
-      this.display = 'display:none;';
-    });
-    this.actions$.pipe(
-      ofType(deleteTaxSuccess)
-    ).subscribe(() => {
+    // this.actions$.pipe(
+    //   ofType(deleteTaxSuccess)
+    // ).subscribe(() => {
+     
       // this.SweetAlert2_.showFancyAlertSuccess('Record deleted successfully.');
-      this.display = 'display:none;';
-    });
+     
+  //  });
+    
   }
   handleDeleteConfirmed() {
 
