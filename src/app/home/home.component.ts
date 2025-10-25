@@ -51,9 +51,9 @@ import { InitializeInvoice } from '../core/commanFunction/InitializeInvoice.serv
 import { HomeEnvironment } from '../environment/homeEnvironment'
 import * as AddOnProductActions from '../manage/ManageStore/addOnProductStore/addOnProduct.action';
 import { Actions, ofType } from '@ngrx/effects';
-import * as RunningItemActions from './homeStore/runningItemStore/runningItem.actions';
+import * as RunningItemsActions from './homeStore/runningItemStore/runningItem.actions';
 import { addAddOnProductService } from '../core/Services/addOnProduct.service';
-
+import { selectAllRunningItems } from './homeStore/runningItemStore/runningitems.selectors';
 type Nullable<T> = T | null | undefined;
 
 @Component({
@@ -105,6 +105,25 @@ export class HomeComponent implements OnInit {
   discountvalue: number = 0;
   actualdiscountprice: number = 0;
   getpercentOnebyOne: number = 0;
+  RunningItemsInit_: RunningItems={
+    _idPP: '',
+    AddOnItems: [],
+    ProductPrice: '',
+    SelectProductId: '',
+    ProductName: '',
+    selectcategoryID: '',
+    categoryName: '',
+    selectQtypeID: '',
+    QtypeName: '',
+    selectSubQuantityTypeID: '',
+    SubQuantityTypeName: '',
+    quntityvalue: 0,
+    qvalue: 0,
+    taxnames: '',
+    taxvalues: '',
+    totaltaxvalue: 0
+  };
+
   RunningItems_: RunningItems[] = [];
   RunningItems_2: RunningItems[] = [];
   RunningItems_$?: Observable<RunningItems[]>;
@@ -288,7 +307,7 @@ addondata: any; addondataarr: IAddOnItems[] = [];
     this.addOnProductsData$ = this.store.select(state => state.addOnProductReducer_.addOnProducts.data);
     this.loading$ = this.store.select(state => state.addOnProductReducer_.loading);
     this.error$ = this.store.select(state => state.addOnProductReducer_.error);
-    this.RunningItems_$ = this.store.select(state => state.runningItemReducer_?.item?.data ?? []);
+    this.RunningItems_$ = this.store.select(state => state.runningItemReducer_?.runningItem.data);
     this.categorynamedata$ = this.store.select(state => state.categoryLoad.ProductCategory_.data);
     this.Qtypenamedata$ = this.store.select(state => state.quantityTypeLoad.QuantityType_.data);
     this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
@@ -373,21 +392,7 @@ addondata: any; addondataarr: IAddOnItems[] = [];
    }
    );
   }
-// @ViewChildren('addonLi') addonLis!: QueryList<ElementRef>;
 
-// ngAfterViewInit() {
-//   if (Array.isArray(this.RunningItems_)) {
-//     this.RunningItems_.forEach(runningItem => {
-//       if (runningItem && Array.isArray(runningItem.AddOnItems)) {
-//         runningItem.AddOnItems.forEach((item: any) => {
-//           if (item && item._id) {
-//             this.loadAddOnProductsInitializing(item._id);
-//           }
-//         });
-//       }
-//     });
-//   }
-// }
 
 
   loadinvoice(): void {
@@ -432,13 +437,7 @@ addondata: any; addondataarr: IAddOnItems[] = [];
       // Reset running items and totals
      
       this.intializeRunningItem(this.Itemsdata);
-       this.addAddOnTotalAmount();
-     // this.initializeItemsCountableData();
-      // this.loadTax();
-      // this.loadAddOnProductsForRunningItems_();
-      // Build tax name string
-
-     
+      
 
       // Get invoice details for discount and taxes
 
@@ -498,6 +497,28 @@ addondata: any; addondataarr: IAddOnItems[] = [];
         const addOnItems: IAddOnItems[] = await getMatchingAddOns(item);
 
         // Push to RunningItems_
+        // const RunningItemsInit={
+        //   _idPP: item.Productid,
+        //     ProductPrice: item.itemamount?.toString() ?? '0',
+        //     SelectProductId: item.Productid,
+        //     ProductName: item.Productname,
+        //     selectcategoryID: '',
+        //     categoryName: '',
+        //     selectQtypeID: item.Qauntityid,
+        //     QtypeName: item.Qauntityname,
+        //     selectSubQuantityTypeID: item.SubQuantityTypeID,
+        //     SubQuantityTypeName: item.SubQuantityTypeName,
+        //     quntityvalue: item.Quantity,
+        //     qvalue: item.Quantity,
+        //     taxnames: this.taxname,
+        //     taxvalues: 'taxpercentValues',
+        //     totaltaxvalue: 0,
+        //     AddOnItems: addOnItems
+        // }
+        // // Fix: store.dispatch returns void; do not attempt to subscribe
+        // console.log(RunningItemsInit);
+        // this.store.dispatch(RunningItemsActions.addRunningItem({ runningItem: RunningItemsInit }));
+       
         this.RunningItems_.push({
           _idPP: item.Productid,
           ProductPrice: item.itemamount?.toString() ?? '0',
@@ -531,12 +552,9 @@ addondata: any; addondataarr: IAddOnItems[] = [];
     
     //  this.gettotamount();
       console.log(this.RunningItems_);
-      // Push the RunningItems_ array into the store using the addRunningItem action
-     
-      
-    };
+    
+     };
   
-
     // Run the processing (needed for addOn observables to all resolve before dispatch)
     processAllItems();
    
@@ -544,29 +562,7 @@ addondata: any; addondataarr: IAddOnItems[] = [];
     // this.getitemTotalTax();
     // this.getitemtotalamount();
   }
- addAddOnTotalAmount()
- {
-  
-  // const lastRunningItem = this.RunningItems_[this.RunningItems_.length - 1];
-  // if (lastRunningItem.AddOnItems?.length) {
-  //   lastRunningItem.AddOnItems.forEach(addOnItem => {
-  //     this.store.dispatch(AddOnProductActions.getAddOnProductById({ _id: addOnItem._id }));
-
-  //     const addOnProductSubscription = this.addOnProductsData$.subscribe(addOnProducts => {
-  //       const matchedAddOn = Array.isArray(addOnProducts)
-  //         ? addOnProducts.find((p: any) => p._id === addOnItem._id)
-  //         : null;
-  //       const addOnPrice = matchedAddOn && typeof matchedAddOn.Price === 'string'
-  //         ? +matchedAddOn.Price
-  //         : 0;
-  //       const quantity = addOnItem.numberofQuantity ? +addOnItem.numberofQuantity : 0;
-  //       this.itemtotalamount += addOnPrice * quantity;
-  //       this.totalamount += addOnPrice * quantity;
-  //       addOnProductSubscription.unsubscribe();
-  //     });
-  //   });
-  // }
- }
+ 
   loadAddOnProductsInitializing(_id:string)
   {
 this.store.dispatch(AddOnProductActions.getAddOnProductById({_id:_id}));
@@ -623,9 +619,6 @@ this.addOnProductsData$.subscribe(data=>
       // Calculate discount value and update item total amount
       this.discountvalue = (this.itemtotalamount - ((+this.itemtotalamount * this.percent) / 100)) + this.totaltax;
       this.itemtotalamount = (this.itemtotalamount + ((+this.itemtotalamount * this.percent) / 100)) + this.totaltax;
-      // this.totalamount = this.gettotamount();
-      // this.getitemTotalTax();
-      // this.getitemtotalamount();
       
     });
    
@@ -1015,30 +1008,54 @@ this.addOnProductsData$.subscribe(data=>
     quntity: any,
     price: any
   ): void {
+    // Clear items array; initialize working variables
     this.gitems2.length = 0;
-    let taxpercent = 0;
-    this.totalamount = 0;
-    if (!this.allppdata.length) {
-      this.allppdata = this.RunningItems_;
-    }
-    this.itemP = this.allppdata.find(
+    const taxpercent = 0;
+
+    // Defensive: default allppdata
+    if (!this.allppdata.length) this.allppdata = this.RunningItems_;
+
+    // Find product index and data in allppdata
+    const itemIdxInAllPP = this.allppdata.findIndex(
       (item: any) => item.SelectProductId === id && item.SubQuantityTypeName === SubQuantityTypeName
     );
-    this.indexP = this.allppdata.findIndex(
-      (item: any) => item.SelectProductId === id && item.SubQuantityTypeName === SubQuantityTypeName
+    const allPPItem = this.allppdata[itemIdxInAllPP];
+
+    // Find in running items
+    const runningItemIdx = this.RunningItems_.findIndex(
+      item => item._idPP === id && item.SubQuantityTypeName === SubQuantityTypeName
     );
-    if (this.itemP?.SelectProductId && action === 'inc') {
-      let val = quntity + 1;
+    const runningItem = this.RunningItems_[runningItemIdx];
+
+    let val: number;
+
+    // Short references for repeated payload
+    const getGItem = (
+      obj: any,
+      quantity: number
+    ) => ({
+      Productid: obj.SelectProductId,
+      Productname: obj.ProductName,
+      SubQuantityTypeID: obj.selectSubQuantityTypeID,
+      SubQuantityTypeName: obj.SubQuantityTypeName,
+      Invoiceid: this.invoiceid,
+      Qauntityid: obj.selectQtypeID,
+      Qauntityname: obj.QtypeName,
+      Quantity: quantity,
+      itemamount: price,
+      totalquantityamount: +price * quantity,
+      employee_id: this.employeeId
+    });
+
+    if (allPPItem?.SelectProductId && action === 'inc') {
+      val = quntity + 1;
       if (this.RunningItems_.length > 0) {
-        const index = this.RunningItems_.findIndex(
-          item => item._idPP === id && item.SubQuantityTypeName === SubQuantityTypeName
-        );
-        if (index !== -1) {
+        if (runningItemIdx !== -1) {
           // Defensive: if item is frozen, replace with a clone
-          if (!Object.isExtensible(this.RunningItems_[index])) {
-            this.RunningItems_[index] = { ...this.RunningItems_[index] };
+          if (!Object.isExtensible(this.RunningItems_[runningItemIdx])) {
+            this.RunningItems_[runningItemIdx] = { ...runningItem };
           }
-          Object.assign(this.RunningItems_[index], {
+          Object.assign(this.RunningItems_[runningItemIdx], {
             _idPP: id,
             quntityvalue: val,
             qvalue: val,
@@ -1046,35 +1063,21 @@ this.addOnProductsData$.subscribe(data=>
             taxvalues: '',
             totaltaxvalue: taxpercent
           });
-          this.gitems2 = [
-            {
-              Productid: this.RunningItems_[index].SelectProductId,
-              Productname: this.RunningItems_[index].ProductName,
-              SubQuantityTypeID: this.RunningItems_[index].selectSubQuantityTypeID,
-              SubQuantityTypeName: this.RunningItems_[index].SubQuantityTypeName,
-              Invoiceid: this.invoiceid,
-              Qauntityid: this.RunningItems_[index].selectQtypeID,
-              Qauntityname: this.RunningItems_[index].QtypeName,
-              Quantity: val,
-              itemamount: price,
-              totalquantityamount: +price * val,
-              employee_id: this.employeeId
-            }
-          ];
+          this.gitems2 = [getGItem(this.RunningItems_[runningItemIdx], val)];
           this.ItemsService_.update(this.gitems2).subscribe();
         } else {
-          // When pushing, use a brand new object (avoid mutating frozen, spread if necessary)
-          const itemToPush = {
+          // Add a new running item
+          const newRunningItem = {
             _idPP: id,
             ProductPrice: price,
-            SelectProductId: this.allppdata[this.indexP].SelectProductId,
-            ProductName: this.allppdata[this.indexP].ProductName,
-            selectcategoryID: this.allppdata[this.indexP].selectcategoryID,
-            categoryName: this.allppdata[this.indexP].categoryName,
-            selectQtypeID: this.allppdata[this.indexP].selectQtypeID,
-            QtypeName: this.allppdata[this.indexP].QtypeName,
-            selectSubQuantityTypeID: this.allppdata[this.indexP].selectSubQuantityTypeID,
-            SubQuantityTypeName: this.allppdata[this.indexP].SubQuantityTypeName,
+            SelectProductId: allPPItem.SelectProductId,
+            ProductName: allPPItem.ProductName,
+            selectcategoryID: allPPItem.selectcategoryID,
+            categoryName: allPPItem.categoryName,
+            selectQtypeID: allPPItem.selectQtypeID,
+            QtypeName: allPPItem.QtypeName,
+            selectSubQuantityTypeID: allPPItem.selectSubQuantityTypeID,
+            SubQuantityTypeName: allPPItem.SubQuantityTypeName,
             quntityvalue: val,
             qvalue: val,
             taxnames: '',
@@ -1082,36 +1085,22 @@ this.addOnProductsData$.subscribe(data=>
             totaltaxvalue: taxpercent,
             AddOnItems: []
           };
-          this.RunningItems_ = [...this.RunningItems_, itemToPush];
-          this.gitems2 = [
-            {
-              Productid: this.allppdata[this.indexP].SelectProductId,
-              Productname: this.allppdata[this.indexP].ProductName,
-              SubQuantityTypeID: this.allppdata[this.indexP].selectSubQuantityTypeID,
-              SubQuantityTypeName: this.allppdata[this.indexP].SubQuantityTypeName,
-              Invoiceid: this.invoiceid,
-              Qauntityid: this.allppdata[this.indexP].selectQtypeID,
-              Qauntityname: this.allppdata[this.indexP].QtypeName,
-              Quantity: val,
-              itemamount: price,
-              totalquantityamount: +price * val,
-              employee_id: this.employeeId
-            }
-          ];
+          this.RunningItems_ = [...this.RunningItems_, newRunningItem];
+          this.gitems2 = [getGItem(allPPItem, val)];
           this.ItemsService_.add(this.gitems2).subscribe();
         }
       } else {
-        // When array is empty: always use new object + spread for immutability safety
-        const itemToPush = {
+        // RunningItems_ empty, always add
+        const newRunningItem = {
           _idPP: id,
           ProductPrice: price,
-          SelectProductId: this.allppdata[this.indexP].SelectProductId,
-          ProductName: this.allppdata[this.indexP].ProductName,
-          selectcategoryID: this.allppdata[this.indexP].selectcategoryID,
-          categoryName: this.allppdata[this.indexP].categoryName,
-          selectQtypeID: this.allppdata[this.indexP].selectQtypeID,
-          QtypeName: this.allppdata[this.indexP].QtypeName,
-          selectSubQuantityTypeID: this.allppdata[this.indexP].selectSubQuantityTypeID,
+          SelectProductId: allPPItem.SelectProductId,
+          ProductName: allPPItem.ProductName,
+          selectcategoryID: allPPItem.selectcategoryID,
+          categoryName: allPPItem.categoryName,
+          selectQtypeID: allPPItem.selectQtypeID,
+          QtypeName: allPPItem.QtypeName,
+          selectSubQuantityTypeID: allPPItem.selectSubQuantityTypeID,
           SubQuantityTypeName: SubQuantityTypeName,
           quntityvalue: val,
           qvalue: val,
@@ -1120,35 +1109,18 @@ this.addOnProductsData$.subscribe(data=>
           totaltaxvalue: taxpercent,
           AddOnItems: []
         };
-        this.RunningItems_ = [...this.RunningItems_, itemToPush];
-        this.gitems2 = [
-          {
-            Productid: this.allppdata[this.indexP].SelectProductId,
-            Productname: this.allppdata[this.indexP].ProductName,
-            SubQuantityTypeID: this.allppdata[this.indexP].selectSubQuantityTypeID,
-            SubQuantityTypeName: SubQuantityTypeName,
-            Invoiceid: this.invoiceid,
-            Qauntityid: this.allppdata[this.indexP].selectQtypeID,
-            Qauntityname: this.allppdata[this.indexP].QtypeName,
-            Quantity: val,
-            itemamount: price,
-            totalquantityamount: +price * val,
-            employee_id: this.employeeId
-          }
-        ];
+        this.RunningItems_ = [...this.RunningItems_, newRunningItem];
+        this.gitems2 = [getGItem(allPPItem, val)];
         this.ItemsService_.add(this.gitems2).subscribe();
       }
-    } else if (this.itemP?.SelectProductId && action === 'dcre') {
-      const index = this.RunningItems_.findIndex(
-        item => item._idPP === id && item.SubQuantityTypeName === SubQuantityTypeName
-      );
-      if (index !== -1) {
-        // Defensive: ensure item is extensible, if not, replace with clone
-        if (!Object.isExtensible(this.RunningItems_[index])) {
-          this.RunningItems_[index] = { ...this.RunningItems_[index] };
+    } else if (allPPItem?.SelectProductId && action === 'dcre') {
+      if (runningItemIdx !== -1) {
+        // Defensive: ensure item is extensible, if not, clone it
+        if (!Object.isExtensible(this.RunningItems_[runningItemIdx])) {
+          this.RunningItems_[runningItemIdx] = { ...this.RunningItems_[runningItemIdx] };
         }
-        let val = quntity - 1;
-        Object.assign(this.RunningItems_[index], {
+        val = quntity - 1;
+        Object.assign(this.RunningItems_[runningItemIdx], {
           quntityvalue: val,
           qvalue: val,
           ProductPrice: price,
@@ -1157,55 +1129,61 @@ this.addOnProductsData$.subscribe(data=>
           totaltaxvalue: taxpercent
         });
         if (val !== 0) {
-          this.gitems2 = [
-            {
-              Productid: this.RunningItems_[index].SelectProductId,
-              Productname: this.RunningItems_[index].ProductName,
-              SubQuantityTypeID: this.RunningItems_[index].selectSubQuantityTypeID,
-              SubQuantityTypeName: this.RunningItems_[index].SubQuantityTypeName,
-              Invoiceid: this.invoiceid,
-              Qauntityid: this.RunningItems_[index].selectQtypeID,
-              Qauntityname: this.RunningItems_[index].QtypeName,
-              Quantity: val,
-              itemamount: price,
-              totalquantityamount: +price * val,
-              employee_id: this.employeeId
-            }
-          ];
+          this.gitems2 = [getGItem(this.RunningItems_[runningItemIdx], val)];
           this.ItemsService_.update(this.gitems2).subscribe();
         } else {
           this.ItemsService_
             .delete(
               this.invoiceid,
-              this.RunningItems_[index].SelectProductId,
-              this.RunningItems_[index].selectSubQuantityTypeID
+              this.RunningItems_[runningItemIdx].SelectProductId,
+              this.RunningItems_[runningItemIdx].selectSubQuantityTypeID
             )
             .subscribe();
-          // Remove item immutably to avoid issues with frozen arrays
+          // Remove item immutably
           this.RunningItems_ = [
-            ...this.RunningItems_.slice(0, index),
-            ...this.RunningItems_.slice(index + 1)
+            ...this.RunningItems_.slice(0, runningItemIdx),
+            ...this.RunningItems_.slice(runningItemIdx + 1)
           ];
         }
       }
     }
+
+    // Reset discount form and recompute amounts
     this.myDiscountForm = this.fb.group({
       discount: '',
       numberInput: [0]
     });
     this.percent = 0;
-   
-   this.totalamount = this.gettotamount();
+
+    this.totalamount = this.gettotamount();
     this.getitemTotalTax();
     this.getitemtotalamount();
-    
-     
   }
 
   // print-section
   async KOT(): Promise<void> {
+  //   this.RunningItems_$ = this.store.select(selectAllRunningItems);
+  // // this.RunningItems_$ = this.store.select(state => state.runningItemReducer_?.runningItem.data);
+  //   this.RunningItems_$.subscribe(data=>{
+  //     console.log(data);
+  //   });
+  // const stored = localStorage.getItem('runningItems');
+  // if (stored) {
+  //   const parsed = JSON.parse(stored);
+  //   console.log(parsed);
+  //   if (parsed?.data?.length) {
+  //     // Example merge logic (if you want to ensure fresh state)
+  //     parsed.data.forEach((item: RunningItems) => {
+  //      console.log(  item );
+  //     });
+  //   }
+  // }
+   // console.log(this.RunningItems_$ );
+
+
     // this.placeOrder();
-    // this.close2();
+    // this.placeOrder();
+    this.close2();
     const invoiceCard = document.getElementById('printable-section-KOT');
     let printContent = '';
     if (invoiceCard) {
@@ -1495,44 +1473,7 @@ this.addOnProductsData$.subscribe(data=>
     }
     return categoryname;
   }
-  // //filter veg nonveg start
-  // getFilteredProductsByCategoryId(): void {
-  //   if (this.replaceFilteredData && this.productsByCategoryId.length > 0) {
-  //     if (this.replaceFilteredData[0]) {
-  //       if (
-  //         this.productsByCategoryId[0].categoryName !==
-  //         this.replaceFilteredData[0].categoryName
-  //       ) {
-  //         this.replaceFilteredData = [];
-  //         this.replaceFilteredData = this.productsByCategoryId;
-  //         this.productsByCategoryId = this.processFoodFiltering();
-  //       } else {
-  //         this.productsByCategoryId = this.replaceFilteredData;
-  //         this.productsByCategoryId = this.processFoodFiltering();
-  //       }
-  //     } else {
-  //       this.replaceFilteredData = [];
-  //       this.replaceFilteredData = this.productsByCategoryId;
-  //       this.productsByCategoryId = this.processFoodFiltering();
-  //     }
-  //   } else if (this.replaceFilteredData) {
-  //     this.productsByCategoryId = this.replaceFilteredData;
-  //     this.productsByCategoryId = this.processFoodFiltering();
-  //   } else {
-  //     this.replaceFilteredData = this.productsByCategoryId;
-  //     this.productsByCategoryId = this.processFoodFiltering();
-  //   }
-  // }
-
-  // processFoodFiltering(): any[] {
-  //   if (!this.selectedType) return this.productsByCategoryId;
-  //   return this.productsByCategoryId.filter(items =>
-  //     Object.values(items).some(val =>
-  //       String(val).toLowerCase().includes(this.selectedType.toLowerCase())
-  //     )
-  //   );
-  // }
-  // filter veg nonveg end
+ 
 
   // show customer popup
   showAddonPopUp = false;
@@ -1552,10 +1493,7 @@ this.addOnProductsData$.subscribe(data=>
     this.showAddonPopUp = close;
     this.getAddOnProducts();
     this.load_AddOnProductsdata();
-    //this.loadfood('DinningTable', this.invoiceid);
-    //console.log(this.Itemsdata);
-    // this.intializeRunningItem(this.Itemsdata);
-    // this.loadAddOnProductsForRunningItems_();
+   
   }
   InitializeselectedAddOnItemsCallbackFun(selectedAddOnItems: any) {
     // Store selectedAddOnItems reference
@@ -1609,7 +1547,7 @@ if( this.innvoicedata.data[0]?.AddOnItems.length>0)
     }
     );
   });
-  //this.addAddOnProductService_.getById
+ 
 }
         // 
       }
@@ -1630,47 +1568,7 @@ if( this.innvoicedata.data[0]?.AddOnItems.length>0)
     // Dispatch action to load AddOnProducts by SelectProductId and SubQuantityTypeID
     this.getAddOnItembySubQuantity_Product_ID(SelectProductId, selectSubQuantityTypeID);
   }
-  // loadAddOnProductsForRunningItems_() {
-
-  //   this.InvoiceService_.getbyid(this.invoiceid).subscribe(data => {
-  //     if (data) {
-  //       this.innvoicedata = data;
-  //       this.selectedAddOnItems = this.innvoicedata.data[0].AddOnItems;
-  //       console.log(this.selectedAddOnItems);
-  //       if (this.selectedAddOnItems.length > 0) {
-  //         for (let i = 0; i < this.selectedAddOnItems.length; i++)
-  //           this.loadAddOnProductsBy_id(this.selectedAddOnItems[i]._id);
-  //         // this.invoiceData = this.innvoicedata.data;
-  //         //  return this.selectedAddOnItems;
-  //       }
-  //     }
-  //   }
-  //   );
-  // }
-  // loadAddOnProductsBy_id(_id: string) {
-  //   this.store.dispatch(AddOnProductActions.getAddOnProductById({ _id: _id }));
-  //   const successSub = this.actions$.pipe(
-  //     filter((action: any) => action.type === AddOnProductActions.getAddOnProductByIdSuccess.type)
-  //   ).subscribe(action => {
-  //     // Handle success, e.g., update local state or log
-  //     console.log('AddOnProducts loaded:', action.addOnProduct);
-  //     this.addOnProduct = action.addOnProduct.data;
-  //     this.checkAddOnProductsInRunningItem(this.addOnProduct);
-  //     //this.invoiceData = this.genrateInvoice();
-  //    // this.getAddOnProducts();
-  //   });
-
-  //   const failureSub = this.actions$.pipe(
-  //     filter((action: any) => action.type === AddOnProductActions.getAddOnProductByIdFailure.type)
-  //   ).subscribe(action => {
-  //     // Handle failure, e.g., show error message
-  //     console.error('Failed to load AddOnProducts:', action.error);
-  //   });
-
-  //   // Store subscriptions to clean up later if needed
-  //   this.subscriptions.push(successSub, failureSub);
-  // }
-
+ 
   getAddOnProducts() {
     this.InvoiceService_.getbyid(this.invoiceid).subscribe(data => {
       if (data) {
@@ -1690,18 +1588,7 @@ if( this.innvoicedata.data[0]?.AddOnItems.length>0)
       SelectProductId: SelectProductId,
       SubQuantityTypeID: selectSubQuantityTypeID
     }));
-    //   this.actions$.pipe(ofType(AddOnProductActions.getByProductIdSubQTypeIDAddOnProductsSuccess)).subscribe(action => {
-
-    //     console.log('AddOnProducts loaded:', action.addOnProducts);
-
-    //    });
-    // this.actions$.pipe(ofType(AddOnProductActions.getByProductIdSubQTypeIDAddOnProductsFailure)).subscribe(action => {
-
-    //   console.error('Failed to load AddOnProducts:', action.error);
-
-    //    });
-
-
+   
     // Listen for success and failure actions
     const successSub = this.actions$.pipe(
       filter((action: any) => action.type === AddOnProductActions.getByProductIdSubQTypeIDAddOnProductsSuccess.type)

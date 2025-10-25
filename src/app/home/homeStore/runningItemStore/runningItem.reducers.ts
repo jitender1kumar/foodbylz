@@ -1,192 +1,61 @@
 import { createReducer, on } from '@ngrx/store';
-import * as RunningItemActions from './runningItem.actions';
+import * as RunningItemsActions from './runningItem.actions';
 import { RunningItems } from '../../../model/category.model';
 
-export interface RunningItemState {
-  items: RunningItems[];
+export interface RunningItemsState {
+  runningItem: RunningItems[];
   loading: boolean;
-  error: any;
 }
 
-export const initialState: RunningItemState = {
-  items: [],
+export const initialState: RunningItemsState = {
+  runningItem: [],
   loading: false,
-  error: null
 };
 
-export const runningItemReducer = createReducer(
+export const runningItemsReducer = createReducer(
   initialState,
 
-  // Load Running Items
-  // Load data logic for RunningItems per the category.model (RunningItems interface)
-  on(RunningItemActions.loadRunningItems, (state) => ({
+  on(RunningItemsActions.loadRunningItems, state => ({
     ...state,
     loading: true,
-    error: null
-  })),
-  on(RunningItemActions.loadRunningItemsSuccess, (state, { items }) => ({
-    ...state,
-    // ensure each item matches RunningItems interface; fallback to empty array if not
-    items: Array.isArray(items) ? items.map(item => ({
-      _idPP: item._idPP,
-      AddOnItems: item.AddOnItems ?? [],
-      ProductPrice: item.ProductPrice,
-      SelectProductId: item.SelectProductId,
-      ProductName: item.ProductName,
-      selectcategoryID: item.selectcategoryID,
-      categoryName: item.categoryName,
-      selectQtypeID: item.selectQtypeID,
-      QtypeName: item.QtypeName,
-      selectSubQuantityTypeID: item.selectSubQuantityTypeID,
-      SubQuantityTypeName: item.SubQuantityTypeName,
-      quntityvalue: item.quntityvalue,
-      qvalue: item.qvalue,
-      taxnames: item.taxnames,
-      taxvalues: item.taxvalues,
-      totaltaxvalue: item.totaltaxvalue
-    })) : [],
-    loading: false,
-    error: null
-  })),
-  on(RunningItemActions.loadRunningItemsFailure, (state, { error }) => ({
-    ...state,
-    loading: false,
-    error
   })),
 
-  // Add Running Item
-  // Add Running Item
-  on(RunningItemActions.addRunningItem, (state) => ({
+  on(RunningItemsActions.loadRunningItemsSuccess, (state, { runningItems }) => ({
     ...state,
-    loading: true,
-    error: null
-  })),
-  on(RunningItemActions.addRunningItemSuccess, (state, { item }) => {
-    // Support both single RunningItems object or array of RunningItems
-    let newItems: any[] = [];
-    if (Array.isArray(item)) {
-      newItems = item.map((it: any) => ({
-        _idPP: it._idPP,
-        AddOnItems: it.AddOnItems ?? [],
-        ProductPrice: it.ProductPrice,
-        SelectProductId: it.SelectProductId,
-        ProductName: it.ProductName,
-        selectcategoryID: it.selectcategoryID,
-        categoryName: it.categoryName,
-        selectQtypeID: it.selectQtypeID,
-        QtypeName: it.QtypeName,
-        selectSubQuantityTypeID: it.selectSubQuantityTypeID,
-        SubQuantityTypeName: it.SubQuantityTypeName,
-        quntityvalue: it.quntityvalue,
-        qvalue: it.qvalue,
-        taxnames: it.taxnames,
-        taxvalues: it.taxvalues,
-        totaltaxvalue: it.totaltaxvalue
-      }));
-    } else if (item) {
-      newItems = [{
-        _idPP: item._idPP,
-        AddOnItems: item.AddOnItems ?? [],
-        ProductPrice: item.ProductPrice,
-        SelectProductId: item.SelectProductId,
-        ProductName: item.ProductName,
-        selectcategoryID: item.selectcategoryID,
-        categoryName: item.categoryName,
-        selectQtypeID: item.selectQtypeID,
-        QtypeName: item.QtypeName,
-        selectSubQuantityTypeID: item.selectSubQuantityTypeID,
-        SubQuantityTypeName: item.SubQuantityTypeName,
-        quntityvalue: item.quntityvalue,
-        qvalue: item.qvalue,
-        taxnames: item.taxnames,
-        taxvalues: item.taxvalues,
-        totaltaxvalue: item.totaltaxvalue
-      }];
-    }
-    return {
-      ...state,
-      items: [...state.items, ...newItems],
-      loading: false,
-      error: null
-    };
-  }),
-  on(RunningItemActions.addRunningItemFailure, (state, { error }) => ({
-    ...state,
+    runningItem: runningItems,
     loading: false,
-    error
   })),
 
-  // Update Running Item
-  on(RunningItemActions.updateRunningItem, (state) => ({
+  // on(RunningItemsActions.addRunningItem, state => ({
+  //   ...state,
+  //   loading: true,
+  // })),
+  on(RunningItemsActions.addRunningItem, (state, { runningItem }) => ({
     ...state,
-    loading: true,
-    error: null
+    runningItem: [...state.runningItem, runningItem],
+    loading: false,
   })),
-  on(RunningItemActions.updateRunningItemSuccess, (state, { item }) => {
-    // Ensure proper updating of RunningItems_ based on unique keys (_idPP and SubQuantityTypeName)
-    const updatedItems = state.items.map(existingItem => {
-      if (
-        existingItem._idPP === item._idPP &&
-        existingItem.SubQuantityTypeName === item.SubQuantityTypeName
-      ) {
-        // Return a new RunningItems object reflecting the latest item, as per model @file_context_0
-        return {
-          ...existingItem,
-          ...item,
-          AddOnItems: item.AddOnItems ?? existingItem.AddOnItems,
-          ProductPrice: item.ProductPrice ?? existingItem.ProductPrice,
-          SelectProductId: item.SelectProductId ?? existingItem.SelectProductId,
-          ProductName: item.ProductName ?? existingItem.ProductName,
-          selectcategoryID: item.selectcategoryID ?? existingItem.selectcategoryID,
-          categoryName: item.categoryName ?? existingItem.categoryName,
-          selectQtypeID: item.selectQtypeID ?? existingItem.selectQtypeID,
-          QtypeName: item.QtypeName ?? existingItem.QtypeName,
-          selectSubQuantityTypeID: item.selectSubQuantityTypeID ?? existingItem.selectSubQuantityTypeID,
-          SubQuantityTypeName: item.SubQuantityTypeName ?? existingItem.SubQuantityTypeName,
-          quntityvalue: item.quntityvalue ?? existingItem.quntityvalue,
-          qvalue: item.qvalue ?? existingItem.qvalue,
-          taxnames: item.taxnames ?? existingItem.taxnames,
-          taxvalues: item.taxvalues ?? existingItem.taxvalues,
-          totaltaxvalue: item.totaltaxvalue ?? existingItem.totaltaxvalue
-        };
-      }
-      return existingItem;
-    });
-    return {
-      ...state,
-      items: updatedItems,
-      loading: false,
-      error: null
-    };
-  }),
-  on(RunningItemActions.updateRunningItemFailure, (state, { error }) => ({
+  on(RunningItemsActions.addRunningItemFailure, (state, { error }) => ({
     ...state,
     loading: false,
-    error
+    // Optionally you can add error state if you declare it in the state
+    // error: error
   })),
 
-  // Delete Running Item
-  on(RunningItemActions.deleteRunningItem, (state) => ({
+  on(RunningItemsActions.updateRunningItem, (state, { runningItem }) => ({
     ...state,
-    loading: true,
-    error: null
+    runningItem: state.runningItem.map((item: RunningItems) =>
+      item._idPP === runningItem._idPP ? runningItem : item
+    ),
   })),
-  on(RunningItemActions.deleteRunningItemSuccess, (state, { productId, subQuantityTypeId }) => {
-    // Remove items from the RunningItems_ array where SelectProductId and selectSubQuantityTypeID match
-    const updatedItems = state.items.filter(
-      i => !(i.SelectProductId === productId && i.selectSubQuantityTypeID === subQuantityTypeId)
-    );
-    return {
-      ...state,
-      items: updatedItems,
-      loading: false,
-      error: null
-    };
-  }),
-  on(RunningItemActions.deleteRunningItemFailure, (state, { error }) => ({
+
+  on(RunningItemsActions.removeRunningItem, (state, { _idPP }) => ({
     ...state,
-    loading: false,
-    error
+    runningItem: state.runningItem.filter(item => item._idPP !== _idPP),
+  })),
+
+  on(RunningItemsActions.clearRunningItems, state => ({
+    ...state,
+    runningItem: [],
   }))
 );
-

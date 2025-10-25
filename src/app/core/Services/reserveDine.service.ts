@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../environment/environment';
-import { ReserveDine } from '../Model/crud.model';
+import { ReserveDine, ReserveDineEdit } from '../Model/crud.model';
 @Injectable({
   providedIn: 'root'
 })
@@ -37,7 +37,8 @@ getReservedEndTime(DateTimeStart:string,DateTimeEnd:string)
   delete(_id: string) {
     return this.http.delete(`${this.reserveDineUrl}/${_id}`);
   }
-  update(ReserveDine_: ReserveDine) {
-    return this.http.put(this.reserveDineUrl, { ReserveDine_ });
+
+  update(ReserveDine_: ReserveDineEdit): Observable<ReserveDineEdit> {
+    return this.http.put<ReserveDineEdit>(this.reserveDineUrl, ReserveDine_);
   }
-}                                                                                                                              
+}

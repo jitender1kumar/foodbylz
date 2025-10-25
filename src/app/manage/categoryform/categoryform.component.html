@@ -14,14 +14,14 @@
     <div class="row box">
       <!-- left col -->
       <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" #f="ngForm" class="col lbl2" >
-        <button  class="close" (click)="close()">Close</button>
+        <button  class="close" (click)="close()"><b>x</b></button>
         <div class="row lbl"><h4>Insert Product Category(like chinees, south indian )</h4></div>
         <div class="row form-group">
           <div class="col"> <label class="lbl"  for="categoryname" id="categoryname" > Name :</label></div>
           <div class="col"><input class="lbl" minlength="0" maxlength="200" type="text"  id="categorynametxt" formControlName="name"/></div>
         </div>
         <div class="row form-group">
-          <div class="col">  <label class="lbl" minlength="0" maxlength="200" for="categorydesc" id="categorydesc" > Description :</label></div>
+          <div class="col">  <label class="lbl" minlength="0" maxlength="200" for="quantitydesctxt" id="categorydesc" > Description :</label></div>
           <div class="col">  <input class="lbl" type="text"  id="quantitydesctxt" formControlName="categorydesc"/></div>
         </div>
         <p>{{popupenvironments.args$ | async}}</p>
@@ -38,8 +38,8 @@
     <div class="row box">
       <form [formGroup]="myEditForm" (ngSubmit)="onEditForm()" #f="ngForm" class="col lbl2">
         <button  class="close" (click)="close()">Close</button>
-        <div class="row form-group">
-          <div class="col"><h2 ><b>Edit</b></h2></div>
+        <div class="row lbl">
+          <h2 ><b>Edit</b></h2>
         </div>
         <p>{{popupenvironments.args$ | async}}</p>
         <div class="row form-group">
@@ -47,13 +47,14 @@
           <div class="col"> <input style="width: 114px; margin: 3px;" minlength="0" maxlength="200" type="text" formControlName="name"></div>
         </div>
         <div class="row form-group">
-          <div class="col"><label class="lbl" for="categorydesc" id="categorydesc2" > Description :</label></div>
-          <div class="col"><input style="width: 250px; margin: 3px;" minlength="0" maxlength="200" type="text" formControlName="categorydesc"></div>
+          <div class="col"><label class="lbl" for="quantitydesctxt2" id="categorydesc2" > Description :</label></div>
+          <div class="col"><input id="quantitydesctxt2" style="width: 250px; margin: 3px;" minlength="0" maxlength="200" type="text" formControlName="categorydesc"></div>
         </div>
-        <div class="row form-group">
-          <div class="col"> <button class="bt1n" style=" margin: 3px;" id="b{{popupenvironments.popdata2$._id | async}}" [disabled]="myEditForm.invalid " >Update</button>
+       
+        <div class="mt-2">
+            <button class="bt1n"  id="b{{popupenvironments.popdata2$._id | async}}" [disabled]="myEditForm.invalid " >Update</button>
         </div>
-      </div>
+     
     </form>
   </div>
 </div>

@@ -50,9 +50,12 @@
         {{floor.name}}
       </div>
       <div class="table-layout">
-        <div *ngFor="let d of dinedata index as ii">
+        <!-- <div *ngFor="let d of dinedata index as ii"> -->
+          @for( d of dinedata; track d){
+          
           @if (d.status) {
-          <div>
+          <!-- <div> -->
+            
             @if (floor._id==d.floor_id) {
             <a (click)="booktable(d._id)" class="table">
               <p> <b>{{d.name}} </b> Available </p>
@@ -68,7 +71,7 @@
               </div>
             </a>
             }
-          </div>
+          <!-- </div> -->
           } @else {
           <div>
             @if (floor._id==d.floor_id) {
@@ -87,7 +90,8 @@
             }
           </div>
           }
-        </div>
+        }
+        <!-- </div> -->
       </div>
     </div>
     }
@@ -239,13 +243,15 @@
   @if (show) {
   <div class="comman">
     <div class="row box">
-      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" class="col lbl2">
+     
+
+      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" >
 
         <!-- Close Button -->
-        <button class="close" type="button" (click)="close()">Close</button>
-
+       
         <!-- Header -->
         <div class="row lbl">
+          <button class="close"  (click)="close()">Close</button>
           <h4>Reserve a Dine (Validity for 2 hour)</h4>
         </div>
 
@@ -434,7 +440,7 @@
         </div>
 
         <!-- Hidden field bound to the form's DateTimeStart -->
-        <!-- <input type="hidden" id="dateTimeStartControl" name="dateTimeStartControl" [formControl]="dateTimeStartControl" /> -->
+        <input type="hidden" id="dateTimeStartControl" name="dateTimeStartControl" [formControl]="dateTimeStartControl" />
 
 
         <!-- Customer Selection -->

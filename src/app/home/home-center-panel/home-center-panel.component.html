@@ -1,4 +1,4 @@
-<td class="billing-container align-top p-0">
+
     <div class="billing-app px-4 py-6 sm:px-6 lg:px-12 max-w-screen-xl mx-auto" style="width:100%;">
       <h2 class="text-xl font-semibold mb-4 text-gray-800">Search Foods</h2>
 
@@ -54,7 +54,7 @@
       <div *ngIf="productsByCategoryId" class="mt-8 px-4">
         <div class="grid gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           <div *ngFor="let product of productsByCategoryId" class="group h-50">
-            <div
+            <div style="height: min-content;max-height:180px;max-width: fit-content;" 
               class="bg-white shadow-md hover:shadow-xl border border-gray-200 hover:border-cyan-500 transition-all duration-300 p-5 flex flex-col items-center text-center cursor-pointer relative"
               (click)="increment(product._id)"
             >
@@ -89,4 +89,4 @@
         </div>
       </div>
     </div>
-  </td>
+

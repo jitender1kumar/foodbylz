@@ -61,7 +61,7 @@
   animation: fadeIn 0.03s ease-in-out;
 }
 
-.comman {
+/* .comman {
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
@@ -70,12 +70,9 @@
   max-height: 90vh;
   overflow-y: auto;
   margin: 0 auto;
-}
+} */
 
-.comman * {
-  margin: 0.5em 0;
-  line-height: 1.5;
-}
+
 @media print {
   body * {
     display: none;
@@ -115,17 +112,20 @@
 }
 
 .close {
-    position: initial;
-    top: 15px;
-    right: 35px;
-    color: #df4c4c;
+    position: absolute;
+    top: 0;
+    right: 0;
+    float: right;
+    padding: 5px;
+    color: #e95050;
     font-size: 20px;
+    border: solid red 1px;
     font-weight: 600;
-    background-color: rgb(243, 233, 199);
+    background-color:red;
   }
  
   .close:hover{
-    color: #df4c4c;
+    color: #b32929;
     font-weight: 650;
    
   }
@@ -1029,7 +1029,7 @@ form button:hover {
 
 /* Order List Container */
 .order-list-container {
-  background-color: var(--white);
+  background-color: var(--l-orange-10);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0px 4px 0px rgba(0, 0, 0, 0.04);
@@ -1269,10 +1269,11 @@ table tr:last-child td {
 
 .table-layout {
   display: grid; /* Use grid for table layout */
-  grid-template-columns: repeat(7, 0fr); /* 4 columns */
-  gap: 94px; /* Space between tables */
+  grid-template-columns: repeat(4, 0fr); /* 4 columns */
+  gap: 54px; /* Space between tables */
   margin-top: 20px; /* Space above table layout */
-  padding: 32px;
+  padding: 12px;
+
 }
 .tdcontainerformanage
 {
@@ -1283,9 +1284,9 @@ table tr:last-child td {
 }
 .table {
   position: relative; /* Position relative for absolute positioning of circles */
-  width: 104px; /* Set a fixed width for square tables */
+  width: 180px; /* Set a fixed width for square tables */
   height: 104px; /* Set a fixed height for square tables */
-  background-color: #E6F0FA; /* Light gray background for tables */
+  background-color: #dddddd; /* Light gray background for tables */
   border: 1px solid #CDE0F4; /* Light border for tables */
   border-radius: 8px; /* Slightly rounded corners */
   padding: 8px; /* Padding inside table */
@@ -1302,7 +1303,7 @@ table tr:last-child td {
   transform: translate(-50%, -50%);
   width: 32px; /* Circle diameter */
   height: 16px; /* Circle diameter */
-  background-color: var(--l-blue-20); /* Color of circles for reserved table */
+  background-color: var(--light-grey-3); /* Color of circles for reserved table */
   border-radius: 150px 150px 0 0;
 }
 

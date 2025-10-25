@@ -540,36 +540,20 @@ export class TablesComponent implements OnInit {
     this.mergeFloorNameWithDine();
     this.show = true;
   }
-
-  onFormEditSubmit() {
-    alert();
-    // Placeholder for edit form submission logic
+updateReserveDine(ReserveDine_:ReserveDineEdit)
+{
+  this.reservedineservice.update(ReserveDine_).subscribe(data=>
+  {
+    if(data)
+    console.log(data);
   }
-
-  onFormSubmit() {
-    // this function used for reserving customers table 
-    const index = this.dinedata.findIndex((item: { _id: any; }) => item._id === this.myAddForm.value.TableId);
-    this.myAddForm.value.TableName = this.dinedata[index].name;
-
-    this.date = new Date(this.myAddForm.value.DateTimeStart).toLocaleString().split(',');
-    this.now = new Date();
-    const date = this.date[0].split('/');
-    const time = this.date[1].split(':');
-    this.myAddForm.value.DateTimeStart = `${date[2] < 10 ? "0" + date[2] : date[2]}-${date[0] < 10 ? "0" + date[0] : date[0]}-${date[1] < 10 ? "0" + date[1] : date[1]}T${time[0]}:${time[1]}:${time[2]}`;
-    this.myAddForm.value.DateTimeEnd = `${date[2] < 10 ? "0" + date[2] : date[2]}-${date[0] < 10 ? "0" + date[0] : date[0]}-${date[1] < 10 ? "0" + date[1] : date[1]}T${+time[0] + 2}:${time[1]}:${time[2]}`;
-
-    const d = new Date();
-    this.myAddForm.value.RecieptNumber = d.getFullYear() + d.getTime();
-    this.resevetable = this.myAddForm.value;
-
-    this.reservedineservice.add(this.resevetable).subscribe(reservedine => {
-      if (reservedine) {
-        // this.reservedinedata2 = reservedine;
-        // this.reservedinedata = this.reservedinedata2.data;
-        this.args = "Successfully Reserved";
-        this.loadReservedDineData();
-      }
-    });
+  );
+}
+  onFormEditSubmit() {
+    if (this.myEditForm.valid) {
+      // Gather edited form values
+     
+    }
   }
 
   loadReservedDineData() {

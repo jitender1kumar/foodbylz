@@ -16,63 +16,63 @@
         </ul>
       </div>
     </td> -->
-    <td>
-<app-homeleftpanel (getproductbycategoryclicked)="getproductbycategory($event)"></app-homeleftpanel>
+    <td class=" align-top p-0">
+<app-homeleftpanel (getproductbycategoryclicked)="getproductbycategory($event)" ></app-homeleftpanel>
 </td>
 
     <!-- Center Panel: Product Search & Grid -->
-    <td> 
-      <app-home-center-panel [productsByCategoryId]="productsByCategoryId" (incrementclicked)="increment($event)"></app-home-center-panel>
+    <td class="billing-container align-top p-0"> 
+      <app-home-center-panel [productsByCategoryId]="productsByCategoryId" (incrementclicked)="increment($event)" ></app-home-center-panel>
       </td>  
        <!-- Right Panel: Invoice & Order Summary -->
-<td>
+<td >
   
    
-  <td class="fooditems">
+  <td  class=" align-top p-0" class="fooditems">
     <div class="invoice-card" id="printable-section-KOT">
       <p
         *ngIf="ordermode"
         class="font-bold text-xs "
-        style="font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;"
+        style="font-family:  Verdana;height: min-content;font-size:smaller;"
       >
         Invoice No.: {{ invoiceid }}, Token Number.: {{ TokenNumber }}
       </p>
       <div class="flex items-center justify-between flex-wrap gap-1 bg-gray-50 px-1 py-1 rounded shadow mb-1">
         <!-- Action Buttons -->
         <div class="flex gap-1 " *ngIf="ordermode">
-          <p
-            class=" bg-gradient-to-r from-blue-600 to-violet-600 text-black font-semibold py-2 px-4 rounded shadow hover:scale-105 transition"
+          <p style="font-family:  Verdana;height: min-content;font-size:smaller;"
+            class=" bg-gradient-to-r from-blue-200 to-violet-200 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
           >
             {{ ordermode }}
         </p>
         <div *ngIf="CustomerName!='Guest';else changeName"> 
-          <button 
+          <button  style="font-family:  Verdana;height: min-content;font-size:smaller;"
             (click)="showCustomersPopUp()"
-            class="bg-gradient-to-r from-indigo-500 to-purple-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
+            class="bg-gradient-to-r from-indigo-200 to-purple-200 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
           >Change Customer</button>
         </div>
            
             <ng-template #changeName>
-              <button 
+              <button  style="font-family:  Verdana;height: min-content;font-size:smaller;"
             (click)="showCustomersPopUp()"
-            class="bg-gradient-to-r from-indigo-500 to-purple-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
+            class="bg-gradient-to-r from-indigo-200 to-purple-200 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
           >+Customer
         </button>
             </ng-template>
           
-          <button
+          <button style="font-family:  Verdana;height: min-content;font-size:smaller;"
             (click)="showCommentsPopUp()"
-            class="bg-gradient-to-r from-indigo-500 to-purple-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
+            class="bg-gradient-to-r from-indigo-200 to-purple-200 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
           >
             Comment
           </button>
-          <button
-            class=" bg-gradient-to-r from-blue-600 to-violet-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
+          <button style="font-family:  Verdana;height: min-content;font-size:smaller;"
+            class=" bg-gradient-to-r from-blue-200 to-violet-200 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
           >
             Assist To
           </button>
-          <p *ngIf="CustomerName"
-            class=" bg-gradient-to-r from-blue-600 to-green-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
+          <p *ngIf="CustomerName" style="font-family:  Verdana;height: min-content;font-size:smaller;"
+            class=" bg-gradient-to-r from-blue-200 to-green-200 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
           >
           Customer Name:  {{ CustomerName }}
         </p>
@@ -221,7 +221,7 @@
         <div class=" text-center mb-4">
           <button
             (click)="showDiscountForm = !showDiscountForm"
-            class="bg-indigo-600 hover:bg-indigo-700 text-gray px-6 py-2 rounded shadow transition"
+            class="bg-indigo-300 hover:bg-indigo-400 text-gray hover:text-black px-1 py-1 rounded shadow "
           >
             {{ showDiscountForm ? 'Hide' : 'Show' }} Discount
           </button>

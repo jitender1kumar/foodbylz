@@ -65,7 +65,8 @@ import { addOnProductEditReducer, addOnProductReducer, getAddOnProductByIdReduce
 import { AddOnProductEffects } from './manage/ManageStore/addOnProductStore/addOnProduct.effects';
 import { productItemReducer } from './home/homeStore/productItemStore/productItem.reducers';
 import { ProductItemEffects } from './home/homeStore/productItemStore/productItem.effects';
-import { runningItemReducer } from './home/homeStore/runningItemStore/runningItem.reducers';
+import {  runningItemsReducer } from './home/homeStore/runningItemStore/runningItem.reducers';
+import { metaReducers } from './home/homeStore/runningItemStore/localStorage';
 
 const routes: Routes = [
  
@@ -138,8 +139,11 @@ const routes: Routes = [
         productItemReducer_:productItemReducer,
         getByProductIdSubQTypeIDAddOnProductsReducer_:getByProductIdSubQTypeIDAddOnProductsReducer,
         getAddOnProductByIdReducer_:getAddOnProductByIdReducer,
-        runningItemReducer_:runningItemReducer
-      }), // Register reducer
+        runningItemReducer_: runningItemsReducer
+      },
+      { metaReducers }), 
+      // Register reducer
+      StoreModule.forFeature('runningItem', runningItemsReducer),
     EffectsModule.forRoot([
       ProductCategoryEffects,
       ProductPriceEffects,

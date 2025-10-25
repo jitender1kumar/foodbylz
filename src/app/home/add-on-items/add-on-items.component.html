@@ -22,7 +22,7 @@
         [(ngModel)]="selectedAddOnProduct"
         (change)="onAddOnProductSelect()"
       >
-        <option value="" disabled selected>Select Add-On Product</option>
+        <option  disabled  value="noID">Select Add-On Product</option>
         <option *ngFor="let product of addOnProducts " [value]="product._id">
           {{ product.name }} - Rs.{{ product.Price }}
         </option>
