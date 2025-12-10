@@ -12,6 +12,7 @@ import { PopupmodelComponent } from '../popupmodel/popupmodel.component';import 
 import { InventoryFoodQuantityTypeLoadReducer } from './inventoryStore/inventoryFoodQuantityTypeStore/inventoryFoodQuantityType.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { ProductInventoryFoodQuantityTypeEffects } from './inventoryStore/inventoryFoodQuantityTypeStore/inventoryFoodQuantityType.effects';
+import { GridTableModule } from '../core/shared/dynamicTable/gird-table/gridtable.module';
 ;
 
 const routes: Routes = [
@@ -27,7 +28,7 @@ const routes: Routes = [
   imports: [
     CommonModule, AgGridAngular, BrowserModule, ReactiveFormsModule, RouterModule.forRoot(routes),
     FormsModule,PopupmodelComponent,
-    PopupCrudComponent
+    PopupCrudComponent,GridTableModule
 ],
   exports:[InventoryfoodComponent,
     InventorymainfoodComponent,

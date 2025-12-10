@@ -1,0 +1,27 @@
+
+<button class="bt1n" (click)="openPopup()">Make Default Pay By</button>
+
+@if (popup) {
+  <div class="popup-overlay">
+    <div class="popup-content">
+      <h3>Select Default Pay By</h3>
+      <ng-container *ngIf="PayByData && PayByData.length > 0; else noPayBy">
+        <form>
+          <div *ngFor="let payby of PayByData; let i = index">
+            <label>
+              <input type="radio" name="paybyDefault" [value]="payby._id" [(ngModel)]="selectedPayById" />
+              {{payby.name}} <span *ngIf="payby.desc">- {{payby.desc}}</span>
+            </label>
+          </div>
+        </form>
+        <div style="margin-top:12px;">
+          <button class="bt1n" (click)="setDefaultPayBy()" [disabled]="!selectedPayById">Set Default</button>
+          <button class="bt1n" style="margin-left:6px;" (click)="closePopup()">Cancel</button>
+        </div>
+      </ng-container>
+      <ng-template #noPayBy>
+        <p>No PayBy entries available.</p>
+      </ng-template>
+    </div>
+  </div>
+}

@@ -32,6 +32,43 @@ showhomefun() {
  showrunningorderfun() {
   this.notifyManage.emit("runningorder");
  }
+  // Profile dropdown toggle logic for profile section in navbar.component.html
+
+  dropdownVisible: boolean = false;
+
+  toggleDropdown(): void {
+    this.dropdownVisible = !this.dropdownVisible;
+    // Instead of direct DOM, use *ngIf or [hidden] in the template for visibility
+    // Optionally, still provide the fallback for existing HTML if required:
+    const dropdown = document.getElementById('profileDropdown');
+    if (dropdown) {
+      dropdown.style.display = this.dropdownVisible ? 'block' : 'none';
+    }
+  }
+
+  // If you want to close the dropdown when you click outside
+  // (optional, for better UX)
+  ngOnInit(): void {
+    document.addEventListener('click', this.handleOutsideClick);
+  }
+
+  ngOnDestroy(): void {
+    document.removeEventListener('click', this.handleOutsideClick);
+  }
+
+  handleOutsideClick = (event: any) => {
+    const dropdown = document.getElementById('profileDropdown');
+    const profile = document.querySelector('.profile');
+    if (
+      dropdown &&
+      profile &&
+      !profile.contains(event.target)
+    ) {
+      this.dropdownVisible = false;
+      dropdown.style.display = 'none';
+    }
+  };
+
 
   x:any;
 myFunction() {

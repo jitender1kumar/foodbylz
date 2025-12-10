@@ -245,10 +245,15 @@ id="maplocation2txt" /></div>
 </div>
 }
 
-<ag-grid-angular class="box ag-theme-quartz" style="height:500px;" [rowData]="companyprofiledata" [columnDefs]="colDefs"
+<!-- <ag-grid-angular class="box ag-theme-quartz" style="height:500px;" [rowData]="companyprofiledata" [columnDefs]="colDefs"
   [pagination]="pagination" [paginationPageSize]="paginationPageSize"
-  [paginationPageSizeSelector]="paginationPageSizeSelector" (cellClicked)="onCellClick($event)" />
-  <div>
+  [paginationPageSizeSelector]="paginationPageSizeSelector" (cellClicked)="onCellClick($event)" />-->
+  <div> 
+    <app-gird-table
+    [columns]="colDefs"
+    [data]="companyprofiledata"
+    (rowClicked)="onRowClick($event)"
+  ></app-gird-table>
     <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()"
     [style]="display" [tabname]="tablename" [data]="valueid" [modal]="modal"></app-popupmodel>
   </div>

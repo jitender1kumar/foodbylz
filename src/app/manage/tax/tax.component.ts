@@ -2,17 +2,17 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Tax } from '../../core/Model/crud.model';
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
-import { ColDef } from 'ag-grid-community';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
 import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
 import { TaxService } from '../../core/Services/tax.service';
-import { filter, Observable } from 'rxjs';
+import {  Observable } from 'rxjs';
 import * as TaxAction from '../ManageStore/taxStore/tax.actions';
 import { Store } from '@ngrx/store';
-import { addTax, deleteTax, deleteTaxSuccess, loadTax } from '../ManageStore/taxStore/tax.actions';
+import { addTax, deleteTax, loadTax } from '../ManageStore/taxStore/tax.actions';
 import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
 import { ofType } from '@ngrx/effects';
 import { ValidationService } from '../../core/commanFunction/Validation.service';
+import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 @Component({
   selector: 'app-tax',
   templateUrl: './tax.component.html',
@@ -33,10 +33,10 @@ export class TaxComponent implements OnInit {
   taxnamedata: any;
   taxnamedata2: any;
 
-  colDefs: ColDef[] = [
-    { field: "name" },
-    { field: "Description" },
-    { field: "perscentRate" },
+  colDefs: ColumnDef[] = [
+    { field: "name",sortable:true },
+    { field: "Description",sortable:true  },
+    { field: "perscentRate",sortable:true  },
     { field: "Delete", cellRenderer: BasetypDeleteButtun },
     { field: "Edit", cellRenderer: BasetypEditButtun }
 
@@ -91,15 +91,7 @@ export class TaxComponent implements OnInit {
   loadTaxFunction() {
     this.store.dispatch(loadTax());
     this.tax$ = this.store.select(state => state.taxLoad.Tax_.data);
-    // this.actions$.pipe(ofType(loadTaxSuccess)).subscribe(() => {
-    //   // this.args="Successfully Added Tax: " + Tax_.name;
-    //   //   this.loadTax();
-    // });
-    // this.actions$.pipe(ofType(TaxAction.loadTaxFailure)).subscribe(() => {
-    //   this.args = "Something went wrong";
-
-    // });
-
+   
   }
   onFormSubmit() {
     if (this.myAddForm.valid) {
@@ -123,15 +115,7 @@ export class TaxComponent implements OnInit {
         this.args = "Something went wrong";
 
       });
-      //   this.service.update(Tax_).subscribe(res => {
-      //     if (res) {
-      //       //this.args = "Successfully Updated quantity types..." + Tax.name;
-      //        this.SweetAlert2_.showFancyAlertSuccess("Successfully updated Tax: " + Tax_.name);
-      //        this.store.dispatch(loadTax());
-      // this.tax$ = this.store.select(state => state.taxLoad.Tax_.data);
-
-      //     }
-      //   })
+     
     }
 
   }
@@ -162,31 +146,29 @@ export class TaxComponent implements OnInit {
 
     }
   }
-
-  onCellClick(event: any) {
-
-    if (event.colDef.field == 'Delete') {
+  onRowClick(r: any) { console.log('clicked row', r);
+    // console.log(this.colDefs);
+    if (r[0].field == 'Delete') {
       this.modal = "modal";
       this.display = "display:block"
-      this.valueid = event.data._id;
+      this.valueid = r[0].row._id;
       this.tablename = "qtyp";
-
     }
-    if (event.colDef.field == 'Edit') {
-      this.popdata2 = event.data;
+    if (r[0].field == 'Edit') {
+      this.popdata2 = r[0].row;
       this.showEdit = true;
       this.show = false;
       this.args = null;
       this.myEditForm = this.formedit.group({
-        _id: [event.data._id],
-        name: [event.data.name, Validators.required],
-        Description: [event.data.Description],
-        perscentRate: [event.data.perscentRate, Validators.required],
-        Status: [event.data.Status, Validators.required]
+        _id: [r[0].row._id],
+        name: [r[0].row.name, Validators.required],
+        Description: [r[0].row.Description],
+        perscentRate: [r[0].row.perscentRate, Validators.required],
+        Status: [r[0].row.Status, Validators.required]
       });
     }
-  }
-
+   }
+  
 
   show: any = false;
   showEdit: any = false;

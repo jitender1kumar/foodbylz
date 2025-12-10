@@ -13,6 +13,7 @@ import { addInventoryMainFood, deleteInventoryMainFood, loadInventoryMainFood, u
 import { popupenvironment } from '../../environment/popupEnvironment';
 import * as InventoryMainFoodActions from '../inventoryStore/inventoryMainFoodStore/inventoryMainFood.actions';
 import { Actions, ofType } from '@ngrx/effects';
+import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 
 @Injectable({ providedIn: 'root' })
 @Component({
@@ -34,18 +35,15 @@ export class InventorymainfoodComponent implements OnInit {
   loading$!: Observable<boolean>;
   error$!: Observable<string | null>;
 
-  colDefs: ColDef[] = [
-    { field: "name" },
-    { field: "quantitytypename" },
-    { field: "quantitytypevalue" },
-    { field: "description", flex: 2 },
+  colDefs: ColumnDef[] = [
+    { field: "name", sortable:true },
+    { field: "quantitytypename", sortable:true },
+    { field: "quantitytypevalue", sortable:true },
+    { field: "description", sortable:true },
     { field: "Edit", cellRenderer: BasetypEditButtun }
   ];
   // Common pagination properties
-  pagination = true;
-  paginationPageSize = 10;
-  paginationPageSizeSelector = [10,200, 500, 1000];
-
+ 
   // Common UI state properties
  
 
@@ -179,40 +177,38 @@ export class InventorymainfoodComponent implements OnInit {
   loadinventoeryfoodquantitytype() {
     throw new Error('Method not implemented.');
   }
-
-  onCellClick(event: any) {
-    if (event.colDef.field === 'Delete') {
+  onRowClick(r: any) { console.log('clicked row', r);
+    // console.log(this.colDefs);
+    if (r[0].field == 'Delete') {
       this.popupenvironments.modal$.next("modal");
       this.popupenvironments.display$.next("display:block");
-      this.popupenvironments.valueid$.next(event.data._id);
+      this.popupenvironments.valueid$.next(r[0].row._id);
       this.popupenvironments.tablename$.next("cate");
     }
-
-    if (event.colDef.field === 'Edit') {
-      
+    if (r[0].field == 'Edit') {
       this.initForms();
       this.loadInventoryFoodQuantityTypes();
-      console.log(event.data);
-      this.popupenvironments.popdata2$.next(event.data);
+      console.log(r[0].row);
+      this.popupenvironments.popdata2$.next(r[0].row);
       console.log(this.popupenvironments.popdata2$.value);
       
       this.popupenvironments.showEdit$.next(true);
       this.popupenvironments.show$.next(false);
       this.popupenvironments.args$.next(null);
-      this.quantitytypename = event.data.quantitytypename;
+      this.quantitytypename = r[0].row.quantitytypename;
 
       this.myEditForm.patchValue({
-        _id: event.data._id,
-        name: event.data.name,
-        description: event.data.description,
-        quantitytypeID: event.data.quantitytypeID,
-        quantitytypename: event.data.quantitytypename,
-        quantitytypevalue: event.data.quantitytypevalue,
+        _id: r[0].row._id,
+        name: r[0].row.name,
+        description: r[0].row.description,
+        quantitytypeID: r[0].row.quantitytypeID,
+        quantitytypename: r[0].row.quantitytypename,
+        quantitytypevalue: r[0].row.quantitytypevalue,
         employee_id: this.employeeId
       });
-      
     }
-  }
+   }
+ 
 
   changeQuantityTypeName() {
     // Placeholder for future logic if needed

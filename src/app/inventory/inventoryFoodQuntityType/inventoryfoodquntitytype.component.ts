@@ -14,6 +14,7 @@ import { Actions, ofType } from '@ngrx/effects';
 import { popupenvironment } from '../../environment/popupEnvironment';
 import { Validationenvironment } from '../../environment/validtionEnvironment';
 import { ValidationService } from '../../core/commanFunction/Validation.service';
+import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 
 
 @Injectable({ providedIn: 'root' })
@@ -45,9 +46,9 @@ export class InventoryfoodquntitytypeComponent implements OnInit {
     description: "",
     _id: "undefined"
   };
-  colDefs: ColDef[] = [
-    { field: "name" },
-    { field: "description", flex: 2 },
+  colDefs: ColumnDef[] = [
+    { field: "name" , sortable:true },
+    { field: "description", sortable:true },
     { field: "Delete", cellRenderer: BasetypDeleteButtun },
     { field: "Edit", cellRenderer: BasetypEditButtun }
 
@@ -82,40 +83,7 @@ export class InventoryfoodquntitytypeComponent implements OnInit {
   }
  
 
-  // checkAddNameExist(checkName: string) {
-   
-  //   this.inventoryQuantityTypeData$?.subscribe(getName => {
-  //     const NameExist = getName.find(item => item.name === checkName);
-  //     if (NameExist) {
-  //      this.Validationenvironments.nameExists$.next(true);
-  //      // return this.InventoryNameExist = true;
-  //     }
-  //     else {
-  //       //  alert("else"+NameExist);
-  //         this.Validationenvironments.nameExists$.next(false);
-  //     //  return this.InventoryNameExist = false;
-  //     }
-  //   });
-  //    return  this.Validationenvironments.nameExists$;
-  //  // return this.InventoryNameExist;
-  // }
-  // checkUpdateNameExist(checkName: string) {
-   
-  //   this.inventoryQuantityTypeData$?.subscribe(getName => {
-  //     const NameExist = getName.find(item => item.name === checkName);
-  //     if (NameExist) {
-  //      this.Validationenvironments.nameExists$.next(true);
-  //      // return this.InventoryNameExist = true;
-  //     }
-  //     else {
-  //       //  alert("else"+NameExist);
-  //         this.Validationenvironments.nameExists$.next(false);
-  //     //  return this.InventoryNameExist = false;
-  //     }
-  //   });
-  //    return  this.Validationenvironments.nameExists$;
-  //  // return this.InventoryNameExist;
-  // }
+
   add(InventoryFoodQuantityType_: InventoryFoodQuantityType): void {
     this.inventoryQuantityTypeData$ = this.store.select(state => state.loadInventoryFoodQuantityType.InventoryFoodQuantityType_.data);
     const valid  = this.ValidationService_.checkNameExistforAddForm(this.myAddForm.value.name,this.inventoryQuantityTypeData$);
@@ -141,35 +109,29 @@ export class InventoryfoodquntitytypeComponent implements OnInit {
     }
 
   }
-  onCellClick(event: any) {
-
-    if (event.colDef.field == 'Delete') {
-
+  onRowClick(r: any) { console.log('clicked row', r);
+    // console.log(this.colDefs);
+    if (r[0].field == 'Delete') {
       this.popupenvironments.modal$.next("modal");
       this.popupenvironments.display$.next("display:block");
-      this.popupenvironments.valueid$.next(event.data._id);
+      this.popupenvironments.valueid$.next(r[0].row._id);
       this.popupenvironments.tablename$.next("cate");
-     
-      
-
-
     }
-    if (event.colDef.field == 'Edit') {
-      this.popupenvironments.popdata2$.next(event.data);
+    if (r[0].field == 'Edit') {
+      this.popupenvironments.popdata2$.next(r[0].row);
       this.popupenvironments.showEdit$.next(true);
       this.popupenvironments.show$.next(false);
       this.popupenvironments.args$.next(null);
       
       
       this.myEditForm = this.formedit.group({
-        _id: [event.data._id],
-        name: [event.data.name, Validators.required],
-        description: [event.data.categorydesc]
-
+        _id: [r[0].row._id],
+        name: [r[0].row.name, Validators.required],
+        description: [r[0].row.categorydesc]
       });
     }
-
-  }
+   }
+ 
 
   loadinventoeryfoodquantitytype() {
 

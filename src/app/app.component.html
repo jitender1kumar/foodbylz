@@ -1,31 +1,86 @@
-<!-- <app-categoryform></app-categoryform> -->
-<!-- jai shree ram  -->
-<!-- jai shree krishna jsk -->
-@if (showmanagebar=='manage') {
+<!--
+  Refactored app component layout.
+  Dynamic page rendering via *ngIf
+-->
+
+<!-- NAVBAR always visible -->
+ 
+ <ng-container *ngIf="showmanagebar === 'companylogin'">
   <div>
-    <app-managefoodnavbar ></app-managefoodnavbar>
+    <app-companylogin (redirectToTables)="receiveNotification($event)"></app-companylogin>
   </div>
-}
-<!-- <app-home [invoiceid]="invoiceid" (valueChanged)="updateValue($event)"></app-home> -->
-@if (showmanagebar=='home') {
-  <div> <app-home [invoiceid]="invoiceid" [TokenNumber]="TokenNumber" (valueChanged)="updateValue($event)" (cancelOrder)="cancelOrder($event)" ></app-home> </div>
-}
-@if (showmanagebar=='dashboard') {
-  <div> <app-dashboard></app-dashboard></div>
-}
-@if (showmanagebar=='orders') {
-  <div> <app-orders (showTables)="receiveNotification($event )"  (pickUpOrder)="pickUpOrders($event)"></app-orders></div>
-}
-@if (showmanagebar=='customers') {
-  <div> <app-customers></app-customers></div>
-}
-@if (showmanagebar=='runningorder') {
-  <div > <app-runningorders  (notifyManage3)="gohomeinvoiceid($event)"></app-runningorders></div>
-}
-@if (showmanagebar=='tables') {
-  <div> <app-tables [pickupOrder]="pickup" [CancelOrder]="CancelOrder" (clearCancelOrder)="clearCancelOrders($event)" (notifyManage2)="receiveNotification2($event)" (clearPickupOrder)="clearPickupOrders($event)"></app-tables></div>
-}
+</ng-container>
+<app-navbar (notifyManage)="receiveNotification($event)"></app-navbar>
 
-<app-navbar (notifyManage)="receiveNotification($event )" ></app-navbar>
+<!-- MANAGE SECTION -->
+<ng-container *ngIf="showmanagebar === 'manage'">
+  <div>
+    <app-managefoodnavbar></app-managefoodnavbar>
+  </div>
+</ng-container>
 
+<!-- HOME SECTION -->
+<ng-container *ngIf="showmanagebar === 'home'">
+  <div>
+    <app-home
+      [invoiceid]="invoiceid"
+      [TokenNumber]="TokenNumber"
+      [paybydata]="payBy"
+      [categorynamedata$]="category$"
+      [Productnamedata$]="product$"
+      [productPriceData$]="productPrice$"
+      [addOnProductsData$]="addOnProduct$"
+      [subQuantityTypeName$]="subQuantityTtype$"
+      [Tax]="tax"
+      [Qtypenamedata$]="quantityType$"
+      [InvoiceData$]="invoicedata$" 
+      (valueChanged)="updateValue($event)"
+      (cancelOrder)="cancelOrder($event)"
+    ></app-home>
+  </div>
+</ng-container>
 
+<!-- DASHBOARD SECTION -->
+<ng-container *ngIf="showmanagebar === 'dashboard'">
+  <div>
+    <app-dashboard></app-dashboard>
+  </div>
+</ng-container>
+
+<!-- ORDERS SECTION -->
+<ng-container *ngIf="showmanagebar === 'orders'">
+  <div>
+    <app-orders
+      (showTables)="receiveNotification($event)"
+      (pickUpOrder)="pickUpOrders($event)"
+    ></app-orders>
+  </div>
+</ng-container>
+
+<!-- CUSTOMERS SECTION -->
+<ng-container *ngIf="showmanagebar === 'customers'">
+  <div>
+    <app-customers></app-customers>
+  </div>
+</ng-container>
+
+<!-- RUNNING ORDERS SECTION -->
+<ng-container *ngIf="showmanagebar === 'runningorder'">
+  <div>
+    <app-runningorders (notifyManage3)="gohomeinvoiceid($event)"></app-runningorders>
+  </div>
+</ng-container>
+
+<!-- TABLES SECTION -->
+<ng-container *ngIf="showmanagebar === 'tables'">
+  <div>
+    <app-tables
+     [runningItemsKOT$]="runningItems$"
+      [pickupOrder]="pickup"
+      [CancelOrder]="CancelOrder"
+      (clearCancelOrder)="clearCancelOrders($event)"
+      (notifyManage2)="initializeDataForHome($event)"
+      (clearPickupOrder)="clearPickupOrders($event)"
+    ></app-tables>
+  </div>
+</ng-container>

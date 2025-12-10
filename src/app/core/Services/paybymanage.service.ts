@@ -30,6 +30,13 @@ export class PaybyService {
   get() {
     return this.http.get(this.payByManageUrl);
   }
+  updateMakeDefaultTask(_id: string): Observable<any> {
+    return this.http.put<any>(`${this.payByManageUrl}/${_id}`,{_id});
+  }
+
+  updateById(_id: string, paybymanage: Paybymanage): Observable<Paybymanage> {
+    return this.http.put<Paybymanage>(`${this.payByManageUrl}/${_id}`, paybymanage);
+  }
 
 
 }

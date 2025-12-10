@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { combineLatest, filter, map, Observable, Subject, take, takeUntil } from 'rxjs';
+import { combineLatest, filter, map, Observable, Subject, take } from 'rxjs';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { popupenvironment } from '../../environment/popupEnvironment';
@@ -16,7 +16,7 @@ import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbas
 import { loadAddOnProducts } from '../ManageStore/addOnProductStore/addOnProduct.action';
 import * as SubQuantityTypeAction from '../ManageStore/subQuantityTypeStore/subQuantityType.actions';
 import * as productAction from '../ManageStore/productStore/product.actions';
-
+import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 @Component({
   selector: 'app-add-on-product',
   standalone: false,
@@ -38,18 +38,16 @@ export class AddOnProductComponent implements OnInit {
   quantitytypename = '';
   AddOnProduct_?: AddOnProduct;
   mergedAddOnProductWithProduct: any[] = [];
-  colDefs: ColDef[] = [
-    { field: 'name' },
-    { field: 'Price', flex: 2 },
-    { field: 'description', flex: 2 },
-    { field: 'ProductName', flex: 2 }, 
-    { field: 'SubQuantityTypeName', flex: 2 },
+  colDefs: ColumnDef[] = [
+    { field: 'name' , sortable: true},
+    { field: 'Price', sortable: true },
+    { field: 'description', sortable: true },
+    { field: 'ProductName' , sortable: true}, 
+    { field: 'SubQuantityTypeName' , sortable: true},
     { field: 'Delete', cellRenderer: BasetypDeleteButtun },
     { field: 'Edit', cellRenderer: BasetypEditButtun }
   ];
-  pagination = true;
-  paginationPageSize = 10;
-  paginationPageSizeSelector = [10, 200, 500, 1000];
+
   _mergedDataLoaded: any;
 
   constructor(
@@ -77,12 +75,7 @@ export class AddOnProductComponent implements OnInit {
     this.loadProducts();
     this.loadAddOnProduct();
     this.mergeAddOnProductAndProduct();
-    // this.addOnProductsMergeData$= this.getMergedAddOnProductData$();
-    // this.addOnProductsMergeData$.subscribe(data=>
-    // {
-    //   console.log(data);
-    // }
-    // );
+  
   }
 
   private initObservables(): void {
@@ -121,75 +114,16 @@ export class AddOnProductComponent implements OnInit {
     this.store.dispatch(SubQuantityTypeAction.loadSubQuantityType());
     this.subQuantityTypeData$ = this.store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
  
- 
-  //  this.actions$.pipe(
-  //   ofType(SubQuantityTypeAction.loadSubQuantityTypeFailure),
-  //   takeUntil(this.destroy$)
-  // ).subscribe(() => {
-  //   this.popupenvironments.args$.next('Failed to load.');
-  // });
-
-  // this.subQuantityTypeData$.pipe(
-  //   filter(subQuantityTypeData => !!subQuantityTypeData),
-  //   takeUntil(this.destroy$)
-  // ).subscribe(subQuantityTypeData => {
-  //  // this.mergeAddOnProductAndProduct();
-  // });
-
-
-    // this.actions$.pipe(ofType(SubQuantityTypeAction.loadSubQuantityTypeSuccess)).subscribe(() => {
-    //   // Optionally handle success
-    // });
-    // this.actions$.pipe(ofType(SubQuantityTypeAction.loadSubQuantityTypeFailure)).subscribe(() => {
-    //  // this.sweetAlert2.showFancyAlertFail('Loading Failed.');
-    // });
   }
   loadProducts(): void {
     this.store.dispatch(loadProduct());
     this.Products$ = this.store.select(state => state.productLoad.Product_.data);
- 
- 
-   //   this.actions$.pipe(
-  //     ofType(productAction.loadProductFailure),
-  //     takeUntil(this.destroy$)
-  //   ).subscribe(() => {
-  //     this.popupenvironments.args$.next('Failed to load.');
-  //   });
-  
-  //   this.Products$.pipe(
-  //     filter(Products => !!Products),
-  //     takeUntil(this.destroy$)
-  //   ).subscribe(Products => {
-  //  //   this.mergeAddOnProductAndProduct();
-  //   });
-    
-
-    // this.Products$.subscribe(data => {
-    //   console.log(data);
-    //   // Optionally, merge again if products change
-    //   this.mergeAddOnProductAndProduct();
-    // });
-    // this.popupenvironments.args$.next('Product Loaded');
   }
+
   loadAddOnProduct(): void {
     this.store.dispatch(loadAddOnProducts());
     this.addOnProducts$ = this.store.select(state => state.addOnProductReducer_.addOnProducts.data);
-   // this.mergeAddOnProductAndProduct();
    
-   // this.actions$.pipe(
-    //   ofType(AddOnProductActions.loadAddOnProductsFailure)
-    //   // ,takeUntil(this.destroy$)
-    // ).subscribe(() => {
-    //   this.popupenvironments.args$.next('Failed to load.');
-    // });
-  
-    // this.addOnProducts$.pipe(
-    //   filter(addOnProducts => !!addOnProducts)
-    // ).subscribe(addOnProducts => {
-     
-    //   // this.mergeAddOnProductAndProduct();
-    // });
-  // this.mergeAddOnProductAndProduct();
   }
  
   loadSubQuantityTypeAdd(): void {
@@ -204,7 +138,7 @@ export class AddOnProductComponent implements OnInit {
         
       }
     });
-    // Products.unsubscribe();
+   
   }
 
 
@@ -215,19 +149,11 @@ export class AddOnProductComponent implements OnInit {
     // Use combineLatest to avoid multiple subscriptions and unnecessary reloads.
     this.mergedAddOnProductWithProduct=[];
     console.log(this.mergedAddOnProductWithProduct);
-    // if (!this._mergedDataLoaded) {
-    //   this._mergedDataLoaded = true; // flag to prevent multiple loads
-    //this.mergedAddOnProductWithProduct=[];
     this.addOnProducts$ = this.store.select(state => state.addOnProductReducer_.addOnProducts.data);
-   
-   // const addOnProductsUnsubscribe =  
-  //const addonuns =  
-  this.addOnProducts$.pipe(take(2)).subscribe(addOnData=>
+   this.addOnProducts$.pipe(take(2)).subscribe(addOnData=>
         {
           
-          console.log(addOnData);
-         // console.log(addOnData.length);
-        if(!addOnData)return;
+         if(!addOnData)return;
           if(addOnData.length>0)
           {
             if(addOnData.length===0)return;
@@ -250,40 +176,13 @@ export class AddOnProductComponent implements OnInit {
                 this.mergedAddOnProductWithProduct.push(addOnProduct_);
                 
               }
-              console.log(this.mergedAddOnProductWithProduct);
+        //      console.log(this.mergedAddOnProductWithProduct);
         this.addOnDataArray=this.mergedAddOnProductWithProduct;
           }
 
         }        
         );
-      //  addonuns.unsubscribe();
-     //   addOnProductsUnsubscribe.unsubscribe();
-        // Use combineLatest to get latest values from all observables
-        // combineLatest([
-        //   this.addOnProducts$,
-        //   this.Products$,
-        //   this.subQuantityTypeData$
-        // ])
-        // .pipe(take(1))
-        // .subscribe(([addOnProductsArr, productsArr, subQuantityTypesArr]) => {
-        //   // Clear the array before inserting new merged data
-         
-        //   this.mergedAddOnProductWithProduct = (addOnProductsArr || []).map(addOnProduct => {
-        //     const product = (productsArr || []).find((p: { _id: any; }) => p._id === addOnProduct.SelectProductId);
-        //     const subQuantityType = (subQuantityTypesArr || []).find((s: { _id: any; }) => s._id === addOnProduct.SubQuantityTypeID);
-
-        //     return {
-        //       ...addOnProduct,
-        //       productName: product ? product.name : null,
-        //       productId: product ? product._id : null,
-        //       subQuantityTypeId: subQuantityType ? subQuantityType._id : null,
-        //       subQuantityTypeName: subQuantityType ? subQuantityType.name : null
-        //     };
-        //   });
-        //   // Data is now stored in mergedAddOnProductWithProduct and won't reload unless explicitly reset
-        //   console.log(this.mergedAddOnProductWithProduct);
-        // });
-      
+    
     }
   
 
@@ -301,8 +200,7 @@ export class AddOnProductComponent implements OnInit {
         SubQuantityTypeName = subQuantityTypeData[indexP].name;
       }
     })
-  //  subQuantityTypeData.unsubscribe();
-
+  
     return SubQuantityTypeName;  
   }
   getProductName(_id:string)
@@ -360,35 +258,34 @@ export class AddOnProductComponent implements OnInit {
   
 
   
-
-  onCellClick(event: any): void {
-    if (event.colDef.field === 'Delete') {
+  onRowClick(r: any) { console.log('clicked row', r);
+    // console.log(this.colDefs);
+    if (r[0].field == 'Delete') {
+     // this.deleteDisplayBlock(r[0].row);
       this.popupenvironments.modal$.next('modal');
       this.popupenvironments.display$.next('display:block');
-      this.popupenvironments.valueid$.next(event.data._id);
+      this.popupenvironments.valueid$.next(r[0].row._id);
       this.popupenvironments.tablename$.next('cate');
     }
-
-    if (event.colDef.field === 'Edit') {
-     
-     // this.popupenvironments.popdata2$.next(event.data);
-      this.popupenvironments.showEdit$.next(true);
-      this.popupenvironments.show$.next(false);
-      this.popupenvironments.args$.next(null);
-      
-      this.myEditForm.patchValue({
-        _id: event.data._id,
-        name: event.data.name,
-        description: event.data.description,
-        Price: event.data.Price,
-        SelectProductId: event.data.SelectProductId,
-        SubQuantityTypeID: event.data.SubQuantityTypeID,
-        employee_id: this.employeeId
-      });
-      this.loadSubQuantityTypeAddEdit();
-    }
+    if (r[0].field == 'Edit') {
+    //  this.editDisplayBlock(r[0].row);
+    this.popupenvironments.showEdit$.next(true);
+    this.popupenvironments.show$.next(false);
+    this.popupenvironments.args$.next(null);
     
-  }
+    this.myEditForm.patchValue({
+      _id: r[0].row._id,
+      name: r[0].row.name,
+      description: r[0].row.description,
+      Price: r[0].row.Price,
+      SelectProductId: r[0].row.SelectProductId,
+      SubQuantityTypeID: r[0].row.SubQuantityTypeID,
+      employee_id: this.employeeId
+    });
+    this.loadSubQuantityTypeAddEdit();
+    }
+   }
+  
   loadSubQuantityTypeAddEdit(): void {
     this.Products$ = this.store.select(state => state.productLoad.Product_.data);
   // const Products =  
@@ -428,9 +325,7 @@ export class AddOnProductComponent implements OnInit {
         this.popupenvironments.args$.next(addOnProductEdit.name + ' updated.');
         this.mergeAddOnProductAndProduct();
       });
-      // AddOnProductActionsSuccess.unsubscribe();
-    // const updateAddOnProductFailure = 
-     this.actions$.pipe(ofType(AddOnProductActions.updateAddOnProductFailure)).subscribe((error) => {
+       this.actions$.pipe(ofType(AddOnProductActions.updateAddOnProductFailure)).subscribe((error) => {
         // Show a more descriptive error message for failed update
         this.popupenvironments.args$.next('Failed to update data. Please try again.');
       });

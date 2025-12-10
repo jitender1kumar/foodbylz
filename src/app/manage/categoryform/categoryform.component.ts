@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { CategoryService } from '../../core/Services/category.service';
 import { ProductCategory } from '../../core/Model/crud.model';
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
-import { ColDef } from 'ag-grid-community';
+// import { ColDef } from 'ag-grid-community';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
 import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
 import { ProductService } from '../../core/Services/product.service';
@@ -17,7 +17,7 @@ import {  ValidationService } from '../../core/commanFunction/Validation.service
 import { popupenvironment } from '../../environment/popupEnvironment';
 import { Validationenvironment } from '../../environment/validtionEnvironment';
 import { ManageDataEnvironment } from '../../environment/dataEnvironment';
-
+import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 @Component({
   selector: 'app-categoryform',
   templateUrl: './categoryform.component.html',
@@ -46,11 +46,11 @@ export class CategoryformComponent implements OnInit {
     name: '', categorydesc: '',
     createdAt: ''
   };
-  colDefs: ColDef[] = [
-    { field: "name" },
-    { field: "categorydesc", flex: 2 },
-    { field: "Delete", cellRenderer: BasetypDeleteButtun },
-    { field: "Edit", cellRenderer: BasetypEditButtun }
+  colDefs: ColumnDef[] = [
+    { field: "name", header: 'Name' , sortable: true},
+    { field: "categorydesc", header: 'Description' , sortable: true},//, flex: 2
+    { field: "Delete" , cellRenderer: BasetypDeleteButtun},//, cellRenderer: BasetypDeleteButtun
+    { field: "Edit" , cellRenderer: BasetypEditButtun } //, cellRenderer: BasetypEditButtun
 
   ];
 
@@ -58,9 +58,9 @@ export class CategoryformComponent implements OnInit {
   
   myAddForm: FormGroup;
 
-  pagination = true;
-  paginationPageSize = 20;
-  paginationPageSizeSelector = [20, 200, 500, 1000];
+  // pagination = true;
+  // paginationPageSize = 20;
+  // paginationPageSizeSelector = [20, 200, 500, 1000];
   constructor(private service: CategoryService,
      private router: Router, 
      private formedit: FormBuilder,
@@ -93,7 +93,8 @@ export class CategoryformComponent implements OnInit {
    
     this.loadcategory();
     }
-
+   
+    
   add(ProductCategory_: ProductCategory): void {
     this.ManageDataEnvironments.Category$.next(null);
     this.service.getCategoryByName(ProductCategory_.name).subscribe({
@@ -124,17 +125,17 @@ export class CategoryformComponent implements OnInit {
       }
     });
   }
-
-  onCellClick(event: any) {
-
-    if (event.colDef.field == 'Delete') {
-      this.deleteDisplayBlock(event.data);
+  onRowClick(r: any) { console.log('clicked row', r);
+    // console.log(this.colDefs);
+    if (r[0].field == 'Delete') {
+      this.deleteDisplayBlock(r[0].row);
     }
-    if (event.colDef.field == 'Edit') {
-      this.editDisplayBlock(event.data);
+    if (r[0].field == 'Edit') {
+      this.editDisplayBlock(r[0].row);
     }
-
-  }
+   }
+  // onCellClick(event: any) {
+  // }
   deleteDisplayBlock(id: any) {
  
     this.popupenvironments.modal$.next("modal");
@@ -172,6 +173,7 @@ export class CategoryformComponent implements OnInit {
         this.SweetAlert2_.showFancyAlertFail(`Error loading categories: ${categoryState.error}`);
       }
       else if (!categoryState.loading && categoryState.ProductCategory_?.data?.length) {
+        // this.tableData=categoryState.ProductCategory_?.data;
         // this.SweetAlert2_.showFancyAlertSuccess("Categories loaded successfully.");
       }
     });

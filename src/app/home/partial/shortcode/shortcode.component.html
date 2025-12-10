@@ -1,0 +1,8 @@
+<form [formGroup]="shortcodeForm">
+  <input
+    type="text"
+    formControlName="shortcode"
+    placeholder="Enter shortcode"
+    (keydown.enter)="onShortcodeEnter()"
+  />
+</form>

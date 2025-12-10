@@ -65,6 +65,87 @@
           <input class="lbl" type="number" min="0" max="100000" formControlName="ProductPrice" id="ProductPricetxt" />
         </div>
       </div>
+      <div class="form-group row">
+        <div class="col">
+          <label class="lbl" for="Shortcode">Shortcode (number) :</label>
+        </div>
+        <div class="col">
+          <input
+            type="number"
+            id="Shortcode"
+            class="lbl"
+            formControlName="ShortCodeNumber"
+            minlength="0"
+            maxlength="10"
+            pattern="^[0-9]{0,10}$"
+            placeholder="Enter shortcode (numbers only)"
+            required
+          />
+          <div
+            *ngIf="myAddForm.get('Shortcode')?.invalid && myAddForm.get('Shortcode')?.touched"
+            class="text-danger"
+          >
+            <div *ngIf="myAddForm.get('Shortcode')?.errors?.['required']">
+              Shortcode is required.
+            </div>
+            <div *ngIf="myAddForm.get('Shortcode')?.errors?.['pattern']">
+              Shortcode must be numeric.
+            </div>
+            <div *ngIf="myAddForm.get('Shortcode')?.errors?.['maxlength']">
+              Shortcode cannot be more than 10 digits.
+            </div>
+            <div *ngIf="shortcodeStringDuplicate" class="text-danger">
+              Shortcode already exists. Please enter a unique value.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col">
+          <label class="lbl" for="ShortcodeString">Shortcode (string):</label>
+        </div>
+        <div class="col">
+          <input
+            type="text"
+            id="ShortcodeString"
+            class="lbl"
+            formControlName="ShortCodeString"
+            minlength="0"
+            maxlength="10"
+            placeholder="Enter shortcode (max 10 chars)"
+            required
+            (blur)="checkDuplicateShortcode()"
+          />
+          <div
+            *ngIf="myAddForm.get('ShortcodeString')?.invalid && myAddForm.get('ShortcodeString')?.touched"
+            class="text-danger"
+          >
+            <div *ngIf="myAddForm.get('ShortcodeString')?.errors?.['required']">
+              Shortcode is required.
+            </div>
+            <div *ngIf="myAddForm.get('ShortcodeString')?.errors?.['maxlength']">
+              Shortcode cannot be more than 10 characters.
+            </div>
+          </div>
+          <div *ngIf="shortcodeStringDuplicate" class="text-danger">
+            Shortcode already exists. Please enter a unique value.
+          </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col">
+          <label class="lbl" for="mostSelling">Most Selling Item</label>
+        </div>
+        <div class="col" style="display: flex; align-items: center;">
+          <input
+            type="checkbox"
+            id="mostSelling"
+            formControlName="mostSelling"
+          />
+          <label for="mostSelling" style="margin-left: 8px;">Mark as Most Selling</label>
+        </div>
+      </div>
+
       <p>{{ args }}</p>
       <div class="row">
         <div class="col">
@@ -138,6 +219,86 @@
       </div>
       <div class="form-group row">
         <div class="col">
+          <label class="lbl" for="Shortcode">Shortcode (number) :</label>
+        </div>
+        <div class="col">
+          <input
+            type="number"
+            id="Shortcode"
+            class="lbl"
+            formControlName="ShortCodeNumber"
+            minlength="0"
+            maxlength="10"
+            pattern="^[0-9]{0,10}$"
+            placeholder="Enter shortcode (numbers only)"
+            required
+          />
+          <div
+            *ngIf="myAddForm.get('Shortcode')?.invalid && myAddForm.get('Shortcode')?.touched"
+            class="text-danger"
+          >
+            <div *ngIf="myAddForm.get('Shortcode')?.errors?.['required']">
+              Shortcode is required.
+            </div>
+            <div *ngIf="myAddForm.get('Shortcode')?.errors?.['pattern']">
+              Shortcode must be numeric.
+            </div>
+            <div *ngIf="myAddForm.get('Shortcode')?.errors?.['maxlength']">
+              Shortcode cannot be more than 10 digits.
+            </div>
+            <div *ngIf="shortcodeStringDuplicate" class="text-danger">
+              Shortcode already exists. Please enter a unique value.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col">
+          <label class="lbl" for="ShortcodeString">Shortcode (string):</label>
+        </div>
+        <div class="col">
+          <input
+            type="text"
+            id="ShortcodeString"
+            class="lbl"
+            formControlName="ShortCodeString"
+            minlength="0"
+            maxlength="10"
+            placeholder="Enter shortcode (max 10 chars)"
+            required
+            (blur)="checkDuplicateShortcode()"
+          />
+          <div
+            *ngIf="myAddForm.get('ShortcodeString')?.invalid && myAddForm.get('ShortcodeString')?.touched"
+            class="text-danger"
+          >
+            <div *ngIf="myAddForm.get('ShortcodeString')?.errors?.['required']">
+              Shortcode is required.
+            </div>
+            <div *ngIf="myAddForm.get('ShortcodeString')?.errors?.['maxlength']">
+              Shortcode cannot be more than 10 characters.
+            </div>
+          </div>
+          <div *ngIf="shortcodeStringDuplicate" class="text-danger">
+            Shortcode already exists. Please enter a unique value.
+          </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col">
+          <label class="lbl" for="mostSelling">Most Selling Item</label>
+        </div>
+        <div class="col" style="display: flex; align-items: center;">
+          <input
+            type="checkbox"
+            id="mostSelling"
+            formControlName="mostSelling"
+          />
+          <label for="mostSelling" style="margin-left: 8px;">Mark as Most Selling</label>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col">
           <button class="bt1n" style="margin: 3px;" [id]="'b' + popdata2?._id">Update</button>
         </div>
       </div>
@@ -146,7 +307,7 @@
 </div>
 
 <!-- Data Table -->
-<ag-grid-angular
+<!-- <ag-grid-angular
   class="box ag-theme-quartz"
   style="height:500px;"
   [rowData]="productPriceRecord"
@@ -155,8 +316,12 @@
   [paginationPageSize]="paginationPageSize"
   [paginationPageSizeSelector]="paginationPageSizeSelector"
   (cellClicked)="onCellClick($event)"
-></ag-grid-angular>
-
+></ag-grid-angular> -->
+<app-gird-table
+      [columns]="colDefs"
+      [data]="productPriceRecord"
+      (rowClicked)="onRowClick($event)"
+    ></app-gird-table>
 <!-- Popup Modal -->
 <app-popupmodel
   (deletedconfirmedclicked)="deletedConfirmed($event)"

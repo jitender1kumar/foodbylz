@@ -1,3 +1,5 @@
+import { RunningItems } from "../../model/category.model"
+
 export interface ProductCategory {
     _id:string,
     name: string,
@@ -20,7 +22,11 @@ export interface ProductCategory {
     selectcategoryID:string,
       selectQtypeID:string,
       selectSubQuantityTypeID:string,
+      ShortCodeNumber:number,
+      ShortCodeString: string,
+      mostSelling:boolean,
       employee_id:string
+
   }
 
     export interface  Products{
@@ -53,6 +59,9 @@ export interface ProductCategory {
         categoryName:any,
           selectQtypeID:string,
           QtypeName:any,
+          ShortCodeNumber: number,
+          ShortCodeString: string,
+          mostSelling: boolean,
           selectSubQuantityTypeID: string,
           SubQuantityTypeName:any,
           quntityvalue:number,
@@ -113,7 +122,16 @@ Status:boolean,
       }
       export interface GenratedItems
       {
-        Invoiceid:string,
+        RecieptNumber:string,
+       Items:IItems[]
+      }
+      export interface GenratedItemKOT
+      {
+        RecieptNumber:string,
+        KOTrunningorders:RunningItems[]
+      }
+      export interface IItems
+      {
         Productid:  string,
         Productname: string,
         SubQuantityTypeID:string,
@@ -288,8 +306,8 @@ Status:boolean,
     export interface ReserveDine {
 
       TableId:  string,
-        DateTimeStart:  string,
-        DateTimeEnd:  string,
+      ReservedDate:  string,
+      ReservedTimeSlot:  string,
         CustomerId: string,
         Name: string,
         TableName:string,
@@ -301,11 +319,23 @@ Status:boolean,
           RecieptNumber:string,
           employee_id:string
     }
+    export interface KOTrunning{
+      KOTsRunning:IKOTsRunning[]
+      RecieptNumber:string,
+      DateTime:string,
+    }
+    export interface IKOTsRunning
+    {
+itemsId:string,
+ifCancelledId:string,
+isKotPrinted:boolean,
+KOTPrintedAt:Date,
+    }
     export interface ReserveDineEdit {
          _id:string,
       TableId:  string,
-        DateTimeStart:  string,
-        DateTimeEnd:  string,
+      ReservedDate:  string,
+      ReservedTimeSlot:  string,
         CustomerId: string,
         Name: string,
         TableName:string,

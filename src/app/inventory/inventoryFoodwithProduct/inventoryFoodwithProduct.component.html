@@ -173,17 +173,14 @@
   </div>
 }
 
-<ag-grid-angular
-  class="box ag-theme-quartz"
-  style="height:500px;width:100%;"
-  [rowData]="fooddata$ | async"
-  [columnDefs]="colDefs"
-  [pagination]="pagination"
-  [paginationPageSize]="paginationPageSize"
-  [paginationPageSizeSelector]="paginationPageSizeSelector"
-  (cellClicked)="onCellClick($event)">
-</ag-grid-angular>
 
+<ng-container *ngIf="fooddata$ | async as fooddata">
+  <app-gird-table
+  [columns]="colDefs"
+  [data]="fooddata "
+  (rowClicked)="onRowClick($event)"
+  ></app-gird-table>
+  </ng-container>
 <div>
   <app-popupmodel
     (deletedconfirmedclicked)="deletedConfirmed($event)"

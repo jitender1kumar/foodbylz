@@ -2,9 +2,26 @@ import { createAction, props } from '@ngrx/store';
 import { ProductPrice } from '../../../core/Model/crud.model';
 
 // Load
+
+
 export const loadProductPrice = createAction('[ProductPrice] Load ProductPrice');
 export const loadProductPriceSuccess = createAction('[ProductPrice] Load ProductPrice Success', props<{ ProductPrice_: any[] }>());
 export const loadProductPriceFailure = createAction('[ProductPrice] Load ProductPrice Failure', props<{ error: string }>());
+
+export const loadProductPriceByShortcode = createAction(
+    '[ProductPrice] Load Product Price By shortcode',
+    props<{ shortcode: any }>()
+  );
+  
+  export const loadProductPriceByShortcodeSuccess = createAction(
+    '[ProductPrice] Load Product Price By shortcode Success',
+    props<{ ProductPrice_: any }>()
+  );
+  
+  export const loadProductPriceByShortcodeFailure = createAction(
+    '[ProductPrice] Load Product Price By shortcode Failure',
+    props<{ error: any }>()
+  );
 
 // Add
 export const addProductPrice = createAction('[ProductPrice] Add ProductPrice', props<{ ProductPrice_: ProductPrice }>());

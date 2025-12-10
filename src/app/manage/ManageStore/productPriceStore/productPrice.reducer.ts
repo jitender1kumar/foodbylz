@@ -31,9 +31,28 @@ export const productPriceLoadReducer = createReducer(
     ...state,
     loading: false,
     error
-  })),
-  
+  }))
+);
 
+export const productPriceReducerShortcode = createReducer(
+  initialState,
+  on(ProductPriceActions.loadProductPriceByShortcode, (state) => ({
+    ...state,
+    loading: true,
+    error: null
+  })),
+
+  on(ProductPriceActions.loadProductPriceByShortcodeSuccess, (state, { ProductPrice_ }) => ({
+    ...state,
+    ProductPrice_,
+    loading: false
+  })),
+
+  on(ProductPriceActions.loadProductPriceByShortcodeFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error
+  }))
 );
 export const productPriceAddReducer = createReducer(
   initialState,

@@ -1,13 +1,13 @@
 <h4 class="titleh4"> Payby Type Management</h4>
 <button class="bt1n btnbox" id="show" (click)="shows()">+Add Payby</button>
-
+<app-makeme-default [PayByData]="PayByData"></app-makeme-default>
 @if (popupenvironments.show$ | async) {
   <div class="comman" >
     <div class="row box">
       <!-- left col -->
       <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" #f="ngForm" class="col lbl2" >
         <button  class="close" (click)="close()">Close</button>
-        <div class="row lbl"><h4>Insert Product Category(like chinees, south indian )</h4></div>
+        <div class="row lbl"><h4>Insert Payby(like BHIMUPI, CARD, ONLINE )</h4></div>
         <div class="row form-group">
           <div class="col"> <label class="lbl" for="Paybyname" id="name" >Pay By Name :</label></div>
           <div class="col"><input class="lbl" type="text"  id="Paybynametxt" formControlName="name"/></div>
@@ -54,7 +54,7 @@
 
 
 
-<ag-grid-angular class="box ag-theme-quartz"
+<!-- <ag-grid-angular class="box ag-theme-quartz"
   style="height:500px;"
   [rowData]="ManageDataEnvironments.Payby$ | async"
   [columnDefs]="colDefs"
@@ -62,7 +62,14 @@
   [paginationPageSize]="paginationPageSize"
   [paginationPageSizeSelector]="paginationPageSizeSelector"
   (cellClicked)="onCellClick($event)"
-  />
-  <div >
+  /> -->
+  <app-gird-table
+      [columns]="colDefs"
+      [data]="PayByData"
+      
+      (rowClicked)="onRowClick($event)"
+     
+    ></app-gird-table>
+  <!-- <div >
     <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()" [style]="popupenvironments.display$ | async" [tabname]="popupenvironments.tablename$ | async" [data]="popupenvironments.valueid$ | async" [modal]="popupenvironments.modal$ | async"></app-popupmodel>
-  </div>
+  </div> -->

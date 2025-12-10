@@ -12,6 +12,9 @@ import { DineComponent } from './dine/dine/dine.component';
 import { TablesComponent } from './dine/tables/tables.component';
 import { HomeComponent } from './home/home.component';
 import { AddOnProductComponent } from './manage/add-on-product/add-on-product.component';
+import { CompanyloginComponent } from './company/companyAuth/companylogin/companylogin.component';
+import { AdminComponent } from './company/companyAuth/admin/admin.component';
+import { EmployeeComponent } from './company/employee/employee.component';
 const routes: Routes = [
   {path:'category',component:CategoryformComponent},
   {path:'Quantitytype',component:CategorytypeformComponent},
@@ -26,6 +29,9 @@ const routes: Routes = [
   {path:'chair',component:ChairComponent},
   {path:'tables',component:TablesComponent},
   {path:'AddOn',component:AddOnProductComponent},
+  { path: 'companylogin', component: CompanyloginComponent },
+  { path: 'admin', component: AdminComponent },
+  { path: 'employeelogin', component: EmployeeComponent },
 ];
 
 @NgModule({

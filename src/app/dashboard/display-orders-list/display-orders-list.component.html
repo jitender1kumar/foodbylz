@@ -19,7 +19,7 @@
     <div>
 <app-order-diplay-in-pop-up [customers]="customersRecord" [EditOrderInvoice]="EditOrder" [EditOrderItems]="EditOrderItems" [showPopUp]="showPopUp" [closePopUp]="closePopUp" (closePopUpByChild)="closePopUpByChild($event)" (ReInitializeEditOrderInvoice)="reInitializeEditOrderInvoice($event)"></app-order-diplay-in-pop-up>
     </div>
-<ag-grid-angular class=" ag-theme-quartz agtable"
+<!-- <ag-grid-angular class=" ag-theme-quartz agtable"
 style="height:500px;width: 95%;margin: auto;" 
 [rowData]="ordersdata"
     [columnDefs]="colDefs" 
@@ -27,5 +27,10 @@ style="height:500px;width: 95%;margin: auto;"
 [paginationPageSize]="paginationPageSize"
 [paginationPageSizeSelector]="paginationPageSizeSelector"
 (cellClicked)="onCellClick($event)"
-    />                
+    />                 -->
+    <app-gird-table
+      [columns]="colDefs"
+      [data]="ordersdata"
+      (rowClicked)="onRowClick($event)"
+    ></app-gird-table>
 </div>

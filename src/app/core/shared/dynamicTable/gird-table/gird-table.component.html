@@ -1,0 +1,157 @@
+<div class="dt-wrapper">
+  <!-- Toolbar: Global Search & Column Visibility -->
+  <div class="dt-toolbar">
+    <div class="toolbar-section" style="display: flex; align-items: center; gap: 10px;">
+      <span style="font-size: 1.2em; margin-right: 7px; color: #000000;">Search</span>
+      <input
+        type="text"
+        [(ngModel)]="globalFilter"
+        (input)="onGlobalFilterChange()"
+        placeholder="Find Here..."
+        style="border-radius: 8px; padding: 8px 14px; font-size: 1.08em; background: #fff9f2; border: 1.5px solid #ffc46d; box-shadow: 0 2px 6px #fff3e1;" />
+    </div>
+    <div class="col-visibility toolbar-section" style="padding: 2px 6px; border-radius: 6px; background:#e3f1fa; font-size: 12.5px; min-width: unset;">
+      <span style="font-weight:600; color:#2493e2; margin-right:5px; font-size:1.1em;">🗂️</span>
+      <ng-container *ngFor="let col of visibleColumns">
+        <label class="col-toggle" style="margin-right: 4px; font-weight:500; display:inline-flex; align-items:center; padding:1.5px 5px; border-radius:5px; background:#fff; transition:background 0.2s, box-shadow 0.2s; box-shadow:0 1px 3px rgba(38,142,190,0.07); cursor:pointer;">
+          <input
+            type="checkbox"
+            [(ngModel)]="col.visible"
+            (change)="toggleColumnVisibility(col)"
+            style="width:15px; height:15px; accent-color:#2acbe7; margin-right:3px; cursor:pointer;" />
+          <span style="font-size:12px; white-space:nowrap;">{{ col.header || col.field }}</span>
+        </label>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <table class="dt-table">
+    <thead>
+      <tr>
+        <ng-container *ngFor="let col of visibleColumns">
+          <th [hidden]="!col.visible" [style.width]="col.width">
+            <span (click)="toggleSort(col)" style="cursor:pointer;">
+              {{ col.header || col.field }}
+              <span *ngIf="col.sortable">
+                <ng-container [ngSwitch]="true">
+                  <span *ngSwitchCase="sort.field === col.field && sort.dir === 'asc'">▲</span>
+                  <span *ngSwitchCase="sort.field === col.field && sort.dir === 'desc'">▼</span>
+                </ng-container>
+              </span>
+            </span>
+            <div *ngIf="col.filterable">
+              <input
+                type="text"
+                [(ngModel)]="columnFilters[col.field]"
+                (input)="onColumnFilterChange()"
+                placeholder="Filter"
+                style="width:100%; font-size:0.98em; margin-top:5px;"/>
+            </div>
+          </th>
+        </ng-container>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let row of pageData(); let rowIndex = index"
+       
+        class="data-row"
+      >
+       
+          <!-- <td
+            [hidden]="!col.visible"
+            [style.width]="col.width"
+          >
+            <ng-container [ngSwitch]="col.editable && isEditing(rowIndex, col.field)">
+              <ng-container *ngSwitchCase="true">
+                <input
+                  [value]="getCellText(row, col.field)"
+                  #inputEl
+                  (blur)="finishEdit(+rowIndex, col.field, inputEl.value)"
+                  (keydown.enter)="finishEdit(+rowIndex, col.field, inputEl.value)"
+                  autofocus
+                />
+              </ng-container>
+              <ng-container *ngSwitchDefault>
+                <span
+                  (dblclick)="col.editable && startEdit(rowIndex, col.field)"
+                >{{ getCellText(row, col.field) }}</span>
+              </ng-container>
+            </ng-container>
+          </td> -->
+          <ng-container *ngFor="let col of visibleColumns; let colIndex = index"  >
+            <td [hidden]="!col.visible" [style.width]="col.width" (click)="onRowClick(row,col)">
+                
+              <ng-container *ngIf="col.cellRenderer; else defaultCell" >
+                <ng-container *ngComponentOutlet="col.cellRenderer;
+                  injector: createRendererInjector(row, col, rowIndex)">
+                </ng-container>
+              </ng-container>
+              <!-- 2️⃣ Default text or editable cell -->
+              <ng-template #defaultCell>
+                <ng-container *ngIf="!col.editable || !isEditing(rowIndex, col.field)">
+                  <span (dblclick)="col.editable ? startEdit(rowIndex, col.field) : null">{{ getCellText(row, col.field) }}</span>
+                </ng-container>
+
+                <ng-container *ngIf="col.editable && isEditing(rowIndex, col.field)">
+                  <input    
+                    [value]="getCellText(row, col.field)"
+                    #inputEl
+                    (blur)="finishEdit(rowIndex, col.field, inputEl.value)"
+                    (keydown.enter)="finishEdit(rowIndex, col.field, inputEl.value)"
+                    autofocus
+                  />
+                </ng-container>
+              </ng-template>
+            </td>
+          </ng-container>
+          
+        
+      </tr>
+      <tr *ngIf="filteredData.length === 0">
+        <td [attr.colspan]="visibleColumns.length">No data found.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Footer: Pagination & Info -->
+  <div class="dt-footer">
+    <div class="pagination">
+      <button (click)="prev()" [disabled]="page <= 1">Prev</button>
+      <span>
+        Page <strong>{{ page }}</strong> / {{ totalPages }}
+      </span>
+      <button (click)="next()" [disabled]="page >= totalPages">Next</button>
+      <label class="goto-label">
+        Go to:
+        <input
+          type="number"
+          [value]="page"
+          (ngModelChange)="goToPage(+($event))"
+          min="1"
+          [max]="totalPages"
+        />
+        <!-- (change)="goToPage($event.target.valueAsNumber)" -->
+      </label>
+    </div>
+    <div class="info">
+      <span>
+        Showing
+        {{ filteredData.length === 0 ? 0 : (page - 1) * pageSize + 1 }}
+        -
+        {{ page * pageSize < filteredData.length ? page * pageSize : filteredData.length }}
+        of {{ filteredData.length }}
+      </span>
+      <label>
+        Page size:
+        <select [(ngModel)]="pageSize" (ngModelChange)="applyAll()" (change)="applyAll()">
+          <option [ngValue]="5">5</option>
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="25">25</option>
+          <option [ngValue]="50">50</option>
+        </select>
+      </label>
+    </div>
+  </div>
+</div>

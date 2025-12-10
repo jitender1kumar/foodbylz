@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CategoryService } from '../core/Services/category.service';
 import { ProductService } from '../core/Services/product.service';
 import { ProductPriceService } from '../core/Services/productprice.service';
@@ -6,11 +6,12 @@ import { QuantitytypeService } from '../core/Services/quantitytype.service';
 import { subQuantityTypeService } from '../core/Services/subQuantityType.service';
 @Component({
   selector: 'app-popupmodel',
-  standalone:true,
+  
   //template:,
   templateUrl: './popupmodel.component.html',
   styleUrl: './popupmodel.component.css',
-  imports: [],
+  standalone:true,
+ // imports: [],
  // imports: []
   
 })

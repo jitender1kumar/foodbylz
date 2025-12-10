@@ -1,68 +1,164 @@
-<table><tr>
-  <td style="width: 80px;border-right: solid rgb(229, 229, 236) 0.03rem;" class="text-center">
-      <div class="" id="">
-          <div class="col" style="background-color: white; padding-top: 10px;color: currentColor;text-align: center;padding-bottom: 10px;">
-            <ul >
-              <li><a routerLink="category" class="col1">
-                <p ><b class="text-sm text-green-300">Step: (1)</b>Category</p></a></li>
-                <ul>
-               
-                  <li>
-                    <a  routerLink="Quantitytype" class="col1">
-                      <p><b class="text-sm text-green-300"> (2)</b>QuantityType</p></a>
-                  </li>
-                  <li>
-                    <a routerLink="basetype" class="col1">
-                      <p><b class="text-sm text-green-300"> (3)</b>Sub Quntity type</p></a>
-                  </li>
-                 
-                </ul>
-            </ul>
-            
-           
-           
-            <a routerLink="product" class="col1">
-              <p><b class="text-sm text-green-400">Step: (1)</b>Foods</p></a>
-            <a routerLink="productprice" class="col1">
-              <p><b class="text-sm text-green-400"> (2)</b>Food Price</p></a>
-              <a routerLink="AddOn" class="col1">
-                <p>AddOn</p></a>
-            <a routerLink="tax" class="col1">
-              <p>Tax</p></a>
-              <a routerLink="floor"  class="col1">
-                <p><b class="text-sm text-green-300">Step: (1)</b>Floor</p></a>
-            <a routerLink="dine" class="col1" >
-              <p><b class="text-sm text-green-300">(2)</b>Dine In</p></a>
-            <a routerLink="chair"  class="col1">
-              <p><b class="text-sm text-green-300"> (3)</b>Dine In Chair</p></a>
-              
-              <a routerLink="ifqt"  class="col1">
-                <p><b class="text-sm text-green-400">Step: (1)</b>Inventory Food Quantity Type</p></a>
-                <a routerLink="imf"  class="col1">
-                  <p><b class="text-sm text-green-400"> (2)</b>Inventory Main Food</p></a>
-                 
-                    <a routerLink="imfwp"  class="col1">
-                      <p><b class="text-sm text-green-400"> (3)</b>Assocciate Inventory Food With Product</p></a>
-                      <a routerLink="Payby"  class="col1">
-                        <p>PayBy Manage</p></a>
-                        <a routerLink="employee"  class="col1">
-                          <p>Employee Manage</p></a>
-                          <a routerLink="companyprofile"  class="col1">
-                            <p> Company Profile</p></a>
-            </div>
-           
-            
-          </div>
-          
-        
-          
-        
-  </td>
-<td style="width: 100%" class="tdcontainerformanage">
-  
-  <router-outlet></router-outlet>     
-  </td>
-</tr>
-</table>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
-                                                                               
+<style>
+  /* Simple and attractive dropdownable sidebar for restaurant navbar */
+  .manage-navbar {
+    width: 210px;
+    background: #fff;
+    border-right: 1.5px solid #eee;
+    min-height: 100vh;
+    padding: 18px 0 18px 0;
+    box-shadow: 1px 0 6px 0 rgba(232,186,115,0.06);
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .manage-navbar ul, .manage-navbar li { margin: 0; padding: 0; list-style: none; }
+  .manage-navbar .nav-section {
+    margin-bottom: 12px;
+    border-bottom: 1px dashed #eef1ea;
+    padding-bottom: 8px;
+  }
+  .manage-navbar .nav-title {
+    font-size: 1em;
+    color: #a08c51;
+    font-weight: 600;
+    display: flex; align-items: center; cursor:pointer;
+    user-select: none;
+    transition: color 0.18s;
+    padding: 6px 18px 6px 12px;
+  }
+  .manage-navbar .nav-title:hover { color: #5c530a;}
+  .manage-navbar .nav-dropdown-links {
+    padding-left: 18px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    transition: max-height 0.2s;
+    overflow:hidden;
+  }
+  .manage-navbar .nav-link {
+    display: flex;
+    align-items: center;
+    color: #28726c;
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 6px 12px;
+    border-radius: 7px;
+    font-size: 0.95em;
+    margin-bottom:2px;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .manage-navbar .nav-link:hover, .manage-navbar .nav-link.active {
+    background: #f0f7ff;
+    color: #13806e;
+    font-weight: 600;
+  }
+  .nav-chevron {
+    margin-left: auto;
+    font-size: 1.05em;
+    transition: transform 0.21s;
+  }
+  .nav-chevron.open { transform: rotate(90deg);}
+</style>
+
+<div style="display: flex; width: 100%;">
+  <aside class="manage-navbar">
+
+    <!-- Categories Section -->
+    <div class="nav-section">
+      <div class="nav-title" (click)="sectionOpenCat = !sectionOpenCat">
+        <span>Categories</span>
+        <span class="nav-chevron" [ngClass]="{'open': sectionOpenCat}">&#9654;</span>
+      </div>
+      <div class="nav-dropdown-links" [style.maxHeight]="sectionOpenCat ? '400px':'0'">
+        <a routerLink="category" class="nav-link">
+          <b class="text-sm text-green-400">Step: (1)</b>&nbsp;Category
+        </a>
+        <a routerLink="Quantitytype" class="nav-link">
+          <b class="text-sm text-green-400">(2)</b>&nbsp;Quantity Type
+        </a>
+        <a routerLink="basetype" class="nav-link">
+          <b class="text-sm text-green-400">(3)</b>&nbsp;Sub Quantity Type
+        </a>
+      </div>
+    </div>
+    <!-- Foods Section -->
+    <div class="nav-section">
+      <div class="nav-title" (click)="sectionOpenFood = !sectionOpenFood">
+        <span>Foods</span>
+        <span class="nav-chevron" [ngClass]="{'open': sectionOpenFood}">&#9654;</span>
+      </div>
+      <div class="nav-dropdown-links" [style.maxHeight]="sectionOpenFood ? '400px':'0'">
+        <a routerLink="product" class="nav-link">
+          <b class="text-sm text-green-500">Step: (1)</b>&nbsp;Foods
+        </a>
+        <a routerLink="productprice" class="nav-link">
+          <b class="text-sm text-green-500">(2)</b>&nbsp;Food Price
+        </a>
+        <a routerLink="AddOn" class="nav-link">AddOn</a>
+        <a routerLink="tax" class="nav-link">Tax</a>
+      </div>
+    </div>
+    <!-- Floor & Dine Section -->
+    <div class="nav-section">
+      <div class="nav-title" (click)="sectionOpenDine = !sectionOpenDine">
+        <span>Floor &#38; Dine In</span>
+        <span class="nav-chevron" [ngClass]="{'open': sectionOpenDine}">&#9654;</span>
+      </div>
+      <div class="nav-dropdown-links" [style.maxHeight]="sectionOpenDine ? '400px':'0'">
+        <a routerLink="floor" class="nav-link">
+          <b class="text-sm text-green-400">Step: (1)</b>&nbsp;Floor
+        </a>
+        <a routerLink="dine" class="nav-link">
+          <b class="text-sm text-green-400">(2)</b>&nbsp;Dine In
+        </a>
+        <a routerLink="chair" class="nav-link">
+          <b class="text-sm text-green-400">(3)</b>&nbsp;Dine In Chair
+        </a>
+      </div>
+    </div>
+    <!-- Inventory Section -->
+    <div class="nav-section">
+      <div class="nav-title" (click)="sectionOpenInventory = !sectionOpenInventory">
+        <span>Inventory</span>
+        <span class="nav-chevron" [ngClass]="{'open': sectionOpenInventory}">&#9654;</span>
+      </div>
+      <div class="nav-dropdown-links" [style.maxHeight]="sectionOpenInventory ? '400px':'0'">
+        <a routerLink="ifqt" class="nav-link">
+          <b class="text-sm text-green-500">Step: (1)</b>&nbsp;Inventory Food Qty Type
+        </a>
+        <a routerLink="imf" class="nav-link">
+          <b class="text-sm text-green-500">(2)</b>&nbsp;Inventory Main Food
+        </a>
+        <a routerLink="imfwp" class="nav-link">
+          <b class="text-sm text-green-500">(3)</b>&nbsp;Associate Inventory Food With Product
+        </a>
+      </div>
+    </div>
+    <!-- General Management Section -->
+    <div class="nav-section" style="border-bottom: none;">
+      <div class="nav-title" (click)="sectionOpenGeneral = !sectionOpenGeneral">
+        <span>General</span>
+        <span class="nav-chevron" [ngClass]="{'open': sectionOpenGeneral}">&#9654;</span>
+      </div>
+      <div class="nav-dropdown-links" [style.maxHeight]="sectionOpenGeneral ? '400px':'0'">
+        <a routerLink="Payby" class="nav-link">PayBy Manage</a>
+        <a routerLink="employee" class="nav-link">Employee Manage</a>
+        <a routerLink="companyprofile" class="nav-link">Company Profile</a>
+      </div>
+    </div>
+  </aside>
+  <main style="width: 100%; padding-left:8px; padding-top:0;">
+    <router-outlet></router-outlet>
+  </main>
+</div>
+
+<!-- Simple toggle variables (for Angular template) -->
+<script type="text/ng-template">
+// In your component.ts
+// export class ManageFoodNavbarComponent {
+//   sectionOpenCat = true;
+//   sectionOpenFood = false;
+//   sectionOpenDine = false;
+//   sectionOpenInventory = false;
+//   sectionOpenGeneral = false;
+// }
+</script>

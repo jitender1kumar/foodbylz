@@ -41,9 +41,10 @@
     <div><strong>Total Items Amount:</strong> ₹{{ EditOrderInvoice.TotalItemsAmount }}</div>
     <div><strong>Tax:</strong> ₹{{ EditOrderInvoice.TotalTaxAmount }}</div>
     <div><strong>Total Amount:</strong> ₹{{ EditOrderInvoice.Totalvaue }}</div>
-    <div><strong>Discount:</strong> {{ EditOrderInvoice.Discountperstage }}% (₹{{ EditOrderInvoice.Discountvalue }})</div>
+    <div *ngIf="EditOrderInvoice.Discountperstage!=0"><strong>Discount:</strong> {{ EditOrderInvoice.Discountperstage }}% (₹{{ EditOrderInvoice.Discountvalue }})</div>
     <div><strong>Grand Total:</strong> ₹{{ EditOrderInvoice.grandtotal }}</div>
     <div><strong>Paid:</strong> ₹{{ EditOrderInvoice.PaidAmount }}</div>
+    <div><strong>Return Amount:</strong> ₹{{ EditOrderInvoice.returnAmount }}</div>
     <div><strong>Pending:</strong> ₹{{ EditOrderInvoice.PendingAmount }}</div>
     <div><strong>Created At:</strong> {{ EditOrderInvoice.createdAt }}</div>
   </div>

@@ -63,7 +63,7 @@
 
 
 
-<ag-grid-angular class="box ag-theme-quartz"
+<!-- <ag-grid-angular class="box ag-theme-quartz"
   style="height:500px;"
   [rowData]="categories$|async "
   [columnDefs]="colDefs"
@@ -71,7 +71,24 @@
   [paginationPageSize]="paginationPageSize"
   [paginationPageSizeSelector]="paginationPageSizeSelector"
   (cellClicked)="onCellClick($event)"
-  />
+  /> -->
+  <ng-container *ngIf="categories$ | async as categories">
+    <app-gird-table
+    [columns]="colDefs"
+    [data]="categories "
+    (rowClicked)="onRowClick($event)"
+    ></app-gird-table>
+    </ng-container>
+  
+     <!-- (rowEdited)=" onRowEdit($event)"
+      (cellClicked)="onCellClick($event)" -->
   <div >
-    <app-popupmodel [data]="popupenvironments.valueid$ | async" [modal]="popupenvironments.modal$ | async" (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()" [style]="popupenvironments.display$ | async" [tabname]="popupenvironments.tablename$ | async"  ></app-popupmodel>
+    <app-popupmodel
+      [data]="popupenvironments.valueid$ | async"
+      [modal]="popupenvironments.modal$ | async"
+      [style]="popupenvironments.display$ | async"
+      [tabname]="popupenvironments.tablename$ | async"
+      (deletedconfirmedclicked)="deletedConfirmed($event)"
+      (clicked)="handleChildClick()"
+    ></app-popupmodel>
   </div>

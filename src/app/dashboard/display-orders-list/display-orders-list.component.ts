@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ColDef } from 'ag-grid-community';
 import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
 import { FormBuilder, Validators } from '@angular/forms';
@@ -11,6 +10,7 @@ import { Observable } from 'rxjs';
 import { ItemsService } from '../../core/Services/items.service';
 import { CustomresService } from '../../core/Services/customers.service';
 import { Customers } from '../../core/Model/crud.model';
+import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 @Component({
   selector: 'app-display-orders-list',
   templateUrl: './display-orders-list.component.html',
@@ -50,22 +50,22 @@ export class DisplayOrdersListComponent implements OnInit {
   pagination = true;
   paginationPageSize = 10;
   paginationPageSizeSelector = [10,200, 500, 1000];
-  colDefs: ColDef[] = [
-    { field: "RecieptNumber", maxWidth: 170 },
+  colDefs: ColumnDef[] = [
+    { field: "RecieptNumber",sortable:true },
     ///  { field: "OrderTypeName" ,maxWidth:100},
-    { field: "Orderstatus", maxWidth: 100 },
-    { field: "createdAt", headerName: "Date", maxWidth: 220 },
-    { field: "tablename", headerName: "Table", maxWidth: 100 },
+    { field: "Orderstatus",sortable:true },
+    { field: "createdAt", header: "Date",sortable:true },
+    { field: "tablename", header: "Table",sortable:true },
     /// { field: "TotalItemsAmount",maxWidth:140},
-    { field: "AmountPaidstatus", headerName: "Paid Status", maxWidth: 120 },
-    { field: "Discountperstage", headerName: "Discount(%)", maxWidth: 120 },
-    { field: "Totalvaue", headerName: "Tot. Amount", maxWidth: 120 },
-    { field: "PaidAmount", headerName: "Paid Amount", maxWidth: 120 },
-    { field: "returnAmount", headerName: "Return Amount", maxWidth: 120 },
-    { field: "PendingAmount", headerName: "Pending", maxWidth: 100 },
-    { field: "grandtotal", headerName: "Grand Total", maxWidth: 120 },
+    { field: "AmountPaidstatus", header: "Paid Status",sortable:true },
+    { field: "Discountperstage", header: "Discount(%)",sortable:true },
+    { field: "Totalvaue", header: "Tot. Amount",sortable:true  },
+    { field: "PaidAmount", header: "Paid Amount",sortable:true  },
+    { field: "returnAmount", header: "Return Amount",sortable:true  },
+    { field: "PendingAmount", header: "Pending",sortable:true },
+    { field: "grandtotal", header: "Grand Total",sortable:true  },
     //  { field: "Delete",cellRenderer:BasetypDeleteButtun},
-    { field: "Edit", cellRenderer: BasetypEditButtun, maxWidth: 100 },
+    { field: "Edit", cellRenderer: BasetypEditButtun,sortable:true },
 
   ];
   myEditForm: any;
@@ -235,39 +235,38 @@ export class DisplayOrdersListComponent implements OnInit {
       console.log(this.ordersdata);
     });
   }
-
-  onCellClick(event: any) {
-    //alert(event.colDef.field);
-    if (event.colDef.field == 'Delete') {
+  onRowClick(r: any) { console.log('clicked row', r);
+    // console.log(this.colDefs);
+    if (r[0].field == 'Delete') {
+     
+    }
+    if (r[0].field == 'Items') {
 
     }
-    if (event.colDef.field == 'Items') {
-
-    }
-    if (event.colDef.field == 'Edit') {
+    if (r[0].field == 'Edit') {
       this.showPopUp = true;
 
       //alert("Items");
-      this.EditOrder = event.data;//Invoice data
+      this.EditOrder = r[0].row;//Invoice data
       console.log(this.EditOrder);
-      this.getItems(event.data.RecieptNumber);
-      this.getCustomersData(event.data);
+      this.getItems(r[0].row.RecieptNumber);
+      this.getCustomersData(r[0].row);
       // this.myEditForm = this.formedit.group({
-      //   RecieptNumber: [event.data.RecieptNumber],
-      //   Orderstatus : [event.data.Orderstatus],
-      //   AmountPaidstatus: [event.data.AmountPaidstatus],
-      //   PendingAmount: [event.data.PendingAmount],
-      //   TotalItemsAmount: [event.data.TotalItemsAmount],
-      //   Totalvaue: [event.data.Totalvaue],
-      //   Discountvalue: [event.data.Discountvalue],
-      //   Discountperstage: [event.data.Discountperstage],
-      //   grandtotal: [event.data.grandtotal]
+      //   RecieptNumber: [r[0].row.RecieptNumber],
+      //   Orderstatus : [r[0].row.Orderstatus],
+      //   AmountPaidstatus: [r[0].row.AmountPaidstatus],
+      //   PendingAmount: [r[0].row.PendingAmount],
+      //   TotalItemsAmount: [r[0].row.TotalItemsAmount],
+      //   Totalvaue: [r[0].row.Totalvaue],
+      //   Discountvalue: [r[0].row.Discountvalue],
+      //   Discountperstage: [r[0].row.Discountperstage],
+      //   grandtotal: [r[0].row.grandtotal]
 
 
       // });
     }
-
-  }
+   }
+ 
   getCustomersData(data: any) {
     this.customerdata = "";
     this.customers = "";

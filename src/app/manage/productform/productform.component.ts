@@ -6,7 +6,6 @@ import { QuantitytypeService } from '../../core/Services/quantitytype.service';
 import { Router } from '@angular/router';
 import { Products } from '../../core/Model/crud.model';
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
-import { ColDef } from 'ag-grid-community';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
 import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
 import { Observable } from 'rxjs';
@@ -23,6 +22,7 @@ import { Actions, ofType } from '@ngrx/effects';
 import { ValidationService } from '../../core/commanFunction/Validation.service';
 import { ManageDataEnvironment } from '../../environment/dataEnvironment';
 import { popupenvironment } from '../../environment/popupEnvironment';
+import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 @Component({
   selector: 'app-productform',
   templateUrl: './productform.component.html',
@@ -70,17 +70,14 @@ export class ProductformComponent implements OnInit {
   isCheckedavailablity: any = true;
   isCheckedStatus: any = true;
   
-  colDefs: ColDef[] = [
-    { field: "name" },
-    { field: "Productdesc", flex: 2 },
+  colDefs: ColumnDef[] = [
+    { field: "name", sortable:true },
+    { field: "Productdesc", sortable:true},
     { field: "Delete", cellRenderer: BasetypDeleteButtun },
     { field: "Edit", cellRenderer: BasetypEditButtun }
 
   ];
-  pagination = true;
-  paginationPageSize = 10;
-  paginationPageSizeSelector = [10,200, 500, 1000];
-
+ 
 
   constructor(private service: ProductService, public actions$: Actions,
     private ValidationService_:ValidationService,
@@ -137,9 +134,9 @@ export class ProductformComponent implements OnInit {
     });
   }
   ngOnInit(): void {
-    this.loadcategory()
-    this.loadQtype()
-    this.loadProducts();
+    // this.loadcategory()
+    // this.loadQtype()
+     this.loadProducts();
   }
   loadcategory() {
     this.categorynamedata$ = this.store.select(state => state.categoryLoad.ProductCategory_.data);
@@ -164,9 +161,11 @@ this.loadSubQuantityTypeByQuantityTypeId(this.myAddForm.value.selectQtypeID);
     this.Qtypenamedata$ = this.store.select(state => state.quantityTypeLoad.QuantityType_.data);
 
   }
+  
   loadProducts() {
     this.store.dispatch(loadProduct());
     this.Products$ = this.store.select(state => state.productLoad.Product_.data);
+    
   }
   onFormSubmit() {
     if (this.myAddForm.valid) {
@@ -244,37 +243,46 @@ this.loadSubQuantityTypeByQuantityTypeId(this.myAddForm.value.selectQtypeID);
   cDelete(_id: any) {
 
   }
-
+  onRowClick(r: any) { console.log('clicked row', r);
+    // console.log(this.colDefs);
+    if (r[0].field == 'Delete') {
+      this.popupenvironments.modal$.next("modal");
+      this.popupenvironments.display$.next("display:block;");
+      this.popupenvironments.valueid$.next(r[0].row._id);
+      this.popupenvironments.tablename$.next("prod");
+    }
+    if (r[0].field == 'Edit') {
+      // this.editDisplayBlock(r[0].row);
+      this.popupenvironments.popdata2$.next(r[0].row);
+      this.popdata2=r[0].row;
+      this.popupenvironments.args$.next(null);
+      
+      this.myEditForm = this.formedit.group({
+        _id: [r[0].row._id],
+        name: [r[0].row.name, Validators.required],
+        Productdesc: [r[0].row.Productdesc],
+        selectcategoryID: [r[0].row.selectcategoryID, [Validators.required]],
+        selectQtypeID: [r[0].row.selectQtypeID, [Validators.required]],
+        selectSubQuantityTypeID: [r[0].row.selectSubQuantityTypeID, [Validators.required]],
+        availablity: [r[0].row.availablity],
+        veg_nonveg: [r[0].row.veg_nonveg],
+        Status: [r[0].row.Status]
+      });
+      this.loadSubQuantityTypeByQuantityTypeId(r[0].row.selectQtypeID);
+      this.popupenvironments.showEdit$.next(true);
+      this.popupenvironments.show$.next(false);
+    }
+   }
   onCellClick(event: any) {
 
     if (event.colDef.field == 'Delete') {
-      alert("working body");
-      this.popupenvironments.modal$.next("modal");
-      this.popupenvironments.display$.next("display:block;");
-      this.popupenvironments.valueid$.next(event.data._id);
-      this.popupenvironments.tablename$.next("prod");
+      //alert("working body");
+     
       
     }
     if (event.colDef.field == 'Edit') {
       
-      this.popupenvironments.popdata2$.next(event.data);
-      this.popdata2=event.data;
-      this.popupenvironments.args$.next(null);
-      
-      this.myEditForm = this.formedit.group({
-        _id: [event.data._id],
-        name: [event.data.name, Validators.required],
-        Productdesc: [event.data.Productdesc],
-        selectcategoryID: [event.data.selectcategoryID, [Validators.required]],
-        selectQtypeID: [event.data.selectQtypeID, [Validators.required]],
-        selectSubQuantityTypeID: [event.data.selectSubQuantityTypeID, [Validators.required]],
-        availablity: [event.data.availablity],
-        veg_nonveg: [event.data.veg_nonveg],
-        Status: [event.data.Status]
-      });
-      this.loadSubQuantityTypeByQuantityTypeId(event.data.selectQtypeID);
-      this.popupenvironments.showEdit$.next(true);
-      this.popupenvironments.show$.next(false);
+    
      
     }
 

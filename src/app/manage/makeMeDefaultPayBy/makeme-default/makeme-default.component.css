@@ -1,0 +1,85 @@
+.bt1n {
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 7px 18px;
+  font-size: 14px;
+  cursor: pointer;
+  margin: 2px 0;
+  transition: background 0.2s;
+}
+.bt1n:disabled {
+  background-color: #cfcfcf;
+  color: #888;
+  cursor: not-allowed;
+}
+.bt1n:not(:disabled):hover {
+  background-color: #1258a1;
+}
+
+/* Popup overlay for modal effect */
+.popup-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(63, 63, 63, 0.4);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Popup box styling */
+.popup-content {
+  background: #fff;
+  border-radius: 10px;
+  padding: 30px 30px 20px;
+  min-width: 340px;
+  min-height: 160px;
+  box-shadow: 0 8px 32px -8px #3337, 0 1.5px 8px #1976d2;
+  position: relative;
+}
+.popup-content h3 {
+  margin: 0 0 16px 0;
+  color: #1976d2;
+  font-size: 1.15rem;
+  text-align: center;
+}
+
+/* Radio group styling */
+.popup-content form {
+  margin-bottom: 7px;
+}
+.popup-content label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  margin: 6px 0;
+  cursor: pointer;
+}
+.popup-content input[type="radio"] {
+  accent-color: #1976d2;
+  margin-right: 5px;
+}
+
+.popup-content span {
+  color: #666;
+  font-size: 13px;
+}
+
+/* No PayBy entry styling */
+.popup-content p {
+  text-align: center;
+  color: #b71c1c;
+  font-size: 1rem;
+  margin: 14px 0 0 0;
+}
+
+/* Button layout in modal */
+.popup-content > div[style] {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+

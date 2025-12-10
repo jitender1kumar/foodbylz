@@ -53,7 +53,7 @@
 
 
 
-<ag-grid-angular class="box ag-theme-quartz"
+<!-- <ag-grid-angular class="box ag-theme-quartz"
   style="height:500px;"
   [rowData]="inventoryQuantityTypeData$|async"
   [columnDefs]="colDefs"
@@ -61,7 +61,14 @@
   [paginationPageSize]="paginationPageSize"
   [paginationPageSizeSelector]="paginationPageSizeSelector"
   (cellClicked)="onCellClick($event)"
-  />
+  /> -->
+  <ng-container *ngIf="inventoryQuantityTypeData$ | async as inventoryQuantityTypeData">
+    <app-gird-table
+    [columns]="colDefs"
+    [data]="inventoryQuantityTypeData "
+    (rowClicked)="onRowClick($event)"
+    ></app-gird-table>
+    </ng-container>
   <div >
     <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()" [style]="this.popupenvironments.display$ |async" [tabname]="this.popupenvironments.tablename$ |async" [data]="this.popupenvironments.valueid$ |async" [modal]="this.popupenvironments.modal$ |async"></app-popupmodel>
   </div>

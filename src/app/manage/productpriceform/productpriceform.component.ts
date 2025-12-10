@@ -5,12 +5,11 @@ import { CategoryService } from '../../core/Services/category.service';
 import { QuantitytypeService } from '../../core/Services/quantitytype.service';
 import { ProductService } from '../../core/Services/product.service';
 import { Router } from '@angular/router';
-import { ColDef } from 'ag-grid-community';
-import { ProductPrice, ProductPriceDetails, Products } from '../../core/Model/crud.model';
+import { ProductPrice, ProductPriceDetails } from '../../core/Model/crud.model';
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
 import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
-import { Observable, takeUntil } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import * as ProductPriceActions from '../ManageStore/productPriceStore/productPrice.actions';
 import { loadProduct } from '../ManageStore/productStore/product.actions';
@@ -20,6 +19,7 @@ import { loadQuantityType, loadQuantityTypeFailure, loadQuantityTypeSuccess } fr
 import { addProductPrice, deleteProductPrice, loadProductPrice, loadProductPriceSuccess, updateProductPrice, updateProductPriceSuccess } from '../ManageStore/productPriceStore/productPrice.actions';
 import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
 import { Actions, ofType } from '@ngrx/effects';
+import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 @Component({
   selector: 'app-productpriceform',
   templateUrl: './productpriceform.component.html',
@@ -47,7 +47,7 @@ export class ProductpriceformComponent implements OnInit {
 subQuntities:any=[];
   categorynamedata2: any
   subQuantityTypeData2: any;
-
+  shortcodeStringDuplicate:any; 
   productPrice$!: Observable<any[]>;
   loading$: Observable<boolean>;
   error$: Observable<string | null>;
@@ -71,6 +71,9 @@ subQuntities:any=[];
       selectcategoryID: '',
       selectQtypeID: '',
       selectSubQuantityTypeID: '',
+      ShortCodeNumber: 0,
+      ShortCodeString: '',
+      mostSelling: false,
       employee_id: ''
     }
   SelectProductId = "";
@@ -78,20 +81,23 @@ subQuntities:any=[];
   selectQtypeID = "";
   selectSubQuantityTypeID = "";
   ProductPrice = "";
-  colDefs: ColDef[] = [
-    { field: "ProductPrice" },
-    { field: "ProductName" },
-    { field: "categoryName" },
-    { field: "QtypeName" },
-    { field: "SubQuantityTypeName" },
+  colDefs: ColumnDef[] = [
+    { field: "ProductPrice",sortable:true },
+    { field: "ProductName",sortable:true },
+    { field: "categoryName",sortable:true },
+    { field: "QtypeName",sortable:true },
+    { field: "ShortCodeNumber",sortable:true },
+    { field: "ShortCodeString",sortable:true },
+    { field: "mostSelling",sortable:true },
+    { field: "SubQuantityTypeName",sortable:true },
     { field: "Delete", cellRenderer: BasetypDeleteButtun },
     { field: "Edit", cellRenderer: BasetypEditButtun }
 
   ];
 
-  pagination = true;
-  paginationPageSize = 20;
-  paginationPageSizeSelector = [20, 200, 500, 1000];
+  // pagination = true;
+  // paginationPageSize = 20;
+  // paginationPageSizeSelector = [20, 200, 500, 1000];
 
   constructor(private service: ProductPriceService,
     public actions$: Actions,
@@ -131,6 +137,9 @@ subQuntities:any=[];
       selectcategoryID: ['', [Validators.required]],
       selectQtypeID: ['', [Validators.required]],
       selectSubQuantityTypeID: ['', [Validators.required]],
+      ShortCodeNumber:[0],
+      ShortCodeString:[''],
+      mostSelling:[false],
       employee_id: this.employeeId
     });
     this.myAddForm = this.formedit.group({
@@ -138,8 +147,11 @@ subQuntities:any=[];
       SelectProductId: ['', [Validators.required]],
       selectcategoryID: ['', [Validators.required]],
       selectQtypeID: ['', [Validators.required]],
-      selectSubQuantityTypeID: ['', [Validators.required]]
-      , employee_id: this.employeeId
+      selectSubQuantityTypeID: ['', [Validators.required]],
+      ShortCodeNumber:[0],
+      ShortCodeString:[''],
+      mostSelling:[false],
+       employee_id: this.employeeId
     });
   }
   ngOnInit(): void {
@@ -147,10 +159,10 @@ subQuntities:any=[];
     this.refresh();
   }
   refresh() {
+    this.loadProducts();
     this.loadSubQuantityTypeName();
     this.loadcategory();
     this.loadQtype();
-    this.loadProducts();
     this.loadProductPrice();
   }
 
@@ -170,7 +182,10 @@ subQuntities:any=[];
           SelectProductId: [this.prodata[0]._id, [Validators.required]],
           selectcategoryID: [this.prodata[0].selectcategoryID, [Validators.required]],
           selectQtypeID: [this.prodata[0].selectQtypeID, [Validators.required]],
-          selectSubQuantityTypeID: [this.prodata[0].selectSubQuantityTypeID, [Validators.required]]
+          selectSubQuantityTypeID: [this.prodata[0].selectSubQuantityTypeID, [Validators.required]],
+          ShortCodeNumber: [this.prodata[0].ShortCodeNumber, [Validators.required]],
+          ShortCodeString: [this.prodata[0].ShortCodeString, [Validators.required]],
+          mostSelling: [this.prodata[0].mostSelling, [Validators.required]],
         });
       //  alert(this.prodata[0].Productname);
         console.log(this.prodata);
@@ -211,7 +226,7 @@ subQuntities:any=[];
         });
       }
     }
-    subQuantityTypeDataSub.unsubscribe();
+    
    
     console.log(this.subQuntities);
 // const itemSubQuantity = subQuantityData.find((item: { selectQtypeID: string; })=>item.selectQtypeID===QuntityTypeId);
@@ -224,6 +239,7 @@ subQuntities:any=[];
        
        
    });
+   subQuantityTypeDataSub.unsubscribe();
   }
   loadSubQuantityTypeByAdd() {
 this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID); 
@@ -301,6 +317,9 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
                 selectcategoryID: productPriceData[ii].selectcategoryID,
                 selectQtypeID: productPriceData[ii].selectQtypeID,
                 selectSubQuantityTypeID: productPriceData[ii].selectSubQuantityTypeID,
+                ShortCodeNumber: productPriceData[ii].ShortCodeNumber,
+                ShortCodeString: productPriceData[ii].ShortCodeString,
+                mostSelling: productPriceData[ii].mostSelling,
                 quntityvalue: 0,
                 veg_nonveg: productPriceData[ii].veg_nonveg
               };
@@ -319,7 +338,7 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
     let ProductName = "";
     this.Productnamedata$ = this.store.select(state => state.productLoad.Product_.data);
   const Productnamedata =   this.Productnamedata$?.subscribe(Productnamedata => {
-      console.log(Productnamedata);
+    //  console.log(Productnamedata);
       const itemP = Productnamedata.find((item: { _id: string; }) => item._id === _id);
       const indexP = Productnamedata.findIndex((item: { _id: string; }) => item._id === _id);
 
@@ -391,7 +410,7 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
           console.log(result);
           this.addProductPriceResultdata = result;
           console.log(this.addProductPriceResultdata.data);
-          console.log(this.addProductPriceResultdata.length);
+          console.log(this.addProductPriceResultdata.data.length);
           if (this.addProductPriceResultdata.data.length == 0) {
 
             this.store.dispatch(addProductPrice({ ProductPrice_ }));
@@ -418,7 +437,10 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
       // console.log(r);
     }
   }
-
+  checkDuplicateShortcode()
+  {
+    
+  }
   onFormSubmit() {
     if (this.myAddForm.valid) {
       this.add(this.myAddForm.value);
@@ -440,32 +462,43 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
       this.args = "Something went wrong with Product Price";
     });
   }
-
-  onCellClick(event: any) {
-
-    if (event.colDef.field == 'Delete') {
+  onRowClick(r: any) { console.log('clicked row', r);
+    // console.log(this.colDefs);
+    if (r[0].field == 'Delete') {
       this.modal = "modal";
       this.display = "display:block;";
-      this.valueid = event.data._id;
+      this.valueid = r[0].row._id;
       this.tablename = "prodpric";
     }
-    if (event.colDef.field == 'Edit') {
-      this.popdata2 = event.data;
-      this.loadSubQuantityTypeByEdit(event.data.selectQtypeID);
-      //  this.loadSubQuantityTypeByQuantityTypeID(event.data.selectQtypeID);
+    if (r[0].field == 'Edit') {
+      this.popdata2 = r[0].row;
+      this.loadSubQuantityTypeByEdit(r[0].row.selectQtypeID);
+      //  this.loadSubQuantityTypeByQuantityTypeID(r[0].row.selectQtypeID);
       this.showEdit = true;
       this.show = false;
       this.args = "";
       this.myEditForm = this.formedit.group({
-        _id: [event.data._id],
-        ProductPrice: [event.data.ProductPrice, Validators.required],
-        SelectProductId: [event.data.SelectProductId, [Validators.required]],
-        selectcategoryID: [event.data.selectcategoryID, [Validators.required]],
-        selectQtypeID: [event.data.selectQtypeID, [Validators.required]],
-        selectSubQuantityTypeID: [event.data.selectSubQuantityTypeID, [Validators.required]]
+        _id: [r[0].row._id],
+        ProductPrice: [r[0].row.ProductPrice, Validators.required],
+        SelectProductId: [r[0].row.SelectProductId, [Validators.required]],
+        selectcategoryID: [r[0].row.selectcategoryID, [Validators.required]],
+        selectQtypeID: [r[0].row.selectQtypeID, [Validators.required]],
+        selectSubQuantityTypeID: [r[0].row.selectSubQuantityTypeID, [Validators.required]],
+        ShortCodeNumber: [r[0].row.ShortCodeNumber, [Validators.required]],
+        ShortCodeString: [r[0].row.ShortCodeString, [Validators.required]],
+        mostSelling: [r[0].row.mostSelling, [Validators.required]],
       });
     }
-  }
+   }
+  // onCellClick(event: any) {
+
+  //   if (event.colDef.field == 'Delete') {
+     
+  //   }
+  //   if (event.colDef.field == 'Edit') {
+     
+  //   }
+  // }
 
   show: any = false;
   showEdit: any = false;

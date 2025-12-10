@@ -61,6 +61,24 @@
   animation: fadeIn 0.03s ease-in-out;
 }
 
+.comman > * {
+  max-width: 700px;
+  max-height: 100vh;
+  width: 100%;
+  border-radius: 12px;
+  overflow-y: auto;
+  background: #fff;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  padding: 2rem 1rem;
+  /* Hide scrollbars */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+.comman > *::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+
 /* .comman {
   background: #fff;
   border-radius: 12px;
@@ -105,10 +123,15 @@
     color: rgb(24, 4, 4);
    font-size: medium;
   }
-.btnbox
-{
-  padding: 10px;
-  background-color: white;
+.btnbox {
+  padding: 14px 24px;
+  background: linear-gradient(90deg, #6dd5ed 0%, #2193b0 100%);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(33, 147, 176, 0.08);
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
 }
 
 .close {

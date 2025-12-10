@@ -38,7 +38,7 @@ getReservedEndTime(DateTimeStart:string,DateTimeEnd:string)
     return this.http.delete(`${this.reserveDineUrl}/${_id}`);
   }
 
-  update(ReserveDine_: ReserveDineEdit): Observable<ReserveDineEdit> {
-    return this.http.put<ReserveDineEdit>(this.reserveDineUrl, ReserveDine_);
+  update(ReserveDine_: ReserveDine): Observable<ReserveDine> {
+    return this.http.put<ReserveDine>(this.reserveDineUrl, ReserveDine_);
   }
 }

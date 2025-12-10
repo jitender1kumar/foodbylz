@@ -14,6 +14,8 @@ import { CustomresService } from '../../core/Services/customers.service';
 import { ReserveDineService } from '../../core/Services/reserveDine.service';
 import { GetOrderDetailsService } from '../../core/commanFunction/getOrderDetails.service';
 import { InitializeInvoice } from '../../core/commanFunction/InitializeInvoice.service';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Component({
   selector: 'app-tables',
@@ -24,6 +26,8 @@ import { InitializeInvoice } from '../../core/commanFunction/InitializeInvoice.s
 })
 @Injectable({ providedIn: 'root' })
 export class TablesComponent implements OnInit {
+  //last step
+  @Input() runningItemsKOT$?: Observable<any[]> | null = null;
   @Input() pickupOrder: any;
   @Input() CancelOrder: any;
   @Output() clearCancelOrder = new EventEmitter<string>();
@@ -91,6 +95,7 @@ export class TablesComponent implements OnInit {
   tabactive1: any;
   tabactive2: any;
   tabactive3: any;
+  tabactive4:any;
   Customersnamedata: any;
   Customersnamedata2: any;
   date2 = '';
@@ -111,14 +116,14 @@ export class TablesComponent implements OnInit {
   ordersdata2: any;
   todayBilledLists: any = [];
   CustomerId = "";
-
+ 
   // Form groups
   myAddForm: FormGroup;
   myEditForm: FormGroup<{
     _id: FormControl<string | null>;
     TableId: FormControl<string | null>;
-    DateTimeStart: FormControl<string | null>;
-    DateTimeEnd: FormControl<string | null>;
+    ReservedDate: FormControl<string | null>;
+    ReservedTimeSlot: FormControl<string | null>;
     CustomerId: FormControl<string | null>;
     Name: FormControl<string | null>;
     MobileNo: FormControl<string | null>;
@@ -136,7 +141,9 @@ export class TablesComponent implements OnInit {
   chair2: IChair;
   chairsrunningorderarr: IChairsrunningorder;
   checkbox: any | null;
-
+  ReservedTable$?: Observable<any[]>;
+  loading$?: Observable<boolean>;
+  error$?: Observable<string | null>;
   constructor(
     private service: DineService,
     private quantitytypeService: QuantitytypeService,
@@ -151,8 +158,11 @@ export class TablesComponent implements OnInit {
     private reservedineservice: ReserveDineService,
     private datePipe: DatePipe,
     private getOrderDetailsService: GetOrderDetailsService,
-    private initializeInvoice: InitializeInvoice
+    private initializeInvoice: InitializeInvoice,
+    private store: Store<{ reserveTableReducer_: any}>
   ) {
+   
+    this.ReservedTable$ = this.store.select(state => state.reserveTableReducer_.ReserveTables.data);
     const today = new Date();
     this.currentTime = (today.getHours() > 12 ? today.getHours() - 12 : today.getHours()) + ":" + today.getMinutes() + ":" + today.getSeconds();
     this.currentDateOnly = today.toISOString().split('T')[0];
@@ -169,12 +179,12 @@ export class TablesComponent implements OnInit {
     this.tabactive1 = "table-tab ";
     this.tabactive2 = "table-tab ";
     this.tabactive3 = "table-tab ";
-
+    
     this.myEditForm = this.formedit.group({
       _id: [''],
       TableId: [''],
-      DateTimeStart: [''],
-      DateTimeEnd: [''],
+      ReservedDate: [''],
+      ReservedTimeSlot: [''],
       CustomerId: [''],
       Name: ['',new FormControl({value: '', disabled: true})],
       MobileNo: ['',new FormControl({value: '', disabled: true})],
@@ -186,8 +196,8 @@ export class TablesComponent implements OnInit {
 
     this.myAddForm = this.formedit.group({
       TableId: [''],
-      DateTimeStart: new FormControl('', Validators.required),
-      DateTimeEnd: [''],
+      ReservedDate: new FormControl('', Validators.required),
+      ReservedTimeSlot: [''],
       CustomerId: [''],
       Name: ['',new FormControl({value: '', disabled: true})],
       MobileNo: ['',new FormControl({value: '', disabled: true})],
@@ -201,8 +211,8 @@ export class TablesComponent implements OnInit {
     this.reserveTableEdit = {
       _id: '',
       TableId: '',
-      DateTimeStart: '',
-      DateTimeEnd: '',
+      ReservedDate: '',
+      ReservedTimeSlot: '',
       CustomerId: '',
       Name: '',
       MobileNo: '',
@@ -217,8 +227,8 @@ export class TablesComponent implements OnInit {
 
     this.resevetable = {
       TableId: "undefined",
-      DateTimeStart: this.now,
-      DateTimeEnd: "",
+      ReservedDate: this.now,
+      ReservedTimeSlot: "",
       CustomerId: "undefined",
       Name: "undefined",
       MobileNo: "undefined",
@@ -260,6 +270,7 @@ export class TablesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+   
     this.referesh();
     if (this.CancelOrder) {
       this.cancel(this.CancelOrder);
@@ -282,7 +293,7 @@ export class TablesComponent implements OnInit {
   }
 
   get dateTimeStartControl(): FormControl {
-    return this.myAddForm.get('DateTimeStart') as FormControl;
+    return this.myAddForm.get('ReservedDate') as FormControl;
   }
 
   referesh() {
@@ -306,7 +317,11 @@ export class TablesComponent implements OnInit {
       });
     }
   }
-
+  hasRunningItem(runningItems: any[], receiptNumber: any): boolean {
+    if (!runningItems || !receiptNumber) return false;
+    return runningItems.some(item => item.RecieptNumber === receiptNumber);
+  }
+  
   deletereservedine(_id: any) {
     this.args = "";
     this.deleteshow = true;
@@ -337,7 +352,7 @@ export class TablesComponent implements OnInit {
   updateDateTime() {
     if (this.selectedDate && this.selectedTime) {
       const combined = `${this.selectedDate}T${this.selectedTime}`;
-      this.myAddForm.get('DateTimeStart')?.setValue(combined);
+      this.myAddForm.get('ReservedDate')?.setValue(combined);
     }
   }
   editReserveDine2(_id: any) {
@@ -380,9 +395,9 @@ export class TablesComponent implements OnInit {
         this.editreservedinefata2 = data;
         this.editreservedinefata = this.editreservedinefata2.data;
         //editreservedine
-        const splitTime = this.editreservedinefata[0].DateTimeStart.split('T');
+        const splitTime = this.editreservedinefata[0].ReservedDate.split('T');
         console.log(splitTime);
-        console.log(this.editreservedinefata[0].DateTimeStart);
+        console.log(this.editreservedinefata[0].ReservedDate);
         console.log(splitTime[0] + "," + splitTime[1]);
         const selectedDatepart = this.datePipe.transform(splitTime[0], 'yyyy-MM-dd')?.toString();
         this.selectedDate = selectedDatepart || '';
@@ -392,8 +407,8 @@ export class TablesComponent implements OnInit {
         this.myEditForm = this.formedit.group({
           _id: [_id],
           TableId: [this.editreservedinefata[0].TableId],
-          DateTimeStart: [this.editreservedinefata[0].DateTimeStart],
-          DateTimeEnd: [this.editreservedinefata[0].DateTimeEnd],
+          ReservedDate: [this.editreservedinefata[0].ReservedDate],
+          ReservedTimeSlot: [this.editreservedinefata[0].ReservedTimeSlot],
           CustomerId: [this.editreservedinefata[0].CustomerId],
           Name: [this.editreservedinefata[0].Name],
           MobileNo: [this.editreservedinefata[0].MobileNo],
@@ -454,8 +469,8 @@ export class TablesComponent implements OnInit {
     this.myEditForm.patchValue({
       _id: _id,
       TableId: this.reserveCustomer.TableId,
-      DateTimeStart: this.reserveCustomer.DateTimeStart,
-      DateTimeEnd: this.reserveCustomer.DateTimeEnd,
+      ReservedDate: this.reserveCustomer.ReservedDate,
+      ReservedTimeSlot: this.reserveCustomer.ReservedTimeSlot,
       CustomerId: this.reserveCustomer.CustomerId,
       Name: this.reserveCustomer.Name,
       MobileNo: this.reserveCustomer.MobileNo,
@@ -468,8 +483,8 @@ export class TablesComponent implements OnInit {
       ...this.myEditForm.value,
       _id: this.reserveCustomer._id ?? '',
       TableId: this.reserveCustomer.TableId ?? '',
-      DateTimeStart: this.reserveCustomer.DateTimeStart ?? '',
-      DateTimeEnd: this.reserveCustomer.DateTimeEnd ?? '',
+      ReservedDate: this.reserveCustomer.ReservedDate ?? '',
+      ReservedTimeSlot: this.reserveCustomer.ReservedTimeSlot ?? '',
       CustomerId: this.reserveCustomer.CustomerId ?? '',
       Name: this.reserveCustomer.Name ?? '',
       MobileNo: this.reserveCustomer.MobileNo ?? '',
@@ -525,7 +540,7 @@ export class TablesComponent implements OnInit {
   }
   selectdateandtime() {
     // for reserve table end date
-    this.date = new Date(this.myAddForm.value.DateTimeStart).getTime();
+    this.date = new Date(this.myAddForm.value.ReservedDate).getTime();
     this.now = new Date();
     const distance = this.date - this.now;
     const days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -549,10 +564,67 @@ updateReserveDine(ReserveDine_:ReserveDineEdit)
   }
   );
 }
+onFormSubmit()
+{
+  if (this.myAddForm.valid) {
+    // Gather edited form values
+  // Dispatch action to add a reserved table using ngrx store
+  const reserveTable: ReserveDine = {
+    TableId: this.myAddForm.value.TableId,
+    ReservedDate: this.myAddForm.value.ReservedDate,
+    ReservedTimeSlot: this.myAddForm.value.ReservedTimeSlot,
+    CustomerId: this.myAddForm.value.CustomerId,
+    Name: this.myAddForm.value.Name,
+    MobileNo: this.myAddForm.value.MobileNo,
+    Paymentstatus: this.myAddForm.value.Paymentstatus,
+    Bookingstatus: this.myAddForm.value.Bookingstatus,
+    ConfirmStatus: this.myAddForm.value.ConfirmStatus,
+    BookingAmount: this.myAddForm.value.BookingAmount,
+    RecieptNumber:  (new Date().getDate()+ new Date().getTime()).toString(),
+    TableName: this.getTableName(this.myAddForm.value.TableId),
+    employee_id: ''
+  };
+
+  this.store.dispatch({
+    type: '[ReserveTable] Add ReserveTable',
+    reserveTable
+  });
+  this.error$?.subscribe(error => {
+    if (!error) {
+      this.args='Reservation successful!'; // Or use a better UI feedback system
+    }
+  });
+  }
+}
   onFormEditSubmit() {
     if (this.myEditForm.valid) {
       // Gather edited form values
-     
+    const reserveTableEdit: ReserveDineEdit = {
+      _id: this.editreservedinefata[0]._id,
+      TableId: this.myEditForm.value.TableId ?? '',
+      ReservedDate: this.myEditForm.value.ReservedDate ?? '',
+      ReservedTimeSlot: this.myEditForm.value.ReservedTimeSlot ?? '',
+      CustomerId: this.myEditForm.value.CustomerId ?? '',
+      Name: this.myEditForm.value.Name ?? '',
+      MobileNo: this.myEditForm.value.MobileNo ?? '',
+      Paymentstatus: this.myEditForm.value.Paymentstatus ?? false,
+      Bookingstatus: this.myEditForm.value.Bookingstatus ?? false,
+      // ConfirmStatus is not in the type, so do not include it to avoid TS error
+      BookingAmount: Number(this.myEditForm.value.BookingAmount ?? 0),
+      RecieptNumber: this.editreservedinefata[0]?.RecieptNumber ?? '',
+      TableName: this.getTableName(this.myEditForm.value.TableId ?? ''),
+      employee_id: '',
+      ConfirmStatus: false
+    };
+    this.store.dispatch({
+      type: '[ReserveTable] Update ReserveTable',
+      reserveTableEdit
+    });
+    this.error$?.subscribe(error => {
+      if (!error) {
+        this.args='Reservation updated successfully!';
+      }
+    });
     }
   }
 
@@ -615,6 +687,22 @@ updateReserveDine(ReserveDine_:ReserveDineEdit)
     this.clearPickupOrder.emit("");
     this.loadchairsrunningorderselected("pickup");
   }
+  groupByReceiptNumber(runningItemsKOT: any[]): { RecieptNumber: any, items: any[] }[] {
+    if (!Array.isArray(runningItemsKOT)) return [];
+    const grouped: { [key: string]: any[] } = {};
+    for (const item of runningItemsKOT) {
+      const recNo = item.RecieptNumber || item.receiptnumber || 'Unknown';
+      if (!grouped[recNo]) {
+        grouped[recNo] = [];
+      }
+      grouped[recNo].push(item);
+    }
+    // Convert object to array of { RecieptNumber, items }
+    return Object.keys(grouped).map(RecieptNumber => ({
+      RecieptNumber,
+      items: grouped[RecieptNumber]
+    }));
+  }
 
   tabshow(tab: number) {
 
@@ -623,12 +711,27 @@ updateReserveDine(ReserveDine_:ReserveDineEdit)
     this.tabactive1 = "table-tab ";
     this.tabactive2 = "table-tab ";
     this.tabactive3 = "table-tab ";
-    if (tab === 0) this.tabactive0 += "active";
-    if (tab === 1) this.tabactive1 += "active";
-    if (tab === 2) this.tabactive2 += "active";
-    if (tab === 3) {
-      this.tabactive3 += "active";
-      this.loadBilled();
+    this.tabactive4 = "table-tab ";
+    switch (tab) {
+      case 0:
+        this.tabactive0 += "active";
+        break;
+      case 1:
+        this.tabactive1 += "active";
+        break;
+      case 2:
+        this.tabactive2 += "active";
+        break;
+      case 3:
+        this.tabactive3 += "active";
+        this.loadBilled();
+        break;
+        case 4:
+          this.tabactive4 += "active";
+          break;
+      default:
+        // Do nothing for other tabs
+        break;
     }
   }
 
@@ -725,6 +828,31 @@ updateReserveDine(ReserveDine_:ReserveDineEdit)
       }
     });
   }
+  goToHomeBookedTable(_id:string,tablename:string)
+  {
+    console.log(_id);
+    console.log( this.runningorder);
+    // First, try to find in this.runningorder by table_id directly
+    // let reservedTable = this.runningorder.find(
+    //   (item: { tablename: string }) => item.tablename === tablename
+    // );
+    // If not found, check nested Chairsrunningorder
+    //if (!reservedTable) {
+    const  reservedTable = this.runningorder.find(
+        (item: { Chairsrunningorder?: any[] }) => 
+          item.Chairsrunningorder &&
+          item.Chairsrunningorder.find(
+            (chair: { table_id: string }) => chair.table_id === _id
+          )
+      );
+      console.log(reservedTable);
+    //}
+   // console.log(reservedTable);
+    if (reservedTable) {
+       this.gotohome(reservedTable.receiptnumber, reservedTable.tokennumber);
+    
+    }
+  }
   redirectto_gotohome(RecieptNumber: string) {
 
     console.log(RecieptNumber);
@@ -769,6 +897,10 @@ updateReserveDine(ReserveDine_:ReserveDineEdit)
   getFloorName(floor_id: string): string {
     const floor = this.Floordata.find((item: { _id: string }) => item._id === floor_id);
     return floor ? floor.name : '';
+  }
+  getTableName(table_id: string): string {
+  const table = this.dinedata.find((item: { _id: string }) => item._id === table_id);
+  return table ? table.name : '';
   }
   chairstatus(e: any, name: string, description: string, table_id: string) {
     // checking chair status for selecting chairs .. this further use coding
@@ -985,9 +1117,9 @@ updateReserveDine(ReserveDine_:ReserveDineEdit)
                 this.dine.floor_id = this.dinedata[inde].floor_id;
                 this.service.update(this.dine).subscribe(data => {
                   if (data) {
-                    this.loadallchair();
-                    this.loaddine();
-                    this.loadrunningorder();
+                    // this.loadallchair();
+                    // this.loaddine();
+                    // this.loadrunningorder();
                     this.notifyManage2.emit(this.invoiceid + "jsk" + this.TokenNumber);
                   }
                 });

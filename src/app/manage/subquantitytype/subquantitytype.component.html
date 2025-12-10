@@ -119,7 +119,7 @@
 </div>
 
 <!-- Data Table -->
-<ag-grid-angular
+<!-- <ag-grid-angular
   class="box ag-theme-quartz"
   style="height:500px;"
   [rowData]="subQuantityTypeData$ | async"
@@ -128,8 +128,14 @@
   [paginationPageSize]="paginationPageSize"
   [paginationPageSizeSelector]="paginationPageSizeSelector"
   (cellClicked)="onCellClick($event)"
-></ag-grid-angular>
-
+></ag-grid-angular> -->
+<ng-container *ngIf="subQuantityTypeData$ | async as subQuantityTypeData">
+<app-gird-table
+[columns]="colDefs"
+[data]="subQuantityTypeData "
+(rowClicked)="onRowClick($event)"
+></app-gird-table>
+</ng-container>
 <!-- Popup Modal -->
 <div>
   <app-popupmodel

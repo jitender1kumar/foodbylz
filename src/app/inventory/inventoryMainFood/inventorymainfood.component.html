@@ -133,17 +133,13 @@
   </div>
 }
 
-<ag-grid-angular
-  class="box ag-theme-quartz"
-  style="height:500px;"
-  [rowData]="InventoryMainFooddata$ | async"
-  [columnDefs]="colDefs"
-  [pagination]="pagination"
-  [paginationPageSize]="paginationPageSize"
-  [paginationPageSizeSelector]="paginationPageSizeSelector"
-  (cellClicked)="onCellClick($event)"
-></ag-grid-angular>
-
+<ng-container *ngIf="InventoryMainFooddata$ | async as InventoryMainFooddata">
+  <app-gird-table
+  [columns]="colDefs"
+  [data]="InventoryMainFooddata "
+  (rowClicked)="onRowClick($event)"
+  ></app-gird-table>
+  </ng-container>
 <div>
   <app-popupmodel
     (deletedconfirmedclicked)="deletedConfirmed($event)"

@@ -1,8 +1,7 @@
-import { Component, Injectable, OnInit, ViewChild } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Customers, CustomersEdit, Floor, IChair, IChairMergeDineName } from '../core/Model/crud.model';
-import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
-import { ColDef, ICellRendererParams } from 'ag-grid-community';
+import { Customers, CustomersEdit } from '../core/Model/crud.model';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { BasetypEditButtun } from '../commanComponent/editbutton/editbuttoncomponent';
 import { BasetypDeleteButtun } from '../commanComponent/deletebutton/deletbasetypebutton';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
@@ -13,6 +12,7 @@ import { Observable } from 'rxjs/internal/Observable';
 import * as CustomersActions from './customersStore/customers.actions';
 import { ValidationService } from '../core/commanFunction/Validation.service';
 import { Actions, ofType } from '@ngrx/effects';
+import { ColumnDef } from '../core/shared/dynamicTable/gird-table/gird-table.component';
 // import { customersReducer } from './customersStore/customers.reducer'; 
 @Component({
   selector: 'app-customers',
@@ -21,7 +21,7 @@ import { Actions, ofType } from '@ngrx/effects';
   standalone: false
 })
 @Injectable({ providedIn: 'root' })
-export class CustomersComponent implements OnInit, ICellRendererAngularComp {
+export class CustomersComponent implements OnInit {
   args: any = null;
   myEditForm: FormGroup;
   qid: any;
@@ -45,27 +45,18 @@ export class CustomersComponent implements OnInit, ICellRendererAngularComp {
   myAddForm: FormGroup;
 
 
-  agInit(params: ICellRendererParams): void {
-    this.id = params.data._id;
-    //this.rowData= params.api.refreshClientSideRowModel;
-    // console.log(params);
-
-  }
   //static rowData:any;
   // Column Definitions: Defines the columns to be displayed.
 
-  pagination = true;
-  paginationPageSize = 10;
-  paginationPageSizeSelector = [10, 50, 500, 1000];
+  
 
-
-  colDefs: ColDef[] = [
-    { field: "name" },
-    { field: "MobileNo" },
-    { field: "DOB" },
-    { field: "tag" },
-    { field: "DueAmount" },
-    { field: "Anniversary" },
+  colDefs: ColumnDef[] = [
+    { field: "name" ,sortable:true},
+    { field: "MobileNo",sortable:true },
+    { field: "DOB",sortable:true },
+    { field: "tag" ,sortable:true},
+    { field: "DueAmount" ,sortable:true},
+    { field: "Anniversary" ,sortable:true},
     { field: "Delete", cellRenderer: BasetypDeleteButtun },
     { field: "Edit", cellRenderer: BasetypEditButtun }
 
@@ -122,9 +113,7 @@ export class CustomersComponent implements OnInit, ICellRendererAngularComp {
 
   }
 
-  refresh(params: ICellRendererParams<any, any, any>): boolean {
-    throw new Error('Method not implemented.');
-  }
+  
   loadCustomers() {
     //alert(selectcategoryID);
     this.store.dispatch(CustomersActions.loadCustomers());//state => state.LoadFloor.Floor_.data
@@ -134,45 +123,42 @@ export class CustomersComponent implements OnInit, ICellRendererAngularComp {
     }
     );
   }
-  onCellClick(event: any) {
-
-    if (event.colDef.field == 'Delete') {
+  onRowClick(r: any) { console.log('clicked row', r);
+    // console.log(this.colDefs);
+    if (r[0].field == 'Delete') {
       this.modal = "modal";
       this.display = "display:block;"
-      this.valueid = event.data._id;
+      this.valueid = r[0].row._id;
       this.tablename = "base";
       alert(this.valueid);
       if (PopupmodelComponent.delete == true) {
-        this.customerservice.delete(event.data._id).subscribe(res => {
+        this.customerservice.delete(r[0].row._id).subscribe(res => {
           alert("Successfully Delete BaseType...");
-          // this.args="Successfully Deleted "+event.data.Basetypename;
+          // this.args="Successfully Deleted "+r[0].row.Basetypename;
         })
       }
 
-
     }
-    if (event.colDef.field == 'Edit') {
-      //  this.loaddine2();
-      this.popdata2 = event.data;
+    if (r[0].field == 'Edit') {
+      this.popdata2 = r[0].row;
       this.showEdit = true;
       this.show = false;
       this.args = null;
       this.myEditForm = this.formedit.group({
-        _id: [event.data._id],
-        name: [event.data.name],
-        MobileNo: [event.data.MobileNo],
-        DOB: [event.data.DOB],
+        _id: [r[0].row._id],
+        name: [r[0].row.name],
+        MobileNo: [r[0].row.MobileNo],
+        DOB: [r[0].row.DOB],
 
-        tag: [event.data.tag],
-        DueAmount: [event.data.DueAmount],
-        Anniversary: [event.data.Anniversary],
+        tag: [r[0].row.tag],
+        DueAmount: [r[0].row.DueAmount],
+        Anniversary: [r[0].row.Anniversary],
 
 
       });
-
     }
-   
-  }
+   }
+  
 
 
   SearchedCustomerData: any;

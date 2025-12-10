@@ -2,10 +2,8 @@ import { Component, Injectable, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Floor } from '../../core/Model/crud.model';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
 import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
-import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { DineService } from '../../core/Services/dine.service';
 import { FloorService } from '../../core/Services/floor.service';
 import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
@@ -13,6 +11,7 @@ import { ValidationService } from '../../core/commanFunction/Validation.service'
 import * as FloorActions from '../dineStore/floorStore/floor.action';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/internal/Observable';
+import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 
 @Component({
   selector: 'app-floor',
@@ -21,7 +20,7 @@ import { Observable } from 'rxjs/internal/Observable';
   standalone: false
 })
 @Injectable({ providedIn: 'root' })
-export class FloorComponent implements OnInit, ICellRendererAngularComp {
+export class FloorComponent implements OnInit {
   args: string | null = null;
   myEditForm!: FormGroup;
   myAddForm!: FormGroup;
@@ -41,12 +40,10 @@ export class FloorComponent implements OnInit, ICellRendererAngularComp {
 
   // AG Grid
   floors: Floor[] = [];
-  pagination = true;
-  paginationPageSize = 10;
-  paginationPageSizeSelector = [10, 50, 500, 1000];
-  colDefs: ColDef[] = [
-    { field: "name" },
-    { field: "description", flex: 2 },
+ 
+  colDefs: ColumnDef[] = [
+    { field: "name", sortable:true  },
+    { field: "description", sortable:true },
     { field: "Delete", cellRenderer: BasetypDeleteButtun },
     { field: "Edit", cellRenderer: BasetypEditButtun }
   ];
@@ -83,15 +80,8 @@ export class FloorComponent implements OnInit, ICellRendererAngularComp {
     this.loadFloor();
   }
 
-  agInit(params: ICellRendererParams): void {
-    this.id = params.data._id;
-  }
 
-  refresh(params: ICellRendererParams<any, any, any>): boolean {
-    // Not implemented as per interface
-    return false;
-  }
-
+ 
   private initForms(): void {
     this.myEditForm = this.formBuilder.group({
       _id: [''],
@@ -119,28 +109,29 @@ export class FloorComponent implements OnInit, ICellRendererAngularComp {
     this.store.dispatch(FloorActions.loadFloors());
     this.Floordata$ = this.store.select(state => state.LoadFloor.Floor_.data);
   }
-
-  onCellClick(event: any): void {
-    if (event.colDef.field === 'Delete') {
+  onRowClick(r: any) { console.log('clicked row', r);
+    // console.log(this.colDefs);
+    if (r[0].field == 'Delete') {
       this.modal = "modal";
       this.display = "display:block;";
-      this.valueid = event.data._id;
+      this.valueid = r[0].row._id;
       this.tablename = "Floor_";
-    } else if (event.colDef.field === 'Edit') {
-      this.popdata2 = event.data;
+    }
+    if (r[0].field == 'Edit') {
+      this.popdata2 = r[0].row;
       this.showEdit = true;
       this.show = false;
       this.args = null;
       this.myEditForm = this.formBuilder.group({
-        _id: [event.data._id],
-        name: [event.data.name, Validators.required],
-        description: [event.data.description],
-        status: [event.data.status, Validators.required]
+        _id: [r[0].row._id],
+        name: [r[0].row.name, Validators.required],
+        description: [r[0].row.description],
+        status: [r[0].row.status, Validators.required]
       });
     }
     this.loadFloor();
-  }
-
+   }
+ 
   add(floor: Floor): void {
     const valid = this.validationService.checkNameExistforAddForm(floor.name, this.Floordata$);
     if (valid.value) {

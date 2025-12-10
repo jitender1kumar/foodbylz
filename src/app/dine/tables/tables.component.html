@@ -17,6 +17,7 @@
       <button [class]="tabactive1" (click)="tabshow(1)">Reserved ({{reservedLength}}) </button>
       <button [class]="tabactive2" (click)="tabshow(2)">Running Orders ({{runningOrderLength}}) </button>
       <button [class]="tabactive3" (click)="tabshow(3)">Billed</button>
+      <button [class]="tabactive4" (click)="tabshow(4)">Running KOT</button>
     </div>
 
     <div class="status-indicators">
@@ -42,61 +43,47 @@
 
   <!-- Fourth Div -->
   <!-- selet table start-->
-  @if (tab==0) {
-  <div class="order-list-container">
-    @for (floor of Floordata; track floor) {
-    <div>
-      <div class="order-list-header">
-        {{floor.name}}
-      </div>
-      <div class="table-layout">
-        <!-- <div *ngFor="let d of dinedata index as ii"> -->
-          @for( d of dinedata; track d){
-          
-          @if (d.status) {
-          <!-- <div> -->
-            
-            @if (floor._id==d.floor_id) {
-            <a (click)="booktable(d._id)" class="table">
-              <p> <b>{{d.name}} </b> Available </p>
-
-              <div>
-                <!-- chair booking status 0-booked 1-booking available 2-booking available but do want book -->
-                <div class="circle top-left"></div>
-                <div class="circle top-right"></div>
-                <div class="circle bottom-left">
-                </div>
-                <div class="circle bottom-right">
-                </div>
-              </div>
-            </a>
-            }
-          <!-- </div> -->
-          } @else {
-          <div>
-            @if (floor._id==d.floor_id) {
-            <div class="table">
-              <b>{{d.name}} Booked</b>
-              <div>
-                <!-- chair booking status 0-booked 1-booking available 2-booking available but do want book -->
-                <div class="circle top-left"></div>
-                <div class="circle top-right"></div>
-                <div class="circle bottom-left">
-                </div>
-                <div class="circle bottom-right">
-                </div>
-              </div>
-            </div>
-            }
+  <ng-container *ngIf="tab === 0">
+    <div class="order-list-container">
+      <ng-container *ngFor="let floor of Floordata; ">
+        <div>
+          <div class="order-list-header">
+            {{ floor.name }}
           </div>
-          }
-        }
-        <!-- </div> -->
-      </div>
+          <div class="table-layout">
+            <ng-container *ngFor="let d of dinedata; ">
+              <ng-container *ngIf="floor._id === d.floor_id">
+                <ng-container *ngIf="d.status; else bookedTable">
+                  <a (click)="booktable(d._id)" class="table">
+                    <p><b>{{ d.name }}</b> Available</p>
+                    <div>
+                      <div class="circle top-left"></div>
+                      <div class="circle top-right"></div>
+                      <div class="circle bottom-left"></div>
+                      <div class="circle bottom-right"></div>
+                    </div>
+                  </a>
+                </ng-container>
+                <ng-template #bookedTable >
+                  <a class="table" style="background-color: #007BFF" (click)="goToHomeBookedTable(d._id,d.name)" class="table">
+                    <b>{{ d.name }} Booked</b>
+                    <div>
+                      <div class="circle top-left"></div>
+                      <div class="circle top-right"></div>
+                      <div class="circle bottom-left"></div>
+                      <div class="circle bottom-right">
+
+                      </div>
+                    </div>
+                  </a>
+                </ng-template>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </ng-container>
     </div>
-    }
-  </div>
-  }
+  </ng-container>
   <!-- end -->
   <!-- reservedind start -->
   @if (tab==1) {
@@ -108,23 +95,15 @@
          
           <div>
             
-            <a  class="table">
-              <div style="font-size:small;"> {{d.DateTimeStart.split('T')}}
+            <a  class="table" style="background-color: #FFC107;">
+              <div style="font-size:small;"> {{d.ReservedDate.split('T')}}
                 <br>
-                <!-- {{currentTime.split(':')[0]}}
-                <br>
-                {{d.DateTimeStart.split('T')[1].split(':')[0]}}
-                <br > -->
-                {{(d.DateTimeStart.split('T')[0]=== currentDateOnly)}} 
-                {{(d.DateTimeStart.split('T')[1].split(':')[0]===currentTime.split(':')[0])}} 
-                {{d.DateTimeStart.split('T')[1].split(':')[0]}}
-                {{currentTime.split(':')[0]}}
-                {{(+1+(+d.DateTimeStart.split('T')[1].split(':')[0].trim())) }}
+               
                 <br>
                 <b *ngIf="d.MobileNo"> Mobile No: {{d.MobileNo}}</b>
                 <br>
                 <!-- (d.DateTimeStart.split('T')[1].split(':')[0]}=== currentDateOnly.split(':'[0]))&& (d.DateTimeStart.split('T')[1].split(':')[0]}===currentTime.split(:)[0]) -->
-                <div *ngIf="(d.DateTimeStart.split('T')[0]=== currentDateOnly) && (d.DateTimeStart.split('T')[1].split(':')[0].trim()===currentTime.split(':')[0].trim() || ((+1+(+d.DateTimeStart.split('T')[1].split(':')[0].trim())))===(+currentTime.split(':')[0].trim()))">
+                <div *ngIf="(d.ReservedDate.split('T')[0]=== currentDateOnly) && (d.ReservedDate.split('T')[1].split(':')[0].trim()===currentTime.split(':')[0].trim() || ((+1+(+d.ReservedDate.split('T')[1].split(':')[0].trim())))===(+1+currentTime.split(':')[0].trim()))">
                  
                  
                       <!-- <div>
@@ -173,43 +152,59 @@
   }
   <!-- end  -->
   <!-- runing order start -->
-  @if (tab==2) {
-  <div class="order-list-container">
-    <div class="running-layout">
-      @for (runningorder_ of runningorder; track runningorder_) {
-      <div class="table">
-        <div class="states restaurant-states">
-          <div class="state-column restaurant-state-column">
-            @if (runningorder_.Chairsrunningorder.length > 0) {
-            <div>
-              @for (d of dinedata; track d) {
-              <div class="order-text">
-                @if (d._id == runningorder_.Chairsrunningorder[0].table_id) {
-                <h6>{{d.name}}, Token: ({{runningorder_.tokennumber}})
+  <ng-container *ngIf="tab === 2">
+    <div class="order-list-container">
+      <div class="running-layout">
+        <ng-container *ngFor="let runningorder_ of runningorder">
+          <div class="table">
+            <div class="states restaurant-states">
+              <div class="state-column restaurant-state-column">
 
-                  <h6 class="order-meta">{{runningorder_.receiptnumber}}</h6>
-                </h6>
-                }
+                <ng-container *ngIf="runningorder_.Chairsrunningorder.length > 0; else tableInfo">
+                  <div>
+                    <ng-container *ngFor="let d of dinedata">
+                      <div class="order-text" *ngIf="d._id === runningorder_.Chairsrunningorder[0].table_id">
+                        <h6>
+                          {{ d.name }}, Token: ({{ runningorder_.tokennumber }})
+                          <h6 class="order-meta">{{ runningorder_.receiptnumber }}</h6>
+                        </h6>
+                      </div>
+                    </ng-container>
+                  </div>
+                </ng-container>
+                <ng-template #tableInfo>
+                  <h6 class="order-text">
+                    <b>
+                      {{ runningorder_.tablename }}, Token: ({{ runningorder_.tokennumber }})
+                    </b>
+                  </h6>
+                  <h6 class="order-meta">{{ runningorder_.receiptnumber }}</h6>
+                </ng-template>
+
+                <div class="order-actions">
+                  <button class="btn-danger" (click)="cancel(runningorder_.receiptnumber)">🗑️</button>
+                  <button class="btn-primary"
+                    (click)="gotohome(runningorder_.receiptnumber, runningorder_.tokennumber)">
+                    goToMenu
+                  </button>
+                  <ng-container *ngIf="runningItemsKOT$ | async as runningItemsKOT">
+                    <ng-container *ngIf="hasRunningItem(runningItemsKOT, runningorder_.receiptnumber)">
+                      <div class="btn-info">
+                       KOT Running
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                  
+               
+                </div>
+
               </div>
-              }
-            </div>
-            } @else {
-            <h6 class="order-text"><b>{{runningorder_.tablename}}, Token: ({{runningorder_.tokennumber}})</b></h6>
-            <h6 class="order-meta">{{runningorder_.receiptnumber}}</h6>
-            }
-            <div class="order-actions">
-              <button class="btn-danger" (click)="cancel(runningorder_.receiptnumber)">🗑️</button>
-              <button class="btn-primary"
-                (click)="gotohome(runningorder_.receiptnumber,runningorder_.tokennumber)">goToMenu</button>
-
             </div>
           </div>
-        </div>
+        </ng-container>
       </div>
-      }
     </div>
-  </div>
-  }
+  </ng-container>
 
 
 
@@ -235,7 +230,118 @@
     </div>
   </div>
   }
+  <ng-container *ngIf="tab === 4">
+    <div class="order-list-container">
+      <div class="running-layout">
+          <!-- <h4 style="margin-bottom: 12px;">KOT Running Items</h4> -->
+          <div class="kot-section" *ngIf="runningItemsKOT$ | async as runningItemsKOT">
+            <div class="kot-header">
+              <b>
+                Current KOT Items ({{ runningItemsKOT.length }}):
+              </b>
+            </div>
+            <div *ngIf="runningItemsKOT.length > 0; else noKotItems" class="kot-list">
+              <ng-container *ngFor="let rec of groupByReceiptNumber(runningItemsKOT)">
+                <div class="kot-item-box">
+                  <div class="kot-receipt">
+                    <strong>Receipt:</strong> {{ rec.RecieptNumber }}
+                  </div>
+                  <div class="kot-count">
+                    <strong>KOT Items ({{ rec.items.length }}):</strong>
+                  </div>
+                  <div class="kot-items-row">
+                    <ng-container *ngFor="let item of rec.items">
+                      <div class="kot-box-item">
+                        <span class="kot-table"><strong>Item:</strong> {{ item.KOTrunningorders.length }}</span>
+                        <span *ngIf="!!item.status" class="kot-status"><strong>Status:</strong> {{ item.status }}</span>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+            <ng-template #noKotItems>
+              <div class="no-kot-items">No running KOT items.</div>
+            </ng-template>
+          </div>
 
+          <style>
+            .kot-section {
+              margin-top: 18px;
+            }
+            .kot-header {
+              font-size: 1.15rem;
+              margin-bottom: 14px;
+              color: #1a237e;
+            }
+            .kot-list {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 16px;
+            }
+            .kot-item-box {
+              background: #fff;
+              border: 1px solid #d1d5db;
+              padding: 16px 18px;
+              border-radius: 10px;
+              box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+              min-width: 235px;
+              flex: 1 0 260px;
+              max-width: 360px;
+              box-sizing: border-box;
+              margin-bottom: 16px;
+              display: flex;
+              flex-direction: column;
+              gap: 9px;
+            }
+            .kot-receipt {
+              font-weight: 600;
+              color: #1769aa;
+              margin-bottom: 6px;
+            }
+            .kot-count {
+              font-size: 0.95rem;
+              color: #363946;
+              margin-bottom: 9px;
+            }
+            .kot-items-row {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 10px;
+            }
+            .kot-box-item {
+              flex: 1 0 135px;
+              background: #edeffe;
+              border-radius: 8px;
+              box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+              padding: 10px 12px;
+              min-width: 120px;
+              display: flex;
+              flex-direction: column;
+              align-items: flex-start;
+              margin-bottom: 0;
+            }
+            .kot-table {
+              color:#252d3a;
+              font-size: 0.98em;
+              margin-bottom: 4px;
+              word-break: break-all;
+              font-weight: 500;
+            }
+            .kot-status {
+              margin-top: 2px;
+              color: #1fa944;
+              font-size: 0.93em;
+            }
+            .no-kot-items {
+              margin-top: 10px;
+              color: #b71c1c;
+              font-size: 1.04rem;
+            }
+          </style>
+      </div>
+    </div>
+  </ng-container>
   <!-- Table Section -->
 
   <!-- show popup reserve table start -->
@@ -243,7 +349,7 @@
   @if (show) {
   <div class="comman">
     <div class="row box">
-     
+     <span>{{args}}</span>
 
       <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" >
 
@@ -276,7 +382,7 @@
             <label for="DateOnly">Pick Date:</label>
           </div>
           <div class="col">
-            <input id="DateOnly" type="date" class="form-control" [min]="currentDateOnly" [value]="selectedDate"
+            <input id="DateOnly" type="date" formControlName="ReservedDate" class="form-control" [min]="currentDateOnly" [value]="selectedDate"
               (change)="onDateChange($event)" />
           </div>
         </div>
@@ -287,7 +393,7 @@
             <label for="TimeOnly">Pick Time (2 hour slots):</label>
           </div>
           <div class="col">
-            <select id="TimeOnly" class="form-control" [value]="selectedTime" (change)="onTimeChange($event)">
+            <select id="TimeOnly" formControlName="ReservedTimeSlot" class="form-control" [value]="selectedTime" (change)="onTimeChange($event)">
               <option *ngFor="let time of availableTimeSlots" [value]="time">{{ time }}</option>
             </select>
           </div>
@@ -421,7 +527,7 @@
             <label for="DateOnly">Pick Date:</label>
           </div>
           <div class="col">
-            <input id="DateOnly" type="date" class="form-control" [min]="currentDateOnly" [value]="selectedDate"
+            <input id="DateOnly" formControlName="ReservedDate" type="date" class="form-control" [min]="currentDateOnly" [value]="selectedDate"
               (change)="onDateChange($event)" />
           </div>
         </div>
@@ -433,7 +539,7 @@
           </div>
           <div class="col">
             <!--[value]="selectedTimeforEdit"-->
-            <select id="TimeOnly" class="form-control" [value]="selectedTime" (change)="onTimeChange($event)">
+            <select id="TimeOnly" formControlName="ReservedTimeSlot" class="form-control" [value]="selectedTime" (change)="onTimeChange($event)">
               <option *ngFor="let time of availableTimeSlots index as i"  [value]="selectedTimeforEdit" [selected]="selectedTimeforEdit.trim()==availableTimeSlots[i] || (1+selectedTimeforEdit.trim())==(1-(+availableTimeSlots[i]))" >{{ time  }}</option>
             </select>
           </div>

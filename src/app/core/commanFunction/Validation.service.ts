@@ -153,8 +153,8 @@ export class ValidationService {
     this.Validationenvironments.MobileNoExist$.next(false);
     console.log(MobileNo);
     Data$?.subscribe((getMobile: any[]) => {
-    console.log(getMobile);
-    console.log(_id);
+    // console.log(getMobile);
+    // console.log(_id);
        const mobileNoExists = getMobile.some(item => item.MobileNo === MobileNo && item._id !== _id);
        console.log('Mobile number exists:', mobileNoExists);
        this.Validationenvironments.MobileNoExist$.next(mobileNoExists);

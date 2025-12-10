@@ -141,10 +141,15 @@ id="desctxt" /></div>
 </div>
 }
 
-<ag-grid-angular class="box ag-theme-quartz" style="height:500px;" [rowData]="employeedata" [columnDefs]="colDefs"
+<!-- <ag-grid-angular class="box ag-theme-quartz" style="height:500px;" [rowData]="employeedata" [columnDefs]="colDefs"
   [pagination]="pagination" [paginationPageSize]="paginationPageSize"
-  [paginationPageSizeSelector]="paginationPageSizeSelector" (cellClicked)="onCellClick($event)" />
+  [paginationPageSizeSelector]="paginationPageSizeSelector" (cellClicked)="onCellClick($event)" /> -->
   <div>
+    <app-gird-table
+      [columns]="colDefs"
+      [data]="employeedata"
+      (rowClicked)="onRowClick($event)"
+    ></app-gird-table>
     <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()"
     [style]="display" [tabname]="tablename" [data]="valueid" [modal]="modal"></app-popupmodel>
   </div>

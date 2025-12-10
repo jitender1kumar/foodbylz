@@ -1,14 +1,19 @@
-<div class="category-sidebar">
-    <div class="category-card">
-      <div class="category-header">
-        <h5>Categories</h5>
-      </div>
-      <ul class="category-list">
-        <li *ngFor="let category of categorynamedata$ | async">
-          <button class="category-button" (click)="getproductbycategory(category._id)">
-            {{ category.name }}
-          </button>
-        </li>
-      </ul>
-    </div>
+<div class="category-sidebar bg-white rounded-2xl shadow-md py-6 px-3 flex flex-col items-center">
+  <div class="mb-5 w-full flex flex-col items-center">
+    <span class="inline-flex items-center justify-center bg-cyan-100 text-cyan-700 rounded-full w-12 h-12 mb-2 text-2xl shadow">
+      🍱
+    </span>
+    <h5 class="text-xl font-bold text-cyan-800 tracking-wide">Categories</h5>
   </div>
+  <ul class="w-full flex flex-col gap-2">
+    <li *ngFor="let category of categorynamedata$ | async">
+      <button
+        class="w-full bg-cyan-50 hover:bg-cyan-100 text-cyan-800 font-medium py-2 px-4 rounded-lg transition-all flex justify-start items-center shadow-sm hover:shadow-md text-base"
+        (click)="getproductbycategory(category._id)"
+      >
+        <span class="mr-3 text-lg">🔹</span>
+        {{ category.name }}
+      </button>
+    </li>
+  </ul>
+</div>

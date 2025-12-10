@@ -9,6 +9,7 @@ import { PopupmodelComponent } from '../popupmodel/popupmodel.component';
 import { CustomersComponent } from './customers.component';
 import { AddcustomersComponent } from './addcustomers/addcustomers.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { GridTableModule } from '../core/shared/dynamicTable/gird-table/gridtable.module';
 const routes: Routes = [
   {path:'customers',component:CustomersComponent}
 ];
@@ -20,7 +21,7 @@ const routes: Routes = [
   imports: [
     CommonModule, AgGridAngular, BrowserModule, ReactiveFormsModule, RouterModule.forRoot(routes),
     FormsModule,PopupmodelComponent,
-    PopupCrudComponent,NgSelectModule
+    PopupCrudComponent,NgSelectModule,GridTableModule
     
 ],
   exports:[CustomersComponent]

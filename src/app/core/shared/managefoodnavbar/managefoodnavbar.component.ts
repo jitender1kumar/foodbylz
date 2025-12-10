@@ -18,7 +18,11 @@ import { trigger, transition, style, animate } from '@angular/animations';
     standalone: false
 })
 export class ManagefoodnavbarComponent {
-
+  sectionOpenCat = true;
+    sectionOpenFood = false;
+    sectionOpenDine = false;
+    sectionOpenInventory = false;
+    sectionOpenGeneral = false;
   sidebarCollapsed = false;
   activeSubmenu: string = '';
 

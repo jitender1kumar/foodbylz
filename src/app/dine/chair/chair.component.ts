@@ -11,6 +11,7 @@ import { ChairService } from '../../core/Services/chair.service';
 import { DineService } from '../../core/Services/dine.service';
 import { FloorService } from '../../core/Services/floor.service';
 import {  ValidationService } from '../../core/commanFunction/Validation.service';
+import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 
 @Component({
   selector: 'app-chair',
@@ -37,11 +38,11 @@ export class ChairComponent implements OnInit, ICellRendererAngularComp {
   popdata2: any = null;
 
   // AG Grid
-  colDefs: ColDef[] = [
-    { field: "FloorName" },
-    { field: "DineTable" },
-    { field: "name" },
-    { field: "description", flex: 2 },
+  colDefs: ColumnDef[] = [
+    { field: "FloorName" ,sortable:true},
+    { field: "DineTable",sortable:true },
+    { field: "name",sortable:true },
+    { field: "description",sortable:true },
     { field: "Delete", cellRenderer: BasetypDeleteButtun },
     { field: "Edit", cellRenderer: BasetypEditButtun }
   ];
@@ -159,30 +160,32 @@ Floordata2: any;
     }
   }
   }
-
-  onCellClick(event: any): void {
-    if (event.colDef.field === 'Delete') {
+  onRowClick(r: any) { console.log('clicked row', r);
+    // console.log(this.colDefs);
+    if (r[0].field == 'Delete') {
       this.modal = "modal";
       this.display = "display:block;";
-      this.valueid = event.data._id;
+      this.valueid = r[0].row._id;
       this.tablename = "dine";
-    } else if (event.colDef.field === 'Edit') {
-      this.loadDines();
-      this.popdata2 = event.data;
+    }
+    if (r[0].field == 'Edit') {
+    //  this.loadDines();
+      this.popdata2 = r[0].row;
       this.showEdit = true;
       this.show = false;
       this.args = null;
       this.myEditForm = this.fb.group({
-        _id: [event.data._id],
-        name: [event.data.name, Validators.required],
-        description: [event.data.description],
-        status: [event.data.status, Validators.required],
-        table_id: [event.data.table_id, Validators.required],
-        chairorderstatus: [event.data.chairorderstatus, Validators.required]
+        _id: [r[0].row._id],
+        name: [r[0].row.name, Validators.required],
+        description: [r[0].row.description],
+        status: [r[0].row.status, Validators.required],
+        table_id: [r[0].row.table_id, Validators.required],
+        chairorderstatus: [r[0].row.chairorderstatus, Validators.required]
       });
     }
-    this.loadChairs();
-  }
+   // this.loadChairs();
+   }
+  
 
   add(chair: IChair): void {
     if (this.ValidationService_.checkChairNameExist(

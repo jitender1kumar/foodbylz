@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/internal/Observable';
-
+import {  map } from 'rxjs';
 @Component({
   selector: 'app-homeleftpanel',
   standalone: false,
@@ -10,6 +10,8 @@ import { Observable } from 'rxjs/internal/Observable';
 })
 export class HomeleftpanelComponent implements OnInit {
   @Output() getproductbycategoryclicked = new EventEmitter<any>();
+  @Output() topselling = new EventEmitter<any>();
+  
   response:any;
   loading$?: Observable<boolean>;
   error$?: Observable<string | null>;
@@ -19,16 +21,28 @@ export class HomeleftpanelComponent implements OnInit {
     categoryLoad: any
   }>)
   {
-    this.initObservables();
+    
   }
   ngOnInit(): void {
-    
+    this.initObservables();
+    this.getproductbycategory("999");
    }
   initObservables()
   {
-    this.categorynamedata$ = this.store.select(state => state.categoryLoad.ProductCategory_.data);
+    // this.categorynamedata$ = this.store.select(state => state.categoryLoad.ProductCategory_.data);
+    this.categorynamedata$ = this.store
+  .select(state => state.categoryLoad.ProductCategory_.data)
+  .pipe(
+    map(categories => [
+      { name: 'TopsellingItem', _id: "999" },
+      ...categories
+    ])
+    );
+    
+    //this.topselling.emit();
   }
   getproductbycategory(_id:string) {
+    
      // this.style="display:none;";
       //    if(PopupmodelComponent.delete==true)
     //    {

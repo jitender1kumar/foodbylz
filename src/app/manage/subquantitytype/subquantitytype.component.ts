@@ -4,10 +4,9 @@ import { QuantitytypeService } from '../../core/Services/quantitytype.service';
 import { Router } from '@angular/router';
 import { subQuantityType } from '../../core/Model/crud.model';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ColDef, ICellRendererParams } from 'ag-grid-community';
+import {  ICellRendererParams } from 'ag-grid-community';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
 import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
-import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { ProductPriceService } from '../../core/Services/productprice.service';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -23,6 +22,7 @@ import { loadQuantityType } from '../ManageStore/quntityTypeStore/quntityType.ac
 import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
 import { Actions, ofType } from '@ngrx/effects';
 import { ValidationService } from '../../core/commanFunction/Validation.service';
+import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 
 @Component({
   selector: 'app-subQuantityType',
@@ -31,7 +31,7 @@ import { ValidationService } from '../../core/commanFunction/Validation.service'
   standalone: false
 })
 @Injectable({ providedIn: 'root' })
-export class SubQuantityTypeComponenet implements OnInit, ICellRendererAngularComp {
+export class SubQuantityTypeComponenet implements OnInit {
   // Observables for data and UI state
   subQuantityTypeData$!: Observable<any[]>;
   Qtypenamedata$!: Observable<any[]>;
@@ -58,12 +58,10 @@ export class SubQuantityTypeComponenet implements OnInit, ICellRendererAngularCo
   productrecord: any;
 
   // Table config
-  pagination = true;
-  paginationPageSize = 10;
-  paginationPageSizeSelector = [10,200, 500, 1000];
-  colDefs: ColDef[] = [
-    { field: 'name' },
-    { field: 'decription', flex: 2 },
+  
+  colDefs: ColumnDef[] = [
+    { field: 'name',sortable:true },
+    { field: 'decription', sortable:true},
     { field: 'Delete', cellRenderer: BasetypDeleteButtun },
     { field: 'Edit', cellRenderer: BasetypEditButtun }
   ];
@@ -145,28 +143,28 @@ export class SubQuantityTypeComponenet implements OnInit, ICellRendererAngularCo
       this.sweetAlert2.showFancyAlertFail('Loading Failed.');
     });
   }
-
-  onCellClick(event: any) {
-    if (event.colDef.field === 'Delete') {
+  onRowClick(r: any) { console.log('clicked row', r);
+    // console.log(this.colDefs);
+    if (r[0].field == 'Delete') {
       this.modal = 'modal';
       this.display = 'display:block;';
-      this.valueid = event.data._id;
+      this.valueid = r[0].row._id;
       this.tablename = 'base';
     }
-    if (event.colDef.field === 'Edit') {
-      this.popdata2 = event.data;
+    if (r[0].field == 'Edit') {
+      this.popdata2 = r[0].row;
       this.showEdit = true;
       this.show = false;
       this.args = null;
       this.myEditForm.patchValue({
-        _id: event.data._id,
-        name: event.data.name,
-        description: event.data.description,
-        selectQtypeID: event.data.selectQtypeID
+        _id: r[0].row._id,
+        name: r[0].row.name,
+        description: r[0].row.description,
+        selectQtypeID: r[0].row.selectQtypeID
       });
     }
-    this.loadSubQuantityType();
-  }
+   }
+ 
 
   add(subQuantityType_: subQuantityType): void {
     const name = this.myAddForm.value.name.trim();

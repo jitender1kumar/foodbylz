@@ -21,7 +21,31 @@ export class ProductPriceService {
     return this.http.delete(`${this.productPriceUrl}/${_id}`);
 
   }
+  getPriceByShortcode(shortcode: any): Observable<ProductPrice[]> {
+    if(this.isPureInteger(shortcode))
+    {
+let ShortCodeNumber = +shortcode;
+ return this.getPriceByShortcodeNumber(ShortCodeNumber);
 
+    }
+    else
+    {
+      const ShortCodeString = shortcode;
+     return this.getPriceByShortcodeString(ShortCodeString);
+    }
+  // return "";
+  }
+  getPriceByShortcodeString(ShortCodeString:string): Observable<ProductPrice[]>
+  {
+    return this.http.get<ProductPrice[]>(`${this.productPriceUrl}/${ShortCodeString}`);
+  }
+  getPriceByShortcodeNumber(ShortCodeNumber:number): Observable<ProductPrice[]>
+  {
+    return this.http.get<ProductPrice[]>(`${this.productPriceUrl}/${ShortCodeNumber}`);
+  }
+   isPureInteger(str: string): boolean {
+    return /^[0-9]+$/.test(str);
+  }
   update(productprice: ProductPrice) {
     return this.http.put(this.productPriceUrl, { productprice });
   }
@@ -45,7 +69,7 @@ export class ProductPriceService {
   get(): Observable<ProductPrice[]> {
     return this.http.get<ProductPrice[]>(this.productPriceUrl);
   }
-  post(productprices: ProductPrice): Observable<ProductPrice> {
-    return this.http.post<ProductPrice>(this.productPriceUrl, productprices);
+  post(productprice: ProductPrice): Observable<ProductPrice> {
+    return this.http.post<ProductPrice>(this.productPriceUrl, productprice);
   }
 }

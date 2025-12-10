@@ -12,6 +12,7 @@ import { OrdersgraphsComponent } from './ordersgraphs/ordersgraphs.component';
 import { DisplayOrdersInBoxComponent } from './display-orders-in-box/display-orders-in-box.component';
 import { DisplayOrdersListComponent } from './display-orders-list/display-orders-list.component';
 import { OrderDiplayInPopUpComponent } from './order-diplay-in-pop-up/order-diplay-in-pop-up.component';
+import { GridTableModule } from '../core/shared/dynamicTable/gird-table/gridtable.module';
 
 const routes: Routes = [
  
@@ -30,7 +31,7 @@ const routes: Routes = [
   imports: [
     CommonModule, AgGridAngular, BrowserModule, ReactiveFormsModule, RouterModule.forRoot(routes),
         FormsModule,PopupmodelComponent,
-        PopupCrudComponent
+        PopupCrudComponent,GridTableModule
   ],
   exports:[
       OrdersComponent,

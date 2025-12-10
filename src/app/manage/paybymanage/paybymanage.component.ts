@@ -3,7 +3,6 @@ import { Component, Injectable, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Paybymanage } from '../../core/Model/crud.model';
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
-import { ColDef } from 'ag-grid-community';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
 import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
 import { PaybyService } from '../../core/Services/paybymanage.service';
@@ -11,6 +10,7 @@ import { Validationenvironment } from '../../environment/validtionEnvironment';
 import { popupenvironment } from '../../environment/popupEnvironment';
 import { ManageDataEnvironment } from '../../environment/dataEnvironment';
 import { ValidationService } from '../../core/commanFunction/Validation.service';
+import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 
 @Component({
   selector: 'app-paybymanage',
@@ -24,9 +24,7 @@ import { ValidationService } from '../../core/commanFunction/Validation.service'
 export class PaybymanageComponent implements OnInit {
 
   myEditForm: FormGroup;
-  pagination = true;
-  paginationPageSize = 10;
-  paginationPageSizeSelector = [10, 200, 500, 1000];
+  
   @ViewChild('f')
   categoryViewchild!: NgForm;
   @ViewChild('formupdate')
@@ -37,14 +35,15 @@ export class PaybymanageComponent implements OnInit {
     name: 'undefined',
     desc: 'undefined'
   };
-  colDefs: ColDef[] = [
-    { field: "name" },
-    { field: "desc", flex: 2 },
+
+  colDefs: ColumnDef[] = [
+    { field: "name", sortable: true },
+    { field: "desc", sortable: true },
     { field: "Delete", cellRenderer: BasetypDeleteButtun },
     { field: "Edit", cellRenderer: BasetypEditButtun }
-
   ];
 
+  
 
 
   myAddForm: FormGroup;
@@ -84,19 +83,7 @@ export class PaybymanageComponent implements OnInit {
     else {console.log(valid.value);
       this.addPayBy(paybymanage);}
     }
-    // if (valid.value) {
-    //   this.popupenvironments.args$.next("Payby Exists: " + paybymanage.name);
-    // }
-    // else {
-
-    //   this.service.add(paybymanage).subscribe(res => {
-    //     if (res) {
-    //       this.popupenvironments.args$.next("Successfully Added ..." + paybymanage.name);
-    //       this.loadpayby();
-
-    //     }
-    //   })
-    // }
+  
   }
   addPayBy(paybymanage: Paybymanage)
   {
@@ -108,35 +95,47 @@ export class PaybymanageComponent implements OnInit {
         }
       })
   }
-  onCellClick(event: any) {
-
-    if (event.colDef.field == 'Delete') {
+  onRowClick(r: any) { console.log('clicked row', r);
+    // console.log(this.colDefs);
+    if (r[0].field == 'Delete') {
+      // this.deleteDisplayBlock(r[0].row);
       this.popupenvironments.modal$.next("modal");
       this.popupenvironments.display$.next("display:block;");
-      this.popupenvironments.valueid$.next(event.data._id);
+      this.popupenvironments.valueid$.next(r[0].row._id);
       this.popupenvironments.tablename$.next("cate");
     }
-    if (event.colDef.field == 'Edit') {
-      this.popupenvironments.popdata2$.next(event.data);
+    if (r[0].field == 'Edit') {
+      //this.editDisplayBlock(r[0].row);
+      this.popupenvironments.popdata2$.next(r[0].row);
       this.popupenvironments.showEdit$.next(true);
       this.popupenvironments.show$.next(false);
       this.popupenvironments.args$.next(null);
 
 
       this.myEditForm = this.formedit.group({
-        _id: [event.data._id],
-        name: [event.data.name, Validators.required],
-        desc: [event.data.desc]
+        _id: [r[0].row._id],
+        name: [r[0].row.name, Validators.required],
+        desc: [r[0].row.desc]
 
       });
     }
-  }
+   }
+  onCellClick(event: any) {
 
+    if (event.colDef.field == 'Delete') {
+     
+    }
+    if (event.colDef.field == 'Edit') {
+     
+    }
+  }
+  PayByData:any;
   loadpayby() {
     this.service.get().subscribe(data => {
       if (data) {
         this.ManageDataEnvironments.Payby2$.next(data);
         this.ManageDataEnvironments.Payby$.next(this.ManageDataEnvironments.Payby2$?.value.data);
+        this.PayByData=this.ManageDataEnvironments.Payby2$?.value.data;
        }
     })
   }

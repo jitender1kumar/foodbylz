@@ -2,14 +2,12 @@ import { Component, Injectable, OnInit, ViewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CompanyProfile } from '../../core/Model/crud.model';
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
-import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
 import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
 //import { basetyperowData } from './basetype.model';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
-import { PopupmodelComponent } from '../../popupmodel/popupmodel.component';
-import { EmployeeService } from '../../core/Services/employee.service';
 import { CompanyProfileService } from '../../core/Services/companyprofile.service';
+import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 
 @Component({
     selector: 'app-companyprofile',
@@ -18,7 +16,7 @@ import { CompanyProfileService } from '../../core/Services/companyprofile.servic
     standalone: false
 })
 @Injectable({ providedIn: 'root' })
-export class CompanyprofileComponent  implements OnInit, ICellRendererAngularComp {
+export class CompanyprofileComponent  implements OnInit {
   args: any = null;
   myEditForm: FormGroup;
   qid: any;
@@ -39,12 +37,7 @@ export class CompanyprofileComponent  implements OnInit, ICellRendererAngularCom
   valueid: any;
   tablename: any;
   myAddForm: FormGroup;
-  agInit(params: ICellRendererParams): void {
-    this.id = params.data._id;
-    //this.rowData= params.api.refreshClientSideRowModel;
-    // console.log(params);
-
-  }
+  
   //static rowData:any;
   // Column Definitions: Defines the columns to be displayed.
   //lodbastype: basetyperowData[] = [];
@@ -52,7 +45,7 @@ export class CompanyprofileComponent  implements OnInit, ICellRendererAngularCom
   paginationPageSize = 10;
   paginationPageSizeSelector = [10,200, 500, 1000];
 
-  colDefs: ColDef[] = [
+  colDefs: ColumnDef[] = [
     { field: "name" },
     { field: "tilte" },
     { field: "desc" },
@@ -131,57 +124,45 @@ this.display="display:none;"
     this.loadcompanyprofile();
 
   }
-  refresh(params: ICellRendererParams<any, any, any>): boolean {
-    throw new Error('Method not implemented.');
-  }
-
-  onCellClick(event: any) {
-
-    if (event.colDef.field == 'Delete') {
+  
+  onRowClick(r: any) { console.log('clicked row', r);
+    // console.log(this.colDefs);
+    if (r[0].field == 'Delete') {
       this.modal = "modal";
       this.display = "display:block;"
-      this.valueid = event.data._id;
+      this.valueid = r[0].row._id;
       this.tablename = "base";
-      // alert(this.valueid);
-      //    if(PopupmodelComponent.delete==true)
-      //    {
-      // this.service.delete(event.data._id).subscribe(res => {
-      //   alert("Successfully Delete BaseType...");
-      //     // this.args="Successfully Deleted "+event.data.Basetypename;
-      //    })
-      //    }
-
-
     }
-    if (event.colDef.field == 'Edit') {
-      this.popdata2 = event.data;
+    if (r[0].field == 'Edit') {
+      this.popdata2 = r[0].row;
       this.showEdit = true;
       this.show = false;
       this.args = null;
       this.myEditForm = this.formedit.group({
-        _id: [event.data._id],
-        name:[event.data.name],
-        tilte: [event.data.tilte],
-         desc: [event.data.desc],
-         GSTNumber:[event.data.GSTNumber],
-          turnover: [event.data.turnover],
-          address:  [event.data.address],
-          mobilenumber: [event.data.mobilenumber],
-          mobilenumber2: [event.data.mobilenumber2],
-          customercarenumber:[event.data.customercarenumber],
-          maplocation1: [event.data.maplocation1],
-          maplocation2: [event.data.maplocation2],
-          telephonenumber: [event.data.telephonenumber],
-          companyId: [event.data.companyId],
-          companyphoto: [event.data.companyphoto],
-          websitelink:  [event.data.websitelink],
-          logo:[event.data.logo],
+        _id: [r[0].row._id],
+        name:[r[0].row.name],
+        tilte: [r[0].row.tilte],
+         desc: [r[0].row.desc],
+         GSTNumber:[r[0].row.GSTNumber],
+          turnover: [r[0].row.turnover],
+          address:  [r[0].row.address],
+          mobilenumber: [r[0].row.mobilenumber],
+          mobilenumber2: [r[0].row.mobilenumber2],
+          customercarenumber:[r[0].row.customercarenumber],
+          maplocation1: [r[0].row.maplocation1],
+          maplocation2: [r[0].row.maplocation2],
+          telephonenumber: [r[0].row.telephonenumber],
+          companyId: [r[0].row.companyId],
+          companyphoto: [r[0].row.companyphoto],
+          websitelink:  [r[0].row.websitelink],
+          logo:[r[0].row.logo],
  
       });
 
     }
-    this.loadcompanyprofile();
-  }
+    // this.loadcompanyprofile();
+   }
+ 
 
   ngOnInit(): void {
     this.loadcompanyprofile();

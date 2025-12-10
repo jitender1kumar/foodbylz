@@ -191,7 +191,7 @@ tr
 }
 
 .item-list {
-    max-height:150px;
+    max-height:200px;
   overflow-y: scroll;
   display: flex;
   flex-direction: column;

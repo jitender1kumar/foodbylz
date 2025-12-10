@@ -16,8 +16,8 @@ import * as InvoiceActions from '../../core/store/invoiceStor/invoice.actions';
   styleUrl: './add-on-items.component.css'
 })
 export class AddOnItemsComponent implements OnInit {
-  @Input() showPopUp!: boolean;
-  @Input() closePopUp!: boolean;
+  @Input() showPopUp!: any;
+  @Input() closePopUp!: any;
   @Input()
   addOnProducts: any[] = [];
   @Input()
@@ -134,28 +134,6 @@ export class AddOnItemsComponent implements OnInit {
     const index = this.addOnProducts.findIndex(items => items._id === this.selectedAddOnProduct);
     console.log(item);
 
-    // if (item) {
-    //   this.returnAddOnItemsArray=[];
-    // this.returnAddOnItemsArray.push({
-    //   SelectProductId: item.SelectProductId,
-    //   SubQuantityTypeID: item.SubQuantityTypeID,
-    // });
-    //   this.AddOnProductEdit_ = {
-    //     name: item.name,
-    //     description: item.description,
-    //     Price: item.Price,
-    //     SelectProductId: item.SelectProductId,
-    //     SubQuantityTypeID: item.SubQuantityTypeID,
-    //     employee_id: item.employee_id,
-    //     _id: item._id, createdAt: new Date(),
-    //     updatedAt: new Date(),
-    //     __v: undefined
-    //   };
-    //   this.selectedAddOnItems.push(this.AddOnProductEdit_);
-    // }
-
-   // for (let i = 0; i < this.selectedAddOnItems.length; i++) {
-    // Prevent adding same item more than once
     this.alreadyExists=false;
     this.AddOnItemsArray = this.selectedAddOnItems;
 

@@ -159,7 +159,7 @@
 </div>
 
 <!-- Data Table -->
-<ag-grid-angular
+<!-- <ag-grid-angular
   class="box ag-theme-quartz"
   style="height:500px;"
   [rowData]="addOnDataArray"
@@ -168,8 +168,13 @@
   [paginationPageSize]="paginationPageSize"
   [paginationPageSizeSelector]="paginationPageSizeSelector"
   (cellClicked)="onCellClick($event)"
-></ag-grid-angular>
+></ag-grid-angular> -->
 
+<app-gird-table
+      [columns]="colDefs"
+      [data]="addOnDataArray"
+      (rowClicked)="onRowClick($event)"
+    ></app-gird-table>
 <!-- Popup Modal -->
 <div>
   <app-popupmodel

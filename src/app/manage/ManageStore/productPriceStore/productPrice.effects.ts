@@ -19,7 +19,30 @@ export class ProductPriceEffects {
       )
     )
   );
-
+  loadProductPriceByShortcode$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProductPriceAction.loadProductPriceByShortcode),
+      mergeMap((action) =>
+        this.ProductPriceService.getPriceByShortcode(action.shortcode).pipe(
+          map((ProductPrice_) =>ProductPriceAction.loadProductPriceByShortcodeSuccess({ ProductPrice_ })),
+          catchError((error) =>of(ProductPriceAction.loadProductPriceByShortcodeFailure({ error:error.message })))
+        )
+      )
+    )
+  );
+  // loadSubQuantityById$ = createEffect(() =>
+  //   this.actions$.pipe(
+  //     ofType(SubQuantityTypeAction.loadSubQuantityTypeById),
+  //     mergeMap((action) =>
+  //       this.SubQuantityTypeService.getbyid(action.selectQtypeID).pipe(
+  //         map((SubQuantityType_) => SubQuantityTypeAction.loadSubQuantityTypeByIdSuccess({ SubQuantityType_ })),
+  //         catchError((error) =>
+  //           of(SubQuantityTypeAction.loadSubQuantityTypeByIdFailure({ error: error.message }))
+  //         )
+  //       )
+  //     )
+  //   )
+  // );
   addProductPrice$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ProductPriceAction.addProductPrice),

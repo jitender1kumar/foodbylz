@@ -89,7 +89,7 @@
   </div>
 }
 
-<ag-grid-angular class="box ag-theme-quartz"
+<!-- <ag-grid-angular class="box ag-theme-quartz"
   style="height:500px;"
   [rowData]="Customersdata$ | async"
   [columnDefs]="colDefs"
@@ -97,7 +97,14 @@
   [paginationPageSize]="paginationPageSize"
   [paginationPageSizeSelector]="paginationPageSizeSelector"
   (cellClicked)="onCellClick($event)"
-  />
+  /> -->
+  <ng-container *ngIf="Customersdata$ | async as Customersdata">
+    <app-gird-table
+    [columns]="colDefs"
+    [data]="Customersdata "
+    (rowClicked)="onRowClick($event)"
+    ></app-gird-table>
+    </ng-container>
   <div >
     <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()" [style]="display" [tabname]="tablename" [data]="valueid" [modal]="modal"></app-popupmodel>
   </div>

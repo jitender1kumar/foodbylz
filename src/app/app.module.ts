@@ -1,26 +1,15 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideHttpClient } from '@angular/common/http';
 import { NavbarComponent } from './core/shared/navbar/navbar.component';
 import { RouterModule, Routes } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { AgGridAngular } from 'ag-grid-angular';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { StoreModule } from '@ngrx/store';
-import 'ag-grid-community/styles/ag-grid.css';
-/* Quartz Theme Specific CSS */
-import { ReactiveFormsModule } from '@angular/forms'; // Import ReactiveFormsModule
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import 'ag-grid-community/styles/ag-theme-quartz.css';
-import { PopupmodelComponent} from './popupmodel/popupmodel.component';
-//import { HomeComponent } from './home/home.component';
-// import { PickupComponent } from './orderMode/pickup/pickup.component';
-// import { OnlinedeliveryComponent } from './orderMode/onlinedelivery/onlinedelivery.component';
+import { PopupmodelComponent } from './popupmodel/popupmodel.component';
 import { ManagefoodnavbarComponent } from './core/shared/managefoodnavbar/managefoodnavbar.component';
-// import { RunningordersComponent } from './dine/runningorders/runningorders.component';
-// import { GoodscollectionComponent } from '../../userend/crud/goodscollection/goodscollection.component';
 import { PaybymanageComponent } from './manage/paybymanage/paybymanage.component';
 import { InventoryModule } from './inventory/inventory.module';
 import { DineModule } from './dine/dine.module';
@@ -32,12 +21,46 @@ import { ShowbuttonComponent } from './showbutton/showbutton.component';
 import { InventoryFoodQuantityTypeLoadReducer } from './inventory/inventoryStore/inventoryFoodQuantityTypeStore/inventoryFoodQuantityType.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { ProductInventoryFoodQuantityTypeEffects } from './inventory/inventoryStore/inventoryFoodQuantityTypeStore/inventoryFoodQuantityType.effects';
-import { categoryAddReducer, categoryDeleteReducer, categoryLoadReducer, categoryUpdateReducer } from './manage/ManageStore/categoryStore/category.reducer';
-import { productPriceAddReducer, productPriceDeleteReducer, productPriceLoadReducer, productPriceUpdateReducer } from './manage/ManageStore/productPriceStore/productPrice.reducer';
-import { ProductAddReducer, ProductByIdLoadReducer, ProductDeleteReducer, ProductLoadReducer, ProductUpdateReducer } from './manage/ManageStore/productStore/product.reducer';
-import { QuantityTypeAddReducer, QuantityTypeDeleteReducer, QuantityTypeLoadReducer, QuantityTypeUpdateReducer } from './manage/ManageStore/quntityTypeStore/quntityType.reducer';
-import { SubQuantityTypeAddReducer, SubQuantityTypeByIdLoadReducer, SubQuantityTypeByNameLoadReducer, SubQuantityTypeDeleteReducer, SubQuantityTypeLoadReducer, SubQuantityTypeUpdateReducer } from './manage/ManageStore/subQuantityTypeStore/subQuantityType.reducer';
-import { TaxAddReducer, TaxDeleteReducer, TaxLoadReducer, TaxUpdateReducer } from './manage/ManageStore/taxStore/tax.reducer';
+import {
+  categoryAddReducer,
+  categoryDeleteReducer,
+  categoryLoadReducer,
+  categoryUpdateReducer
+} from './manage/ManageStore/categoryStore/category.reducer';
+import {
+  productPriceAddReducer,
+  productPriceDeleteReducer,
+  productPriceLoadReducer,
+  productPriceUpdateReducer,
+  productPriceReducerShortcode
+} from './manage/ManageStore/productPriceStore/productPrice.reducer';
+import {
+  ProductAddReducer,
+  ProductByIdLoadReducer,
+  ProductDeleteReducer,
+  ProductLoadReducer,
+  ProductUpdateReducer
+} from './manage/ManageStore/productStore/product.reducer';
+import {
+  QuantityTypeAddReducer,
+  QuantityTypeDeleteReducer,
+  QuantityTypeLoadReducer,
+  QuantityTypeUpdateReducer
+} from './manage/ManageStore/quntityTypeStore/quntityType.reducer';
+import {
+  SubQuantityTypeAddReducer,
+  SubQuantityTypeByIdLoadReducer,
+  SubQuantityTypeByNameLoadReducer,
+  SubQuantityTypeDeleteReducer,
+  SubQuantityTypeLoadReducer,
+  SubQuantityTypeUpdateReducer
+} from './manage/ManageStore/subQuantityTypeStore/subQuantityType.reducer';
+import {
+  TaxAddReducer,
+  TaxDeleteReducer,
+  TaxLoadReducer,
+  TaxUpdateReducer
+} from './manage/ManageStore/taxStore/tax.reducer';
 import { ProductCategoryEffects } from './manage/ManageStore/categoryStore/category.effects';
 import { ProductPriceEffects } from './manage/ManageStore/productPriceStore/productPrice.effects';
 import { ProductEffects } from './manage/ManageStore/productStore/product.effects';
@@ -54,46 +77,73 @@ import { HomeComponent } from './home/home.component';
 import { CustomersModule } from './customers/customers.module';
 import { HomeModule } from './home/home.module';
 import { FloorEffects } from './dine/dineStore/floorStore/floor.effects';
-import { floorAddReducer, floorDeleteReducer, floorLoadReducer, floorUpdateReducer } from './dine/dineStore/floorStore/floor.reducer';
+import {
+  floorAddReducer,
+  floorDeleteReducer,
+  floorLoadReducer,
+  floorUpdateReducer
+} from './dine/dineStore/floorStore/floor.reducer';
 import { dineTableReducer } from './dine/dineStore/dinetableStore/dinetable.reducer';
 import { DineEffects } from './dine/dineStore/dinetableStore/dinetable.effects';
 import { invoiceReducer } from './core/store/invoiceStor/invoice.reducers';
 import { InvoiceEffects } from './core/store/invoiceStor/invoice.effects';
 import { customersReducer } from './customers/customersStore/customers.reducer';
 import { CustomersEffects } from './customers/customersStore/customers.effects';
-import { addOnProductEditReducer, addOnProductReducer, getAddOnProductByIdReducer, getByProductIdSubQTypeIDAddOnProductsReducer, loadAddOnProductReducer } from './manage/ManageStore/addOnProductStore/addOnProduct.reducer';
+import {
+  addOnProductEditReducer,
+  addOnProductReducer,
+  getAddOnProductByIdReducer,
+  getByProductIdSubQTypeIDAddOnProductsReducer,
+  loadAddOnProductReducer
+} from './manage/ManageStore/addOnProductStore/addOnProduct.reducer';
 import { AddOnProductEffects } from './manage/ManageStore/addOnProductStore/addOnProduct.effects';
 import { productItemReducer } from './home/homeStore/productItemStore/productItem.reducers';
 import { ProductItemEffects } from './home/homeStore/productItemStore/productItem.effects';
-import {  runningItemsReducer } from './home/homeStore/runningItemStore/runningItem.reducers';
+import { runningItemReducer } from './home/homeStore/runningItemStore/runningItem.reducers';
 import { metaReducers } from './home/homeStore/runningItemStore/localStorage';
+import { GirdTableComponent } from './core/shared/dynamicTable/gird-table/gird-table.component';
+import { GridTableModule } from './core/shared/dynamicTable/gird-table/gridtable.module';
+import { CompanyloginComponent } from './company/companyAuth/companylogin/companylogin.component';
+import { reserveTableReducer } from './dine/dineStore/reserveTableStore/reserveTable.reducer';
+import { ReserveTableEffects } from './dine/dineStore/reserveTableStore/reserveTable.effect';
+import { RunningItemEffects } from './home/homeStore/runningItemStore/runningItem.effects';
 
 const routes: Routes = [
- 
   { path: 'popup', component: PopupmodelComponent },
   { path: '', component: HomeComponent },
+ 
   { path: 'dashboard', component: DashboardComponent },
-  
-  // {path:'runningorder',component:RunningordersComponent},
-  {path:'Payby',component:PaybymanageComponent},
-  {path:'manage',component:ManageComponent},
+  { path: 'Payby', component: PaybymanageComponent },
+  { path: 'manage', component: ManageComponent },
+  { path: 'Home', component: HomeComponent },
 ];
+
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
     ManagefoodnavbarComponent,
-    // RunningordersComponent,
     PaybymanageComponent,
     ShowbuttonComponent,
   ],
   imports: [
-    BrowserModule, ReactiveFormsModule, RouterModule.forRoot(routes),
-    FormsModule, AgGridAngular,
-    AppRoutingModule,CompanyModule,ManageModule,DashboardModule,
-    DineModule,BrowserAnimationsModule,CustomersModule,HomeModule,
-    InventoryModule,PopupmodelComponent
-    ,StoreModule.forRoot({ 
+    BrowserModule,
+    ReactiveFormsModule,
+    RouterModule.forRoot(routes),
+    FormsModule,
+    GridTableModule,
+    AppRoutingModule,
+    CompanyModule,
+    ManageModule,
+    DashboardModule,
+    HomeModule,
+    DineModule,
+    BrowserAnimationsModule,
+    CustomersModule,
+    InventoryModule,
+    // Remove PopupmodelComponent from imports, as it should be declared, not imported as a module
+    StoreModule.forRoot(
+      {
         categoryLoad: categoryLoadReducer,
         categoryAdd: categoryAddReducer,
         categoryUpdate: categoryUpdateReducer,
@@ -102,6 +152,7 @@ const routes: Routes = [
         productPriceAdd: productPriceAddReducer,
         productPriceUpdate: productPriceUpdateReducer,
         productPriceDelete: productPriceDeleteReducer,
+        productPriceReducerShortcode_:productPriceReducerShortcode,
         productLoad: ProductLoadReducer,
         productAdd: ProductAddReducer,
         productUpdate: ProductUpdateReducer,
@@ -121,29 +172,30 @@ const routes: Routes = [
         taxAdd: TaxAddReducer,
         taxUpdate: TaxUpdateReducer,
         taxDelete: TaxDeleteReducer,
-        //end manage module
+        // Inventory-related reducers
         loadInventoryFoodQuantityType: InventoryFoodQuantityTypeLoadReducer,
         loadInventoryMainFood: InventoryMainFoodLoadReducer,
         loadAssocciatedInvtoryFood: InventoryFoodwithProductLoadReducer,
-        // floor reducer
-       LoadFloor:floorLoadReducer,
-        AddFloor:floorAddReducer,
-        UpdateFloor:floorDeleteReducer,
-        DeleteFloor:floorUpdateReducer,
-        dineTableReducer_:dineTableReducer,
-        invoiceReducer_:invoiceReducer,
-        customersReducer_:customersReducer,
-        addOnProductReducer_:addOnProductReducer,
-        loadAddOnProductReducer_:loadAddOnProductReducer,
-        addOnProductEditReducer_:addOnProductEditReducer,
-        productItemReducer_:productItemReducer,
-        getByProductIdSubQTypeIDAddOnProductsReducer_:getByProductIdSubQTypeIDAddOnProductsReducer,
-        getAddOnProductByIdReducer_:getAddOnProductByIdReducer,
-        runningItemReducer_: runningItemsReducer
+        // Floor-related reducers
+        LoadFloor: floorLoadReducer,
+        AddFloor: floorAddReducer,
+        UpdateFloor: floorUpdateReducer,
+        DeleteFloor: floorDeleteReducer,
+        dineTableReducer_: dineTableReducer,
+        invoiceReducer_: invoiceReducer,
+        customersReducer_: customersReducer,
+        addOnProductReducer_: addOnProductReducer,
+        loadAddOnProductReducer_: loadAddOnProductReducer,
+        addOnProductEditReducer_: addOnProductEditReducer,
+        productItemReducer_: productItemReducer,
+        getByProductIdSubQTypeIDAddOnProductsReducer_: getByProductIdSubQTypeIDAddOnProductsReducer,
+        getAddOnProductByIdReducer_: getAddOnProductByIdReducer,
+        runningItemReducer_: runningItemReducer,
+        reserveTableReducer_:reserveTableReducer,
       },
-      { metaReducers }), 
-      // Register reducer
-      StoreModule.forFeature('runningItem', runningItemsReducer),
+      { metaReducers }
+    ),
+    // Remove duplicate StoreModule.forFeature('runningItem', runningItemsReducer)
     EffectsModule.forRoot([
       ProductCategoryEffects,
       ProductPriceEffects,
@@ -154,21 +206,21 @@ const routes: Routes = [
       ProductInventoryFoodQuantityTypeEffects,
       ProductInventoryMainFoodEffects,
       ProductInventoryFoodwithProductEffects,
-      // floor effects
       FloorEffects,
       DineEffects,
       InvoiceEffects,
       CustomersEffects,
       AddOnProductEffects,
-      ProductItemEffects
-    ])          
-      
-    
-],
-  providers: [
-    provideClientHydration(),provideHttpClient(),DatePipe
+      ProductItemEffects,
+      ReserveTableEffects,
+      RunningItemEffects
+    ]),
   ],
-  bootstrap: [AppComponent]
+  providers: [
+    provideClientHydration(),
+    provideHttpClient(),
+    DatePipe,
+  ],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
-
+export class AppModule {}

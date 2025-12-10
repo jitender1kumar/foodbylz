@@ -1,61 +1,62 @@
-import { createReducer, on } from '@ngrx/store';
-import * as RunningItemsActions from './runningItem.actions';
-import { RunningItems } from '../../../model/category.model';
+import { createReducer, on, Action } from '@ngrx/store';
+import * as RunningItemActions from './runningItem.actions';
+import { GenratedItemKOT } from '../../../core/Model/crud.model';
 
 export interface RunningItemsState {
-  runningItem: RunningItems[];
-  loading: boolean;
+  KOTrunningorders: GenratedItemKOT[];
+  error: any | null;
 }
 
 export const initialState: RunningItemsState = {
-  runningItem: [],
-  loading: false,
+  KOTrunningorders: [],
+  error: null,
 };
 
-export const runningItemsReducer = createReducer(
+const reducer = createReducer(
   initialState,
-
-  on(RunningItemsActions.loadRunningItems, state => ({
+  on(RunningItemActions.loadRunningItems, (state) => ({
     ...state,
-    loading: true,
+    error: null,
   })),
-
-  on(RunningItemsActions.loadRunningItemsSuccess, (state, { runningItems }) => ({
+  on(RunningItemActions.loadRunningItemsSuccess, (state, { KOTrunningorders }) => ({
     ...state,
-    runningItem: runningItems,
-    loading: false,
+    KOTrunningorders,
+    error: null,
   })),
-
-  // on(RunningItemsActions.addRunningItem, state => ({
-  //   ...state,
-  //   loading: true,
-  // })),
-  on(RunningItemsActions.addRunningItem, (state, { runningItem }) => ({
+  on(RunningItemActions.addRunningItem, (state) => ({
     ...state,
-    runningItem: [...state.runningItem, runningItem],
-    loading: false,
+    error: null,
   })),
-  on(RunningItemsActions.addRunningItemFailure, (state, { error }) => ({
+  on(RunningItemActions.addRunningItemSuccess, (state, { KOTrunningorders }) => ({
     ...state,
-    loading: false,
-    // Optionally you can add error state if you declare it in the state
-    // error: error
+    KOTrunningorders: [...state.KOTrunningorders, KOTrunningorders],
+    error: null,
   })),
-
-  on(RunningItemsActions.updateRunningItem, (state, { runningItem }) => ({
+  on(RunningItemActions.addRunningItemFailure, (state, { error }) => ({
     ...state,
-    runningItem: state.runningItem.map((item: RunningItems) =>
-      item._idPP === runningItem._idPP ? runningItem : item
+    error,
+  })),
+  on(RunningItemActions.updateRunningItem, (state, { KOTrunningorders }) => ({
+    ...state,
+    KOTrunningorders: state.KOTrunningorders.map(item =>
+      item.RecieptNumber === KOTrunningorders.RecieptNumber ? KOTrunningorders : item
     ),
+    error: null,
   })),
-
-  on(RunningItemsActions.removeRunningItem, (state, { _idPP }) => ({
+  on(RunningItemActions.removeRunningItem, (state, { RecieptNumber }) => ({
     ...state,
-    runningItem: state.runningItem.filter(item => item._idPP !== _idPP),
+    KOTrunningorders: state.KOTrunningorders.filter(item => item.RecieptNumber !== RecieptNumber),
+    error: null,
   })),
-
-  on(RunningItemsActions.clearRunningItems, state => ({
+  on(RunningItemActions.clearRunningItems, (state) => ({
     ...state,
-    runningItem: [],
+    KOTrunningorders: [],
+    error: null,
   }))
 );
+
+// For AoT compatibility (Angular)
+export function runningItemReducer(state: RunningItemsState | undefined, action: Action) {
+  return reducer(state, action);
+}
+

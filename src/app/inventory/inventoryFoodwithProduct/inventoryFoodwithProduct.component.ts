@@ -2,13 +2,12 @@ import { Component, Injectable, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   InventoryFoodwithProduct,
-  Goodscollection,
+  
   InventoryFoodwithProduct2,
   GoodscollectionMergename,
   InventoryFoodwithProductforEdit
 } from '../../core/Model/crud.model';
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
-import { ColDef } from 'ag-grid-community';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
 import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
 import { InventoryMainFoodwithProductService } from '../../core/Services/inventoryFoodWithProduct.service';
@@ -33,6 +32,7 @@ import { loadInventoryFoodQuantityType } from '../inventoryStore/inventoryFoodQu
 import { ofType, Actions } from '@ngrx/effects';
 import { popupenvironment } from '../../environment/popupEnvironment';
 import * as InventoryFoodwithProductActions from '../inventoryStore/inventoryFoodwithProductStore/inventoryFoodwithProduct.actions';
+import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 
 @Injectable({ providedIn: 'root' })
 @Component({
@@ -77,17 +77,14 @@ export class InventoryfoodComponent implements OnInit {
   b: any;
 
   // Table
-  colDefs: ColDef[] = [
-    { field: "ProductName" },
-    { field: "SubQuantityTypeName" },
-    { field: "discription", flex: 2 },
+  colDefs: ColumnDef[] = [
+    { field: "ProductName", sortable:true },
+    { field: "SubQuantityTypeName", sortable:true },
+    { field: "discription", sortable:true },
     { field: "Delete", cellRenderer: BasetypDeleteButtun },
     { field: "Edit", cellRenderer: BasetypEditButtun }
   ];
-  pagination = true;
-  paginationPageSize = 10;
-  paginationPageSizeSelector = [10,200, 500, 1000];
-
+  
   // ViewChilds
   @ViewChild('f') categoryViewchild!: NgForm;
   @ViewChild('formupdate') formupdate!: NgForm;
@@ -374,19 +371,18 @@ export class InventoryfoodComponent implements OnInit {
       }
     });
   }
-
-  onCellClick(event: any) {
-    if (event.colDef.field === 'Delete') {
+  onRowClick(r: any) { console.log('clicked row', r);
+    // console.log(this.colDefs);
+    if (r[0].field == 'Delete') {
       this.popupenvironments.modal$.next("modal");
       this.popupenvironments.display$.next("display:block");
-      this.popupenvironments.valueid$.next(event.data._id);
+      this.popupenvironments.valueid$.next(r[0].row._id);
       this.popupenvironments.tablename$.next("cate");
-
     }
-    if (event.colDef.field === 'Edit') {
+    if (r[0].field == 'Edit') {
       this.getProduct();
-      this.getsubQuantityTypeDatatypeforedit(event.data.ProductId);
-      this.popupenvironments.popdata2$.next(event.data);
+      this.getsubQuantityTypeDatatypeforedit(r[0].row.ProductId);
+      this.popupenvironments.popdata2$.next(r[0].row);
       this.popupenvironments.showEdit$.next(true);
       this.popupenvironments.show$.next(false);
       this.popupenvironments.args$.next(null);
@@ -395,21 +391,22 @@ export class InventoryfoodComponent implements OnInit {
           // No-op: code was only splicing, not used
         });
       }
-      this._GoodscollectionMergename_List = [...event.data.goodscollections];
+      this._GoodscollectionMergename_List = [...r[0].row.goodscollections];
       this.myEditForm = this.fb.group({
-        _id: [event.data._id],
-        ProductId: [event.data.ProductId],
-        ProductPrcieId: [event.data.ProductPrcieId],
-        ProductName: [event.data.ProductName],
-        SubQuantityTypeID: [event.data.SubQuantityTypeID],
-        SubQuantityTypeName: [event.data.SubQuantityTypeName],
-        quantitytypename: [event.data.quantitytypename],
-        goodscollections: [event.data.goodscollections],
-        inventoryfoodmain_id: [event.data.inventoryfoodmain_id],
-        quantitytypevalue: [event.data.quantitytypevalue]
+        _id: [r[0].row._id],
+        ProductId: [r[0].row.ProductId],
+        ProductPrcieId: [r[0].row.ProductPrcieId],
+        ProductName: [r[0].row.ProductName],
+        SubQuantityTypeID: [r[0].row.SubQuantityTypeID],
+        SubQuantityTypeName: [r[0].row.SubQuantityTypeName],
+        quantitytypename: [r[0].row.quantitytypename],
+        goodscollections: [r[0].row.goodscollections],
+        inventoryfoodmain_id: [r[0].row.inventoryfoodmain_id],
+        quantitytypevalue: [r[0].row.quantitytypevalue]
       });
     }
-  }
+   }
+ 
 
   loadInventoryAssocciatedFood() {
     this.store.dispatch(loadInventoryFoodwithProduct());

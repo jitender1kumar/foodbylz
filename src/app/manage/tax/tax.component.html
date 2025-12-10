@@ -77,7 +77,7 @@
   </div>
 }
 
-<ag-grid-angular class="box ag-theme-quartz"
+<!-- <ag-grid-angular class="box ag-theme-quartz"
   style="height:500px;"
   [rowData]="tax$|async"
   [columnDefs]="colDefs"
@@ -85,8 +85,14 @@
   [paginationPageSize]="paginationPageSize"
   [paginationPageSizeSelector]="paginationPageSizeSelector"
   (cellClicked)="onCellClick($event)"
-  />
-
+  /> -->
+  <ng-container *ngIf="tax$ | async as tax">
+    <app-gird-table
+    [columns]="colDefs"
+    [data]="tax "
+    (rowClicked)="onRowClick($event)"
+    ></app-gird-table>
+    </ng-container>
   <div >
     <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()" [style]="display" [tabname]="tablename" [data]="valueid" [modal]="modal"></app-popupmodel>
   </div>

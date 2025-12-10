@@ -3,10 +3,8 @@ import { QuantitytypeService } from '../../core/Services/quantitytype.service';
 import { Router } from '@angular/router';
 import { IChairDefault, IDine, IFloorMergeWithDine } from '../../core/Model/crud.model';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
 import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
-import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { DineService } from '../../core/Services/dine.service';
 import { FloorService } from '../../core/Services/floor.service';
 import { ShowbuttonComponent } from '../../showbutton/showbutton.component';
@@ -16,7 +14,8 @@ import { Store } from '@ngrx/store';
 import * as DineActions from '../dineStore/dinetableStore/dinetable.action';
 import { Observable } from 'rxjs/internal/Observable';
 import * as FloorActions from '../dineStore/floorStore/floor.action';
-import { Actions, ofType } from '@ngrx/effects';
+import { Actions } from '@ngrx/effects';
+import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 @Component({
   selector: 'app-dine',
   templateUrl: './dine.component.html',
@@ -24,7 +23,7 @@ import { Actions, ofType } from '@ngrx/effects';
   standalone: false
 })
 @Injectable({ providedIn: 'root' })
-export class DineComponent implements OnInit, ICellRendererAngularComp {
+export class DineComponent implements OnInit {
   // State
   modal = "";
   args: any = null;
@@ -69,17 +68,15 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
   };
 
   // AG Grid
-  colDefs: ColDef[] = [
-    { field: "FloorName" },
-    { field: "name", headerName: "TableName" },
-    { field: "description", flex: 1 },
+  colDefs: ColumnDef[] = [
+    { field: "FloorName" , sortable:true},
+    { field: "name", header: "TableName" , sortable:true},
+    { field: "description", sortable:true },
     { field: "QR code", cellRenderer: ShowbuttonComponent },
     { field: "Delete", cellRenderer: BasetypDeleteButtun },
     { field: "Edit", cellRenderer: BasetypEditButtun }
   ];
-  pagination = true;
-  paginationPageSize = 10;
-  paginationPageSizeSelector = [10, 200, 500, 1000];
+  
   popdata2: any;
 
 
@@ -96,8 +93,8 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
     this.Floordata$ = this.store.select(state => state.LoadFloor.Floor_.data);
     this.dinedata$ = this.store.select(state => state.dineTableReducer_.Floor_.data);
     this.initForms();
-    this.loaddine();
-    this.loadChairs();
+    // this.loaddine();
+    // this.loadChairs();
   }
 
   ngOnInit(): void {
@@ -105,17 +102,10 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
     this.loadfloor();
     this.classname = "";
     this.loaddine();
+    this.mergeFloorNameWithDine();
   }
 
-  agInit(params: ICellRendererParams): void {
-    // For ag-grid cell renderer
-    this.valueid = params.data._id;
-  }
-
-  refresh(params: ICellRendererParams): boolean {
-    throw new Error('Method not implemented.');
-  }
-
+  
   private initForms() {
     this.myEditForm = this.fb.group({
       _id: [''],
@@ -151,11 +141,13 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
     // Use ngrx to load dine tables and select from store
     this.store.dispatch(DineActions.loadDineTables());
     this.dinedata$ = this.store.select(state => state.dineTableReducer_.IDine_.data);
-    this.mergeFloorNameWithDine();
+  //  this.mergeFloorNameWithDine();
   }
 
   mergeFloorNameWithDine(): void {
     // Subscribe to dinedata$ and update MergeFloorNameWithDineList with merged data
+    this.MergeFloorNameWithDineList = [];
+        this.FloorWithDineData = [];
     this.dinedata$?.subscribe((mergeDineWithFloor: any[]) => {
       if (Array.isArray(mergeDineWithFloor)) {
         this.MergeFloorNameWithDineList = mergeDineWithFloor.map((dine: { _id: any; floor_id: any; name: any; description: any; status: any; }) => ({
@@ -166,11 +158,13 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
           status: dine.status,
           floor_id: dine.floor_id
         }));
+        
         this.FloorWithDineData = this.MergeFloorNameWithDineList;
-      } else {
-        this.MergeFloorNameWithDineList = [];
-        this.FloorWithDineData = [];
-      }
+      } 
+      // else {
+      //   this.MergeFloorNameWithDineList = [];
+      //   this.FloorWithDineData = [];
+      // }
     });
   }
   //   this.FloorWithDineData = this.MergeFloorNameWithDineList;
@@ -196,16 +190,16 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
 
     return floorName;
   }
-
-  onCellClick(event: any): void {
-    switch (event.colDef.field) {
+  onRowClick(r: any) { console.log('clicked row', r);
+    // console.log(this.colDefs);
+    switch (r[0].field.field) {
       case 'QR code':
         this.showQr = true;
-        this.qrData = `${event.data._id} ${event.data.name}`;
+        this.qrData = `${r[0].row._id} ${r[0].row.name}`;
         break;
       case 'Delete':
         this.display = "display:block;";
-        this.valueid = event.data._id;
+        this.valueid = r[0].row._id;
         this.tablename = "dine";
         this.modal = "modal";
         // Removed invalid property assignment: this.modal = "modal";
@@ -213,19 +207,21 @@ export class DineComponent implements OnInit, ICellRendererAngularComp {
       case 'Edit':
         this.showEdit = true;
         this.show = false;
-        this.popdata2 = event.data;
+        this.popdata2 = r[0].row;
         this.args = null;
         this.myEditForm = this.fb.group({
-          _id: [event.data._id],
-          name: [event.data.name, Validators.required],
-          description: [event.data.description, Validators.required],
-          status: [event.data.status, Validators.required],
-          floor_id: [event.data.floor_id, Validators.required]
+          _id: [r[0].row._id],
+          name: [r[0].row.name, Validators.required],
+          description: [r[0].row.description, Validators.required],
+          status: [r[0].row.status, Validators.required],
+          floor_id: [r[0].row.floor_id, Validators.required]
         });
         break;
     }
     this.loaddine();
-  }
+   
+   }
+  
 
   add(dine: IDine): void {
     this.dinedata$ = this.store.select(state => state.dineTableReducer_.IDine_.data);

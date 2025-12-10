@@ -13,6 +13,7 @@ import { addQuantityType, deleteQuantityType, loadQuantityType, updateQuantityTy
 import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
 import { ofType, Actions } from '@ngrx/effects';
 import {  ValidationService } from '../../core/commanFunction/Validation.service';
+import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 @Component({
   selector: 'app-categorytypeform',
   templateUrl: './quantitytype.component.html',
@@ -120,39 +121,35 @@ private showDuplicateNameMessage(name: string): void {
 }
 
 
-  colDefs: ColDef[] = [
-    { field: "name" },
-    { field: "Desc", flex: 2 },
+  colDefs: ColumnDef[] = [
+    { field: "name",sortable:true },
+    { field: "Desc",sortable:true },
     { field: "Delete", cellRenderer: BasetypDeleteButtun },
     { field: "Edit", cellRenderer: BasetypEditButtun }
 
   ];
-  pagination = true;
-  paginationPageSize = 10;
-  paginationPageSizeSelector = [10,200, 500, 1000];
-  onCellClick(event: any) {
-
-    if (event.colDef.field == 'Delete') {
+  onRowClick(r: any) { console.log('clicked row', r);
+    // console.log(this.colDefs);
+    if (r[0].field == 'Delete') {
       this.modal = "modal";
       this.display = "display:block"
-      this.valueid = event.data._id;
+      this.valueid = r[0].row._id;
       this.tablename = "qtyp";
-
     }
-    if (event.colDef.field == 'Edit') {
-      this.popdata2 = event.data;
+    if (r[0].field == 'Edit') {
+      this.popdata2 = r[0].row;
       this.showEdit = true;
       this.show = false;
       this.args = null;
       this.myEditForm = this.formedit.group({
-        _id: [event.data._id],
-        name: [event.data.name, Validators.required],
-        Desc: [event.data.Desc]
+        _id: [r[0].row._id],
+        name: [r[0].row.name, Validators.required],
+        Desc: [r[0].row.Desc]
       });
 
     }
-
-  }
+   }
+  
 
   loadQtype() {
     this.store.dispatch(loadQuantityType());

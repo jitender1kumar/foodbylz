@@ -1,3 +1,4 @@
+<!-- <app-homedata loadRefeshed()="loadRefresh()"></app-homedata> -->
 <h4 class="titleh4">Billing Orders</h4>
 <table>
   <tr>
@@ -17,222 +18,233 @@
       </div>
     </td> -->
     <td class=" align-top p-0">
-<app-homeleftpanel (getproductbycategoryclicked)="getproductbycategory($event)" ></app-homeleftpanel>
+<app-homeleftpanel (topselling)="loadProductByTopSelling()" (getproductbycategoryclicked)="getproductbycategory($event)" ></app-homeleftpanel>
 </td>
 
     <!-- Center Panel: Product Search & Grid -->
     <td class="billing-container align-top p-0"> 
-      <app-home-center-panel [productsByCategoryId]="productsByCategoryId" (incrementclicked)="increment($event)" ></app-home-center-panel>
+      <app-home-center-panel [productitembackup]="productitembackup" [productPriceData$]="productPriceData$"  [productsByCategoryId]="productsByCategoryId" (incrementclicked)="increment($event)" (shorcodeEnteredbychild)=shortCode($event)></app-home-center-panel>
       </td>  
        <!-- Right Panel: Invoice & Order Summary -->
 <td >
   
    
-  <td  class=" align-top p-0" class="fooditems">
-    <div class="invoice-card" id="printable-section-KOT">
-      <p
-        *ngIf="ordermode"
-        class="font-bold text-xs "
-        style="font-family:  Verdana;height: min-content;font-size:smaller;"
-      >
-        Invoice No.: {{ invoiceid }}, Token Number.: {{ TokenNumber }}
-      </p>
-      <div class="flex items-center justify-between flex-wrap gap-1 bg-gray-50 px-1 py-1 rounded shadow mb-1">
-        <!-- Action Buttons -->
-        <div class="flex gap-1 " *ngIf="ordermode">
-          <p style="font-family:  Verdana;height: min-content;font-size:smaller;"
-            class=" bg-gradient-to-r from-blue-200 to-violet-200 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
-          >
-            {{ ordermode }}
-        </p>
-        <div *ngIf="CustomerName!='Guest';else changeName"> 
-          <button  style="font-family:  Verdana;height: min-content;font-size:smaller;"
-            (click)="showCustomersPopUp()"
-            class="bg-gradient-to-r from-indigo-200 to-purple-200 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
-          >Change Customer</button>
+  <td class="align-top p-0 fooditems" style="height: 700px; min-height: 700px; max-height: 700px; background: #fffaf7;">
+    <div class="invoice-card" id="printable-section-KOT" style="height: 100%; min-height: 100%; max-height: 100%; display: flex; flex-direction: column; border-radius: 18px; box-shadow: 0 4px 18px rgba(0,0,0,0.08); background: #fff;">
+      <!-- Header: Invoice Info -->
+      <div class="flex items-center justify-between p-2 mb-2" style="border-bottom: 1px solid #ece7e3;">
+        <div>
+          <span *ngIf="ordermode" style="font-family: 'Segoe UI', Verdana; font-size: 15px; font-weight: bold; color: #7c4931;">
+            <i class="fa fa-bookmark me-1" style="color: #de7350;"></i>
+            Invoice #{{ invoiceid }}
+          </span>
         </div>
-           
-            <ng-template #changeName>
-              <button  style="font-family:  Verdana;height: min-content;font-size:smaller;"
-            (click)="showCustomersPopUp()"
-            class="bg-gradient-to-r from-indigo-200 to-purple-200 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
-          >+Customer
-        </button>
-            </ng-template>
-          
-          <button style="font-family:  Verdana;height: min-content;font-size:smaller;"
-            (click)="showCommentsPopUp()"
-            class="bg-gradient-to-r from-indigo-200 to-purple-200 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
-          >
-            Comment
-          </button>
-          <button style="font-family:  Verdana;height: min-content;font-size:smaller;"
-            class=" bg-gradient-to-r from-blue-200 to-violet-200 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
-          >
-            Assist To
-          </button>
-          <p *ngIf="CustomerName" style="font-family:  Verdana;height: min-content;font-size:smaller;"
-            class=" bg-gradient-to-r from-blue-200 to-green-200 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
-          >
-          Customer Name:  {{ CustomerName }}
-        </p>
+        <div>
+          <span *ngIf="ordermode" class="text-xs" style="color: #b68746;">
+            Token: <b>{{ TokenNumber }}</b>
+          </span>
         </div>
       </div>
 
-      <!-- Item List -->
-      <div class="item-list ">
-        <div *ngFor="let d of RunningItems_; index as i" class="item-row">
-          <ng-container *ngIf="i === 0">
-            <div class="item-header ">
-              <div class="item-col action-col"></div>
-              <div class="item-col action-col"></div>
-              <div class="item-col action-col">Addon</div>
-              <div class="item-col name-col">Name</div>
-              <div class="item-col type-col">Qty. Type</div>
-              <div class="item-col quantity-col">Total Qty.</div>
-              <div class="item-col price-col">Price</div>
-              <div class="item-col total-col">Item Total</div>
-              <hr/>
-            </div>
-          </ng-container>
-          <div class="item-row-content ">
-            <button class="action-button" (click)="increment2(d._idPP, d.SubQuantityTypeName, d.quntityvalue, d.ProductPrice)"><b>+</b></button>
-            <button class="action-button" (click)="decrement2(d._idPP, d.SubQuantityTypeName, d.qvalue, d.ProductPrice)"> <b>-</b></button>
-            <button class="action-button" (click)="showAddonsPopUp(d.SelectProductId,d.selectSubQuantityTypeID)">
-            
-              <div style="font-size: x-small;font-weight: bolder;">   
-               <ng-container *ngIf="d.AddOnItems && d.AddOnItems.length > 0; else noAddons">
-                 <p>addon({{d.AddOnItems.length}})</p>
-               </ng-container>
-               <ng-template #noAddons>
-                 <p>addon</p> 
-               </ng-template>
-              </div> 
-            </button>
-            
-            <div class="item-col name-col ">
-              <span class="item-text">{{ d.ProductName }}</span>
-            </div>
-            <div class="item-col type-col ">
-              <span class="item-text">{{ d.SubQuantityTypeName }}</span>
-            </div>
-            <div class="item-col quantity-col ">
-              <span class="item-text">{{ d.quntityvalue }}</span>
-            </div>
-            <div class="item-col price-col ">
-              <span class="item-text">{{ d.ProductPrice }}</span>
-            </div>
-            <div class="item-col total-col ">
-              <span class="item-text">{{ (+d.ProductPrice) * d.quntityvalue }}</span>
-            </div>
-            <hr/>
-          </div>
-          <small>
-            <div ></div>
-          <div  class="item-row-content " *ngIf="d.AddOnItems.length > 0" >
-            <!-- load dynamically loadAddOnProductsInitializing(addon._id) -->
-           
-              <div  *ngFor="let addonItem of d.AddOnItems">
-                <!-- <ng-container *ngIf="addonItem._id" (mouseover)="loadAddOnProductsInitializing(addonItem._id)"></ng-container> -->
-               <!-- <ng-container *ngIf="addOnProducts$ | async as addOnProducts"> -->
-                
-                  <div class="item-col total-col" *ngFor="let addonProductdata of loadAddOnProductsdata$ | async">
-                    <span *ngIf="addonItem._id===addonProductdata._id">
-                      {{ addonProductdata.name || 'Addon' }}
-                      <ng-container *ngIf="addonItem.numberofQuantity">
-                        x {{ addonItem.numberofQuantity }}
-                      </ng-container>
-                      <ng-container *ngIf="addonProductdata.Price">
-                        + ₹{{ addonProductdata.Price }}
-                      </ng-container>
-                    </span>
-                  </div>
-                
-              <!-- </ng-container> -->
-            </div>
-           
-            
-          </div>
-          
-          </small>
-       
+      <!-- Order Mode & Actions -->
+      <div class="flex items-center gap-2 px-2 py-2 mb-2" style="background: #fbeedb; border-radius: 10px;">
+        <div class="flex-1">
+          <span style="font-weight:bold; color: #7e5422;">
+            🍽️ {{ ordermode }}
+          </span>
+        </div>
+        <div>
+          <button (click)="showCustomersPopUp()" class="btn-restaurant" [ngClass]="{'primary': CustomerName!='Guest', 'accent': CustomerName=='Guest'}" style="margin-right:4px;">
+              {{ CustomerName!='Guest' ? 'Change Customer' : '+Customer' }}
+          </button>
+        </div>
+        <div>
+          <button (click)="showCommentsPopUp()" class="btn-restaurant" style="margin-right:4px;">
+            <i class="fa fa-comment"></i> Comment
+          </button>
+        </div>
+        <div>
+          <button class="btn-restaurant" style="background:#fde4ec; color: #c4709a; border:none;">
+            <i class="fa fa-handshake-o"></i> Assist To
+          </button>
+        </div>
+        <div *ngIf="CustomerName" style="margin-left:8px;">
+          <span style="display:inline-block; font-weight: bold; color: #6e4126; background: #ffe3b3; border-radius: 14px; padding: 4px 10px;">
+            <i class="fa fa-user" style="color:#bd8549;"></i> {{ CustomerName }}
+          </span>
         </div>
       </div>
 
-      <!-- Summary & Discount Section -->
-      <div class="summary-section " *ngIf="RunningItems_.length > 0">
-        <div class="summary-row ">
-          <span>Total Amount:</span>
-          <span>{{ totalamount }}</span>
-        </div>
-        <div class="summary-row ">
-          <span>Tax Name:</span>
-          <span>{{ taxname }}</span>
-          <span>Total Tax:</span>
-          <span>{{ totaltax }}</span>
-        </div>
-        <div class="summary-row grand-total ">
-          <span>Grand Total Amount:</span>
-          <span>{{ itemtotalamount }}</span>
-        </div>
+      <!-- Item List Table -->
+      <div class="item-list px-1" style="overflow-y: auto; flex:1 1 0; min-height:0;">
+        <table style="width: 100%; border-collapse: separate; border-spacing: 0 5px; font-family:'Segoe UI', Verdana;">
+          <thead>
+            <tr style="background: #f9f5f2;">
+              <th style="padding:4px; font-size:13px;">Addon</th>
+              <th style="padding:4px; font-size:13px;">Name</th>
+              <th style="padding:4px; font-size:13px;">Type</th>
+              <th></th>
+              <th style="padding:4px; font-size:13px;">Qty</th>
+              <th></th>
+              <th style="padding:4px; font-size:13px;">Price</th>
+              <th style="padding:4px; font-size:13px;">Total</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let d of RunningItems_">
+              <td>
+                <button class="action-button btn-xs" style="background:#ffe6c0;border:none; color:#b68746;"
+                  (click)="showAddonsPopUp(d.SelectProductId,d.selectSubQuantityTypeID)">
+                   <ng-container *ngIf="d.AddOnItems && d.AddOnItems.length>0; else noAddonsSimple">
+                      <span>addon({{d.AddOnItems.length}})</span>
+                   </ng-container>
+                   <ng-template #noAddonsSimple>
+                      <span>addon</span>
+                   </ng-template>
+                </button>
+              </td>
+              <td>
+                <span style="font-size:15px; color:#502c13;">{{ d.ProductName }}</span>
+              </td>
+              <td>
+                <span style="font-size:14px; color:#8a634d;">{{ d.SubQuantityTypeName }}</span>
+              </td>
+              <td>
+                <button class="action-button btn-xs" (click)="increment2(d.SelectProductId, d.SubQuantityTypeName, d.quntityvalue, d.ProductPrice)" style="background:#bee0a2; color:#34700f;">+</button>
+              </td>
+              <td>
+                <input type="number" [(ngModel)]="d.quntityvalue"
+                  (ngModelChange)="onQuantityChange(d)"
+                  min="1" max="100000"
+                  style="width: 40px; text-align: center; border: 1px solid #eee; border-radius:7px; font-size:13px;"/>
+              </td>
+              <td>
+                <button class="action-button btn-xs" (click)="decrement2(d.SelectProductId, d.SubQuantityTypeName, d.qvalue, d.ProductPrice)" style="background:#ffe7e7; color:#d24d4d;">-</button>
+              </td>
+              <td>
+                <span style="color:#735a28;">₹{{ d.ProductPrice }}</span>
+              </td>
+              <td>
+                <span style="color:#507d2a; font-weight:600;">₹{{ (+d.ProductPrice) * d.quntityvalue }}</span>
+              </td>
+              <td>
+                <button class="action-button btn-xs" (click)="deleteRunningItem(d)" style="background:#ececec; color:#b15e56;">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+            <!-- Addon display row -->
+            <tr *ngFor="let d of RunningItems_">
+              <td colspan="9" style="padding:0;">
+                <div *ngIf="d.AddOnItems.length > 0" style="font-size:13px; margin:4px 0 2px 35px; color:#8d5e19;">
+                  <span *ngFor="let addonItem of d.AddOnItems">
+                    <ng-container *ngFor="let addonProductdata of loadAddOnProductsdata$ | async">
+                      <span *ngIf="addonItem._id===addonProductdata._id">
+                        {{ addonProductdata.name || 'Addon' }}
+                        <ng-container *ngIf="addonItem.numberofQuantity">x {{ addonItem.numberofQuantity }}</ng-container>
+                        <ng-container *ngIf="addonProductdata.Price">+ ₹{{ addonProductdata.Price }}</ng-container>
+                      </span>
+                    </ng-container>&nbsp;
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-       
-        <!-- Discount Form -->
-        <div
-          *ngIf="showDiscountForm"
-          class=" overflow-hidden transition-all duration-1000 ease-in-out transform scale-y-100 origin-top discount-form shadow-md w-full max-w-lg mx-auto"
-        >
-         
-          <div class="discount-form ">
-            <form [formGroup]="myDiscountForm" (ngSubmit)="discountChange()">
-              <div class="discount-options">
-                <label>
-                  <input type="radio" name="discount" formControlName="discount" value="%" ngModel />
-                  Discount By %
-                </label>
-                <label>
-                  <input type="radio" name="discount" formControlName="discount" value="Rupees" ngModel />
-                  Discount By Rupees
-                </label>
-                <label>
-                  <input
-                    type="number"
-                    name="discountvalue"
-                    formControlName="numberInput"
-                    required
-                    placeholder="Amount"
-                  />
-                </label>
-                <label>
-                  <button class="apply-button" type="submit">Apply</button>
-                </label>
-              </div>
-              <div class="summary-row ">
-                <span>Discount Percent:</span>
-                <span>{{ percent }}%</span>
-              </div>
-              <div class="summary-row ">
-                <span>Settle Amount:</span>
-                <span>{{ discountvalue }}</span>
-              </div>
-            </form>
-          </div>
+      <!-- Summary and Actions -->
+      <div *ngIf="RunningItems_.length > 0" class="summary-section px-2 py-2" style="border-top: 1px solid #ffe6c2; background: #fdf8f2; border-radius:10px 10px 0 0; flex-shrink: 0;">
+        <div class="flex justify-between mb-1" style="font-size:15px; font-weight: 500;">
+          <span>Total: </span><span>₹{{ totalamount }}</span>
         </div>
-        <div class=" text-center mb-4">
-          <button
-            (click)="showDiscountForm = !showDiscountForm"
-            class="bg-indigo-300 hover:bg-indigo-400 text-gray hover:text-black px-1 py-1 rounded shadow "
-          >
-            {{ showDiscountForm ? 'Hide' : 'Show' }} Discount
+        <div class="flex justify-between mb-1" style="font-size:13px;">
+          <span>Tax: <b>{{ taxname }}</b></span>
+          <span>+ ₹{{ totaltax }}</span>
+        </div>
+        <div class="flex justify-between mb-2" style="font-size:17px; font-weight:bold; color:#954300;">
+          <span>Grand Total:</span><span>₹{{ itemtotalamount }}</span>
+        </div>
+        
+        <!-- Discount Dropdown Simple -->
+        <div style="text-align: right;">
+          <button (click)="showDiscountForm = !showDiscountForm"
+                  class="btn-restaurant accent" style="padding:2px 12px;font-size: 13px; margin-bottom:6px; margin-top:2px;">
+            <i class="fa fa-percent"></i>
+            {{ showDiscountForm ? "Hide Discount" : "Add Discount" }}
           </button>
         </div>
-        <div class="action-buttons">
-          <button class="action-success" (click)="placeOrder()">Settle</button>
-          <button class="action-success" style="background-color: blueviolet;" (click)="KOT()">Print KOT</button>
-          <button class="action-warning" (click)="CancelOrder()">Cancel Order</button>
+        <div *ngIf="showDiscountForm" class="py-1" style="animation: fadeIn 0.2s;">
+          <form [formGroup]="myDiscountForm" (ngSubmit)="discountChange()" class="flex items-center gap-2 flex-nowrap">
+            <div style="display: flex; align-items: center; gap: 1em;">
+              <label style="margin-right:0.5em; display:flex; align-items:center;">
+                Select Discount By:
+              </label>
+              <label style="margin-right:0.5em; display:flex; align-items:center;">
+                <input type="radio" name="discount" formControlName="discount" value="%" style="margin-right:4px;" checked /> %
+              </label>
+              <label style="margin-right:0.5em; display:flex; align-items:center;">
+                <input type="radio" name="discount" formControlName="discount" value="Rupees"  style="margin-right:4px;" /> ₹
+              </label>
+              <input
+                type="number"
+                name="discountvalue"
+                formControlName="numberInput"
+                required
+                placeholder="Discount"
+                style="width: 80px; border-radius:5px; border:1px solid #eee; margin-right:1em;"
+              />
+              <button class="btn-restaurant small primary" style="font-size:14px;" type="submit">
+                Apply
+              </button>
+              <ng-container *ngIf="percent || discountvalue">
+                <span *ngIf="percent"><b>{{ percent }}%</b></span>
+                <span *ngIf="discountvalue" style="margin-left: 8px;">| <b>Settle: ₹{{ discountvalue }}</b></span>
+              </ng-container>
+            </div>
+          </form>
+        </div>
+        <!-- Actions -->
+        <div class="flex gap-2 justify-center mt-2 mb-1">
+          <button class="btn-restaurant primary" (click)="placeOrder()">
+            <i class="fa fa-check-circle"></i> Settle
+          </button>
+          <button class="btn-restaurant accent" (click)="KOT()">
+            <i class="fa fa-cutlery"></i> KOT
+          </button>
+          <button class="btn-restaurant accent" style="background-color: #8602bc; color: #fff;" (click)="KOT()">
+            <i class="fa fa-print"></i> Print KOT
+          </button>
+          <button class="btn-restaurant danger" (click)="CancelOrder()">
+            <i class="fa fa-times"></i> Cancel Order
+          </button>
         </div>
       </div>
     </div>
+    <!-- Simple CSS for buttons (optional, Atomatic fallback) -->
+    <style>
+      .btn-restaurant {
+        border: none;
+        border-radius: 7px;
+        padding: 7px 16px;
+        font-size: 14px;
+        background: #fff8f1;
+        color: #bb7a2b;
+        font-weight: 500;
+        box-shadow: 0 1px 3px rgba(155,121,75,0.05);
+        cursor: pointer;
+        transition: background 0.14s, color 0.14s, transform 0.1s;
+        outline:none;
+      }
+      .btn-restaurant.primary { background: #ffedcb; color: #7c4b11; }
+      .btn-restaurant.accent { background: #dde6ff; color: #424089; }
+      .btn-restaurant.danger { background: #ffe7e7; color: #cc1515; }
+      .btn-restaurant.small { padding: 3px 10px; font-size: 13px;}
+      .btn-restaurant:hover, .btn-restaurant:focus { background:#ffe2bc; color: #875c2a; transform: scale(1.04);}
+      .btn-xs { padding: 2px 6px; font-size:11px; border-radius:4px; }
+      @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+    </style>
   </td>
 
 
@@ -283,7 +295,7 @@
           <tr class="bg-gray-100">
             <td class="px-4 py-2">Total Tax</td>
             <td colspan="3">
-              <div *ngFor="let t of taxnamedata">
+              <div *ngFor="let t of Tax">
                 <div *ngIf="t.Status">
                   {{ t.name }} - {{ t.perscentRate }}% = {{ ((+totalamount) * t.perscentRate) / 100 }}
                 </div>
@@ -309,9 +321,22 @@
           <tr>
             <td class="px-4 py-2">Pay Mode</td>
             <td colspan="4">
-              <select class="w-full px-2 py-1 border rounded" [(ngModel)]="paybyId" (change)="getpaybyid()">
-                <option *ngFor="let dd of paybydata" [value]="dd._id">{{ dd.name }}</option>
-              </select>
+              <div class="flex flex-row gap-4 items-center">
+                <ng-container *ngFor="let dd of paybydata">
+                  <label class="flex items-center gap-1">
+                    <input
+                      type="radio"
+                      name="payby"
+                      [value]="dd._id"
+                      
+                      (change)="getpaybyid(dd._id)"
+                      [checked]="dd.makeMeDefault"
+                    />
+                    
+                    <span>{{ dd.name }}</span>
+                  </label>
+                </ng-container>
+              </div>
             </td>
           </tr>
           <tr>
@@ -338,9 +363,10 @@
 <div class="common-modal" *ngIf="showtype">
   <div class="modal-box">
     <button class="close-btn" (click)="close()">×</button>
-    <h6 class="modal-title">Quantity</h6>
+    <h6 class="modal-title">Add Quantity: </h6><p>{{ppalsoavailable[0].ProductName}}</p>
     <form #myForm="ngForm" (ngSubmit)="onSubmit(myForm)">
       <div *ngFor="let dd of ppalsoavailable" class="option-row">
+        
         <label class="radio-option">
           <input type="radio" name="option" [value]="dd.SubQuantityTypeName" ngModel />
           <span class="option-label">{{ dd.SubQuantityTypeName }}</span>
@@ -355,14 +381,15 @@
 <!-- Customer and Comment Popups -->
 <app-addcustomers
   [showPopUp]="showCustomerPopUp"
-  [closePopUp]="closePopUp"
-  (closePopUpByChild)="closePopUpByChild($event)"
+  [closePopUp]="closePopup"
+  (closePopUpByChild)="closePopUpBychild($event)"
   (CustomersDetail)="initializeCustomer($event)"
 ></app-addcustomers>
+
 <app-comment-in-invoice
   [showPopUp]="showCommentPopUp"
-  [closePopUp]="closePopUp"
-  (closePopUpByChild)="closePopUpByChild($event)"
+  [closePopUp]="closePopup"
+  (closePopUpByChild)="closePopUpBychild($event)"
   (CommentToInvoice)="initializeComment($event)"
 ></app-comment-in-invoice>
 
@@ -371,7 +398,7 @@
 [invoice]="invoiceData"
 [addOnProducts]="addOnProduct"
 [showPopUp]="showAddonPopUp"
-[closePopUp]="closePopUp"
+[closePopUp]="closePopup"
 (InitializeselectedAddOnItemsCallback)="InitializeselectedAddOnItemsCallbackFun($event)"
-(closePopUpByChildAddOn)="closePopUpByChildAddOn($event)"
+(closePopUpByChildAddOn)="closePopUpByChildAddon($event)"
 ></app-add-on-items>
