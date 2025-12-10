@@ -7,3 +7,33 @@ node_modules/
 # Ignore environment variables
 .env
 
+# Ignore build output
+dist/
+build/
+
+# Ignore temporary files
+*.tmp
+*.temp
+*.swp
+
+# Ignore IDE and editor folders
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# macOS, Linux, Windows system files
+.DS_Store
+Thumbs.db
+
+# Ignore Angular environment files
+src/environments/environment*.ts
+
+# Ignore coverage reports
+coverage/
+
+# Ignore npm debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
