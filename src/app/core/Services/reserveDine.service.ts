@@ -4,7 +4,7 @@
 
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 import { environment } from '../../environment/environment';
 import { ReserveDine, ReserveDineEdit } from '../Model/crud.model';
@@ -16,6 +16,12 @@ export class ReserveDineService {
   private reserveDineUrl: string = environment.api+"reserveDine";
 private getReserveDineByDateTimeUrl:string = environment.api+"getReserveDineByDateTime";
   constructor(private http: HttpClient) { }
+  private reservedinedataSubject = new BehaviorSubject<any[]>([]);
+  public reservedinedata$ = this.reservedinedataSubject.asObservable();
+
+  setReservedinedata(data: any[]) {
+    this.reservedinedataSubject.next(data);
+  }
 
  
   add(ReserveDine_: ReserveDine): Observable<ReserveDine> {
@@ -40,5 +46,16 @@ getReservedEndTime(DateTimeStart:string,DateTimeEnd:string)
 
   update(ReserveDine_: ReserveDine): Observable<ReserveDine> {
     return this.http.put<ReserveDine>(this.reserveDineUrl, ReserveDine_);
+  }
+  loadReservedDineData() {
+    // load reserved Tables
+    this.get().subscribe(data => {
+      if (data) {
+        // this.reservedinedata2 = data;
+        // this.reservedinedata = this.reservedinedata2.data;
+        // this.reservedLength = this.reservedinedata.length;
+        // this.checkReservedOrderDone();
+      }
+    });
   }
 }

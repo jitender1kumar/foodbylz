@@ -6,14 +6,17 @@
     <h5 class="text-xl font-bold text-cyan-800 tracking-wide">Categories</h5>
   </div>
   <ul class="w-full flex flex-col gap-2">
-    <li *ngFor="let category of categorynamedata$ | async">
-      <button
-        class="w-full bg-cyan-50 hover:bg-cyan-100 text-cyan-800 font-medium py-2 px-4 rounded-lg transition-all flex justify-start items-center shadow-sm hover:shadow-md text-base"
-        (click)="getproductbycategory(category._id)"
-      >
-        <span class="mr-3 text-lg">🔹</span>
-        {{ category.name }}
-      </button>
-    </li>
+    <ng-container *ngIf="(categorynamedata$ | async) as categories">
+      <li *ngFor="let category of categories">
+        <button
+          type="button"
+          class="w-full bg-cyan-50 hover:bg-cyan-100 text-cyan-800 font-medium py-2 px-4 rounded-lg transition-all flex justify-start items-center shadow-sm hover:shadow-md text-base"
+          (click)="getproductbycategory(category?._id)"
+        >
+          <span class="mr-3 text-lg">🔹</span>
+          <span>{{ category?.name }}</span>
+        </button>
+      </li>
+    </ng-container>
   </ul>
 </div>

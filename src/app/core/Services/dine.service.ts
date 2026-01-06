@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 import { environment } from '../../environment/environment';
 import { IDine } from '../Model/crud.model';
@@ -10,7 +10,10 @@ import { IDine } from '../Model/crud.model';
 export class DineService {
 
   private DineUrl: string = environment.api+"dine";
+  public dinedataSubject$ = new BehaviorSubject<any[]>([]);
+ 
 
+ 
   constructor(private http: HttpClient) { }
 
   
@@ -33,5 +36,20 @@ export class DineService {
   update(dine: IDine) {
     return this.http.put(this.DineUrl, { dine });
   }
+ 
+  loaddine() {
+    //getting all tables data
+    this.get().subscribe({
+      next: (data: any) => {
+        const dineData = Array.isArray(data?.data) ? data.data : [];
+        this.dinedataSubject$.next(dineData);
+      },
+      error: error => {
+        console.error('Failed to load dine data:', error);
+        this.dinedataSubject$.next([]);
+      }
+    });
+  }
+
   
 }

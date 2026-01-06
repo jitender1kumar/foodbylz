@@ -1,86 +1,75 @@
 @if (showPopUp) {
-  <!-- search customer -->
-  <div class="comman">
-  
-    <button class="close" type="button" (click)="close()">Close</button>
-        
-    <div class="row lbl">
-      <h4>Select Customer</h4>
-    </div>
-    <div class="row lbl" *ngIf="DisplayCustomers">
-      <label>{{ DisplayCustomers }}</label>
-      <button type="button" (click)="onProceed()" class="bt1n" style="margin: 3px;">
-        Proceed
+  <div class="customer-popup-container">
+    <div class="popup-content">
+      <button class="close-btn" type="button" aria-label="Close" (click)="close()">
+        <span aria-hidden="true">&times;</span>
       </button>
-    </div>
-    <div class="row lbl">
-      <h4>OR</h4>
-    </div>
-    <div class="row box">
-      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" class="col lbl2">
-        
-        <div class="row lbl">
-          <h4>Add Customer</h4>
+
+      <div class="popup-section">
+        <h2 class="popup-title">Customer Selection</h2>
+      </div>
+
+      <div *ngIf="DisplayCustomers; else noCustomer" class="popup-section selected-customer">
+        <div class="customer-details">
+          <span class="customer-label">{{ DisplayCustomers }}</span>
         </div>
-        <div class="form-group row">
-          <div class="col">
-            <label class="lbl" for="nametxt">Name:</label>
-          </div>
-          <div class="col">
-            <input class="lbl" type="text" formControlName="name" id="nametxt" />
-          </div>
+        <button type="button" class="proceed-btn" (click)="onProceed()">
+          <span>Proceed</span>
+        </button>
+      </div>
+      <ng-template #noCustomer></ng-template>
+
+      <div class="popup-section or-separator">
+        <div class="or-divider">
+          <span>OR</span>
         </div>
-        <div class="form-group row">
-          <div class="col">
-            <label class="lbl" for="mobtxt">Mobile No.:</label>
+      </div>
+
+      <div class="popup-section add-customer-section">
+        <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" class="add-customer-form">
+          <div class="form-heading">
+            <h3 class="popup-title">Add New Customer</h3>
           </div>
-          <div class="col">
-            <input class="lbl" type="number" minlength="10" maxlength="20" formControlName="MobileNo" pattern="[0-9]{10,20}" id="mobtxt" />
+          <div class="form-group row">
+            <label class="form-label col" for="nametxt">Name</label>
+            <div class="col">
+              <input
+                class="form-input"
+                type="text"
+                formControlName="name"
+                id="nametxt"
+                autocomplete="off"
+                aria-label="Customer Name"
+                placeholder="Enter name"
+              />
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <button type="submit" [disabled]="myAddForm.invalid" class="bt1n" style="border: solid black; padding: 10px;">+</button>
+          <div class="form-group row">
+            <label class="form-label col" for="mobtxt">Mobile No.</label>
+            <div class="col">
+              <input
+                class="form-input"
+                type="tel"
+                formControlName="MobileNo"
+                id="mobtxt"
+                minlength="10"
+                maxlength="20"
+                inputmode="numeric"
+                aria-label="Customer Mobile Number"
+                pattern="[0-9]{10,20}"
+                placeholder="10-20 digits"
+              />
+            </div>
           </div>
-        </div>
-      </form>
+          <div class="form-actions row">
+            <div class="col">
+              <button type="submit" [disabled]="myAddForm.invalid" class="add-btn" aria-label="Add Customer">
+                <span>+</span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 }
-
-  <!-- <div class="row box">
-      <form [formGroup]="myCustomerSearchForm" (ngSubmit)="onCustomerSearch()" class="col lbl2">
-        <button class="close" type="button" (click)="close()">Close</button>
-        <div class="row lbl">
-          <h4>Search Customer:</h4>
-        </div>
-        <div class="row lbl" *ngIf="DisplayCustomers">
-          <label>{{ DisplayCustomers }}</label>
-          <button type="button" (click)="onProceed()" class="bt1n" style="margin: 3px;">
-            Proceed
-          </button>
-        </div>
-        <div class="row lbl">
-          <h4>OR</h4>
-        </div>
-        <div class="row lbl">
-          <h4>Search Customer</h4>
-        </div>
-       
-        <div class="form-group row">
-          <div class="col">
-            <label class="lbl" for="mobtxt">Mobile No.:</label>
-          </div>
-          <div class="col">
-            <input class="lbl" type="text" minlength="10" maxlength="20" formControlName="MobileNo" id="mobtxt" />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <button type="submit" [disabled]="myCustomerSearchForm.invalid" class="bt1n" style="border: solid black; padding: 10px;">+</button>
-          </div>
-        </div>
-      </form>
-    </div> -->
-
-    <!-- add customer -->

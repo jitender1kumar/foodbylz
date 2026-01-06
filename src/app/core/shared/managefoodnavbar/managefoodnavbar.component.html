@@ -145,6 +145,15 @@
         <a routerLink="companyprofile" class="nav-link">Company Profile</a>
       </div>
     </div>
+  <div class="nav-section">
+    <div class="nav-title" (click)="sectionOpenDiscount = !sectionOpenDiscount">
+      <span>Discount Management</span>
+      <span class="nav-chevron" [ngClass]="{'open': sectionOpenDiscount}">&#9654;</span>
+    </div>
+    <div class="nav-dropdown-links" [style.maxHeight]="sectionOpenDiscount ? '100px':'0'">
+      <a routerLink="discount" class="nav-link">Manage Discounts</a>
+    </div>
+  </div>
   </aside>
   <main style="width: 100%; padding-left:8px; padding-top:0;">
     <router-outlet></router-outlet>

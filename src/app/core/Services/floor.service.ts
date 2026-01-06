@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 import { environment } from '../../environment/environment';
 import { Floor } from '../Model/crud.model';
@@ -8,6 +8,11 @@ import { Floor } from '../Model/crud.model';
   providedIn: 'root'
 })
 export class FloorService {
+  public FloordataSubject$ = new BehaviorSubject<any[]>([]);
+  //Floordata$ = this.FloordataSubject.asObservable();
+
+
+  
 
   private floorUrl: string ;
   constructor(private http: HttpClient) { 
@@ -32,5 +37,23 @@ export class FloorService {
   }
   update(floor: Floor) {
     return this.http.put(this.floorUrl, { floor });
+  }
+  loadfloor() {
+    // loading floors
+    this.get().subscribe({
+      next: data => {
+        if (Array.isArray((data as any)?.data)) {
+          this.FloordataSubject$.next((data as any).data);
+        } else if (Array.isArray(data)) {
+          this.FloordataSubject$.next(data);
+        } else {
+          this.FloordataSubject$.next([]);
+        }
+      },
+      error: err => {
+        console.error('Error loading floors:', err);
+        this.FloordataSubject$.next([]);
+      }
+    });
   }
 }                                                                         

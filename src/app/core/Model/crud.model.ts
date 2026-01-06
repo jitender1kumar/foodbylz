@@ -1,4 +1,4 @@
-import { RunningItems } from "../../model/category.model"
+import { RunningItems } from "./RunningItemsHomeModel/RunningItem.model"
 
 export interface ProductCategory {
     _id:string,
@@ -14,6 +14,29 @@ export interface ProductCategory {
     selectQtypeID:string,
     
   }
+export interface Payment {
+  _id: string;
+  amount: number;
+  method: string; // e.g., 'cash', 'card', etc.
+  date: string;   // ISO string format
+  orderId?: string; // Associated order or invoice id (optional)
+  status: string;  // e.g., 'completed', 'pending', 'failed'
+  employee_id?: string;
+  notes?: string;
+}
+export interface Discount {
+  _id: string;
+  name: string;
+  amount: number; // the discount value, could be percentage or fixed
+  type: 'percentage' | 'fixed'; // discount type
+  description?: string;
+  active: boolean;
+  validFrom?: string; // ISO string
+  validTo?: string;   // ISO string
+  createdAt?: string;
+  updatedAt?: string;
+  employee_id?: string;
+}
 
   export interface ProductPrice{
     _id:string,
@@ -125,10 +148,32 @@ Status:boolean,
         RecieptNumber:string,
        Items:IItems[]
       }
+      export interface KOTsUD
+      {
+        KOTsUD: {
+          type: Object
+        },
+        RecieptNumber: string,
+        deletedAt:Date,
+        CommentId: string,
+      }
       export interface GenratedItemKOT
       {
+        quntityvalue: any;
+        qvalue: any;
+        EmployeeId:string,
+        TableId:string,
         RecieptNumber:string,
+        KOTStatus:string,
+        createdAt:Date,
         KOTrunningorders:RunningItems[]
+      }
+      export interface Comment
+      {
+        _id:string,
+        CommentType:string,
+        RecieptNumber: string,
+        Comment: Text,
       }
       export interface IItems
       {

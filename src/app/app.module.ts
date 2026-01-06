@@ -99,13 +99,19 @@ import {
 import { AddOnProductEffects } from './manage/ManageStore/addOnProductStore/addOnProduct.effects';
 import { productItemReducer } from './home/homeStore/productItemStore/productItem.reducers';
 import { ProductItemEffects } from './home/homeStore/productItemStore/productItem.effects';
-import { runningItemReducer } from './home/homeStore/runningItemStore/runningItem.reducers';
-import { metaReducers } from './home/homeStore/runningItemStore/localStorage';
+import { runningItemKOTReducer } from './home/homeStore/runningItemKOTStore/runningItemKOT.reducers';
+import { metaReducers } from './home/homeStore/runningItemKOTStore/localStorage';
 import { GirdTableComponent } from './core/shared/dynamicTable/gird-table/gird-table.component';
 import { GridTableModule } from './core/shared/dynamicTable/gird-table/gridtable.module';
 import { CompanyloginComponent } from './company/companyAuth/companylogin/companylogin.component';
 import { reserveTableReducer } from './dine/dineStore/reserveTableStore/reserveTable.reducer';
 import { ReserveTableEffects } from './dine/dineStore/reserveTableStore/reserveTable.effect';
+import {  RunningItemKOTEffects } from './home/homeStore/runningItemKOTStore/runningItemKOT.effects';
+import { PaymentModule } from './payment/payment.module';
+import { DiscountModule } from './discount/discount.module';
+import { DiscountEffects } from './discount/store/discount.effects';
+import { discountReducer } from './discount/store/discount.reducers';
+import { runningItemReducer } from './home/homeStore/runningItemStore/runningItem.reducers';
 import { RunningItemEffects } from './home/homeStore/runningItemStore/runningItem.effects';
 
 const routes: Routes = [
@@ -141,6 +147,8 @@ const routes: Routes = [
     BrowserAnimationsModule,
     CustomersModule,
     InventoryModule,
+    PaymentModule,
+    DiscountModule,
     // Remove PopupmodelComponent from imports, as it should be declared, not imported as a module
     StoreModule.forRoot(
       {
@@ -190,8 +198,10 @@ const routes: Routes = [
         productItemReducer_: productItemReducer,
         getByProductIdSubQTypeIDAddOnProductsReducer_: getByProductIdSubQTypeIDAddOnProductsReducer,
         getAddOnProductByIdReducer_: getAddOnProductByIdReducer,
-        runningItemReducer_: runningItemReducer,
+        runningItemKOTReducer_: runningItemKOTReducer,
         reserveTableReducer_:reserveTableReducer,
+        discountReducer_:discountReducer,
+        runningItemReducer_:runningItemReducer
       },
       { metaReducers }
     ),
@@ -213,8 +223,11 @@ const routes: Routes = [
       AddOnProductEffects,
       ProductItemEffects,
       ReserveTableEffects,
+      RunningItemKOTEffects,
+      DiscountEffects,
       RunningItemEffects
     ]),
+    
   ],
   providers: [
     provideClientHydration(),

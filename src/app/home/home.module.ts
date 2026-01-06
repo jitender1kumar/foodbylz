@@ -13,30 +13,33 @@ import { HomedataComponent } from './HomeData/homedata/homedata.component';
 import { HomeComponent } from './home.component';
 import { ManageModule } from '../manage/manage.module';
 import { ShortcodeComponent } from './partial/shortcode/shortcode.component';
+import { SplitbillComponent } from './partial/splitbill/splitbill/splitbill.component';
 
 @NgModule({
   declarations: [ HomeComponent,
     CommentInInvoiceComponent,
     AddcustomersComponent,
-    AddOnItemsComponent,
     HomeleftpanelComponent,
     HomeRightPanelComponent,
     HomeCenterPanelComponent,
     HomedataComponent,
     ShortcodeComponent,
-   
+    AddOnItemsComponent,
+    SplitbillComponent,
   ],
   imports: [
     CommonModule,
     AgGridModule,
     ReactiveFormsModule,
+   
     FormsModule,
     NgSelectModule
   ],
   exports: [HomeComponent,
     CommentInInvoiceComponent,
     AddcustomersComponent,
-    
+    AddOnItemsComponent,
+    SplitbillComponent,
   ]
 })
 export class HomeModule { }

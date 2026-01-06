@@ -29,7 +29,8 @@ import { loadAllAddOnProducts } from '../../manage/ManageStore/addOnProductStore
 import { InvoiceService } from './invoice.service';
 import { IDine } from '../Model/crud.model';
 import { loadSubQuantityType } from '../../manage/ManageStore/subQuantityTypeStore/subQuantityType.actions';
-import * as runningItemActions from '../../home/homeStore/runningItemStore/runningItem.actions';
+import * as runningItemActions from '../../home/homeStore/runningItemKOTStore/runningItemKOT.actions';
+import { GetOrderDetailsService } from '../commanFunction/getOrderDetails.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -53,6 +54,7 @@ export class ManageService {
   innvoicedata: any;
   invoiceData$ = new BehaviorSubject<any>(null);
   payByData$ = new BehaviorSubject<any>(null);
+  TokenNumber$ = new BehaviorSubject<any>(null);
   table_id: any;
   invoicedata:any;
   table_name: any;
@@ -108,19 +110,20 @@ export class ManageService {
       subQuantityTypeLoad: any;
       subQuantityTypeByIdLoad: any;
       addOnProductReducer_: any;
-      runningItemReducer_: any;
+      runningItemKOTReducer_: any;
       loadAddOnProductReducer_: any;
       
     }>,
     private CustomerService_: CustomresService,
-    private InitializeInvoice_: InitializeInvoice
+    private InitializeInvoice_: InitializeInvoice,
+    private getOrderDetailsService: GetOrderDetailsService
   ) {
    
     this.initObservables();
   }
 
    initObservables(): void {
-    console.log("Hi!");
+  //  console.log("Hi!");
     this.getCustomer$ = this.store.select(
       state => state['customerLoad']?.customers?.data
     );
@@ -131,7 +134,7 @@ export class ManageService {
       state => state.addOnProductReducer_?.addOnProducts?.data
     );
     this.runningItems$ = this.store.select(
-      state => state.runningItemReducer_?.KOTrunningorders?.data
+      state => state.runningItemKOTReducer_?.KOTrunningorders?.data
     );
     this.categorynamedata$ = this.store.select(
       state => state.categoryLoad?.ProductCategory_?.data
@@ -201,11 +204,26 @@ export class ManageService {
     this.loadProductPrices();
 
   }
+ 
+
+  loadToken() {
+    // this function is resposible for making token number
+    // this.TokenNumber = 0;
+    this.getOrderDetailsService.loadToday().subscribe(data => {
+      const items = (data && typeof data === 'object' && Array.isArray((data as any).data)) ? (data as any).data : [];
+    //  console.log(items);
+      this.TokenNumber$.next(items.length + 1);
+      if (!Array.isArray(items)) {
+        const d = new Date();
+        this.TokenNumber$.next(d.getDay() + d.getTime());
+      }
+    });
+  }
   loadRunningKOT()
   {
-    this.store.dispatch(runningItemActions.loadRunningItems());
+    this.store.dispatch(runningItemActions.loadKOTRunningItems());
     this.runningItems$ = this.store.select(
-      state => state.runningItemReducer_?.KOTrunningorders?.data
+      state => state.runningItemKOTReducer_?.KOTrunningorders?.data
     );
   }
   PayByData:any;
@@ -216,29 +234,13 @@ export class ManageService {
         this.PayByData = (data as any).data;
         this.payByData$.next(this.PayByData);
 
-        // this.ManageDataEnvironments.Payby2$.next(data);
-        // this.ManageDataEnvironments.Payby$.next(this.ManageDataEnvironments.Payby2$?.value.data);
-        // // this.ManageDataEnvironments.Payby2$?.value.data;
-        // this.PayByData=this.ManageDataEnvironments.Payby2$?.value.data;
-        // console.log(this.ManageDataEnvironments.Payby2$?.value.data);
-        // console.log(this.ManageDataEnvironments.Payby2$?.value);
+       
        }
     })
   //  console.log(this.PayByData$);
   //  return this.PayByData;
   }
-  // loadpaybyMode() {
-  //   this.PaybyService_.get().subscribe((data: any) => {
-  //     if (!data || !Array.isArray(data.data)) {
-  //       this.paybydata = [];
-  //       return this.paybydata;
-  //     }
-  //     this.paybydata2 = data;
-  //     this.paybydata = data.data;
-  //     console.log(this.paybydata);
-  //     return this.paybydata;
-  //   });
-  // }
+ 
 getInvoiceDataById(invoiceid:string)
 {
   this.InvoiceService_.getbyid(invoiceid).subscribe(data => {
@@ -250,11 +252,7 @@ getInvoiceDataById(invoiceid:string)
     //  console.log(this.invoicedata);
     }
   });
-  // this.invoiceData$.subscribe((data: any)=>{
-  //   console.log(data);
-  //   return data;
-  // });
-  // return this.invoiceData$;
+ 
 }
 
   load_AddOnProductsdata() {

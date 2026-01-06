@@ -28,9 +28,14 @@ style="height:500px;width: 95%;margin: auto;"
 [paginationPageSizeSelector]="paginationPageSizeSelector"
 (cellClicked)="onCellClick($event)"
     />                 -->
-    <app-gird-table
-      [columns]="colDefs"
-      [data]="ordersdata"
-      (rowClicked)="onRowClick($event)"
-    ></app-gird-table>
-</div>
+    <div style="width: 100%;">
+      <app-gird-table
+        class="order-list-table"
+        style="width: 100% !important; display: block !important;"
+        [style.width.%]="100"
+        [columns]="colDefs"
+        [data]="ordersdata"
+        (rowClicked)="onRowClick($event)">
+      </app-gird-table>
+    </div>
+    </div>

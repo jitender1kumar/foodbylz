@@ -18,6 +18,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
     standalone: false
 })
 export class ManagefoodnavbarComponent {
+  sectionOpenDiscount = false;
   sectionOpenCat = true;
     sectionOpenFood = false;
     sectionOpenDine = false;

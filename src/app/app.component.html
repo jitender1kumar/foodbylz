@@ -5,7 +5,7 @@
 
 <!-- NAVBAR always visible -->
  
- <ng-container *ngIf="showmanagebar === 'companylogin'">
+ <ng-container *ngIf="MenuName === 'companylogin'">
   <div>
     <app-companylogin (redirectToTables)="receiveNotification($event)"></app-companylogin>
   </div>
@@ -13,16 +13,18 @@
 <app-navbar (notifyManage)="receiveNotification($event)"></app-navbar>
 
 <!-- MANAGE SECTION -->
-<ng-container *ngIf="showmanagebar === 'manage'">
+<ng-container *ngIf="MenuName === 'manage'">
   <div>
     <app-managefoodnavbar></app-managefoodnavbar>
   </div>
 </ng-container>
 
 <!-- HOME SECTION -->
-<ng-container *ngIf="showmanagebar === 'home'">
+<ng-container *ngIf="MenuName === 'home'">
   <div>
+    <!-- [TokenNumber]="TokenNumber" -->
     <app-home
+    [runningItemsKOT$]="runningItems$"
       [invoiceid]="invoiceid"
       [TokenNumber]="TokenNumber"
       [paybydata]="payBy"
@@ -34,21 +36,22 @@
       [Tax]="tax"
       [Qtypenamedata$]="quantityType$"
       [InvoiceData$]="invoicedata$" 
-      (valueChanged)="updateValue($event)"
+      (value_invoiceid_Changed)="updateinvoiceidValue($event)"
       (cancelOrder)="cancelOrder($event)"
+      (RedirectToTable)="showTablePage($event)"
     ></app-home>
   </div>
 </ng-container>
 
 <!-- DASHBOARD SECTION -->
-<ng-container *ngIf="showmanagebar === 'dashboard'">
+<ng-container *ngIf="MenuName === 'dashboard'">
   <div>
     <app-dashboard></app-dashboard>
   </div>
 </ng-container>
 
 <!-- ORDERS SECTION -->
-<ng-container *ngIf="showmanagebar === 'orders'">
+<ng-container *ngIf="MenuName === 'orders'">
   <div>
     <app-orders
       (showTables)="receiveNotification($event)"
@@ -58,23 +61,27 @@
 </ng-container>
 
 <!-- CUSTOMERS SECTION -->
-<ng-container *ngIf="showmanagebar === 'customers'">
+<ng-container *ngIf="MenuName === 'customers'">
   <div>
     <app-customers></app-customers>
   </div>
 </ng-container>
 
 <!-- RUNNING ORDERS SECTION -->
-<ng-container *ngIf="showmanagebar === 'runningorder'">
+<ng-container *ngIf="MenuName === 'runningorder'">
   <div>
     <app-runningorders (notifyManage3)="gohomeinvoiceid($event)"></app-runningorders>
   </div>
 </ng-container>
 
 <!-- TABLES SECTION -->
-<ng-container *ngIf="showmanagebar === 'tables'">
+<ng-container *ngIf="MenuName === 'tables'">
   <div>
+     <!--  -->
     <app-tables
+    
+    [Floordata$]="floor$"
+    [DineData$]="dine$"
      [runningItemsKOT$]="runningItems$"
       [pickupOrder]="pickup"
       [CancelOrder]="CancelOrder"

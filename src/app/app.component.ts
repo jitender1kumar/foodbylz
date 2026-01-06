@@ -3,6 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TablesComponent } from './dine/tables/tables.component';
 import { ManageService } from './core/Services/manage.service';
 import { InvoiceService } from './core/Services/invoice.service';
+import { FloorService } from './core/Services/floor.service';
+import { DineService } from './core/Services/dine.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -13,7 +15,8 @@ export class AppComponent implements OnInit {
 
   @ViewChild(TablesComponent) table!: TablesComponent;
 
-  showmanagebar = 'companylogin';
+  //MenuName = 'home';
+  MenuName = 'companylogin';
   invoiceid = '';
   TokenNumber = 0;
   pickup = '';
@@ -26,6 +29,7 @@ export class AppComponent implements OnInit {
   payBy: any;
   addOnProduct$: any;
   floor$: any;
+  dine$: any;
   invoicedata$: any;
   CancelOrder = '';
   splitToken: any;
@@ -35,29 +39,37 @@ export class AppComponent implements OnInit {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private manageService: ManageService,
-    private invoiceService: InvoiceService
+    private invoiceService: InvoiceService,
+    private FloorService_:FloorService,
+    private DineService_:DineService,
   ) {
    
 
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+   
+    // Clear localStorage on app initialization
+   
+      // Remove all items from localStorage
+      
+    }
 
-  updateValue(newValue: any): void {
+  updateinvoiceidValue(newValue: any): void {
     this.invoiceid = newValue;
   }
 
   gohomeinvoiceid($event: string): void {
-    this.handleTokenSplit($event);
-  //  this.getInvoiceDataForHome(this.invoiceid);
-    this.initializeManageforHome();
+   this.handleTokenSplit($event);
+  this.initializeManageforHome();
     this.router.navigate(['/Home']);
-    this.showmanagebar = 'home';
+    this.MenuName = 'home';
   }
 
   private handleTokenSplit(tokenString: string): void {
-    // Defensive in case tokenString doesn't have the separator
-    this.splitToken = tokenString.split('jsk');
+   this.splitToken = tokenString.split('jsk');
+    console.log(tokenString);
+    console.log(this.splitToken);
     // If 'jsk' is not found, splitToken[1] could be undefined or empty string
     if (this.splitToken.length > 1 && this.splitToken[1]) {
       this.TokenNumber = +this.splitToken[1] || 0;
@@ -66,66 +78,59 @@ export class AppComponent implements OnInit {
     }
     this.invoiceid = this.splitToken[0] || '';
     console.log(this.invoiceid);
-    // if (!this.invoiceid) {
-    //   this.invoicedata = null;
-    //   return;
-    // }
-
-    // this.invoiceService.getbyid(this.invoiceid).subscribe(data => {
-    //   if (data ) {
-         this.manageService.getInvoiceDataById(this.invoiceid);
-         this.invoicedata$ = this.manageService.invoiceData$;
-         this.invoicedata$.subscribe((data: any) =>
-         {
-          console.log(data);
-         }
-         );
-        // console.log(this.invoicedata$);
-    //   }
-    // });
+    console.log(this.TokenNumber);
+   
   }
 
-  getInvoiceDataForHome(invoiceId: string): void {
-    // if (!invoiceId) {
-    //   this.invoicedata = null;
-    //   return;
-    // }
-    // this.invoiceService.getbyid(invoiceId).subscribe(data => {
-    //   if (data && typeof data === 'object' && 'data' in data) {
-    //     this.invoicedata = (data as any).data;
-    //   } 
-    // });
-  }
+
 
   initializeManageforHome(): void {
     // Initialize as undefined so async pipe does not apply to plain arrays in template
    
-    this.manageService.initObservables();
-    // this.payBy$ = this.manageService.loadpaybyMode();
-    // this.productPrice$ = this.manageService.loadProductPrices();
-    // this.addOnProduct$ = this.manageService.load_AddOnProductsdata();
-    // this.quantityType$ = this.manageService.loadQtype();
-    //  this.payBy = this.manageService.loadpaybyMode();
-    //  console.log(this.payBy);
-    this.manageService.loadpaybyMode();
-    // console.log(this.manageService.payByData$?.value);
-    this.manageService.payByData$?.subscribe(payByData=>{
-      console.log(payByData);
-     // console.log(payByData.data);
-      this.payBy = payByData;
-    });
+    (async () => {
+      // Step 1: Initialize observables
+      this.manageService.initObservables();
+
+      // Step 2: Load tax info
+      await this.manageService.loadTax();
+
+      // Step 3: Load payby modes
+      await this.manageService.loadpaybyMode();
+
+      // Step 4: Load invoice data by id
+      if(this.invoiceid)
+      await this.manageService.getInvoiceDataById(this.invoiceid);
+
+      // Step 5: Assign synchronous values from service to component properties
+      this.payBy = this.manageService.payByData$?.value;
+      this.addOnProduct$ = this.manageService.addOnProductsData$;
+      this.productPrice$ = this.manageService.productPriceData$;
+      this.product$ = this.manageService.Productnamedata$;
+     
+      this.invoicedata$ = this.manageService.invoiceData$;
+      this.category$ = this.manageService.categorynamedata$;
+      this.quantityType$ = this.manageService.Qtypenamedata$;
+      this.subQuantityTtype$ = this.manageService.subQuantityTypeData$;
+
+      this.tax = this.manageService.taxnamedata;
+
+      // Step 6: Logging as needed
+      console.log(this.payBy);
+      console.log(this.tax);
+      console.log(this.invoiceid);
+
+    })();
     
-    this.addOnProduct$ = this.manageService.addOnProductsData$;
-    this.productPrice$ = this.manageService.productPriceData$;
-    this.product$ = this.manageService.Productnamedata$;
-    //console.log();
-    // this.productPrice$.subscribe((data: any)=>{
+    // console.log(this.invoicedata$ );
+    // console.log(this.manageService.invoiceData$.value);
+    // console.log(this.manageService.invoiceData$);
+    // console.log(this.manageService.invoiceData$.value);
+    // console.log(this.manageService.invoiceData$.getValue());
+    // this.invoicedata$.subscribe((data: any)=>
+    // {
     //   console.log(data);
-    // });
-   this.category$ = this.manageService.categorynamedata$;
-    this.quantityType$ = this.manageService.Qtypenamedata$;
-    this.subQuantityTtype$ = this.manageService.subQuantityTypeData$;
-    this.tax=this.manageService.loadTax();
+    // }
+    // );
   }
 
   initializeDataForHome($event: string): void {
@@ -133,25 +138,56 @@ export class AppComponent implements OnInit {
     this.initializeManageforHome();
    // alert("home");
     this.router.navigate(['/Home']);
-    this.showmanagebar = 'home';
+    this.MenuName = 'home';
   }
 
   receiveNotification(event: string): void {
-    this.showmanagebar = event;
-    if(this.showmanagebar==='tables')
+    this.MenuName = event;
+    if(this.MenuName==='tables')
     {
-      this.manageService.loadRunningKOT();
-      this.runningItems$=this.manageService.runningItems$;
-      this.runningItems$?.subscribe((data: any)=>
-        {
-          console.log(data);
+      // Step 1: Load running KOT data
+      
+      console.log("Running KOT loaded successfully.");
+      this.initializeManageforHome();
+      // Step 2: Load token information
+      // Step 2: Load token information (Async/Await)
+      (async () => {
+        try {
+          await this.manageService.loadToken();
+          console.log("Token information loaded successfully.");
+
+          // Step 3: Get and set TokenNumber after loading token
+          this.TokenNumber = this.manageService.TokenNumber$.getValue();
+          console.log("TokenNumber set to:", this.TokenNumber);
+          await this.manageService.loadRunningKOT();
+          // Step 4: Load floor data
+          await this.FloorService_.loadfloor();
+          this.floor$ = this.FloorService_.FloordataSubject$;
+          console.log("Floor data loaded successfully.");
+
+          // Step 5: Load dine data
+          await this.DineService_.loaddine();
+          this.dine$ = this.DineService_.dinedataSubject$;
+          console.log("Dine data loaded successfully.");
+        } catch (error) {
+          console.error("Error in loading table/tokens/floor/dine data", error);
         }
-        );
+      })();
+
+      // Step 6: Set floor$ and dine$ Observables
+     
+     
+      console.log("floor$ and dine$ Observables set.");
+
+      // Step 7: Set runningItems$ Observable
+      this.runningItems$ = this.manageService.runningItems$;
+      console.log("runningItems$ Observable set.");
+     
     }
   }
 
   pickUpOrders(event: string): void {
-    this.showmanagebar = 'tables';
+    this.MenuName = 'tables';
     this.pickup = event;
   }
 
@@ -160,9 +196,13 @@ export class AppComponent implements OnInit {
    
     console.log(this.CancelOrder);
     this.router.navigate(['/tables']);
-    this.showmanagebar = 'tables';
+    this.MenuName = 'tables';
   }
-
+  showTablePage(event: string)
+  {
+    this.router.navigate(['/tables']);
+    this.MenuName = 'tables';
+  }
   clearCancelOrders(event: string): void {
     this.CancelOrder = event;
   }

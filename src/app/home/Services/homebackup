@@ -1,0 +1,1529 @@
+// import {
+//   Component,
+//   ElementRef,
+//   EventEmitter,
+//   Input,
+//   OnInit,
+//   Output,
+//   QueryList,
+//   ViewChildren,
+//   OnDestroy
+// } from '@angular/core';
+// import { FormBuilder, FormGroup } from '@angular/forms';
+// import { Router } from '@angular/router';
+// import { Store } from '@ngrx/store';
+// import { Observable, Subscription } from 'rxjs';
+// import { filter,take } from 'rxjs/operators';
+
+
+// import {
+//   ProductPrice,
+//   ProductPriceDetails,
+//   Invoice,
+//   GenratedItems,
+//   ITax,
+//   IChair,
+//   InventoryFoodMain2,
+//   IDine,
+//   IAddOnItems,
+//   AddOnProductEdit,
+//   GenratedItemKOT
+// } from '../core/Model/crud.model';
+
+
+// import { RunningItems } from '../model/category.model';
+// import { addAddOnProductService } from '../core/Services/addOnProduct.service';
+// import { DatePipe } from '@angular/common';
+// import { HomeEnvironment } from '../environment/homeEnvironment';
+// import * as AddOnProductActions from '../manage/ManageStore/addOnProductStore/addOnProduct.action';
+// import { Actions } from '@ngrx/effects';
+// import { InitializeInvoice } from '../core/commanFunction/InitializeInvoice.service';
+// import { subQuantityTypeService } from '../core/Services/subQuantityType.service';
+// import { InvoiceService } from '../core/Services/invoice.service';
+// import { CustomresService } from '../core/Services/customers.service';
+// import * as runningItemActions from './homeStore/runningItemStore/runningItem.actions';
+// import { ManageService } from '../core/Services/manage.service';
+
+// type Nullable<T> = T | null | undefined;
+
+// @Component({
+//   selector: 'app-home',
+//   templateUrl: './home.component.html',
+//   styleUrls: ['./home.component.css'],
+//   providers: [DatePipe],
+//   standalone:false
+//  // imports:[HomeModule]
+// })
+// export class HomeComponent implements OnInit, OnDestroy {
+//   @Input() runningItemsKOT$?: Observable<any[]> | null = null;
+//   @Input() invoiceid!: string;
+//   @Input() TokenNumber!: number;
+//   @Output() valueChanged = new EventEmitter<string>();
+//   @Output() cancelOrder = new EventEmitter<string>();
+//   @Output() RedirectToTable = new EventEmitter<string>();
+//   @Input() paybydata: any[] = [];
+//   @Input() InvoiceData$?: Observable<any[]> | null = null;
+//   @Input() categorynamedata$?: Observable<any[]> | null = null;
+//   @Input() subQuantityTypeName$?: Observable<any[]> | null = null;
+//   @Input() Tax: any[] | null = null;
+//   @Input() Qtypenamedata$?: Observable<any[]> | null = null;
+//   @Input() Productnamedata$?: Observable<any[]> | null = null;
+//   @Input() productPriceData$?: Observable<any> | null = null;
+//   @Input() addOnProductsData$!: Observable<any[]>;
+
+//   @ViewChildren('dynamicInput') divs!: QueryList<ElementRef>;
+//   //TokenNumber:number=0;
+//   CommentType="";
+//   public RecieptNumber:any;
+//   public display = 'display:none;';
+//   public showCustomerPopUp = false;
+//   public showCommentPopUp = false;
+//   public showDiscountForm = false;
+//   public showdining = false;
+//   public showtype = false;
+//   public showplaceorderPopup = false;
+//   public showAddonPopUp = false;
+//   public closePopup = false;
+//   public searchQuery = '';
+//   public selectedType = '';
+//   public ppalsoavailable: any[] = [];
+//   public selectedAddOnItems: any;
+//   public value = '';
+//   public tot = 0;
+
+//   public paybyId = 'none';
+//   public orders_status = [{ '1': 'NewOrder', '2': 'InProgress', '3': 'Cancelled', '4': 'Settled' }];
+//   public chair: string[] = ['GuestTable'];
+//   public EmployeeId = 'JSK';
+//   runningItemKOT: GenratedItemKOT={
+//     TableId: '',
+//     RecieptNumber: '',
+//     KOTStatus:'',
+//     KOTrunningorders: [],
+//     createdAt: new Date(),
+//     EmployeeId: ''
+//   };
+//   RunningItems_: RunningItems[] = [];
+//   RunningItems_2: RunningItems[] = [];
+//   addOnProduct: any;
+//   productpriceallname: ProductPriceDetails[] = [];
+//   productsByCategoryId: ProductPriceDetails[] = [];
+//   productitembackup: ProductPriceDetails[] = [];
+//   itaxarr: ITax[] = [];
+//   ichar: IChair[] = [];
+//   addonitems: AddOnProductEdit[] = [];
+//   updataAddOnDataInRunningItem: AddOnProductEdit;
+//   gitems: GenratedItems[] = [];
+//   gitems2: GenratedItems[] = [];
+//   AddOnItems: IAddOnItems[] = [];
+//   showCommentConfime=false;
+//   allppdata: any[] = [];
+//   ppname: any[] = [];
+//   typeprice: any[] = [];
+//   priceID: any[] = [];
+//   replaceFilteredData: any[] = [];
+//   chardata: any[] = [];
+//   Itemsdata: any[] = [];
+//   Itemsdata2: any[] = [];
+//   quntityoffoodarray: any[] = [];
+//   item_subQuantityType_ID: any;
+//   item_subQuantityTypeId: any;
+//   getCustomer: any;
+//   getCustomerdata: any;
+//   statusselectall = false;
+//   gettableid2: any;
+//   gettableid: any;
+//   tabledata: any;
+//   tabledata2: any;
+//   getinvoiceid: any;
+//   getinvoiceid2: any;
+//   innvoicedata2: any;
+//   innvoicedata: any;
+//   ifmwpdata: any;
+//   ifmwpdata2: any;
+//   imfsdata2: any;
+//   imfsdata: any;
+//   updatefmsdata2: any;
+//   updatefmsdata: any;
+//   getpercentvaldata: any;
+//   getpercentvaldata2: any;
+//   addondata: any;
+//   addondataarr: IAddOnItems[] = [];
+
+//   CustomerName = 'Guest';
+//   CustomerId = 'undefined';
+//   deletedInvoiceId: string = 'false';
+//   replacedInvoiceId: string = '';
+//   ordermode = '';
+//   table_name = '';
+//   table_id: string = '';
+//   employeeId = 'JSK';
+//   paidamount: number = 0;
+//   itemtotalamount: number = 0;
+//   totalamount: number = 0;
+//   totaltax: number = 0;
+//   percent: number = 0;
+//   discountvalue: number = 0;
+//   actualdiscountprice: number = 0;
+//   getpercentOnebyOne: number = 0;
+//   taxname: string = '';
+//   itemTotalTax: { taxname: string; taxpercent: number }[] = [];
+
+//   dine: IDine = {
+//     _id: '',
+//     name: '',
+//     description: '',
+//     status: true,
+//     floor_id: '',
+//     employee_id: this.employeeId
+//   };
+//   inventoryfoodmain: InventoryFoodMain2;
+//   productprices: ProductPrice;
+//   invoice: Invoice;
+//   invoiceData: any;
+
+//   public loading$?: Observable<boolean>;
+//   public error$?: Observable<string | null>;
+//   public subQuantityTypeByIdData$?: Observable<any[]>;
+//   public runningItems$?: Observable<any[]>;
+//   public loadAddOnProductsdata$!: Observable<any[]>;
+//   public myDiscountForm!: FormGroup;
+
+//   private subscriptions: Subscription[] = [];
+//  // invoiceData$ = new BehaviorSubject<any>(null);
+
+//   constructor(
+//     private router: Router,
+//     private formedit: FormBuilder,
+//     private addAddOnProductService_: addAddOnProductService,
+//     private InvoiceService_: InvoiceService,
+//     private fb: FormBuilder,
+//     private CustomerService_: CustomresService,
+//     private subQuantityTypeService_: subQuantityTypeService,
+//     private datePipe: DatePipe,
+//     public actions$: Actions,
+//     private store: Store<{ runningItemReducer_: any }>,
+//     private InitializeInvoice_: InitializeInvoice,
+//     private ManageService_:ManageService
+//   ) {
+
+//   //  alert("hc "+this.invoiceid);
+//   //  this.RecieptNumber = this.invoiceid
+//  //   alert("hc "+this.RecieptNumber);
+//     this.closePopup=false;
+//     this.updataAddOnDataInRunningItem = {
+//       _id: '',
+//       name: '',
+//       description: '',
+//       Price: 0,
+//       SelectProductId: '',
+//       SubQuantityTypeID: '',
+//       employee_id: '',
+//       createdAt: new Date(),
+//       updatedAt: new Date(),
+//       __v: undefined
+//     };
+//     this.inventoryfoodmain = {
+//       _id: 'undefined',
+//       name: 'undefined',
+//       description: 'undefined',
+//       quantitytypeID: 'undefined',
+//       quantitytypename: 'undefined',
+//       quantitytypevalue: 0,
+//       employee_id: this.employeeId,
+//       createdAt: 'undefined'
+//     };
+//     this.productprices = {
+//       _id: '',
+//       ProductPrice: 100,
+//       SelectProductId: '',
+//       selectcategoryID: '',
+//       selectQtypeID: '',
+//       selectSubQuantityTypeID: '',
+//       ShortCodeNumber: 0,
+//       ShortCodeString: '',
+//       mostSelling:false,
+//       employee_id: this.employeeId
+//     };
+//     this.invoice = this.InitializeInvoice_.initializeInvoiceDefault() as unknown as Invoice;
+//     this.display = 'display:none;';
+//     this.itemtotalamount = 0;
+//     this.totaltax = 0;
+//     this.RunningItems_=[];
+//     this.productpriceallname = [];
+//     this.productsByCategoryId = [];
+//     this.showtype = false;
+//     this.replacedInvoiceId = this.invoiceid;
+//     this.showCommentConfime=false;
+//     this.runningItems$ = store.select(state => state.runningItemReducer_.KOTrunningorders.data);
+//     this.loading$ = store.select(state => state.runningItemReducer_.loading);
+//     this.error$ = store.select(state => state.runningItemReducer_.error);
+//   }
+// KOTItemsdata:any;
+//   ngOnInit(): void {
+//     this.CustomerName='Guest';
+//     this.RecieptNumber = this.invoiceid
+//    // alert("hng "+this.RecieptNumber);
+//     this.RunningItems_=[];
+//     this.initializeKOTItems();
+//     this.loadinvoice();
+  
+//     this.loadfood('DinningTable', this.invoiceid);
+//     this.myDiscountForm = this.fb.group({
+//       discount: '',
+//       numberInput: [0]
+//     });
+//     this.loadProductByTopSelling();
+    
+//   }
+//   initializeKOTItems()
+//   {
+//     if(!this.runningItemsKOT$)return;
+//     this.runningItemsKOT$?.subscribe(KOTItems=>
+//       {
+       
+//         if (KOTItems) {
+//           if (Array.isArray(KOTItems)) {
+//             this.KOTItemsdata = KOTItems.filter(
+//               (item: any) => item && item.RecieptNumber === this.invoiceid  
+//             );
+//             if(!this.KOTItemsdata)this.KOTItemsdata="";
+//            // console.log(this.KOTItemsdata[0].KOTrunningorders);
+//            // console.log(this.KOTItemsdata);
+//            // this.RunningItems_
+//           } else {
+//             this.KOTItemsdata = "";
+//           }
+//         }
+//       }
+//       );
+     
+//   }
+//   deleteRunningItem(d: any): void {
+//     // Remove the item from RunningItems_ by SelectProductId
+//     if (!d.quntityvalue || d.quntityvalue > 1) {
+//       d.quntityvalue = 1;
+//     }
+//     this.loadqunityvalue(d.SelectProductId,'dcre', d.SubQuantityTypeName, d.quntityvalue, d.ProductPrice);
+//   }
+//   onQuantityChange(d: any): void {
+//     // If input is not a positive number, set to 1 as minimum
+//     if (!d.quntityvalue || d.quntityvalue < 1) {
+//       d.quntityvalue = 1;
+//     }
+//     this.loadqunityvalue(d.SelectProductId,'inc', d.SubQuantityTypeName, +d.quntityvalue-1, d.ProductPrice);
+//    // console.log();
+//     // Optionally trigger recalculation of totals/discounts, etc.
+//    // this.recalculateTotals();
+//   }
+
+//   // recalculateTotals(): void {
+//   //   // Simple sum of totalamount and itemtotalamount (assuming structure)
+//   //   this.totalamount = this.RunningItems_
+//   //     ?.reduce((sum: number, item: any) => sum + ((+item.ProductPrice) * (+item.quntityvalue)), 0) ?? 0;
+
+//   //   // If you have discount or tax routines, you can call them here as well
+//   //   // For example:
+//   //   // this.calculateTax();
+//   //   // this.calculateDiscount();
+//   //   // Finally, recalculate itemtotalamount or similar
+//   //   // This is example logic; adjust for your business logic if needed
+//   //   this.itemtotalamount = this.totalamount + (this.totaltax || 0) - (this.percent ? (this.totalamount * this.percent / 100) : 0);
+
+//   //   // If you want discountvalue to be updated as settle amount
+//   //   if (this.itemtotalamount < 0) {
+//   //     this.discountvalue = 0;
+//   //   } else {
+//   //     this.discountvalue = this.itemtotalamount;
+//   //   }
+//   // }
+//   loadinvoice(): void {
+//     const RecieptNumber = this.invoiceid;
+//     if (!RecieptNumber) return;
+
+//     // NOTE: To be replaced with a proper API call from the service
+//     // The current `getbyid` method throws an error.
+//     // const obs = this.InvoiceService_.getbyid(RecieptNumber) as Observable<any>;
+//     // if (!obs || typeof (obs as any).subscribe !== 'function') return;
+
+//     // obs.subscribe((invoiceData: any) => {
+//     //   this.innvoicedata2 = invoiceData;
+//     //   this.innvoicedata = this.innvoicedata2.data;
+//     //   if (this.invoiceData$ && typeof this.invoiceData$.next === 'function') {
+//     //     this.invoiceData$.next(this.innvoicedata);
+//     //   }
+
+//     this.InvoiceData$?.subscribe(InvoiceData=>{
+
+   
+//       const inv = InvoiceData?.[0];
+//       console.log(InvoiceData);
+//       console.log(inv);
+//       if (inv) {
+//         this.table_id = inv.table_id;
+//         this.table_name = inv.tablename;
+//         this.CustomerId = inv.customer_id;
+//         const customerName = inv.customer_id !== 'undefined' ? this.getCustomerName(inv.customer_id) : 'Guest';
+//         this.CustomerName = customerName ?? 'Guest';
+//         this.ordermode = this.table_name !== 'Pick Up' ? this.table_name : 'Pick Up';
+//       }
+//     });
+//     //});
+//   }
+//   getid(event: any): void {
+//     if (!this.chardata) return;
+//     const idx = event.target.value;
+//     if (this.chardata[idx]) {
+//       this.chardata[idx].status = !!event.target.checked;
+//     }
+//   }
+
+//   loadfood(msg: string, _moddata: string): void {
+//     if (msg === 'jsk') return;
+//     if (!this.invoiceid) return;
+//     const runningItemsTable = localStorage.getItem(this.invoiceid);
+//     //console.log(runningItemsTable);
+//     let runningItemsData: any = [];
+//     if (runningItemsTable) {
+//       try {
+//         runningItemsData = JSON.parse(runningItemsTable);
+//        // console.log(runningItemsData);
+//       ///  runningItemsData = [];
+//         this.intializeRunningItem(runningItemsData);
+//       } catch (e) {
+//         console.error('Error parsing RunningItemsTable from localStorage', e);
+//         runningItemsData = [];
+//       }
+//     }
+//     this.totalamount = this.gettotamount();
+//     this.getitemTotalTax();
+//     this.getitemtotalamount();
+//   }
+
+//   intializeRunningItem(Itemsdata: any): void {
+//     this.addondataarr = [];
+//   //  this.RunningItems_ = [];
+//     this.itemtotalamount = 0;
+//     this.totalamount = 0;
+
+//     const processItems = async (invoiceData: any[], itemsData: any[]) => {
+//       if (!invoiceData || !Array.isArray(invoiceData) || invoiceData.length === 0) return;
+//       const invoiceAddOnItems = invoiceData[0].AddOnItems || [];
+//      // if (!invoiceAddOnItems.length) 
+//         //{
+//       //   itemsData.forEach(item => {
+//       //     this.RunningItems_.push({
+//       //       SelectProductId: item.SelectProductId,
+//       //       ProductPrice: item.ProductPrice?.toString() ?? '0',
+//       //       SelectProductId: item.SelectProductId,
+//       //       ProductName: item.ProductName,
+//       //       selectcategoryID: item.selectcategoryID,
+//       //       categoryName: item.categoryName,
+//       //       selectQtypeID: item.selectQtypeID,
+//       //       QtypeName: item.QtypeName,
+//       //       selectSubQuantityTypeID: item.selectSubQuantityTypeID,
+//       //       SubQuantityTypeName: item.SubQuantityTypeName,
+//       //       quntityvalue: item.quntityvalue,
+//       //       qvalue: item.qvalue,
+//       //       taxnames: this.taxname,
+//       //       taxvalues: 'taxpercentValues',
+//       //       totaltaxvalue: 0,
+//       //       AddOnItems: [],
+//       //     });
+//       //     this.itemtotalamount += (item.ProductPrice || 0) * (item.quntityvalue || 0);
+//       //     this.totalamount += (item.ProductPrice || 0) * (item.quntityvalue || 0);
+//       //   });
+//       //   return;
+//       // }
+
+//       // Get add-on product data once for all
+      
+//       let addOnProducts: any[] = [];
+//       const addOnProductsPromise = new Promise(resolve => {
+//         this.addOnProductsData$.subscribe(data => {
+//           addOnProducts = data || [];
+//           resolve(null);
+//         });
+//       });
+//       await addOnProductsPromise;
+
+//       // Helper to get matching add-ons for an item
+//       const getMatchingAddOns = (item: any): IAddOnItems[] => {
+//         return invoiceAddOnItems.filter((addOnItem: IAddOnItems) => {
+//           const addonItemData = addOnProducts.find(p => p._id === addOnItem._id);
+//           return (
+//             addonItemData &&
+//             item.SelectProductId === addonItemData.SelectProductId &&
+//             item.selectSubQuantityTypeID === addonItemData.SubQuantityTypeID &&
+//             addOnItem._id === addonItemData._id
+//           );
+//         });
+//       };
+//        this.itemtotalamount = 0;
+//     this.totalamount = 0;
+
+//       this.RunningItems_=[];
+//       itemsData.forEach(item => {
+//         const addOnItems = getMatchingAddOns(item);
+//         this.RunningItems_.push({
+//           SelectProductId: item.SelectProductId,
+//           ProductPrice: item.ProductPrice?.toString() ?? '0',
+//           ProductName: item.ProductName,
+//           selectcategoryID: item.selectcategoryID,
+//           categoryName: item.categoryName,
+//           selectQtypeID: item.selectQtypeID,
+//           QtypeName: item.QtypeName,
+//           selectSubQuantityTypeID: item.selectSubQuantityTypeID,
+//           SubQuantityTypeName: item.SubQuantityTypeName,
+//           quntityvalue: item.quntityvalue,
+//           qvalue: item.qvalue,
+//           taxnames: this.taxname,
+//           taxvalues: 'taxpercentValues',
+//           totaltaxvalue: 0,
+//           AddOnItems: addOnItems,
+//           paidStatus:false
+//         });
+//         this.itemtotalamount += (item.ProductPrice || 0) * (item.quntityvalue || 0);
+//         this.totalamount += (item.ProductPrice || 0) * (item.quntityvalue || 0);
+//       });
+//     };
+
+//     this.InvoiceData$?.subscribe(invoiceData => {
+//       processItems.call(this, invoiceData, Itemsdata);
+//     });
+//   }
+
+//   loadAddOnProductsInitializing(_id: string) {
+//   //  this.store.dispatch(AddOnProductActions.getAddOnProductById({ _id }));
+//     if (this.addOnProductsData$) {
+//       const sub = this.addOnProductsData$.subscribe(data => {
+//         console.log(data);
+//       });
+//       this.subscriptions.push(sub);
+//     }
+//   }
+
+//   initializeTax(): void {
+//     this.taxname = '';
+//     this.totaltax = 0;
+//     if (this.Tax) {
+//       this.Tax.forEach((tax: { Status: any; name: string; perscentRate: number; }) => {
+//         if (tax.Status) {
+//           this.taxname += tax.name + ', ';
+//           const taxAmount = (+this.itemtotalamount * tax.perscentRate) / 100;
+//           this.totaltax += taxAmount;
+//         }
+//       });
+//     }
+//     this.itemtotalamount += this.totaltax;
+//   }
+
+//   initializeItemsCountableData() {
+//     // this.InvoiceService_.getbyid(this.invoiceid).subscribe(getpercentval => {
+//     //   if (!getpercentval) return;
+//     //   this.getpercentvaldata2 = getpercentval;
+//       this.InvoiceData$?.subscribe(data=>{
+//         this.getpercentvaldata = data;
+//       //});
+//       const invoiceData = this.getpercentvaldata[0];
+//       this.percent = invoiceData.Discountperstage;
+//       this.itemTotalTax = invoiceData.Taxes || [];
+//       this.actualdiscountprice = (this.itemtotalamount * this.percent) / 100;
+//       this.myDiscountForm = this.fb.group({
+//         discount: '',
+//         numberInput: [invoiceData.Discountperstage]
+//       });
+//       this.discountvalue = (this.itemtotalamount - ((+this.itemtotalamount * this.percent) / 100)) + this.totaltax;
+//       this.itemtotalamount = (this.itemtotalamount + ((+this.itemtotalamount * this.percent) / 100)) + this.totaltax;
+//      });
+//     /////
+
+//       // this.getpercentvaldata = this.InvoiceData$;
+//       // const invoiceData = this.getpercentvaldata[0];
+//       // this.percent = invoiceData.Discountperstage;
+//       // this.itemTotalTax = invoiceData.Taxes || [];
+//       // this.actualdiscountprice = (this.itemtotalamount * this.percent) / 100;
+//       // this.myDiscountForm = this.fb.group({
+//       //   discount: '',
+//       //   numberInput: [invoiceData.Discountperstage]
+//       // });
+//       // this.discountvalue = (this.itemtotalamount - ((+this.itemtotalamount * this.percent) / 100)) + this.totaltax;
+//       // this.itemtotalamount = (this.itemtotalamount + ((+this.itemtotalamount * this.percent) / 100)) + this.totaltax;
+   
+//   }
+
+//   getpaybyid(_id:string): void {
+//     //this.paybydata;
+//     this.paybyId=_id;
+//     console.log(this.paybyId);
+//   }
+
+//   getproductbycategory(_id: any): void {
+   
+//     if (this.ordermode) {
+//       console.log(_id);
+     
+//       this.loadproductpricename(_id);
+//     }
+//   }
+
+//   removerunningOrder(): void {
+//     // TODO: Implement or remove unused logic
+//   }
+
+//   genrateOrder(): void {
+//     if (this.paybyId === 'none') {
+//       return;
+//     }
+//     if (typeof this.paidamount !== 'number' || this.paidamount < 0) {
+//       alert('Paid amount should be greater than or equal to 0.');
+//       this.ClearSomeVariable();
+//       return;
+//     }
+//     this.RunningItems_2 = [...this.RunningItems_];
+//     this.getinvoiceid2 = '';
+//     this.getinvoiceid = '';
+//     this.gitems = [];
+//     this.gitems2 = [];
+//     const invoice = this.genrateInvoice('Settled');
+//     this.updateInvoice(invoice);
+//     this.close2();
+//     this.removerunningOrder();
+//     this.ClearSomeVariable();
+//   }
+
+//   ClearSomeVariable(): void {
+//     this.ordermode = '';
+//     this.RunningItems_ = [];
+//     this.productsByCategoryId = [];
+//     this.valueChanged.emit('');
+//   }
+//   ClearSomeVariable2(): void {
+//     this.ordermode = '';
+//     this.RunningItems_ = [];
+//     this.productsByCategoryId = [];
+//    // this.valueChanged.emit('');
+//   }
+
+//   updateInvoice(invoice: any): void {
+//     this.InvoiceService_.update(invoice).subscribe(invoiceupdate => {
+//       if (!invoiceupdate) return;
+//       this.getinvoiceid2 = invoiceupdate;
+//       this.getinvoiceid = this.getinvoiceid2.createdTask;
+//     });
+//   }
+
+//   async genrateInvoice(Orderstatus:string): Promise<Invoice> {
+//     let paidstatus: boolean = false;
+//     if(!this.discountvalue){ if((this.itemtotalamount-this.paidamount)<=0) paidstatus = true;else paidstatus = false;}
+//      else {
+//       if((this.discountvalue-this.paidamount)<=0)paidstatus =true;else paidstatus = false;
+//      }
+//     return {
+//       Taxes: this.getTax(),
+//       Chairs: this.ichar,
+//       AddOnItems: this.selectedAddOnItems,
+//       taxpecentRate: 0,
+//       taxpercentValue: 0,
+//       createdAt: new Date(),
+//       DiscountId: 'jsk',
+//       Discountvalue: this.actualdiscountprice,
+//       Discountperstage: this.percent,
+//       AdditionaldiscountAmount: 0,
+//       Totalvaue: this.itemtotalamount,
+//       grandtotal: this.discountvalue,
+//       RecieptNumber: +this.invoiceid,
+//       OrderType: this.ordermode,
+//       AmountPaidstatus: paidstatus,
+//       Orderstatus: Orderstatus,
+//       PaidAmount: this.paidamount,
+//       PendingAmount: (this.paidamount - this.discountvalue) < 0 ? (this.discountvalue - this.paidamount) : 0,
+//       TotalTaxAmount: this.totaltax,
+//       TotalItemsAmount: this.totalamount,
+//       OrderTypeName: this.chardata[0],
+//       paybyId: this.paybyId,
+//       table_id: String(this.table_id),
+//       tablename: this.table_name === '' ? 'Pick Up' : this.table_name,
+//       customer_id: this.CustomerId === 'undefined' ? 'undefined' : this.CustomerId,
+//       employee_id: String(this.employeeId),
+//       AssistToId: 'undefined',
+//       returnAmount: String((this.paidamount - this.discountvalue || this.itemtotalamount-this.paidamount) > 0 ? (this.paidamount - this.discountvalue || this.itemtotalamount-this.paidamount) : 0),
+//       CommentId: 'undefined',
+//       tokennumber: +this.TokenNumber
+//     };
+//   }
+
+//   getTax(): ITax[] {
+//     this.itaxarr = [];
+//     if (!this.Tax) return this.itaxarr;
+//     for (const runningItem of this.RunningItems_) {
+//       for (const tax of this.Tax) {
+//         if (tax.Status) {
+//           this.itaxarr.push({
+//             id: tax._id,
+//             name: tax.name,
+//             percentt: tax.perscentRate,
+//             amount: ((+runningItem.ProductPrice * runningItem.quntityvalue) * tax.perscentRate) / 100,
+//             productid: runningItem.SelectProductId,
+//             productname: runningItem.ProductName
+//           });
+//         }
+//       }
+//     }
+//     return this.itaxarr;
+//   }
+
+//   discountChange(): void {
+//     const { discount, numberInput } = this.myDiscountForm.value;
+//     if (this.itemtotalamount <= 500) {
+//       return;
+//     }
+//     if (discount === '%') {
+//       if (numberInput > 0 && numberInput <= 10) {
+//         this.percent = +numberInput.toFixed(2);
+//         this.discountvalue = +((+this.itemtotalamount) - (+this.itemtotalamount * this.percent / 100)).toFixed(2);
+//         this.actualdiscountprice = (+this.itemtotalamount) - this.discountvalue;
+//       }
+//     } else if (discount === 'Rupees') {
+//       this.discountvalue = Math.floor((+this.itemtotalamount) - numberInput);
+//       this.percent = ((numberInput * 100) / this.itemtotalamount);
+//       if (numberInput > 0 && this.percent <= 10) {
+//         this.percent = +this.percent.toFixed(2);
+//         this.actualdiscountprice = numberInput;
+//       } else {
+//         this.discountvalue = 0;
+//         this.percent = 0;
+//       }
+//     }
+//   }
+
+//   placeOrder(): void {
+//     if(!this.discountvalue) this.paidamount=this.itemtotalamount;
+//      else this.paidamount = this.discountvalue;
+//     this.showplaceorderPopup = true;
+//   }
+
+//   close2(): void {
+//     this.showplaceorderPopup = false;
+//   }
+//   shortCode(productpricedata:any)
+//   {
+//     this.loadAllProductPriceDatabyProductId();
+// //console.log(data);
+// this.increment(productpricedata.SelectProductId);
+// // this.increment2(productpricedata.SelectProductId, 
+// //   this.getSubQuantityTypeName(productpricedata.selectSubQuantityTypeID) , +1, productpricedata.ProductPrice);
+// // //alert(data);
+//   }
+//   onSubmit(form: any): void {
+//     this.loadAllProductPriceDatabyProductId();
+//     const selectedValue = form.value.option;
+//     this.item_subQuantityType_ID = this.ppalsoavailable.find(
+//       (item: any) => item.SubQuantityTypeName === selectedValue
+//     );
+//     const item = this.RunningItems_.find(
+//       (itm: any) =>
+//         itm.SubQuantityTypeName === selectedValue &&
+//         itm.SelectProductId === this.item_subQuantityType_ID.id
+//     );
+//     if (item?.SelectProductId) {
+      
+//       this.loadqunityvalue(item.SelectProductId, 'inc', item.SubQuantityTypeName, +item.quntityvalue, item.ProductPrice);
+//     } else {
+//       this.loadqunityvalue(this.item_subQuantityType_ID.id, 'inc', this.item_subQuantityType_ID.SubQuantityTypeName, 0, this.item_subQuantityType_ID.price);
+//     }
+//     this.showtype = false;
+//   }
+
+//   close(): void {
+//     this.showtype = false;
+//   }
+ 
+//   increment(_id: any): void {
+//     this.loadAllProductPriceDatabyProductId();
+//     this.showtype = false;
+//     this.ppalsoavailable = this.getallproducttypeprice(_id);
+//     if (this.ppalsoavailable.length == 1) {
+//       let index = this.RunningItems_.findIndex(
+//         (item: any) =>
+//           item.SubQuantityTypeName === this.ppalsoavailable[0].SubQuantityTypeName &&
+//           item.SelectProductId === this.ppalsoavailable[0].id
+//       );
+//       if (index != -1) {
+//         this.loadqunityvalue(
+//           this.ppalsoavailable[0].id,
+//           'inc',
+//           this.ppalsoavailable[0].SubQuantityTypeName,
+//           +this.RunningItems_[index].qvalue,
+//           this.ppalsoavailable[0].price
+//         );
+//       } else {
+//         this.loadAllProductPriceDatabyProductId();
+//         this.loadqunityvalue(this.ppalsoavailable[0].id, 'inc', this.ppalsoavailable[0].SubQuantityTypeName, 0, this.ppalsoavailable[0].price);
+//       }
+//     }
+//   }
+
+//   decrement(_id: any): void {
+//     this.showtype = false;
+//     this.ppalsoavailable = this.getallproducttypeprice(_id);
+//   }
+//   changKOTItemsI(kotitem:any,kot:any,qvalue:number)
+//   {
+//     if(qvalue<0)
+//       {
+//         qvalue=1;
+//       }
+//     if(qvalue>=0)
+//       {
+//         this.deleteRunningKOTItem(kotitem,kot,"Increment");
+//       }
+//   }
+//   increment2(_id: any, SubQuantityTypeName: any, qvalue: any, price: any): void {
+//     this.showtype = false;
+//     this.loadAllProductPriceDatabyProductId();
+//     this.loadqunityvalue(_id, 'inc', SubQuantityTypeName, qvalue, price);
+//   }
+
+//   decrement2(_id: any, SubQuantityTypeName: any, qvalue: any, price: any): void {
+//     this.showtype = false;
+//     this.loadAllProductPriceDatabyProductId();
+//     this.loadqunityvalue(_id, 'dcre', SubQuantityTypeName, qvalue, price);
+//   }
+//   changKOTItemsD(kotitem:any,kot:any,qvalue:number)
+//   {
+//     // TODO: Implement logic for changKOTItemsD, condition is missing
+//     // For now, just call deleteRunningKOTItem
+//     if(qvalue===1)
+//     {
+//       this.deleteRunningKOTItem(kotitem,kot,"Delete");
+//     }
+//     else
+//     {
+//       this.deleteRunningKOTItem(kotitem,kot,"Decrement");
+//     }
+   
+//   }
+//   loadTax(): void {
+//     this.initializeTax();
+//   }
+
+//   loadqunityvalue(
+//     id: string,
+//     action: 'inc' | 'dcre',
+//     SubQuantityTypeName: string,
+//     quntity: any,
+//     price: any
+//   ): void {
+//     this.gitems2.length = 0;
+//     const taxpercent = 0;
+// console.log(id);
+
+//     if (!this.allppdata.length) this.allppdata = this.RunningItems_;
+
+//     const itemIdxInAllPP = this.allppdata.findIndex(
+//       (item: any) => item.SelectProductId === id && item.SubQuantityTypeName === SubQuantityTypeName
+//     );
+//     const allPPItem = this.allppdata[itemIdxInAllPP];
+
+//     const runningItemIdx = this.RunningItems_.findIndex(
+//       item => item.SelectProductId === id && item.SubQuantityTypeName === SubQuantityTypeName
+//     );
+
+//     let val: number;
+
+//     const getGItem = (
+//       obj: any,
+//       quantity: number
+//     ) => ({
+//       RecieptNumber: this.invoiceid,
+//       Items:[{
+//       Productid: obj.SelectProductId,
+//       Productname: obj.ProductName,
+//       SubQuantityTypeID: obj.selectSubQuantityTypeID,
+//       SubQuantityTypeName: obj.SubQuantityTypeName,
+//       Qauntityid: obj.selectQtypeID,
+//       Qauntityname: obj.QtypeName,
+//       Quantity: quantity,
+//       itemamount: price,
+//       totalquantityamount: +price * quantity,
+//       employee_id: this.employeeId
+//     }]
+//     });
+
+//     if (allPPItem?.SelectProductId && action === 'inc') {
+//       val = quntity + 1;
+//       if (this.RunningItems_.length > 0) {
+//         if (runningItemIdx !== -1) {
+//           if (!Object.isExtensible(this.RunningItems_[runningItemIdx])) {
+//             this.RunningItems_[runningItemIdx] = { ...this.RunningItems_[runningItemIdx] };
+//           }
+//           Object.assign(this.RunningItems_[runningItemIdx], {
+//             SelectProductId: id,
+//             quntityvalue: val,
+//             qvalue: val,
+//             taxnames: '',
+//             taxvalues: '',
+//             totaltaxvalue: taxpercent
+//           });
+//           this.gitems2 = [getGItem(this.RunningItems_[runningItemIdx], val)];
+//           try {
+//             localStorage.setItem(this.invoiceid, JSON.stringify(this.RunningItems_));
+//           } catch (e) {
+//             console.error('Error saving RunningItemsTable to localStorage', e);
+//           }
+//         } else {
+//           const newRunningItem = {
+//             SelectProductId: id,
+//             ProductPrice: price,
+//             ProductName: allPPItem.ProductName,
+//             selectcategoryID: allPPItem.selectcategoryID,
+//             categoryName: allPPItem.categoryName,
+//             selectQtypeID: allPPItem.selectQtypeID,
+//             QtypeName: allPPItem.QtypeName,
+//             selectSubQuantityTypeID: allPPItem.selectSubQuantityTypeID,
+//             SubQuantityTypeName: allPPItem.SubQuantityTypeName,
+//             quntityvalue: val,
+//             qvalue: val,
+//             taxnames: '',
+//             taxvalues: '',
+//             totaltaxvalue: taxpercent,
+//             paidStatus:false,
+//             AddOnItems: []
+//           };
+//           this.RunningItems_ = [...this.RunningItems_, newRunningItem];
+//           this.gitems2 = [getGItem(allPPItem, val)];
+//           try {
+//             localStorage.setItem(this.invoiceid, JSON.stringify(this.RunningItems_));
+//           } catch (e) {
+//             console.error('Error saving RunningItemsTable to localStorage', e);
+//           }
+//         }
+//       } else {
+//         const newRunningItem = {
+//           SelectProductId: id,
+//           ProductPrice: price,
+//           ProductName: allPPItem.ProductName,
+//           selectcategoryID: allPPItem.selectcategoryID,
+//           categoryName: allPPItem.categoryName,
+//           selectQtypeID: allPPItem.selectQtypeID,
+//           QtypeName: allPPItem.QtypeName,
+//           selectSubQuantityTypeID: allPPItem.selectSubQuantityTypeID,
+//           SubQuantityTypeName: SubQuantityTypeName,
+//           quntityvalue: val,
+//           qvalue: val,
+//           taxnames: '',
+//           taxvalues: '',
+//           totaltaxvalue: taxpercent,
+//           paidStatus:false,
+//           AddOnItems: []
+//         };
+//         // Ensure newRunningItem conforms to RunningItems type by mapping all required properties
+//         const runningItemMapped = {
+//           ...newRunningItem,
+//           // explicit mappings
+//           // Productid: newRunningItem.SelectProductId,
+//           // Productname: newRunningItem.ProductName,
+//           // SubQuantityTypeID: newRunningItem.selectSubQuantityTypeID,
+//           // Qauntityid: '', // assign appropriately if available
+//           // subquantitytypename: newRunningItem.SubQuantityTypeName,
+//           // Categoryid: newRunningItem.selectcategoryID,
+//           // Categoryname: newRunningItem.categoryName,
+//           // Qtypeid: newRunningItem.selectQtypeID,
+//           // Qtypename: newRunningItem.QtypeName,
+//           // Qauntity: val,
+//           // price: price,
+//           // OfferPrice: 0,
+//           // isAddon: false
+//         };
+//         this.RunningItems_ = [...this.RunningItems_, runningItemMapped as RunningItems];
+//         this.gitems2 = [getGItem(allPPItem, val)];
+//         try {
+//           localStorage.setItem(this.invoiceid, JSON.stringify(this.RunningItems_));
+//         } catch (e) {
+//           console.error('Error saving RunningItemsTable to localStorage', e);
+//         }
+//       }
+//     } else if (allPPItem?.SelectProductId && action === 'dcre') {
+//       if (runningItemIdx !== -1) {
+//         if (!Object.isExtensible(this.RunningItems_[runningItemIdx])) {
+//           this.RunningItems_[runningItemIdx] = { ...this.RunningItems_[runningItemIdx] };
+//         }
+//         val = quntity - 1;
+//         Object.assign(this.RunningItems_[runningItemIdx], {
+//           quntityvalue: val,
+//           qvalue: val,
+//           ProductPrice: price,
+//           taxnames: '',
+//           taxvalues: '',
+//           totaltaxvalue: taxpercent
+//         });
+//         if (val !== 0) {
+//           this.gitems2 = [getGItem(this.RunningItems_[runningItemIdx], val)];
+//           try {
+//             localStorage.setItem(this.invoiceid, JSON.stringify(this.RunningItems_));
+//           } catch (e) {
+//             console.error('Error updating RunningItemsTable in localStorage', e);
+//           }
+//         } else {
+//           this.RunningItems_ = [
+//             ...this.RunningItems_.slice(0, runningItemIdx),
+//             ...this.RunningItems_.slice(runningItemIdx + 1)
+//           ];
+//           localStorage.setItem(this.invoiceid, JSON.stringify(this.RunningItems_));
+//         }
+//       }
+//     }
+
+//     this.myDiscountForm = this.fb.group({
+//       discount: '',
+//       numberInput: [0]
+//     });
+//     this.percent = 0;
+//     this.totalamount = this.gettotamount();
+//     this.getitemTotalTax();
+//     this.getitemtotalamount();
+//   }
+
+//   gettotamount(): number {
+//     return this.RunningItems_.reduce((acc, item) => acc + (+item.totaltaxvalue) + (+item.ProductPrice) * (+item.quntityvalue), 0);
+//   }
+
+//   getitemTotalTax(): void {
+//     this.totaltax = 0;
+//     this.itemTotalTax = [];
+//     if (!this.Tax) return;
+//     for (const tax of this.Tax) {
+//       if (tax.Status) {
+//         const taxpercent = (this.totalamount * tax.perscentRate) / 100;
+//         this.itemTotalTax.push({ taxname: tax.name, taxpercent });
+//         this.totaltax += Math.abs(taxpercent);
+//       }
+//     }
+//     this.totaltax = Math.fround(this.totaltax);
+//   }
+
+//   getitemtotalamount(): void {
+//     this.itemtotalamount = this.itemTotalTax.reduce((acc, curr) => acc + curr.taxpercent, 0);
+//     this.itemtotalamount = Math.fround(this.totalamount + this.itemtotalamount);
+//     this.discountvalue = Math.fround(this.itemtotalamount);
+//   }
+
+//   loadAllProductPriceDatabyProductId(): void {
+//     this.allppdata = [];
+//     if (this.productPriceData$) {
+//       const sub = this.productPriceData$.subscribe(productPriceData => {
+//         if (!productPriceData) return;
+//         try {
+//           for (const pp of productPriceData) {
+//             this.allppdata.push({
+//               _id: pp._id,
+//               ProductPrice: this.getproductprice(pp.SelectProductId),
+//               ProductName: this.getproductname(pp.SelectProductId),
+//               categoryName: this.getcategoryname(pp.selectcategoryID),
+//               QtypeName: this.getqtypnamename(pp.selectQtypeID),
+//               SubQuantityTypeName: this.getSubQuantityTypeName(pp.selectSubQuantityTypeID),
+//               SelectProductId: pp.SelectProductId,
+//               selectcategoryID: pp.selectcategoryID,
+//               selectQtypeID: pp.selectQtypeID,
+//               selectSubQuantityTypeID: pp.selectSubQuantityTypeID,
+//               quntityvalue: 0
+//             });
+//           }
+//         } catch (error) {
+//           console.error('Error pushing data:', error);
+//         }
+//       });
+//       this.subscriptions.push(sub);
+//     }
+//   }
+
+//   loadproductpricename(_id: any): void {
+   
+//     this.productsByCategoryId = [];
+   
+//     if (this.Productnamedata$) {
+//       const sub = this.Productnamedata$.subscribe(Productnamedata => {
+//        // alert("finally");
+//         if (!Productnamedata) return;
+//         if(_id=="999")
+//         {
+//           this.loadProductByTopSelling();
+//           return;
+//         }
+//         console.log(Productnamedata);
+//         this.initializeVegType(Productnamedata, _id);
+//       });
+//       this.subscriptions.push(sub);
+//     }
+//     this.ppname = this.productpriceallname;
+//   }
+
+//   initializeVegType(Productnamedata: any, _id: string) {
+    
+//     for (const prod of Productnamedata) {
+//       if (prod.selectcategoryID === _id) {
+//         if (HomeEnvironment.VegType$.value === prod.veg_nonveg.toString() || HomeEnvironment.VegType$.value == "") {
+//           this.initilalizvegTypeFinal(prod);
+//         }
+//       }
+//     }
+//   }
+//   initilalizvegTypeFinal(prod: any) {
+   
+//     this.productsByCategoryId.push({
+//       _id: prod._id,
+//       ProductPrice: this.getproductprice(prod._id).toString(),
+//       ProductName: this.getproductname(prod._id),
+//       categoryName: this.getcategoryname(prod.selectcategoryID),
+//       QtypeName: this.getqtypnamename(prod.selectQtypeID),
+//       SubQuantityTypeName: this.getSubQuantityTypeName(prod.selectSubQuantityTypeID),
+//       SelectProductId: prod._id,
+//       selectcategoryID: prod.selectcategoryID,
+//       selectQtypeID: prod.selectQtypeID,
+//       selectSubQuantityTypeID: prod.selectSubQuantityTypeID,
+//       ShortCodeNumber:prod.ShortCodeNumber,
+//       ShortCodeString: prod.ShortCodeString,
+//       mostSelling: prod.mostSelling,
+//       quntityvalue: 0,
+//       veg_nonveg: prod.veg_nonveg
+//     });
+//    // this.productitembackup=[];
+//       this.productitembackup=this.productsByCategoryId;
+//   }
+ 
+//   loadProductByTopSelling()
+// {
+ 
+//   this.productPriceData$
+//   ?.pipe(take(1))
+//   .subscribe(productList => {
+//     if (!Array.isArray(productList)) return;
+
+//     const topSellingItems = productList.filter(
+//       item => item.mostSelling === true
+//     );
+//     for (const prod of topSellingItems) {
+      
+//       if (HomeEnvironment.VegType$.value.toString() === this.returnVegNonVeg(prod.SelectProductId).toString() || HomeEnvironment.VegType$.value.toString() == "") {
+//         this.initilalizvegTypeFinalTopselling(prod,this.returnVegNonVeg(prod.SelectProductId));
+//       }
+//         //  this.initilalizvegTypeFinalTopselling(prod);
+//       }
+//     console.log("Top Selling Items: ", topSellingItems);
+//   });
+
+// }
+//   initilalizvegTypeFinalTopselling(prod: any, veg_nonveg: any) {
+   
+//     this.productsByCategoryId.push({
+//       _id: prod.SelectProductId,
+//       ProductPrice: prod.ProductPrice,
+//       ProductName: this.getproductname(prod.SelectProductId),
+//       categoryName: this.getcategoryname(prod.selectcategoryID),
+//       QtypeName: this.getqtypnamename(prod.selectQtypeID),
+//       SubQuantityTypeName: this.getSubQuantityTypeName(prod.selectSubQuantityTypeID),
+//       SelectProductId: prod.SelectProductId,
+//       selectcategoryID: prod.selectcategoryID,
+//       selectQtypeID: prod.selectQtypeID,
+//       selectSubQuantityTypeID: prod.selectSubQuantityTypeID,
+//       ShortCodeNumber:prod.ShortCodeNumber,
+//       ShortCodeString: prod.ShortCodeString,
+//       mostSelling: prod.mostSelling,
+//       quntityvalue: 0,
+//       veg_nonveg: veg_nonveg
+//       });
+//     //  this.productitembackup=[];
+//       this.productitembackup=this.productsByCategoryId;
+//       console.log("veg_nonveg: ", veg_nonveg);
+//   }
+
+//   returnVegNonVeg(_id: string): boolean {
+//     let vegNonVeg = false;
+  
+//     this.Productnamedata$
+//       ?.pipe(take(1))
+//       .subscribe(data => {
+//         const item = data?.find(p => p._id === _id);
+//         if (item) vegNonVeg = item.veg_nonveg;
+//       });
+  
+//     return vegNonVeg;
+//   }
+  
+
+  
+
+//   getallproducttypeprice(id: any): any[] {
+//     this.priceID = [];
+//     this.showtype = true;
+//     if (this.productPriceData$) {
+//       const sub = this.productPriceData$.subscribe(productPriceData => {
+//         if (!productPriceData) return;
+//         for (const pp of productPriceData) {
+//           if (pp.SelectProductId === id) {
+//             this.priceID.push({
+//               _id: pp._id,
+//               SubQuantityTypeID: pp.selectSubQuantityTypeID
+//             });
+//           }
+//         }
+//       });
+//       this.subscriptions.push(sub);
+//     }
+//     this.typeprice = [];
+//     for (const price of this.priceID) {
+//       this.typeprice.push({
+//         id: id,
+//         productPriceId: price._id,
+//         SubQuantityTypeID: price.SubQuantityTypeID,
+//         SubQuantityTypeName: this.getSubQuantityTypeName(price.SubQuantityTypeID),
+//         price: this.getproductprice2(price._id),
+//         ProductName:this.getproductname(id)
+//       });
+//       if (this.priceID.length == 1) this.showtype = false;
+//     }
+//     return this.typeprice;
+//   }
+
+//   getproductprice2(_id: string): number {
+//     let productPrice = 0;
+//     if (this.productPriceData$) {
+//       const sub = this.productPriceData$.subscribe(productPriceData => {
+//         if (!productPriceData) return;
+//         const idx = productPriceData.findIndex((item: any) => item._id === _id);
+//         if (idx !== -1) {
+//           productPrice = productPriceData[idx].ProductPrice;
+//         }
+//       });
+//       this.subscriptions.push(sub);
+//     }
+//     return productPrice;
+//   }
+
+//   getproductprice(id: string): number {
+//     let productPrice = 0;
+//     if (this.productPriceData$) {
+//       const sub = this.productPriceData$.subscribe(productPriceData => {
+//         if (!productPriceData) return;
+//         const idx = productPriceData.findIndex((item: any) => item.SelectProductId === id);
+//         if (idx !== -1) {
+//           productPrice = productPriceData[idx].ProductPrice;
+//         }
+//       });
+//       this.subscriptions.push(sub);
+//     }
+//     return productPrice;
+//   }
+//   getSubQuantityTypeName(id: string): string {
+//     return this.subQuantityTypeService_.getSubQuantityTypeName(id);
+//   }
+//   getproductname(_id: string): string {
+//     let productname = '';
+//     if (this.Productnamedata$) {
+//       const sub = this.Productnamedata$.subscribe(Productnamedata => {
+//         if (!Productnamedata) return;
+//         const idx = Productnamedata.findIndex((item: any) => item._id === _id);
+//         if (idx !== -1) {
+//           productname = Productnamedata[idx].name;
+//         }
+//       });
+//       this.subscriptions.push(sub);
+//     }
+//     return productname;
+//   }
+
+//   getqtypnamename(id: string): string {
+//     let qtypename = '';
+//     if (this.Qtypenamedata$) {
+//       const sub = this.Qtypenamedata$.subscribe(Qtypenamedata => {
+//         if (!Qtypenamedata) return;
+//         const idx = Qtypenamedata.findIndex((item: any) => item._id === id);
+//         if (idx !== -1) {
+//           qtypename = Qtypenamedata[idx].name;
+//         }
+//       });
+//       this.subscriptions.push(sub);
+//     }
+//     return qtypename;
+//   }
+
+//   getcategoryname(id: string): string {
+//     let categoryname = '';
+//     if (this.categorynamedata$) {
+//       const sub = this.categorynamedata$.subscribe(categorynamedata => {
+//         if (!categorynamedata) return;
+//         const idx = categorynamedata.findIndex((item: any) => item._id === id);
+//         if (idx !== -1) {
+//           categoryname = categorynamedata[idx].name;
+//         }
+//       });
+//       this.subscriptions.push(sub);
+//     }
+//     return categoryname;
+//   }
+
+//   showCustomersPopUp(): void {
+//     this.showCustomerPopUp = true;
+//   }
+//   closePopUpBychild(close: boolean): void {
+//     this.showCustomerPopUp = false;
+//     this.showCommentPopUp = false;
+//     this.showCommentConfime=false;
+//   }
+//   closePopUpByCommentFun(close: boolean): void {
+//     this.showCustomerPopUp = false;
+//     this.showCommentPopUp = false;
+//     this.showCommentConfime=false;
+//   }
+
+//   closePopUpByChildAddon(close: any): void {
+//     this.showAddonPopUp = close;
+//     this.getAddOnProducts();
+//   }
+
+//   InitializeselectedAddOnItemsCallbackFun(selectedAddOnItems: any) {
+//     this.selectedAddOnItems = selectedAddOnItems;
+
+//     this.InvoiceService_.getbyid(this.invoiceid).subscribe(data => {
+//       if (!data) return;
+//       this.innvoicedata = data;
+//       const invoiceDataArr = this.innvoicedata?.data || [];
+//       this.selectedAddOnItems = invoiceDataArr[0]?.AddOnItems ?? [];
+//       this.invoiceData = invoiceDataArr;
+
+//       const addOnItems = invoiceDataArr[0]?.AddOnItems;
+//       if (Array.isArray(addOnItems) && addOnItems.length > 0) {
+//         // Clear previous AddOnItems in running items
+//         this.RunningItems_.forEach(runningItem => {
+//           runningItem.AddOnItems = [];
+//         });
+
+//         for (const addOnItem of addOnItems) {
+//           const sub = this.addAddOnProductService_.getById(addOnItem._id).subscribe((addOndatabyId: any) => {
+//             // Fix: Properly access the result as an object with a 'data' property
+//             const addOnDataArr = Array.isArray(addOndatabyId?.data) ? addOndatabyId.data : [];
+//             if (!Array.isArray(this.RunningItems_) || !Array.isArray(this.selectedAddOnItems)) return;
+//             if (addOnDataArr.length === 0) return;
+
+//             const addOnData = addOnDataArr[0];
+//             const runningItem = this.RunningItems_.find((item: any) =>
+//               item.SelectProductId === addOnData.SelectProductId &&
+//               item.selectSubQuantityTypeID === addOnData.SubQuantityTypeID
+//             );
+
+//             if (runningItem) {
+//               if (!Array.isArray(runningItem.AddOnItems)) {
+//                 runningItem.AddOnItems = [];
+//               }
+//               // Avoid duplicating AddOnItems
+//               if (!runningItem.AddOnItems.some((item: any) => item._id === addOnItem._id)) {
+//                 runningItem.AddOnItems.push({ ...addOnItem });
+//               }
+//             }
+//           });
+//           if (this.subscriptions) {
+//             this.subscriptions.push(sub);
+//           }
+//         }
+//       }
+//     });
+//   }
+  
+//   showCommentsPopUp(): void {
+//     this.showCommentPopUp = true;
+//    // this.showCommentConfime=true;
+//   }
+//   // showCommentsPopUpKOT(): void {
+//   //   this.showCommentPopUp = true;
+//   //   this.showCommentConfime=true;
+//   // }
+//   deleteKOTItem:any;
+//   SearchDeletingKOTItems:any;
+//   deleteRunningKOTItem(kotitem: any,kot:GenratedItemKOT,CommentType:string): void {
+//    // alert(CommentType)
+//     const inv = this.invoiceid;
+//     this.RecieptNumber=inv;
+//     this.CommentType=CommentType;
+//     this.showCommentPopUp = true;
+//     this.showCommentConfime=true;
+//     this.deleteKOTItem=kotitem;
+//     this.SearchDeletingKOTItems=kot;
+//     // console.log(kotitem);
+//     // console.log(kot);
+//   //   // Filter out the running order with the matching SelectProductId showCommentsPopUp
+//   //   //kot.KOTrunningorders
+//   //   const KOTrunningorders = kot.KOTrunningorders.filter(
+//   //     (item: any) => item.SelectProductId !== kotitem.SelectProductId || item.selectSubQuantityTypeID !== kotitem.selectSubQuantityTypeID
+//   //   );
+//   //   if(KOTrunningorders.length>0)
+//   //   {
+//   //     // const KOTrunningorders = kot.KOTrunningorders.find(
+//   //     //   (item: any) => item.SelectProductId !== kotitem.SelectProductId
+//   //     // );
+//   //     console.log(KOTrunningorders);
+//   //   }
+//   //   else if(KOTrunningorders.length==0)
+//   // {
+//   //   console.log(kot.RecieptNumber);
+//   // }
+//   ////
+//     // if (!item || !item.RecieptNumber) {
+//     //   console.error('Invalid item or missing RecieptNumber.');
+//     //   return;
+//     // }
+//     // // Dispatch the action to remove item from KOT running orders
+//     // this.store.dispatch(runningItemActions.removeRunningItem({ RecieptNumber: item.RecieptNumber }));
+//     // // Optionally update local RunningItems_ array if you maintain a local cache
+//     // this.KOTItemsdata = this.KOTItemsdata.filter((i: any) => i.RecieptNumber !== item.RecieptNumber);
+//   }
+//   showAddonsPopUp(SelectProductId: string, selectSubQuantityTypeID: string) {
+//     this.showAddonPopUp = true;
+//     this.getAddOnItembySubQuantity_Product_ID(SelectProductId, selectSubQuantityTypeID);
+//   }
+
+//   getAddOnProducts() {
+//     this.InvoiceService_.getbyid(this.invoiceid).subscribe(data => {
+//       if (data) {
+//         this.innvoicedata = data;
+//         this.selectedAddOnItems = this.innvoicedata.data[0].AddOnItems;
+//         this.invoiceData = this.innvoicedata.data;
+//       }
+//     });
+//   }
+
+//   getAddOnItembySubQuantity_Product_ID(SelectProductId: string, selectSubQuantityTypeID: string) {
+//     this.store.dispatch(AddOnProductActions.getByProductIdSubQTypeIDAddOnProducts({
+//       SelectProductId,
+//       SubQuantityTypeID: selectSubQuantityTypeID
+//     }));
+
+//     const successSub = this.actions$.pipe(
+//       filter((action: any) => action.type === AddOnProductActions.getByProductIdSubQTypeIDAddOnProductsSuccess.type)
+//     ).subscribe(action => {
+//       this.addOnProduct = action.addOnProducts.data;
+//       this.getAddOnProducts();
+//     });
+
+//     const failureSub = this.actions$.pipe(
+//       filter((action: any) => action.type === AddOnProductActions.getByProductIdSubQTypeIDAddOnProductsFailure.type)
+//     ).subscribe(action => {
+//       console.error('Failed to load AddOnProducts:', action.error);
+//     });
+
+//     this.subscriptions.push(successSub, failureSub);
+//   }
+
+//   initializeCustomer(CustomerDetail: any): void {
+//     this.CustomerId = CustomerDetail._id;
+//     const invoice = this.genrateInvoice('New Order');
+//     this.updateInvoice(invoice);
+//     this.getCustomerName(this.CustomerId);
+//   }
+
+//   getCustomerID(invoiceid: string): void {
+//     this.InvoiceData$?.subscribe(InvoiceData=>
+//     {
+//       this.CustomerId = InvoiceData[0].customer_id;
+//     }
+//     )
+    
+//   }
+
+//   getCustomerName(customer_id: string): void {
+//     this.CustomerService_.getbyid(customer_id).subscribe({
+//       next: (response: any) => {
+//         this.getCustomerdata = response;
+//         this.getCustomer = (this.getCustomerdata && this.getCustomerdata.data) ? this.getCustomerdata.data : [];
+//         this.CustomerName = (this.getCustomer.length && this.getCustomer[0].name) ? this.getCustomer[0].name : "Guest";
+//       },
+//       error: (err) => {
+//         console.error('Failed to load customer name:', err);
+//         this.CustomerName = "Guest";
+//         this.getCustomer = [];
+//       }
+//     });
+//   }
+
+//   initializeComment(_comment: any): void {}
+
+//   CancelOrder(): void {
+//     this.cancelOrder.emit(this.invoiceid);
+//      // this.ClearSomeVariable2();
+  
+//   }
+
+//   async KOT(): Promise<void> {
+//   // Ensure required fields for GenratedItemKOT:
+//   this.paidamount = 0;
+//   this.runningItemKOT = {
+//     EmployeeId:this.employeeId,
+//     TableId:this.table_id,
+//     RecieptNumber: this.invoiceid,
+//     createdAt: new Date().toISOString(),
+//     KOTrunningorders: this.RunningItems_,
+    
+//     // Add/assign other required fields for GenratedItemKOT here if needed
+//   } as unknown as GenratedItemKOT;
+   
+//    try {
+//      this.store.dispatch(runningItemActions.addRunningItem({ KOTrunningorder: this.runningItemKOT }));
+//      const invoice = this.genrateInvoice('Cooking');
+//     this.updateInvoice(invoice);
+//     localStorage.removeItem(this.invoiceid);
+//     this.RunningItems_ = [];
+//     this.productsByCategoryId=[];
+//     this.runningItemKOT = {} as GenratedItemKOT;
+//     this.ManageService_.loadRunningKOT();
+//     this.RedirectToTable.emit("tables");
+//   // this.router.navigate(['/tables']);
+//    } catch (error) {
+//      console.error('Failed to dispatch running item:', error);
+//      // Optionally, you can show a user-facing error as well, e.g.:
+//      // alert('An error occurred while processing the order.');
+//    }
+  
+  
+//   }
+// kotprint()
+// {
+//   this.close2();
+//   const invoiceCard = document.getElementById('printable-section-KOT');
+//   if (invoiceCard) {
+//     const clone = invoiceCard.cloneNode(true) as HTMLElement;
+//     clone.querySelectorAll('button, form, .item-header').forEach(node => node.remove());
+//     const printContent = clone.innerHTML;
+//     const WindowPrt = window.open('', '', 'width=600,height=600');
+//     if (WindowPrt && printContent) {
+//       WindowPrt.document.writeln('<html><head><title>Print</title></head><body>');
+//       WindowPrt.document.writeln(printContent);
+//       WindowPrt.document.writeln('</body></html>');
+//       WindowPrt.focus();
+//       WindowPrt.document.close();
+//       WindowPrt.print();
+//       WindowPrt.close();
+//     }
+//   }
+// }
+
+//   removeCustomer(): void {
+//     // Reset the CustomerName to 'Guest' and potentially notify other parts of the app if needed.
+//     this.ManageService_.getInvoiceDataById(this.invoiceid);
+//     const invoiceData = this.ManageService_.invoiceData$.getValue();
+//     //console.log(invoiceData[0].Orderstatus);
+//     this.CustomerName = 'Guest';
+//     this.CustomerId="undefined";
+//     const invoice = this.genrateInvoice(invoiceData[0].Orderstatus);
+//     this.updateInvoice(invoice);
+//     // If there are other customer details, clear or reset them here as well.
+//     // For more robust design, emit an event or update parent component/service if necessary.
+//   }
+
+//   ngOnDestroy(): void {
+//     this.subscriptions.forEach(sub => sub.unsubscribe());
+//   }
+// }
+// function getGItem(arg0: RunningItems, val: number): GenratedItems {
+//   throw new Error('Function not implemented.');
+// }
+

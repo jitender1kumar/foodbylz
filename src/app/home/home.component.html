@@ -2,21 +2,7 @@
 <h4 class="titleh4">Billing Orders</h4>
 <table>
   <tr>
-    <!-- Left Panel: Categories -->
-    <!-- <td class="category-sidebar">
-      <div class="category-card">
-        <div class="category-header">
-          <h5>Categories</h5>
-        </div>
-        <ul class="category-list">
-          <li *ngFor="let category of categorynamedata$ | async">
-            <button class="category-button" (click)="getproductbycategory(category._id)">
-              {{ category.name }}
-            </button>
-          </li>
-        </ul>
-      </div>
-    </td> -->
+   
     <td class=" align-top p-0">
 <app-homeleftpanel (topselling)="loadProductByTopSelling()" (getproductbycategoryclicked)="getproductbycategory($event)" ></app-homeleftpanel>
 </td>
@@ -37,6 +23,12 @@
           <span *ngIf="ordermode" style="font-family: 'Segoe UI', Verdana; font-size: 15px; font-weight: bold; color: #7c4931;">
             <i class="fa fa-bookmark me-1" style="color: #de7350;"></i>
             Invoice #{{ invoiceid }}
+          </span>
+        </div>
+        <div>
+          <span *ngIf="ordermode" style="font-family: 'Segoe UI', Verdana; font-size: 15px; font-weight: bold; color: #7c4931;">
+            <i class="fa fa-user-circle me-1" style="color: #4a90e2;"></i>
+            (biller) {{ employeeId }}
           </span>
         </div>
         <div>
@@ -68,10 +60,16 @@
             <i class="fa fa-handshake-o"></i> Assist To
           </button>
         </div>
-        <div *ngIf="CustomerName" style="margin-left:8px;">
-          <span style="display:inline-block; font-weight: bold; color: #6e4126; background: #ffe3b3; border-radius: 14px; padding: 4px 10px;">
-            <i class="fa fa-user" style="color:#bd8549;"></i> {{ CustomerName }}
+        <div *ngIf="CustomerName" style="margin-left:8px; display: flex; align-items: center;">
+          <span style="display: flex; align-items: center; font-weight: bold; color: #6e4126; background: #ffe3b3; border-radius: 14px; padding: 4px 10px;">
+            <i class="fa fa-user" style="color:#bd8549; margin-right: 8px;"></i> 
+            <span style="white-space: nowrap;">{{ CustomerName }}</span>
+            <div *ngIf="CustomerName!='Guest'"><button class="btn-restaurant" style="background: #fde4ec; color: #c4709a; border:none; margin-left: 12px;" (click)="removeCustomer()">
+              <i class="fa fa-trash"></i> 
+            </button>
+          </div>
           </span>
+         
         </div>
       </div>
 
@@ -92,52 +90,120 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let d of RunningItems_">
-              <td>
-                <button class="action-button btn-xs" style="background:#ffe6c0;border:none; color:#b68746;"
-                  (click)="showAddonsPopUp(d.SelectProductId,d.selectSubQuantityTypeID)">
-                   <ng-container *ngIf="d.AddOnItems && d.AddOnItems.length>0; else noAddonsSimple">
-                      <span>addon({{d.AddOnItems.length}})</span>
-                   </ng-container>
-                   <ng-template #noAddonsSimple>
+              <!-- if kot running start -->
+          <ng-container *ngIf="KOTItemsdata?.length">
+            <ng-container *ngFor="let kot of KOTItemsdata">
+              <tr style="background: #eaf6fd;">
+                <td colspan="9" style="font-size:13px; color:#1576b8; font-family:'Segoe UI', Verdana; padding: 5px 10px; border-radius: 6px 6px 0 0;">
+                  <span class="font-semibold" style="font-weight:bold;">
+                    KOT Time: {{ kot.createdAt | date: 'dd MMM, yyyy h:mm a' }}
+                  </span>
+                </td>
+              </tr>
+              <ng-container *ngIf="kot.KOTrunningorders?.length">
+                <tr *ngFor="let item of kot.KOTrunningorders" style="background: #f6fbff;">
+                  <td>
+                    <button class="action-button btn-xs" (click)="deleteRunningKOTItem(item,kot,'Delete')" style="background:#ececec; color:#b15e56;">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </td>
+                  <td>
+                    <span style="font-size:14px; color:#3768a0;">
+                      {{ item.ProductName }}
+                    </span>
+                  </td>
+                  <td>
+                    <span style="font-size:13px; color:#689f38;">{{ item.SubQuantityTypeName }}</span>
+                  </td>
+                 
+                  <td></td>
+                  <td>
+                    <button class="action-button btn-xs" (click)="changKOTItemsI(item,kot,item.quntityvalue)" style="background:#bee0a2; color:#34700f;">+</button>
+                  </td>
+                  <td>
+                    <input type="number" value="{{item.quntityvalue}}"
+                      (change)="onQuantityChange(item, $event)"
+                      min="1" max="100000"
+                      style="width: 40px; text-align: center; border: 1px solid #eee; border-radius:7px; font-size:13px;"/>
+                  </td>
+                  <td>
+                    <button class="action-button btn-xs" (click)="changKOTItemsD(item,kot,item.quntityvalue)" style="background:#ffe7e7; color:#d24d4d;">-</button>
+                  </td>
+                  <!-- <td>
+                    <span style="color:#575253;">{{ item.quntityvalue }}</span>
+                  </td> -->
+                  <td></td>
+                  <td>
+                    <span style="color:#735a28;">₹{{ item.ProductPrice }}</span>
+                  </td>
+                  <td>
+                    <span style="color:#507d2a; font-weight:600;">₹{{ (+item.ProductPrice) * item.quntityvalue }}</span>
+                  </td>
+                  <td colspan="4"></td>
+                </tr>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+       <!-- if kot running start -->
+            <tr *ngFor="let d of (RunningItems_$ | async)">
+              <ng-container *ngIf="d">
+                <td>
+                  <button class="action-button btn-xs" style="background:#ffe6c0;border:none; color:#b68746;"
+                          (click)="showAddonsPopUp(d?.SelectProductId, d?.selectSubQuantityTypeID)">
+                    <ng-container *ngIf="d?.AddOnItems?.length > 0; else noAddonsSimple">
+                      <span>addon({{ d?.AddOnItems?.length }})</span>
+                    </ng-container>
+                    <ng-template #noAddonsSimple>
                       <span>addon</span>
-                   </ng-template>
-                </button>
-              </td>
-              <td>
-                <span style="font-size:15px; color:#502c13;">{{ d.ProductName }}</span>
-              </td>
-              <td>
-                <span style="font-size:14px; color:#8a634d;">{{ d.SubQuantityTypeName }}</span>
-              </td>
-              <td>
-                <button class="action-button btn-xs" (click)="increment2(d.SelectProductId, d.SubQuantityTypeName, d.quntityvalue, d.ProductPrice)" style="background:#bee0a2; color:#34700f;">+</button>
-              </td>
-              <td>
-                <input type="number" [(ngModel)]="d.quntityvalue"
-                  (ngModelChange)="onQuantityChange(d)"
-                  min="1" max="100000"
-                  style="width: 40px; text-align: center; border: 1px solid #eee; border-radius:7px; font-size:13px;"/>
-              </td>
-              <td>
-                <button class="action-button btn-xs" (click)="decrement2(d.SelectProductId, d.SubQuantityTypeName, d.qvalue, d.ProductPrice)" style="background:#ffe7e7; color:#d24d4d;">-</button>
-              </td>
-              <td>
-                <span style="color:#735a28;">₹{{ d.ProductPrice }}</span>
-              </td>
-              <td>
-                <span style="color:#507d2a; font-weight:600;">₹{{ (+d.ProductPrice) * d.quntityvalue }}</span>
-              </td>
-              <td>
-                <button class="action-button btn-xs" (click)="deleteRunningItem(d)" style="background:#ececec; color:#b15e56;">
-                  <i class="fa fa-trash"></i>
-                </button>
-              </td>
+                    </ng-template>
+                  </button>
+                </td>
+                <td>
+                  <span style="font-size:15px; color:#502c13;">{{ d?.ProductName || '-' }}</span>
+                </td>
+                <td>
+                  <span style="font-size:14px; color:#8a634d;">{{ d?.SubQuantityTypeName || '-' }}</span>
+                </td>
+                <td>
+                  <button class="action-button btn-xs" 
+                          (click)="increment2(d?.SelectProductId, d?.SubQuantityTypeName, d?.quntityvalue, d?.ProductPrice)" 
+                          style="background:#bee0a2; color:#34700f;" [disabled]="!d">
+                    +
+                  </button>
+                </td>
+                <td>
+                  <input type="number" [(ngModel)]="d.quntityvalue"
+                         (ngModelChange)="onQuantityChange(d, $event)"
+                         min="1" max="100000"
+                         style="width: 40px; text-align: center; border: 1px solid #eee; border-radius:7px; font-size:13px;"
+                         [disabled]="!d"/>
+                </td>
+                <td>
+                  <button class="action-button btn-xs" 
+                          (click)="decrement2(d?.SelectProductId, d?.SubQuantityTypeName, d?.qvalue, d?.ProductPrice)" 
+                          style="background:#ffe7e7; color:#d24d4d;" [disabled]="!d">
+                    -
+                  </button>
+                </td>
+                <td>
+                  <span style="color:#735a28;">₹{{ d?.ProductPrice || 0 }}</span>
+                </td>
+                <td>
+                  <span style="color:#507d2a; font-weight:600;">₹{{ (d?.ProductPrice ? (+d.ProductPrice) : 0) * (d?.quntityvalue || 0) }}</span>
+                </td>
+                <td>
+                  <button class="action-button btn-xs" 
+                          (click)="deleteRunningItem(d)" 
+                          style="background:#ececec; color:#b15e56;" [disabled]="!d">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
+              </ng-container>
             </tr>
             <!-- Addon display row -->
-            <tr *ngFor="let d of RunningItems_">
+            <tr *ngFor="let d of RunningItems_$ | async">
               <td colspan="9" style="padding:0;">
-                <div *ngIf="d.AddOnItems.length > 0" style="font-size:13px; margin:4px 0 2px 35px; color:#8d5e19;">
+                <div *ngIf="d?.AddOnItems && d.AddOnItems.length > 0" style="font-size:13px; margin:4px 0 2px 35px; color:#8d5e19;">
                   <span *ngFor="let addonItem of d.AddOnItems">
                     <ng-container *ngFor="let addonProductdata of loadAddOnProductsdata$ | async">
                       <span *ngIf="addonItem._id===addonProductdata._id">
@@ -155,7 +221,9 @@
       </div>
 
       <!-- Summary and Actions -->
-      <div *ngIf="RunningItems_.length > 0" class="summary-section px-2 py-2" style="border-top: 1px solid #ffe6c2; background: #fdf8f2; border-radius:10px 10px 0 0; flex-shrink: 0;">
+      <div *ngIf="(RunningItems_$ | async)?.length && ((RunningItems_$ | async)?.length! > 0)
+        || (!!KOTItemsdata && KOTItemsdata?.length > 0)"
+        class="summary-section px-2 py-2" style="border-top: 1px solid #ffe6c2; background: #fdf8f2; border-radius:10px 10px 0 0; flex-shrink: 0;">
         <div class="flex justify-between mb-1" style="font-size:15px; font-weight: 500;">
           <span>Total: </span><span>₹{{ totalamount }}</span>
         </div>
@@ -164,6 +232,9 @@
           <span>+ ₹{{ totaltax }}</span>
         </div>
         <div class="flex justify-between mb-2" style="font-size:17px; font-weight:bold; color:#954300;">
+          <button class="btn-restaurant primary" (click)="splitBill()">
+            <i class="fa fa-check-circle"></i> Split Bill
+          </button>
           <span>Grand Total:</span><span>₹{{ itemtotalamount }}</span>
         </div>
         
@@ -206,19 +277,48 @@
           </form>
         </div>
         <!-- Actions -->
+        <div *ngIf="KOTItemsdata?.length > 0" class="flex flex-row gap-4 items-center">
+          <ng-container ><label class="font-semibold mr-1">Pay Mode:</label>
+            <label class="flex items-center gap-1" *ngFor="let payMode of paybydata">
+              <input
+                type="radio"
+                name="payby"
+                [value]="payMode._id"
+                (change)="getpaybyid(payMode._id)"
+                [checked]="payMode.makeMeDefault"
+              />
+              <span> {{ payMode.name }}</span>
+            </label>
+          </ng-container>
+        </div>
         <div class="flex gap-2 justify-center mt-2 mb-1">
-          <button class="btn-restaurant primary" (click)="placeOrder()">
+          <div *ngIf="KOTItemsdata?.length && KOTItemsdata.length > 0">
+          <button class="btn-restaurant primary" style="margin-right: 12px;" (click)="placeOrder()">
             <i class="fa fa-check-circle"></i> Settle
           </button>
-          <button class="btn-restaurant accent" (click)="KOT()">
-            <i class="fa fa-cutlery"></i> KOT
+          <button class="btn-restaurant primary" (click)="printBill()">
+            <i class="fa fa-check-circle"></i> Print Bill
           </button>
-          <button class="btn-restaurant accent" style="background-color: #8602bc; color: #fff;" (click)="KOT()">
-            <i class="fa fa-print"></i> Print KOT
-          </button>
-          <button class="btn-restaurant danger" (click)="CancelOrder()">
-            <i class="fa fa-times"></i> Cancel Order
-          </button>
+          </div>
+          <div *ngIf="(RunningItems_$ | async)?.length && ((RunningItems_$ | async)?.length || 0) > 0">
+            <button class="btn-restaurant accent" (click)="KOT()">
+              <i class="fa fa-cutlery"></i> KOT 
+            </button>
+          </div>
+          <div *ngIf="(RunningItems_$ | async) as runningItems">
+            <ng-container *ngIf="runningItems?.length && runningItems.length > 0">
+              <button class="btn-restaurant accent" style="background-color: #8602bc; color: #fff;" (click)="KOT()">
+                <i class="fa fa-print"></i> Print KOT
+              </button>
+            </ng-container>
+          </div>
+          <ng-container *ngIf="(RunningItems_$ | async) as runningItems">
+            <div *ngIf="runningItems?.length && runningItems.length > 0">
+              <button class="btn-restaurant danger" (click)="CancelOrder()">
+                <i class="fa fa-times"></i> Cancel Order
+              </button>
+            </div>
+          </ng-container>
         </div>
       </div>
     </div>
@@ -280,7 +380,8 @@
               </p>
             </td>
           </tr>
-          <tr *ngFor="let d of RunningItems_; index as i" class="hover:bg-blue-50">
+        
+          <tr *ngFor="let d of RunningItems_$ | async; index as i" class="hover:bg-blue-50">
             <td class="px-4 py-2">{{ d.ProductName }}</td>
             <td class="px-4 py-2">{{ d.SubQuantityTypeName }}</td>
             <td class="px-4 py-2">{{ d.ProductPrice }}</td>
@@ -363,10 +464,13 @@
 <div class="common-modal" *ngIf="showtype">
   <div class="modal-box">
     <button class="close-btn" (click)="close()">×</button>
-    <h6 class="modal-title">Add Quantity: </h6><p>{{ppalsoavailable[0].ProductName}}</p>
+    <h6 class="modal-title">Add Quantity: </h6>
+    <p>
+      <!-- Safely display ProductName only if ppalsoavailable[0] exists -->
+      {{ ppalsoavailable && ppalsoavailable.length > 0 ? ppalsoavailable[0].ProductName : '' }}
+    </p>
     <form #myForm="ngForm" (ngSubmit)="onSubmit(myForm)">
       <div *ngFor="let dd of ppalsoavailable" class="option-row">
-        
         <label class="radio-option">
           <input type="radio" name="option" [value]="dd.SubQuantityTypeName" ngModel />
           <span class="option-label">{{ dd.SubQuantityTypeName }}</span>
@@ -378,6 +482,12 @@
   </div>
 </div>
 
+
+<ul>
+  <li *ngFor="let item of items">
+    {{ item.name }} - ₹{{ item.price }}
+  </li>
+</ul>
 <!-- Customer and Comment Popups -->
 <app-addcustomers
   [showPopUp]="showCustomerPopUp"
@@ -387,9 +497,15 @@
 ></app-addcustomers>
 
 <app-comment-in-invoice
+[CommentType]="CommentType"
+[deleteKOTItem]="deleteKOTItem"
+[SearchDeletingKOTItems]="SearchDeletingKOTItems"
+[InvoiceDataKOT$]="InvoiceData$"
+[RecieptNumber]="RecieptNumber"
+[showConfirme]="showCommentConfime"
   [showPopUp]="showCommentPopUp"
   [closePopUp]="closePopup"
-  (closePopUpByChild)="closePopUpBychild($event)"
+  (closePopUpByComment)="closePopUpByCommentFun($event)"
   (CommentToInvoice)="initializeComment($event)"
 ></app-comment-in-invoice>
 
@@ -402,3 +518,10 @@
 (InitializeselectedAddOnItemsCallback)="InitializeselectedAddOnItemsCallbackFun($event)"
 (closePopUpByChildAddOn)="closePopUpByChildAddon($event)"
 ></app-add-on-items>
+
+<app-splitbill
+[totalAmount]="itemtotalamount || totalamount || 0"
+[showPopUp]="showSplitBillPopUp"
+[closePopUp]="closePopup"
+(closePopUpByChildSplitBill)="closePopUpByChildSplitBill($event)"
+ [KotData]="KOTItemsdata"></app-splitbill>

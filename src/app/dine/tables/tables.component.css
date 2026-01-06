@@ -45,6 +45,79 @@
   color: #6c757d;
 }
 
+.kot-section {
+  margin-top: 18px;
+}
+.kot-header {
+  font-size: 1.15rem;
+  margin-bottom: 14px;
+  color: #1a237e;
+}
+.kot-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.kot-item-box {
+  background: #fff;
+    border: 1px solid #d1d5db;
+    padding: 16px 18px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    /* min-width: 235px; */
+    /* flex: 1 0 260px; */
+    /* max-width: 360px; */
+    box-sizing: border-box;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+.kot-receipt {
+  font-weight: 600;
+  color: #1769aa;
+  margin-bottom: 6px;
+}
+.kot-count {
+  font-size: 0.95rem;
+  color: #363946;
+  margin-bottom: 9px;
+}
+.kot-items-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.kot-box-item {
+  flex: 1 0 135px;
+  background: #edeffe;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  padding: 10px 12px;
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 0;
+}
+.kot-table {
+  color:#252d3a;
+  font-size: 0.98em;
+  margin-bottom: 4px;
+  word-break: break-all;
+  font-weight: 500;
+}
+.kot-status {
+  margin-top: 2px;
+  color: #1fa944;
+  font-size: 0.93em;
+}
+.no-kot-items {
+  margin-top: 10px;
+  color: #b71c1c;
+  font-size: 1.04rem;
+}
+
 .order-actions {
   margin-top: 15px;
   display: flex;
@@ -72,3 +145,8 @@
 .btn-primary:hover, .btn-danger:hover {
   opacity: 0.85;
 }
+
+
+
+
+

@@ -1,0 +1,7 @@
+<span 
+                          class="table-eye-icon" 
+                          title="Running KOT Order" 
+                          style="display: inline-flex; align-items: center; justify-content: center; border: 2px solid #fff; border-radius: 8px; padding: 6px; margin-left: 8px; background: rgba(0,0,0,0.28); cursor: pointer;"
+                          (click)="goToHomeKOTedTable(d._id, d.name)">
+                          <i class="fa fa-eye" style="color: #fff; font-size: 2.2em;"></i>
+                        </span>

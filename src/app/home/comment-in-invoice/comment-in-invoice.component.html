@@ -1,27 +1,40 @@
 
 @if (showPopUp) {
-  <div class="comman" >
+  <div class="comman">
     <div class="row box">
-      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()"  class="col lbl2">
-<button  class="close" (click)="close()">Close</button>
-       
-        
-       
-        
+      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" class="col lbl2">
+        <button class="close" (click)="close()">Close</button>
         <div class="row lbl"><h4>Add Comment</h4></div>
-       
         <div class="form-group row">
-          <div class="col"><label class="lbl" for="Comment" id="Comment" > Comment :</label></div>
-          <div class="col"><input class="lbl" type="text "minlength="10" maxlength="20" formControlName="Comment" ngModel  id="Commenttxt"/></div>
+          <div class="col">
+            <label class="lbl" for="RecieptNumber" id="RecieptNumber">Receipt Number :</label>
+          </div>
+          <div class="col">
+            <input class="lbl" type="text" formControlName="RecieptNumber" id="RecieptNumbertxt" [value]="RecieptNumber" />
+          </div>
         </div>
-      
+        <div class="form-group row">
+          <div class="col">
+            <label class="lbl" for="Comment" id="Comment"> Comment :</label>
+          </div>
+          <div class="col">
+            <input class="lbl" type="text" minlength="10" maxlength="200" formControlName="Comment" id="Commenttxt" />
+          </div>
+        </div>
         <div class="row">
-          <div class="col"><button style="border: solid black; padding: 10px;" [disabled]="myAddForm.invalid " class="bt1n" type="submit">+</button>
+          <div class="col" *ngIf="showConfirme==false">
+            <button style="border: solid black; padding: 10px;" [disabled]="myAddForm.invalid" class="bt1n" type="submit">+</button>
+          </div>
+          <div class="col" *ngIf="showConfirme==true">
+            <button style="border: solid rgb(180, 154, 154); padding: 10px;" class="bt1n" (click)="confirmeKOTUpdatation()">Confirme</button>
+          </div>
+          <div class="col">
+            <button style="border: solid rgb(214, 198, 198); padding: 10px; background-color: brown;" class="lbl2" (click)="close()">Cancel</button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
-</div>
 }
 
 <!-- @if (showEdit) {

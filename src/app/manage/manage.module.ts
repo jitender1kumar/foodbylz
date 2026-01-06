@@ -27,6 +27,8 @@ const routes: Routes = [
   { path: 'product', component: ProductformComponent },
   { path: 'popup', component: PopupmodelComponent },
   { path: 'tax', component: TaxComponent },
+  { path: 'discount', loadChildren: () => import('../discount/discount.module').then(m => m.DiscountModule) },
+  // { path: 'discount', loadChildren: () => import('./discount/discount.module').then(m => m.DiscountModule) },
 ];
 
 const COMPONENTS = [

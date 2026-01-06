@@ -16,8 +16,8 @@ export class KOTrunningordersService {
   constructor(private http: HttpClient) { }
 
  
-  delete(_id: string): Observable<void> {
-    return this.http.delete<void>(`${this.KOTrunningeurl}/${_id}`);
+  delete(RecieptNumber: string): Observable<void> {
+    return this.http.delete<void>(`${this.KOTrunningeurl}/${RecieptNumber}`);
   }
 
 

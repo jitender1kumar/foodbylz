@@ -1,0 +1,147 @@
+<div class="discount-form-container">
+  <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit(myAddForm)" #discountForm="ngForm" novalidate>
+    
+    <!-- Discount Name & Amount (Single Row) -->
+    <div class="form-row" style="display: flex; gap: 20px;">
+      <!-- Discount Name -->
+      <div class="form-group" style="flex: 1;">
+        <label for="name">Discount Name</label>
+        <input
+          type="text"
+          id="name"
+          class="form-control"
+          formControlName="name"
+          required
+          minlength="2"
+          maxlength="100"
+          placeholder="Enter discount name"
+        />
+        <div class="invalid-feedback" *ngIf="myAddForm.get('name')?.invalid && (myAddForm.get('name')?.dirty || myAddForm.get('name')?.touched)">
+          <small *ngIf="myAddForm.get('name')?.errors?.['required']">Name is required.</small>
+          <small *ngIf="myAddForm.get('name')?.errors?.['minlength']">Name must be at least 2 characters.</small>
+          <small *ngIf="myAddForm.get('name')?.errors?.['maxlength']">Name cannot be more than 100 characters.</small>
+        </div>
+      </div>
+
+      <!-- Discount Amount -->
+      <div class="form-group" style="flex: 1;">
+        <label for="amount">Amount</label>
+        <input
+          type="number"
+          id="amount"
+          class="form-control"
+          formControlName="amount"
+          required
+          min="0.01"
+          step="0.01"
+          max="999999"
+          placeholder="Enter discount value"
+        />
+        <div class="invalid-feedback" *ngIf="myAddForm.get('amount')?.invalid && (myAddForm.get('amount')?.dirty || myAddForm.get('amount')?.touched)">
+          <small *ngIf="myAddForm.get('amount')?.errors?.['required']">Amount is required.</small>
+          <small *ngIf="myAddForm.get('amount')?.errors?.['min']">Amount must be greater than zero.</small>
+          <small *ngIf="myAddForm.get('amount')?.errors?.['max']">Amount is too large.</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Discount Type & Description (Single Row) -->
+    <div class="form-row" style="display: flex; gap: 20px;">
+      <!-- Discount Type -->
+      <div class="form-group" style="flex: 1;">
+        <label for="type">Discount Type</label>
+        <select
+          id="type"
+          class="form-control"
+          formControlName="type"
+          required
+        >
+          <option value="" disabled>Select type</option>
+          <option value="percentage">Percentage</option>
+          <option value="fixed">Fixed</option>
+        </select>
+        <div class="invalid-feedback" *ngIf="myAddForm.get('type')?.invalid && (myAddForm.get('type')?.dirty || myAddForm.get('type')?.touched)">
+          <small *ngIf="myAddForm.get('type')?.errors?.['required']">Type is required.</small>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group" style="flex: 1;">
+        <label for="description">Description <span class="text-muted">(optional)</span></label>
+        <textarea
+          id="description"
+          class="form-control"
+          formControlName="description"
+          rows="2"
+          maxlength="300"
+          placeholder="Description (optional)"
+        ></textarea>
+        <div class="invalid-feedback" *ngIf="myAddForm.get('description')?.invalid && (myAddForm.get('description')?.dirty || myAddForm.get('description')?.touched)">
+          <small *ngIf="myAddForm.get('description')?.errors?.['maxlength']">Description can't exceed 300 characters.</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active -->
+    <div class="form-group form-check">
+      <input
+        type="checkbox"
+        id="active"
+        class="form-check-input"
+        formControlName="active"
+      />
+      <label class="form-check-label" for="active">Active</label>
+    </div>
+
+    <!-- Valid Period (Valid From & Valid To in Single Row) -->
+    <div class="form-row" style="display: flex; gap: 20px;">
+      <div class="form-group" style="flex: 1;">
+        <label for="validFrom">Valid From <span class="text-muted">(optional)</span></label>
+        <input
+          type="date"
+          id="validFrom"
+          class="form-control"
+          formControlName="validFrom"
+        />
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <label for="validTo">Valid To <span class="text-muted">(optional)</span></label>
+        <input
+          type="date"
+          id="validTo"
+          class="form-control"
+          formControlName="validTo"
+          [min]="myAddForm.get('validFrom')?.value"
+        />
+        <div class="invalid-feedback" *ngIf="myAddForm.get('validTo')?.invalid && (myAddForm.get('validTo')?.dirty || myAddForm.get('validTo')?.touched)">
+          <small *ngIf="myAddForm.get('validTo')?.errors?.['min']">"Valid To" date cannot be before "Valid From".</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Employee ID -->
+    <div class="form-group">
+      <label for="employee_id">Employee ID <span class="text-muted">(optional)</span></label>
+      <input
+        type="text"
+        id="employee_id"
+        class="form-control"
+        formControlName="employee_id"
+        maxlength="50"
+        pattern="^[a-zA-Z0-9-_]*$"
+        placeholder="Enter employee ID"
+      />
+      <div class="invalid-feedback" *ngIf="myAddForm.get('employee_id')?.invalid && (myAddForm.get('employee_id')?.dirty || myAddForm.get('employee_id')?.touched)">
+        <small *ngIf="myAddForm.get('employee_id')?.errors?.['maxlength']">Employee ID can't exceed 50 characters.</small>
+        <small *ngIf="myAddForm.get('employee_id')?.errors?.['pattern']">Only letters, numbers, dashes and underscores allowed.</small>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary" [disabled]="myAddForm.invalid">
+        Save Discount
+      </button>
+    </div>
+  </form>
+</div>

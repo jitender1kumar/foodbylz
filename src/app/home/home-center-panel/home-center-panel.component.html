@@ -38,11 +38,11 @@
           <div *ngFor="let product of productsByCategoryId" class="group">
             <div 
               class="bg-white rounded-xl shadow hover:shadow-xl border border-gray-100 hover:border-cyan-400 transition-all duration-200 p-6 flex flex-col items-center cursor-pointer relative min-h-[160px]"
-              (click)="increment(product._id)"
+              (click)="product && product._id ? increment(product._id) : null"
             >
               <!-- Veg/Non-Veg Mark -->
               <span
-                *ngIf="product.veg_nonveg === true"
+                *ngIf="product?.veg_nonveg === true"
                 class="absolute top-2 right-2 flex items-center justify-center" title="Non-Veg"
               >
                 <span class="inline-block w-4 h-4 rounded-full border-2 border-red-600 bg-white flex items-center justify-center">
@@ -50,7 +50,7 @@
                 </span>
               </span>
               <span
-                *ngIf="product.veg_nonveg === false"
+                *ngIf="product?.veg_nonveg === false"
                 class="absolute top-2 right-2 flex items-center justify-center" title="Veg"
               >
                 <span class="inline-block w-4 h-4 rounded-full border-2 border-green-600 bg-white flex items-center justify-center">
@@ -63,7 +63,7 @@
                 <span class="text-3xl text-cyan-500 font-bold">+</span>
               </div>
               <span class="text-base font-semibold text-cyan-900 group-hover:text-cyan-700 transition text-center">
-                {{ product.ProductName }}
+                {{ product?.ProductName || 'No Name' }}
               </span>
             </div>
           </div>
