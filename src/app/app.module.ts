@@ -113,6 +113,10 @@ import { DiscountEffects } from './discount/store/discount.effects';
 import { discountReducer } from './discount/store/discount.reducers';
 import { runningItemReducer } from './home/homeStore/runningItemStore/runningItem.reducers';
 import { RunningItemEffects } from './home/homeStore/runningItemStore/runningItem.effects';
+import { splitBillReducer } from './home/partial/splitbill/splitbillStore/splitbill.reducer';
+import { SplitBillEffects } from './home/partial/splitbill/splitbillStore/splitbill.effects';
+import { GenratedItemsReducer } from './home/homeStore/GentratedItemsStore/GenratedItems.reducer';
+import { GenratedItemsEffects } from './home/homeStore/GentratedItemsStore/GenratedItems.effects';
 
 const routes: Routes = [
   { path: 'popup', component: PopupmodelComponent },
@@ -201,7 +205,9 @@ const routes: Routes = [
         runningItemKOTReducer_: runningItemKOTReducer,
         reserveTableReducer_:reserveTableReducer,
         discountReducer_:discountReducer,
-        runningItemReducer_:runningItemReducer
+        runningItemReducer_:runningItemReducer,
+        splitBillReducer_: splitBillReducer,
+        GenratedItemsReducer_: GenratedItemsReducer
       },
       { metaReducers }
     ),
@@ -225,7 +231,9 @@ const routes: Routes = [
       ReserveTableEffects,
       RunningItemKOTEffects,
       DiscountEffects,
-      RunningItemEffects
+      RunningItemEffects,
+      SplitBillEffects,
+      GenratedItemsEffects
     ]),
     
   ],

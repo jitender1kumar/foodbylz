@@ -19,4 +19,5 @@ taxnames:string;
 taxvalues:string;
 totaltaxvalue:number;
 paidStatus:boolean;
+notes:string;
 }

@@ -66,6 +66,19 @@
               <button type="submit" [disabled]="myAddForm.invalid" class="add-btn" aria-label="Add Customer">
                 <span>+</span>
               </button>
+            <!-- INSERT_YOUR_CODE -->
+            </div><div class="col">
+              <button 
+                type="button" 
+                 class="add-btn" 
+               
+                [disabled]="myAddForm.get('MobileNo')?.value?.length !== 10"
+                aria-label="Search Customer"
+                (click)="onSearchCustomer()"
+                style="margin-left: 8px;"
+              >
+                <span>🔍</span> 
+              </button>
             </div>
           </div>
         </form>

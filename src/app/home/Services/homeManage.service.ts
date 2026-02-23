@@ -44,7 +44,10 @@ export class HomeManageService {
     createdAt: new Date(),
     EmployeeId: '',
     quntityvalue: undefined,
-    qvalue: undefined
+    qvalue: undefined,
+    Comment: '',
+    ItemsID: '',
+    _id: ''
   };
   public KOTItemsdata: any;
   public innvoicedata: any;
@@ -119,7 +122,34 @@ export class HomeManageService {
     // Ensure that ReturnRunningItems_ is always defined before returning
     return this.ReturnRunningItems_ ;
 }
-  
+  /**
+   * Updates the notes field in a RunningItem by SelectProductId and selectSubQuantityTypeID.
+   * @param runningItems - The array of running items to update
+   * @param SelectProductId - The product ID to match
+   * @param selectSubQuantityTypeID - The sub quantity type ID to match
+   * @param notes - The new notes string to assign
+   */
+  updateNotesInRunningItems(
+    runningItems: any[],
+    SelectProductId: string,
+    selectSubQuantityTypeID: string,
+    notes: string
+  ): any[] {
+    if (!Array.isArray(runningItems)) return runningItems;
+    return runningItems.map(item => {
+      if (
+        item.SelectProductId === SelectProductId &&
+        item.selectSubQuantityTypeID === selectSubQuantityTypeID
+      ) {
+        return {
+          ...item,
+          notes: notes
+        };
+      }
+      return item;
+    });
+    console.log(runningItems);
+  }
 
   intializeRunningItem(Itemsdata: any): RunningItems {
     // Reset product arrays
@@ -148,7 +178,8 @@ export class HomeManageService {
         taxvalues: 'taxpercentValues', // Placeholder; adjust if you have tax values
         totaltaxvalue: 0,
         AddOnItems: item.AddOnItems || [], // Assign AddOnItems if present
-        paidStatus: false
+        paidStatus: false,
+        notes: ''
       });
       this.itemtotalamount += (item.ProductPrice || 0) * (item.quntityvalue || 0);
       this.totalamount += (parseFloat(item.ProductPrice) || 0) * (item.quntityvalue || 0);
@@ -334,7 +365,8 @@ this.allppdata=allppdata;
             taxvalues: '',
             totaltaxvalue: taxpercent,
             paidStatus: false,
-            AddOnItems: []
+            AddOnItems: [],
+            notes:''
           };
           this.gitems2 = [getGItem(allPPItem, val)];
           this.RunningItems_ = [...this.RunningItems_, newRunningItem];
@@ -363,7 +395,8 @@ this.allppdata=allppdata;
           taxvalues: '',
           totaltaxvalue: taxpercent,
           paidStatus: false,
-          AddOnItems: []
+          AddOnItems: [],
+          notes:''
         };
         this.gitems2 = [getGItem(allPPItem, val)];
         this.RunningItems_ = [newRunningItem];

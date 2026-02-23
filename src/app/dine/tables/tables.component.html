@@ -236,7 +236,7 @@
                   <ng-container *ngIf="runningItemsKOT$ | async as runningItemsKOT">
                     <ng-container *ngIf="hasRunningItem(runningItemsKOT, runningorder_.receiptnumber); else noKotRunning">
                       <div class="btn-info">
-                        <button class="btn-info" (click)="loadRunningKOT(runningorder_.receiptnumber)">KOT Running</button>
+                        <!-- <button class="btn-info" (click)="loadRunningKOT(runningorder_.receiptnumber)">KOT Running</button> -->
                       </div>
                     </ng-container>
                     <ng-template #noKotRunning>
@@ -309,9 +309,9 @@
                         <strong>Time:</strong> {{ item?.createdAt ? (item?.createdAt | date:'short') : 'N/A' }}
                       <ng-container *ngFor="let kotItem of item.KOTrunningorders">
                        
-                          <span class="kot-table"><strong>Item:</strong> {{ kotItem.ProductName || 'Unnamed Item' }}</span>
+                          <span class="kot-table"><strong>Item:</strong> {{ kotItem.ProductName || 'Unnamed Item' }} ({{ kotItem.quntityvalue  }})</span>
                           <span *ngIf="!!item.status" class="kot-status"><strong>Status:</strong> {{ item.status }}</span>
-                        
+                        <pre>{{ kotItem.notes || '' }}</pre>
                       </ng-container>
                     </div>
                     </ng-container>

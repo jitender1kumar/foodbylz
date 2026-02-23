@@ -14,6 +14,7 @@ import { HomeComponent } from './home.component';
 import { ManageModule } from '../manage/manage.module';
 import { ShortcodeComponent } from './partial/shortcode/shortcode.component';
 import { SplitbillComponent } from './partial/splitbill/splitbill/splitbill.component';
+import { PartpaymentComponent } from './partial/partpayment/partpayment.component';
 
 @NgModule({
   declarations: [ HomeComponent,
@@ -26,6 +27,7 @@ import { SplitbillComponent } from './partial/splitbill/splitbill/splitbill.comp
     ShortcodeComponent,
     AddOnItemsComponent,
     SplitbillComponent,
+    PartpaymentComponent,
   ],
   imports: [
     CommonModule,

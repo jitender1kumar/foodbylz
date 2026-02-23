@@ -34,6 +34,7 @@
       [addOnProductsData$]="addOnProduct$"
       [subQuantityTypeName$]="subQuantityTtype$"
       [Tax]="tax"
+      [DineData$]="dine$"
       [Qtypenamedata$]="quantityType$"
       [InvoiceData$]="invoicedata$" 
       (value_invoiceid_Changed)="updateinvoiceidValue($event)"
@@ -79,10 +80,10 @@
   <div>
      <!--  -->
     <app-tables
-    
+    [runningItemsKOT$]="runningItems$"
     [Floordata$]="floor$"
     [DineData$]="dine$"
-     [runningItemsKOT$]="runningItems$"
+    
       [pickupOrder]="pickup"
       [CancelOrder]="CancelOrder"
       (clearCancelOrder)="clearCancelOrders($event)"
@@ -91,3 +92,4 @@
     ></app-tables>
   </div>
 </ng-container>
+ <!-- [runningItemsKOT$]="runningItems$" -->

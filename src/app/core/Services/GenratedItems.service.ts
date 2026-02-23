@@ -3,11 +3,11 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../environment/environment';
-import { GenratedItems } from '../Model/crud.model';
+import { GenratedItems} from '../Model/crud.model';
 @Injectable({
   providedIn: 'root'
 })
-export class ItemsService {
+export class GenratedItemsService {
 
   private itemUrl: string = environment.api+"item";
 
@@ -29,10 +29,18 @@ export class ItemsService {
   //   delete(_id:any){
   //     return this.http.delete(`${this.url2}/${_id}`);
   //   }                                
-    update(RecieptNumber: string, Productid: (RecieptNumber: string, Productid: any, SubQuantityTypeID: any) => unknown, SubQuantityTypeID: (RecieptNumber: string, Productid: any, SubQuantityTypeID: any) => unknown, items: GenratedItems[]) {
+  //   update(RecieptNumber: string, Productid: (RecieptNumber: string, Productid: any, SubQuantityTypeID: any, _id:string) => unknown, SubQuantityTypeID: (RecieptNumber: string, Productid: any, SubQuantityTypeID: any) => unknown, items: GenratedItems[]) {
+  //   return this.http.put(this.itemUrl, { items });
+  // }
+  update( items: GenratedItems[]) {
     return this.http.put(this.itemUrl, { items });
   }
-  delete(Invoiceid: string, Productid: string,SubQuantityTypeID:string) {
-    return this.http.delete(`${this.itemUrl}/${Invoiceid}/${Productid}/${SubQuantityTypeID}`);
+  /**
+   * Delete a generated item given invoice ID, product ID, sub quantity type ID, and item _id.
+   * Returns an Observable of the API response.
+   */
+  delete(invoiceId: string, productId: string, subQuantityTypeId: string, itemId: string): Observable<any> {
+    const url = `${this.itemUrl}/${invoiceId}/${productId}/${subQuantityTypeId}/${itemId}`;
+    return this.http.delete<any>(url);
   }
 }

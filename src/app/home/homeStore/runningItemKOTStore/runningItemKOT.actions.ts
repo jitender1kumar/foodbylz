@@ -33,5 +33,11 @@ export const removeKOTRunningItem = createAction(
   props<{ RecieptNumber: string }>()
 );
 
+export const removeMultipleKOTRunningItems = createAction(
+  '[RunningItemsKOT] Remove Multiple RunningItemKOT',
+  props<{ RecieptNumbers: string; KOTStatus?: string }>()
+);
+
+
 
 export const clearKOTRunningItems = createAction('[RunningItemsKOT] Clear All');

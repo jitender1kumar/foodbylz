@@ -1,6 +1,6 @@
 @if (showPopUp) {
     <div class="comman" >
-  <div class="splitbill-popup" style="width: 530px; height: 560px;">
+  <div class="splitbill-popup" style="width: 100%; height: 560px;">
     <h2>Split Bill Options</h2>
     <button type="button" class="close-btn" (click)="close()" style="position: absolute; top: 10px; right: 10px;">&times;</button>
     <div class="split-options" style="display: flex; gap: 10px; margin-bottom: 18px; align-items: center;">
@@ -35,7 +35,14 @@
         Number of Portions:
        
         <h6><b>1/</b></h6>
-       <input type="number" min="2" [(ngModel)]="portionCount" />
+       <input 
+         type="number" 
+         [min]="2" 
+         [max]="getKotItemsLengthWithQValue()" 
+         [(ngModel)]="portionCount" 
+         class="portion-input"
+         style="width: 68px; padding: 2px 6px; border-radius:4px; border:1px solid #c1c1ee; font-size:16px;"
+       />
       </label>
       <button type="button" (click)="splitPortion()">Split</button>
     </div>
@@ -51,7 +58,8 @@
             <input 
               type="number" 
               min="1" 
-              max="100" 
+             
+              [max]="100"
               [(ngModel)]="percentSplits[i]" 
               style="width: 55px; margin:0 7px;"
             />%
@@ -73,136 +81,109 @@
     </div>
 
     <!-- Items Wise Split -->
-      <div *ngIf="selectedSplit === 'items'" class="split-section">
-        <h3>Item-wise Split</h3>
-        <div style="display: flex; gap: 32px; align-items: flex-start;">
-          <!-- LEFT PANE: ITEMS LIST -->
-          <div>
-            <ng-container *ngFor="let kotData of KotData; let kotIdx = index">
-              <div style="margin-bottom: 12px;">
-                <label style="font-weight: bold;">KOT ({{ kotIdx + 1 }})</label>
-                <div *ngIf="kotData?.KOTrunningorders?.length > 0; else noKOTItems">
-                  <ng-container *ngFor="let kotItem of kotData.KOTrunningorders; let itmIdx = index">
-                    <label
-                      style="display: flex; align-items: center; gap: 6px; cursor: isItemAssignedToAnyPerson(kotItem) "
-                    >
+      <div *ngIf="selectedSplit === 'items'" class="split-section" style="display: flex; gap: 2em;">
+        <!-- Left Section: Item List & Selection -->
+        <div style="flex: 1; border-right: 1px solid #eee; padding-right: 1em;">
+          <h3>Unassigned Items</h3>
+          <div *ngIf="KotDataManage?.length; else noKotDataTemplate">
+            <div *ngFor="let kot of KotDataManage; let KOTIndex = index">
+              <span>KOT({{KOTIndex+1}})</span>
+              <br>
+              <div>
+                <div *ngIf="kot.KOTrunningorders && kot.KOTrunningorders.length > 0; else noItemsTemplate">
+                  <div *ngFor="let Item of kot.KOTrunningorders; let oIdx = index" style="margin-bottom: 5px; padding-left: 8px;">
+                    <label style="display: flex; align-items: center; gap: 8px;">
                       <input
                         type="checkbox"
-                        [checked]="itemSelections ? itemSelections[
-                          getGlobalIndexForItem(kotIdx, itmIdx)
-                        ] : false"
-                        (change)="toggleItemSelection(kotIdx, itmIdx, $event.target.checked)"
-                        [disabled]="isItemAssignedToAnyPerson(kotItem)"
-                        [style.opacity]="isItemAssignedToAnyPerson(kotItem) ? 0.55 : 1"
-                        [style.cursor]="isItemAssignedToAnyPerson(kotItem) ? 'not-allowed' : 'pointer'"
-                        tabindex="0"
-                        [attr.aria-label]="'Select item ' + kotItem.ProductName + ' for splitting'"
+                        id="KOTIndex+KOT+oIdx"
+                        (change)="initializeSelectd(Item,KOTIndex,$event)"
+                        [checked]="isItemCheckedForPerson(Item, KOTIndex)"
+                        [disabled]="
+                          isItemAssignedToOtherPerson(KOTIndex, oIdx) ||
+                          isItemAssignedToOther(KOTIndex, Item.SelectProductId, Item.selectSubQuantityTypeID)
+                        "
                       />
-                      <span>
-                        {{ kotItem.ProductName }} - ₹{{ kotItem.ProductPrice }} × ({{ kotItem.quntityvalue }}) = ₹{{ kotItem.ProductPrice * kotItem.quntityvalue }}
-                        <span *ngIf="isItemAssignedToAnyPerson(kotItem)" style="font-size:12px; color:#b94a48; font-weight:bold;">
-                          [Assigned]
-                        </span>
+                      {{ Item.ProductName }} &mdash; ₹{{ Item.ProductPrice }} x {{ Item.qvalue || 1 }} 
+                      <span style="font-size: 12px; color: #888; margin-left: 8px;">
+                        <!-- Display Person ID if item is assigned, otherwise nothing -->
+                        <ng-container *ngFor="let person of ItemWisePersonList">
+                          <ng-container *ngFor="let split of person.ItemWiseSplits">
+                            <ng-container *ngIf="split.SelectProductId === Item.SelectProductId && split.selectSubQuantityTypeID === Item.selectSubQuantityTypeID && split.KOTIndex === KOTIndex">
+                              (Assigned to Person {{ +person.personId }})
+                            </ng-container>
+                          </ng-container>
+                        </ng-container>
                       </span>
                     </label>
-                  </ng-container>
-                </div>
-                <ng-template #noKOTItems>
-                  <span style="color:#aaa; font-size:13px;">No items in KOT.</span>
-                </ng-template>
-              </div>
-            </ng-container>
-          </div>
-
-          <!-- RIGHT PANE: ASSIGNMENT PANEL -->
-          <div style="max-height: 300px; overflow-y: auto; min-width:230px;">
-            <ng-container *ngIf="assignedItemsList && assignedItemsList.length > 0; else noAssignedPanels">
-              <div
-                *ngFor="let assigned of assignedItemsList; let personIdx = index"
-                style="margin-bottom: 20px;"
-              >
-                <div
-                  style="
-                    width: 210px;
-                    background: #f6f6fa;
-                    border: 1px solid #d7d7e1;
-                    border-radius: 8px;
-                    min-height: 120px;
-                    padding: 17px;
-                    box-shadow: 0 1px 7px #0001;
-                    display: flex;
-                    flex-direction: column;
-                    gap:10px;
-                    position: relative;
-                  "
-                >
-                  <div
-                    style="
-                      margin-bottom: 3px;
-                      font-weight: 500;
-                      display: flex;
-                      justify-content: space-between;
-                      align-items: center;
-                    "
-                  >
-                    <span>Person {{personIdx + 1}}'s Items</span>
-                    <button
-                      type="button"
-                      (click)="assignedItemsList.splice(personIdx, 1)"
-                      style="background: #ffeaea; border: 1px solid #e48a8a; color: #a94141; border-radius: 5px; font-size: 15px; padding: 0 8px; cursor:pointer;"
-                      title="Delete Person"
-                      aria-label="Delete Person"
-                    >
-                      <i class="fa fa-trash"></i>
-                    </button>
                   </div>
-                  <div *ngIf="assigned.items && assigned.items.length > 0; else noItemsForPerson">
-                    <div
-                      class="selected-item"
-                      *ngFor="let item of assigned.items; let itemIdx = index"
-                      style="display: flex; align-items: center; gap: 8px;"
-                    >
-                      <span>
-                        • {{ item.ProductName }} - ₹{{ item.ProductPrice }} × ({{ item.quntityvalue }}) = ₹{{ item.ProductPrice*item.quntityvalue }}
-                      </span>
-                      <button
-                        type="button"
-                        (click)="assigned.items.splice(itemIdx, 1)"
-                        style="margin-left: 10px; background: #faeaea; border: 1px solid #d67c7c; color: #b63b3b; border-radius: 4px; font-size: 13px; padding: 2px 7px; cursor:pointer;"
-                        title="Remove"
-                        aria-label="Remove Item"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  </div>
-                  <ng-template #noItemsForPerson>
-                    <div style="color:#848484; font-size:13px;">No items assigned.</div>
-                  </ng-template>
-                  <button
-                    type="button"
-                    class="btn btn-sm"
-                    style="width: 100%; height: 28px; background: #6929ad; color: white; border: none; border-radius: 5px;"
-                    (click)="assignItemsToPerson(personIdx)">
-                    Assign Selected to Person {{personIdx + 1}}
-                  </button>
                 </div>
               </div>
-            </ng-container>
-            <ng-template #noAssignedPanels>
-              <div style="color:#aaa; font-size:13px;">No persons created for item assignment.</div>
-            </ng-template>
-            <button
-              type="button"
-              class="btn btn-link"
-              style="margin-top: 15px; padding: 0px; color: #6929ad; font-size: 14px;"
-              (click)="addAssignmentPerson()"
-            >
-              + Add Another Person
-            </button>
+            </div>
           </div>
+       
+          <ng-template #noKotDataTemplate>
+            <p style="color: #a88;">No KOT data available.</p>
+          </ng-template>
+          <ng-template #noItemsTemplate>
+            <p style="color: #a88;">No items found.</p>
+          </ng-template>
         </div>
+       
+
+        <!-- Right Section: Assigned Items By Person -->
+        <div style="flex: 1; padding-left: 1em;">
+          <h3>Assigned Items (by Person)</h3>
+          <div *ngFor="let assignment of ItemWisePersonList; let personIdx = index" style="margin-bottom: 2em;">
+            <h4>Person {{ personIdx + 1 }}</h4>
+            <button type="button" (click)="assignSelectedItemsToPerson(personIdx+1)">Assign Selected to Person</button>
+            <!-- INSERT_YOUR_CODE -->
+            <button 
+              type="button" 
+              style="margin-left: 1em; color: #b00;" 
+              (click)="
+              ItemWisePersonListDelete(personIdx, 1)
+              
+              ">
+              Delete Person
+            </button>
+            <ul *ngIf="assignment.ItemWiseSplits && assignment.ItemWiseSplits.length > 0; else noAssignedItems">
+              <li *ngFor="let assignedItem of assignment.ItemWiseSplits">
+                <!-- Look up and display human-friendly names/details using KOTIndex and SelectProductId -->
+                <ng-container *ngIf="KotData?.[assignedItem.KOTIndex]?.KOTrunningorders as itemsGroup">
+                  <ng-container *ngFor="let item of itemsGroup">
+                    <ng-container *ngIf="item.SelectProductId === assignedItem.SelectProductId && item.selectSubQuantityTypeID === assignedItem.selectSubQuantityTypeID">
+                      {{ item.ProductName }} &mdash; ₹{{ item.ProductPrice }} x {{ item.qvalue || 1 }}
+                      <button 
+                        type="button"
+                        style="margin-left: 8px; color: #b00; font-size: 12px; padding: 2px 6px; border: none; background: none; cursor: pointer;"
+                        (click)="
+                          assignment.ItemWiseSplits.splice(assignment.ItemWiseSplits.indexOf(assignedItem), 1)
+                        "
+                        title="Delete this item"
+                      >
+                        Delete
+                      </button>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </li>
+            </ul>
+            <ng-template #noAssignedItems>
+              <li style="color: #999; font-size: 13px;">No items assigned.</li>
+            </ng-template>
+          </div>
+          <button type="button" (click)="addAssignmentPerson()">Add Person</button>
+        </div>
+        
+        <div style="  left: 0; ">
+          <button>
+            Split
+          </button>
+        </div>
+     
       </div>
-  </div>
+      </div>
+      
+   
 </div>
 }

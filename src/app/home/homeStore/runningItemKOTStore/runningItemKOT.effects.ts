@@ -36,6 +36,33 @@ export class RunningItemKOTEffects {
       )
     )
   );
- 
- 
+  removeRunningItem$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(RunningItemActions.removeKOTRunningItem),
+      mergeMap(action =>
+        this.KOTrunningordersService.delete(action.RecieptNumber).pipe(
+          map(() => ({
+            type: '[RunningItemsKOT] Remove RunningItemKOT Success',
+            RecieptNumber: action.RecieptNumber
+          })),
+          catchError(error => of(RunningItemActions.addKOTRunningItemFailure({ error })))
+        )
+      )
+    )
+  );
+  removeMultipleKOTRunningItems$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(RunningItemActions.removeMultipleKOTRunningItems),
+      mergeMap(action =>
+        this.KOTrunningordersService.deleteMultiple(action.RecieptNumbers, action.KOTStatus).pipe(
+          map(() => ({
+            type: '[RunningItemsKOT] Remove Multiple RunningItemKOT Success',
+            RecieptNumbers: action.RecieptNumbers,
+            KOTStatus: action.KOTStatus
+          })),
+          catchError(error => of(RunningItemActions.addKOTRunningItemFailure({ error })))
+        )
+      )
+    )
+  );
 }

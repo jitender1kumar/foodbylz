@@ -66,7 +66,9 @@ import {
   Observable
 } from 'rxjs/internal/Observable';
 import { ManageService } from '../../core/Services/manage.service';
-
+import * as InvoiceActions from '../../core/store/invoiceStor/invoice.actions';
+//import * as runningItemActions from '';
+//import * as RunningItemKOTActions from '../../home/homeStore/runningItemKOTStore/runningItemKOT.action';
 @Component({
   selector: 'app-tables',
   templateUrl: './tables.component.html',
@@ -83,7 +85,7 @@ export class TablesComponent implements OnInit {
   @Input() runningItemsKOT$?: Observable<any[]>;
   @Input() pickupOrder: any;
   @Input() CancelOrder: any;
-
+  //runningItemsKOT$?: Observable<any[]>;
   @Output() clearCancelOrder = new EventEmitter<string>();
   @Output() clearPickupOrder = new EventEmitter<string>();
   @Output() notifyManage3 = new EventEmitter<string>();
@@ -208,9 +210,15 @@ export class TablesComponent implements OnInit {
     private datePipe: DatePipe,
     private getOrderDetailsService: GetOrderDetailsService,
     private initializeInvoice: InitializeInvoice,
-    private store: Store<{ reserveTableReducer_: any }>,
+    private store: Store<{ reserveTableReducer_: any,invoiceReducer_:any, runningItemKOTReducer_:any }>,
     private manageService:ManageService
   ) {
+   // this.loadrunnigKOTITems();
+   
+    // this.runningItemsKOT$= this.store.select(
+    //   state => state.runningItemKOTReducer_?.KOTrunningorders?.data
+    // );
+    
    // this.ReservedTable$ = this.store.select(state => state.reserveTableReducer_.ReserveTables.data);
     const today = new Date();
     this.currentTime = `${today.getHours() > 12 ? today.getHours() - 12 : today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
@@ -316,6 +324,9 @@ export class TablesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+   // alert("ng")
+   
+  
     this.referesh();
     if (this.CancelOrder) {
      // alert("Cancel "+this.CancelOrder);
@@ -340,7 +351,23 @@ export class TablesComponent implements OnInit {
       //   }
       // });
     }
+  //  this.loadrunnigKOTITems();
   }
+  // INSERT_YOUR_CODE
+  // If runningItemsKOT$ is not already loaded, load it using a service method
+  // INSERT_YOUR_CODE
+  // If runningItemsKOT$ is not already loaded, load it using a service method
+ 
+  // loadrunnigKOTITems() {
+   
+  //     // Assuming you have a service to provide runningItemsKOT$
+  //     // Refactored: Call method directly if service is present, drop unnecessary check for method existence
+  //     this.store.dispatch(RunningItemActions.loadKOTRunningItems());
+  //    // this.runningItemsKOT$
+  //   this.runningItemsKOT$= this.store.select(
+  //     state => state.runningItemKOTReducer_?.KOTrunningorders?.data
+  //   );
+  // }
 
   get dateTimeStartControl(): FormControl {
     return this.myAddForm.get('ReservedDate') as FormControl;
@@ -787,11 +814,8 @@ export class TablesComponent implements OnInit {
                             CommentId: inv.Comment ?? '',
                             returnAmount: inv.returnAmount ?? ''
                           };
-                          this.invoiceService.update(cancelInvoice).subscribe(updateddata => {
-                            if (updateddata) {
-                              this.referesh();
-                            }
-                          });
+                          this.store.dispatch(InvoiceActions.updateInvoice({ invoice: cancelInvoice }));
+                          // });
                         });
                       });
                     }
@@ -972,11 +996,13 @@ export class TablesComponent implements OnInit {
             tokennumber: this.TokenNumber,
             createdAt: new Date()
           };
-          this.invoiceService.add(invoicepickup).subscribe(inv => {
-            if (inv) {
-              this.notifyManage2.emit(`${this.pickupinvoiceid}jsk${this.TokenNumber}`);
-            }
-          });
+          this.store.dispatch(InvoiceActions.addInvoice({ invoice: invoicepickup }));
+          this.notifyManage2.emit(`${this.pickupinvoiceid}jsk${this.TokenNumber}`);
+          // this.invoiceService.add(invoicepickup).subscribe(inv => {
+          //   if (inv) {
+          //     this.notifyManage2.emit(`${this.pickupinvoiceid}jsk${this.TokenNumber}`);
+          //   }
+          // });
         }
       });
     } else {
@@ -1104,7 +1130,7 @@ export class TablesComponent implements OnInit {
       this.todayBilledLists = [];
       if (this.ordersdata.length > 0) {
         for (let i = 0; i < this.ordersdata.length; i++) {
-          if (this.ordersdata[i].Orderstatus == "Done") {
+          if (this.ordersdata[i].Orderstatus == "Sattled") {
             this.todayBilledLists.push({
               _id: this.ordersdata[i]._id,
               Orderstatus: this.ordersdata[i].Orderstatus,

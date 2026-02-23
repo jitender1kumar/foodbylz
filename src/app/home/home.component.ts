@@ -12,8 +12,9 @@ import {
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscribable, Subscription } from 'rxjs';
 import { filter,take } from 'rxjs/operators';
+import * as InvoiceActions from '../core/store/invoiceStor/invoice.actions';
 
 
 import {
@@ -27,8 +28,13 @@ import {
   IDine,
   IAddOnItems,
   AddOnProductEdit,
-  GenratedItemKOT
+  GenratedItemKOT,
+  IItems
 } from '../core/Model/crud.model';
+
+import * as GentratedItemsActions from './homeStore/GentratedItemsStore/GenratedItems.action';
+
+import * as DineTableActions from '../dine/dineStore/dinetableStore/dinetable.action';
 
 
 import { RunningItems } from '../core/Model/RunningItemsHomeModel/RunningItem.model';
@@ -46,7 +52,8 @@ import * as RunningItemActions from './homeStore/runningItemStore/runningItem.ac
 import { ManageService } from '../core/Services/manage.service';
 import { HomeManageService } from './Services/homeManage.service';
 import { updateRunningItemQuantity } from './homeStore/runningItemStore/runningItem.action';
-// import { RunningItemsPouchdbService } from '../core/db/services/runningItemsPouchdb.service';
+import { selectAddSuccess } from './homeStore/GentratedItemsStore/GenratedItems.selector';
+import { ChairServiceService } from '../core/Services/chairsrunningorders.serivce';
 
 type Nullable<T> = T | null | undefined;
 export interface InvoiceTableData {
@@ -89,7 +96,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   @Input() Productnamedata$?: Observable<any[]> | null = null;
   @Input() productPriceData$?: Observable<any> | null = null;
   @Input() addOnProductsData$!: Observable<any[]>;
-
+  @Input() DineData$: any;
+  CommentKOT:string='';
    
   @ViewChildren('dynamicInput') divs!: QueryList<ElementRef>;
   //TokenNumber:number=0;
@@ -104,6 +112,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   public showplaceorderPopup = false;
   public showAddonPopUp = false;
   public showSplitBillPopUp=false;
+  public showPartPaymentPopUp=false;
+  
   public closePopup = false;
   public searchQuery = '';
   public selectedType = '';
@@ -124,7 +134,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     createdAt: new Date(),
     EmployeeId: '',
     quntityvalue: undefined,
-    qvalue: undefined
+    qvalue: undefined,
+    Comment: '',
+    ItemsID: '',
+    _id: ''
   };
  // RunningItems_: RunningItems[] = [];
   RunningItems_2: RunningItems[] = [];
@@ -138,6 +151,26 @@ export class HomeComponent implements OnInit, OnDestroy {
   updataAddOnDataInRunningItem: AddOnProductEdit;
   gitems: GenratedItems[] = [];
   gitems2: GenratedItems[] = [];
+  Items: IItems={
+    Productid: '',
+    Productname: '',
+    SubQuantityTypeID: '',
+    SubQuantityTypeName: '',
+    Qauntityid: '',
+    Qauntityname: '',
+    Quantity: 0,
+    itemamount: 0,
+    totalquantityamount: 0,
+    employee_id: ''
+  }
+  GenratedItems_:GenratedItems={
+    RecieptNumber: '',
+    TableId: '',
+    EmployeeId: '',
+    Items: [this.Items],
+    _id: '',
+    createdAt: new Date()
+  }
   AddOnItems: IAddOnItems[] = [];
   showCommentConfime=false;
   allppdata: any[] = [];
@@ -158,7 +191,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   gettableid: any;
   tabledata: any;
   tabledata2: any;
-  getinvoiceid: any;
   getinvoiceid2: any;
   innvoicedata2: any;
   innvoicedata: any;
@@ -223,9 +255,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   public myDiscountForm!: FormGroup;
 
   private subscriptions: Subscription[] = [];
- // invoiceData$ = new BehaviorSubject<any>(null);
-
-
+  receiveNotification: any;
+ 
   constructor(
     private router: Router,
     private formedit: FormBuilder,
@@ -236,12 +267,13 @@ export class HomeComponent implements OnInit, OnDestroy {
     private subQuantityTypeService_: subQuantityTypeService,
     private datePipe: DatePipe,
     public actions$: Actions,
-    private store: Store<{ runningItemReducer_: any,runningItemKOTReducer_:any }>,
+    private store: Store<{ runningItemReducer_: any,runningItemKOTReducer_:any,invoiceReducer_:any ,GenratedItemsReducer_:any,dineTableReducer_:any}>,
     private InitializeInvoice_: InitializeInvoice,
     private ManageService_:ManageService,private HomeManageService_:HomeManageService,
+    private chairsrunningorderservice: ChairServiceService,
    // private pouch: RunningItemsPouchdbService
   ) {
-
+    this.table_id="";
   //  //alert("hc "+this.invoiceid);
   //  this.RecieptNumber = this.invoiceid
  //   //alert("hc "+this.RecieptNumber);
@@ -290,6 +322,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.showtype = false;
     this.replacedInvoiceId = this.invoiceid;
     this.showCommentConfime=false;
+    
+    //this.dineData$ = this.store.select(state => state.dineTableReducer_?.dineData);
     this.runningItemsKOTHome$ = store.select(state => state.runningItemKOTReducer_.KOTrunningorders.data);
     this.loading$ = store.select(state => state.runningItemKOTReducer_.loading);
     this.error$ = store.select(state => state.runningItemKOTReducer_.error);
@@ -300,85 +334,51 @@ export class HomeComponent implements OnInit, OnDestroy {
 KOTItemsdata:any;
 AllProductWithPrice:any;
 items: any[] = [];
+  dineData$: any;
+
+  
+
   ngOnInit(): void {
-   // this.loadData();
-   
+    //this.getDineDataByNgRx();
     this.loadinvoice();
-    
-    this.CustomerName='Guest';
-    this.RecieptNumber = this.invoiceid
-    // //alert("hng "+this.RecieptNumber);
-    //this.RunningItems_ = [];
-    // Defensive: initializeKOTItems expects Observable<GenratedItemKOT[]>, make sure runningItemsKOT$ is not undefined/null
+
+    this.CustomerName = 'Guest';
+    this.RecieptNumber = this.invoiceid;
+
+    // Initialize KOTItemsdata based on available observable
     if (this.runningItemsKOTHome$) {
       this.KOTItemsdata = this.HomeManageService_.initializeKOTItems(this.runningItemsKOTHome$, this.invoiceid);
-    } else if (this.runningItemsKOT$){
+    } else if (this.runningItemsKOT$) {
       this.KOTItemsdata = this.HomeManageService_.initializeKOTItems(this.runningItemsKOT$, this.invoiceid);
+    } else {
+      this.KOTItemsdata = [];
     }
-    else this.KOTItemsdata=[];
-   
+
     this.loadFood();
 
-    // this.loadfood('DinningTable', this.invoiceid);
     this.myDiscountForm = this.fb.group({
       discount: '',
       numberInput: [0]
     });
-   // this.loadProductByTopSelling();
+
     this.AllProductWithPrice = this.loadAllProductPriceDatabyProductId();
-    
   }
-  // async addData() {
-  //   await this.pouch.add({
-  //     name: 'Dosa',
-  //     price: 50,
-  //     createdAt: new Date()
-  //   });
-  //   this.loadData();
-  // }
-  // async loadData() {
-  //   const res: any = await this.pouch.getAll();
-  //   this.items = res.rows.map((r: any) => r.doc);
-  // }
-  // initializeKOTItems()
-  // {
-  //   if(!this.runningItemsKOT$)return;
-  //   this.runningItemsKOT$?.subscribe(KOTItems=>
-  //     {
-       
-  //       if (KOTItems) {
-  //         if (Array.isArray(KOTItems)) {
-  //           this.KOTItemsdata = KOTItems.filter(
-  //             (item: any) => item && item.RecieptNumber === this.invoiceid  
-  //           );
-  //           if(!this.KOTItemsdata)this.KOTItemsdata="";
-  //          // console.log(this.KOTItemsdata[0].KOTrunningorders);
-  //          // console.log(this.KOTItemsdata);
-  //          // this.RunningItems_
-  //         } else {
-  //           this.KOTItemsdata = "";
-  //         }
-  //       }
-  //     }
-  //     );
-     
-  // }
+
+  // getDineDataByNgRx() {
+  //   // Assume that the store has a dineData slice managed by NgRx
+  //   // Dispatch NgRx action to load dinedata (dine tables)
+  //   this.store.dispatch(DineTableActions.loadDineTables());
+  //   this.dineData$ = this.store.select(state => state.dineTableReducer_?.dineData);
+  // }    
+
   loadFood()
   {
-   // const runningItems = this.HomeManageService_.loadfood(this.invoiceid);
-    //this.store.dispatch(RunningItemActions.loadfood({ invoiceid: this.invoiceid }));
     this.store.dispatch(RunningItemActions.loadfood({ invoiceid: this.invoiceid }));
     this.RunningItems_$ = this.store.select(state => state.runningItemReducer_.RunningItems_);
     this.loading$ = this.store.select(state => state.runningItemReducer_.loading);
     this.error$ = this.store.select(state => state.runningItemReducer_.error);
     this.calculateTotalAmount();
-   // this.RunningItems_$.subscribe(data=>console.log(data));
-    // console.log(runningItems);
-    // if (Array.isArray(runningItems)) {
-    //   this.RunningItems_ = runningItems;
-    // } else {
-    //   this.RunningItems_ = [];
-    // }
+  
   }
   deleteRunningItem(d: any): void {
     
@@ -408,13 +408,8 @@ items: any[] = [];
     if (!quntityvalue || quntityvalue < 1) {
       this.quntityvalueNumber = 1; //d.quntityvalue
     }
-   // quntityvalue=this.quntityvalueNumber;
-    // else
-    // {
-    //   d.quntityvalue = ;
-    // }
+   
 const FilteredRunningItemData=this.filterProductwithPriceRunningItem(d.SelectProductId, d.SubQuantityTypeName);
-   // this.RunningItems_ =  this.HomeManageService_.loadqunityvalue(d.SelectProductId,'inc', d.SubQuantityTypeName, +d.quntityvalue-1, d.ProductPrice,this.RunningItems_,this.invoiceid,FilteredRunningItemData);
     this.store.dispatch(
       updateRunningItemQuantity({
         id: d.SelectProductId,
@@ -428,9 +423,7 @@ const FilteredRunningItemData=this.filterProductwithPriceRunningItem(d.SelectPro
       })
     );
     this.RunningItems_$ = this.store.select(state => state.runningItemReducer_.RunningItems_);
-    // console.log();
-    // Optionally trigger recalculation of totals/discounts, etc.
-   // this.recalculateTotals();
+    
   }
 filterProductwithPriceRunningItem(ProductId:string,SubQuantityTypeName:string)
 {
@@ -440,26 +433,7 @@ filterProductwithPriceRunningItem(ProductId:string,SubQuantityTypeName:string)
       item.SubQuantityTypeName === SubQuantityTypeName
   );
 }
-  // recalculateTotals(): void {
-  //   // Simple sum of totalamount and itemtotalamount (assuming structure)
-  //   this.totalamount = this.RunningItems_
-  //     ?.reduce((sum: number, item: any) => sum + ((+item.ProductPrice) * (+item.quntityvalue)), 0) ?? 0;
-
-  //   // If you have discount or tax routines, you can call them here as well
-  //   // For example:
-  //   // this.calculateTax();
-  //   // this.calculateDiscount();
-  //   // Finally, recalculate itemtotalamount or similar
-  //   // This is example logic; adjust for your business logic if needed
-  //   this.itemtotalamount = this.totalamount + (this.totaltax || 0) - (this.percent ? (this.totalamount * this.percent / 100) : 0);
-
-  //   // If you want discountvalue to be updated as settle amount
-  //   if (this.itemtotalamount < 0) {
-  //     this.discountvalue = 0;
-  //   } else {
-  //     this.discountvalue = this.itemtotalamount;
-  //   }
-  // }
+ 
   loadinvoice(): void {
     const RecieptNumber = this.invoiceid;
     if (!RecieptNumber) return;
@@ -491,152 +465,6 @@ filterProductwithPriceRunningItem(ProductId:string,SubQuantityTypeName:string)
     }
   }
 
-  // loadfood(msg: string, _moddata: string): void {
-  //   if (msg === 'jsk') return;
-  //   if (!this.invoiceid) return;
-  //   const runningItemsTable = localStorage.getItem(this.invoiceid);
-  //   //console.log(runningItemsTable);
-  //   let runningItemsData: any = [];
-  //   if (runningItemsTable) {
-  //     try {
-  //       runningItemsData = JSON.parse(runningItemsTable);
-  //      // console.log(runningItemsData);
-  //     ///  runningItemsData = [];
-  //       this.intializeRunningItem(runningItemsData);
-  //     } catch (e) {
-  //       console.error('Error parsing RunningItemsTable from localStorage', e);
-  //       runningItemsData = [];
-  //     }
-  //   }
-  //   this.totalamount = this.gettotamount();
-  //   this.getitemTotalTax();
-  //   this.getitemtotalamount();
-  // }
-
-  // intializeRunningItem(Itemsdata: any): void {
-  //   this.addondataarr = [];
-  // //  this.RunningItems_ = [];
-  //   this.itemtotalamount = 0;
-  //   this.totalamount = 0;
-
-  //   const processItems = async (invoiceData: any[], itemsData: any[]) => {
-  //     if (!invoiceData || !Array.isArray(invoiceData) || invoiceData.length === 0) return;
-  //     const invoiceAddOnItems = invoiceData[0].AddOnItems || [];
-     
-  //     let addOnProducts: any[] = [];
-  //     const addOnProductsPromise = new Promise(resolve => {
-  //       this.addOnProductsData$.subscribe(data => {
-  //         addOnProducts = data || [];
-  //         resolve(null);
-  //       });
-  //     });
-  //     await addOnProductsPromise;
-
-  //     // Helper to get matching add-ons for an item
-  //     const getMatchingAddOns = (item: any): IAddOnItems[] => {
-  //       return invoiceAddOnItems.filter((addOnItem: IAddOnItems) => {
-  //         const addonItemData = addOnProducts.find(p => p._id === addOnItem._id);
-  //         return (
-  //           addonItemData &&
-  //           item.SelectProductId === addonItemData.SelectProductId &&
-  //           item.selectSubQuantityTypeID === addonItemData.SubQuantityTypeID &&
-  //           addOnItem._id === addonItemData._id
-  //         );
-  //       });
-  //     };
-  //      this.itemtotalamount = 0;
-  //   this.totalamount = 0;
-
-  //     this.RunningItems_=[];
-  //     itemsData.forEach(item => {
-  //       const addOnItems = getMatchingAddOns(item);
-  //       this.RunningItems_.push({
-  //         SelectProductId: item.SelectProductId,
-  //         ProductPrice: item.ProductPrice?.toString() ?? '0',
-  //         ProductName: item.ProductName,
-  //         selectcategoryID: item.selectcategoryID,
-  //         categoryName: item.categoryName,
-  //         selectQtypeID: item.selectQtypeID,
-  //         QtypeName: item.QtypeName,
-  //         selectSubQuantityTypeID: item.selectSubQuantityTypeID,
-  //         SubQuantityTypeName: item.SubQuantityTypeName,
-  //         quntityvalue: item.quntityvalue,
-  //         qvalue: item.qvalue,
-  //         taxnames: this.taxname,
-  //         taxvalues: 'taxpercentValues',
-  //         totaltaxvalue: 0,
-  //         AddOnItems: addOnItems,
-  //         paidStatus:false
-  //       });
-  //       this.itemtotalamount += (item.ProductPrice || 0) * (item.quntityvalue || 0);
-  //       this.totalamount += (item.ProductPrice || 0) * (item.quntityvalue || 0);
-  //     });
-  //   };
-
-  //   this.InvoiceData$?.subscribe(invoiceData => {
-  //     processItems.call(this, invoiceData, Itemsdata);
-  //   });
-  // }
-
-  loadAddOnProductsInitializing(_id: string) {
-  //  this.store.dispatch(AddOnProductActions.getAddOnProductById({ _id }));
-    if (this.addOnProductsData$) {
-      const sub = this.addOnProductsData$.subscribe(data => {
-        console.log(data);
-      });
-      this.subscriptions.push(sub);
-    }
-  }
-
-  initializeTax(): void {
-    this.taxname = '';
-    this.totaltax = 0;
-    if (this.Tax) {
-      this.Tax.forEach((tax: { Status: any; name: string; perscentRate: number; }) => {
-        if (tax.Status) {
-          this.taxname += tax.name + ', ';
-          const taxAmount = (+this.itemtotalamount * tax.perscentRate) / 100;
-          this.totaltax += taxAmount;
-        }
-      });
-    }
-    this.itemtotalamount += this.totaltax;
-  }
-
-  // initializeItemsCountableData() {
-  //   // this.InvoiceService_.getbyid(this.invoiceid).subscribe(getpercentval => {
-  //   //   if (!getpercentval) return;
-  //   //   this.getpercentvaldata2 = getpercentval;
-  //     this.InvoiceData$?.subscribe(data=>{
-  //       this.getpercentvaldata = data;
-  //     //});
-  //     const invoiceData = this.getpercentvaldata[0];
-  //     this.percent = invoiceData.Discountperstage;
-  //     this.itemTotalTax = invoiceData.Taxes || [];
-  //     this.actualdiscountprice = (this.itemtotalamount * this.percent) / 100;
-  //     this.myDiscountForm = this.fb.group({
-  //       discount: '',
-  //       numberInput: [invoiceData.Discountperstage]
-  //     });
-  //     this.discountvalue = (this.itemtotalamount - ((+this.itemtotalamount * this.percent) / 100)) + this.totaltax;
-  //     this.itemtotalamount = (this.itemtotalamount + ((+this.itemtotalamount * this.percent) / 100)) + this.totaltax;
-  //    });
-  //   /////
-
-  //     // this.getpercentvaldata = this.InvoiceData$;
-  //     // const invoiceData = this.getpercentvaldata[0];
-  //     // this.percent = invoiceData.Discountperstage;
-  //     // this.itemTotalTax = invoiceData.Taxes || [];
-  //     // this.actualdiscountprice = (this.itemtotalamount * this.percent) / 100;
-  //     // this.myDiscountForm = this.fb.group({
-  //     //   discount: '',
-  //     //   numberInput: [invoiceData.Discountperstage]
-  //     // });
-  //     // this.discountvalue = (this.itemtotalamount - ((+this.itemtotalamount * this.percent) / 100)) + this.totaltax;
-  //     // this.itemtotalamount = (this.itemtotalamount + ((+this.itemtotalamount * this.percent) / 100)) + this.totaltax;
-   
-  // }
-
   getpaybyid(_id:string): void {
     //this.paybydata;
     this.paybyId=_id;
@@ -652,42 +480,132 @@ filterProductwithPriceRunningItem(ProductId:string,SubQuantityTypeName:string)
     }
   }
 
-  removerunningOrder(): void {
+  removerunningOrderKOT(): void {
     // TODO: Implement or remove unused logic
+  this.KOTItemsdata = [];
+  // Remove runningItemsKOT in HomeManageService by RecieptNumber
+  // Dispatch an action to remove the KOT running items for this invoice ID
+  this.store.dispatch(runningItemKOTActions.removeMultipleKOTRunningItems({
+    KOTStatus: 'false',
+    RecieptNumbers: this.invoiceid // Fixed property: should be RecieptNumbers, not RecieptNumber
+  }));
+  this.chairsrunningorderservice.delete(this.invoiceid).subscribe(deleted=>
+  {
+if(deleted) console.log(deleted);
+  })
   }
+  dineDataSubscription:Subscription | undefined;
+  updateTableStatusByTableId(table_id: string,tablename:string): void {
+    // Find the dine record for the given table_id to retrieve the floor_id
+    // If you have a collection of dine objects, you may need to search there.
+    // But assuming you need to get the floor_id for the current table_id from existing dine or available tables:
+     this.dineDataSubscription = this.DineData$.subscribe((dineData: any) => {
+      if (!dineData) return;
 
+      const table = dineData.find((tbl: any) => tbl._id === table_id);
+      const floor_id = table?.floor_id || '';
+
+      if (!floor_id) {
+        this.dineDataSubscription?.unsubscribe();
+        return;
+      }
+
+      this.dine = {
+        _id: table_id,
+        name: tablename,
+        description: '',
+        status: true,
+        floor_id: floor_id,
+        employee_id: this.employeeId,
+      };
+
+      console.log('Updated dine object:', this.dine);
+
+      this.store.dispatch(DineTableActions.updateDineTable({ IDine_: this.dine }));
+      this.dineDataSubscription?.unsubscribe();
+    });
+  
+   
+  }
   genrateOrder(): void {
-    (async () => {
-      if (this.paybyId === 'none') {
-        return;
-      }
-      if (typeof this.paidamount !== 'number' || this.paidamount < 0) {
-        //alert('Paid amount should be greater than or equal to 0.');
-        this.ClearSomeVariable();
-        return;
-      }
+    
       const r = this.getRunningItemsValues();
       this.RunningItems_2 = Array.isArray(r) ? [...r] : [];
       this.getinvoiceid2 = '';
-      this.getinvoiceid = '';
       this.gitems = [];
       this.gitems2 = [];
-      let invoice;
+     // let invoice;
       if (this.discountvalue === this.paidamount) {
-        invoice = await this.genrateInvoice('Settled', true);
+        this.genrateInvoice('Sattled', true).then(invoice => {
+          this.updateInvoiceFunction(invoice);
+
+          // Ensure removerunningOrderKOT exists and is callable
+        
+          console.log(invoice);
+          console.log(invoice.table_id);
+          console.log(invoice.tablename);
+          // Safely call updateTableStatusByTableId if invoice has needed properties
+          if (
+            invoice &&
+            typeof this.updateTableStatusByTableId === 'function' &&
+            invoice.table_id &&
+            invoice.tablename
+          ) {
+           
+            this.updateTableStatusByTableId(invoice.table_id, invoice.tablename);
+          }
+          if (typeof this.removerunningOrderKOT === 'function') {
+            this.removerunningOrderKOT();
+          }
+
+          // Ensure ClearSomeVariable exists and is callable
+          if (typeof this.ClearSomeVariable === 'function') {
+            this.ClearSomeVariable();
+          }
+          // Ensure close2 exists and is callable
+          if (typeof this.close2 === 'function') {
+            this.close2();
+          }
+        // After settling the order, redirect to 'tables' page for next table selection
+        if (this.router && typeof this.router.navigate === 'function') {
+          this.router.navigate(['/tables']);
+        }
+        if (typeof this.receiveNotification === 'function') {
+          this.receiveNotification('tables');
+        }
+        }).catch(err => {
+          console.error('Error generating invoice:', err);
+        });
       } else {
-        invoice = await this.genrateInvoice('Settled', false);
+        this.genrateInvoice('Sattled', false).then(invoice => {
+          this.updateInvoiceFunction(invoice);
+
+          // Ensure getCustomerName exists and is callable
+          if (typeof this.getCustomerName === 'function' && this.CustomerId) {
+            this.getCustomerName(this.CustomerId);
+          }
+
+          // Ensure close2 exists and is callable
+          if (typeof this.close2 === 'function') {
+            this.close2();
+          }
+        }).catch(err => {
+          console.error('Error generating invoice:', err);
+        });
       }
-      await this.updateInvoice(invoice);
 
-      await this.close2();
-      await this.removerunningOrder();
-      await this.ClearSomeVariable();
-    })();
+    // })();
   }
+deleteRunningKOT(): void {
+  // You must dispatch with required payload if needed
+  // Assuming an argument is required: provide the necessary payload (using null or proper object as per your action definition)
+  this.store.dispatch(runningItemKOTActions.removeKOTRunningItem({
+    RecieptNumber: this.invoiceid
+  }));
+}
 
-  ClearSomeVariable(): void {
-    this.ordermode = '';
+ClearSomeVariable(): void {
+  this.ordermode = '';
     //this.RunningItems_ = [];
     this.productsByCategoryId = [];
     this.value_invoiceid_Changed.emit('');
@@ -699,20 +617,19 @@ filterProductwithPriceRunningItem(ProductId:string,SubQuantityTypeName:string)
    // this.valueChanged.emit('');
   }
 
-  updateInvoice(invoice: any): void {
-    this.InvoiceService_.update(invoice).subscribe(invoiceupdate => {
-      if (!invoiceupdate) return;
-      this.getinvoiceid2 = invoiceupdate;
-      this.getinvoiceid = this.getinvoiceid2.createdTask;
-    });
+  updateInvoiceFunction(invoice: any): void {
+    if (invoice) {
+      console.log(invoice);
+      this.store.dispatch(InvoiceActions.updateInvoice({ invoice:invoice }));
+    } else {
+      console.error('No invoice provided for update.');
+    }
+  
+    
   }
 
   async genrateInvoice(Orderstatus:string,paidstatus:boolean): Promise<Invoice> {
-    //let paidstatus: boolean = false;
-    // if(!this.discountvalue){ if((this.itemtotalamount-this.paidamount)<=0) paidstatus = true;else paidstatus = false;}
-    //  else {
-    //   if((this.discountvalue-this.paidamount)<=0)paidstatus =true;else paidstatus = false;
-    //  }
+  
     return {
       Taxes: this.getTax(),
       Chairs: this.ichar,
@@ -865,6 +782,13 @@ console.log(this.AllProductWithPrice);
     this.calculateTotalAmount();
     this.showtype = false;
   }
+  
+  
+  // loadKOTfun()
+  // {
+  // this.ManageService_.loadRunningKOT();
+  // this.RunningItems$ = this.ManageService_.runningKOTItems$;
+  // }
 
   close(): void {
     this.showtype = false;
@@ -958,9 +882,10 @@ console.log(this.AllProductWithPrice);
   }
   increment(_id: any): void {
     this.showtype = false;
+    console.log(_id);
     this.ppalsoavailable = this.getallproducttypeprice(_id);
     const runningItemsArr = Array.isArray(this.getRunningItemsValues()) ? this.getRunningItemsValues() : [];
-
+console.log(runningItemsArr);
     // Ensure only one product type is available to increment
     if (
       Array.isArray(this.ppalsoavailable) &&
@@ -1057,7 +982,7 @@ console.log(this.AllProductWithPrice);
       }
     if(qvalue>=0)
       {
-        this.deleteRunningKOTItem(kotitem,kot,"Increment");
+        this.manageRunningKOTItem(kotitem,kot,"Increment");
       }
     this.calculateTotalAmount();
   }
@@ -1088,10 +1013,7 @@ console.log(FilteredRunningItemData);
 
   decrement2(_id: any, SubQuantityTypeName: any, qvalue: any, price: any): void {
     this.showtype = false;
-  //  console.log(this.AllProductWithPrice);
-  // const allppdata = this.loadAllProductPriceDatabyProductId();
   const FilteredRunningItemData=this.filterProductwithPriceRunningItem( _id, SubQuantityTypeName);
-   // this.RunningItems_ =  this.HomeManageService_.loadqunityvalue(_id, 'dcre', SubQuantityTypeName, qvalue, price,this.RunningItems_,this.invoiceid,FilteredRunningItemData);
     this.store.dispatch(
       updateRunningItemQuantity({
         id: _id,
@@ -1113,16 +1035,15 @@ console.log(FilteredRunningItemData);
     // For now, just call deleteRunningKOTItem
     if(qvalue===1)
     {
-      this.deleteRunningKOTItem(kotitem,kot,"Delete");
+      this.manageRunningKOTItem(kotitem,kot,"Delete");
     }
     else
     {
-      this.deleteRunningKOTItem(kotitem,kot,"Decrement");
+      this.manageRunningKOTItem(kotitem,kot,"Decrement");
     }
     this.calculateTotalAmount();
   }
-  // loadTax(): void {
-  //   this.initializeTax();
+ 
   // }
 
  
@@ -1417,6 +1338,10 @@ console.log(FilteredRunningItemData);
   {
     this.showSplitBillPopUp = close;
   }
+  closePopUpByChildPartPayment(close: any)
+  {
+    this.showPartPaymentPopUp = close;
+  }
   runningItemsArr:any;
  getRunningItemsValues(): RunningItems {
    // If already an array, return as is.
@@ -1490,7 +1415,6 @@ console.log(FilteredRunningItemData);
       if (!Array.isArray(addOnItems) || addOnItems.length === 0) return;
 
       // Clear previous AddOnItems in running items
-     // const runningItemsArr = this.getRunningItemsValues();
       if (Array.isArray(gotRunningItems)) {
         for (const runningItem of gotRunningItems) {
           runningItem.AddOnItems = [];
@@ -1531,59 +1455,47 @@ console.log(FilteredRunningItemData);
   
   showCommentsPopUp(): void {
     this.showCommentPopUp = true;
-   // this.showCommentConfime=true;
   }
-  // showCommentsPopUpKOT(): void {
-  //   this.showCommentPopUp = true;
-  //   this.showCommentConfime=true;
-  // }
-  deleteKOTItem:any;
-  SearchDeletingKOTItems:any;
-  deleteRunningKOTItem(kotitem: any,kot:GenratedItemKOT,CommentType:string): void {
+
+  manageKOTItem:any;
+  SearchManagingKOTItems:any;
+  manageRunningKOTItem(kotitem: any,kot:GenratedItemKOT,CommentType:string): void {
    // //alert(CommentType)
     const inv = this.invoiceid;
     this.RecieptNumber=inv;
     this.CommentType=CommentType;
     this.showCommentPopUp = true;
     this.showCommentConfime=true;
-    this.deleteKOTItem=kotitem;
-    this.SearchDeletingKOTItems=kot;
-    // console.log(kotitem);
-    // console.log(kot);
-  //   // Filter out the running order with the matching SelectProductId showCommentsPopUp
-  //   //kot.KOTrunningorders
-  //   const KOTrunningorders = kot.KOTrunningorders.filter(
-  //     (item: any) => item.SelectProductId !== kotitem.SelectProductId || item.selectSubQuantityTypeID !== kotitem.selectSubQuantityTypeID
-  //   );
-  //   if(KOTrunningorders.length>0)
-  //   {
-  //     // const KOTrunningorders = kot.KOTrunningorders.find(
-  //     //   (item: any) => item.SelectProductId !== kotitem.SelectProductId
-  //     // );
-  //     console.log(KOTrunningorders);
-  //   }
-  //   else if(KOTrunningorders.length==0)
-  // {
-  //   console.log(kot.RecieptNumber);
-  // }
-  ////
-    // if (!item || !item.RecieptNumber) {
-    //   console.error('Invalid item or missing RecieptNumber.');
-    //   return;
-    // }
-    // // Dispatch the action to remove item from KOT running orders
-    // this.store.dispatch(runningItemActions.removeRunningItem({ RecieptNumber: item.RecieptNumber }));
-    // // Optionally update local RunningItems_ array if you maintain a local cache
-    // this.KOTItemsdata = this.KOTItemsdata.filter((i: any) => i.RecieptNumber !== item.RecieptNumber);
+    this.manageKOTItem=kotitem;
+    this.SearchManagingKOTItems=kot;
   }
   showAddonsPopUp(SelectProductId: string, selectSubQuantityTypeID: string) {
     this.showAddonPopUp = true;
     this.getAddOnItembySubQuantity_Product_ID(SelectProductId, selectSubQuantityTypeID);
   }
+  SelectProductId_="";selectSubQuantityTypeID_="";
+  shownotesPopUp(SelectProductId: string, selectSubQuantityTypeID: string): void {
+    const inv = this.invoiceid;
+    this.RecieptNumber=inv;
+    this.showCommentPopUp = true;
+    this.showCommentConfime=true;
+   // this.manageRunningKOTItem('addNotes');
+   this.CommentType="addNotes";
+   
+    // // Here you can fetch or prepare notes-related data based on the product and sub quantity type IDs if required.
+    // // For now, we simply show the popup.
+    this.SelectProductId_ = SelectProductId;
+    this.selectSubQuantityTypeID_ = selectSubQuantityTypeID;
+   // // Optionally: you might want to load notes by product ID and subquantity type ID here.
+  }
   splitBill() {
     // Split Bill logic - Check if there are running items available to split
     
     this.showSplitBillPopUp=true;
+    }
+    partPayment()
+    {
+      this.showPartPaymentPopUp=true;
     }
   getAddOnProducts() {
     this.InvoiceService_.getbyid(this.invoiceid).subscribe(data => {
@@ -1621,7 +1533,7 @@ console.log(FilteredRunningItemData);
     this.CustomerId = CustomerDetail._id;
     // Generate the invoice, then update it. After update is completed, get customer name.
     this.genrateInvoice('New Order',false).then(invoice => {
-      this.updateInvoice(invoice);
+      this.updateInvoiceFunction(invoice);
       
       this.getCustomerName(this.CustomerId);
     });
@@ -1655,52 +1567,130 @@ console.log(FilteredRunningItemData);
 
   CancelOrder(): void {
     this.cancelOrder.emit(this.invoiceid);
-     // this.ClearSomeVariable2();
   
   }
-
+  addSuccessSub: Subscription | undefined;
+  successItems: any;
+ItemID:string='undefined';
   async KOT(): Promise<void> {
-  // Ensure required fields for GenratedItemKOT:
-  this.paidamount = 0;
-  this.runningItemKOT = {
-    EmployeeId:this.employeeId,
-    TableId:this.table_id,
+    // Ensure required fields for GenratedItemKOT:
+    this.paidamount = 0;
+  // Refactored KOT method for improved clarity and maintainability
+ 
+  this.GenratedItems_ = {
     RecieptNumber: this.invoiceid,
-    createdAt: new Date().toISOString(),
-    KOTrunningorders: this.getRunningItemsValues(),
-    KOTStatus:'false'
-    // Add/assign other required fields for GenratedItemKOT here if needed
-  } as unknown as GenratedItemKOT;
+    EmployeeId: this.employeeId,
+    TableId: this.table_id,
+    Items: this.getRunningItemsValues(),
+    createdAt:new Date()
+  } as unknown as GenratedItems;
+
+  try {
+    // Add generated items
+    this.store.dispatch(GentratedItemsActions.addGenratedItems({ items: this.GenratedItems_ }));
+
+    // Unsubscribe logic when items state contains the current RecieptNumber
+    this.addSuccessSub = this.store.select('GenratedItemsReducer_').subscribe(state => {
+      if (state) {
+        console.log(state);
+        // Preferably, find the correct item matching the RecieptNumber and safely extract the ItemID
+        // Deep refactor: properly locate the item matching the current RecieptNumber, validate structure, and extract its _id
+        let itemId: string | undefined;
+
+        function deepFindId(obj: any): string | undefined {
+          if (!obj || typeof obj !== 'object') return undefined;
+          if (typeof obj._id === 'string') return obj._id;
+          for (const key of Object.keys(obj)) {
+            const val = obj[key];
+            if (Array.isArray(val)) {
+              for (const el of val) {
+                const found = deepFindId(el);
+                if (found) return found;
+              }
+            } else if (typeof val === 'object' && val !== null) {
+              const found = deepFindId(val);
+              if (found) return found;
+            }
+          }
+          return undefined;
+        }
+
+        if (Array.isArray(state?.items)) {
+          for (const item of state.items) {
+            const foundId = deepFindId(item);
+            if (foundId) {
+              itemId = foundId;
+             
+              break;
+            }
+          }
+        } else {
+          itemId = undefined;
+        }
+        console.log(itemId);
+        if (!itemId) {
+          console.warn('Cannot extract ItemID from GenratedItems state', state);
+          this.addSuccessSub?.unsubscribe();
+          return;
+        }
+
+        this.ItemID = itemId;
+
+        this.runningItemKOT = {
+          EmployeeId: this.employeeId,
+          TableId: this.table_id,
+          ItemsID: this.ItemID,
+          RecieptNumber: this.invoiceid,
+          createdAt: new Date().toISOString(),
+          KOTrunningorders: this.getRunningItemsValues(),
+          KOTStatus: false, // Use boolean, not string
+          Comment: this.CommentKOT || ''
+        } as unknown as GenratedItemKOT;
+
+        this.store.dispatch(
+          runningItemKOTActions.addKOTRunningItem({ KOTrunningorder: this.runningItemKOT })
+        );
+        this.addSuccessSub?.unsubscribe();
+        this.store.dispatch(
+          runningItemKOTActions.loadKOTRunningItems()
+        );
+        this.addSuccessSub?.unsubscribe();
+        //this.addSuccessSub?.unsubscribe();
+      }
+    });
    
-   try {
-     this.store.dispatch(runningItemKOTActions.addKOTRunningItem({ KOTrunningorder: this.runningItemKOT }));
-     // Run tasks one by one, ensuring each step completes before proceeding
-     const invoicePromise = this.genrateInvoice('Cooking',false);
-     if (invoicePromise instanceof Promise) {
-       invoicePromise.then(invoice => {
-         this.updateInvoice(invoice);
-         localStorage.removeItem(this.invoiceid);
-         this.productsByCategoryId = [];
-         this.runningItemKOT = {} as GenratedItemKOT;
-         this.ManageService_.loadRunningKOT();
-         this.RedirectToTable.emit("tables");
-       });
-     } else {
-       this.updateInvoice(invoicePromise as any);
-       localStorage.removeItem(this.invoiceid);
-       this.productsByCategoryId = [];
-       this.runningItemKOT = {} as GenratedItemKOT;
-       this.ManageService_.loadRunningKOT();
-       this.RedirectToTable.emit("tables");
-     }
-  // this.router.navigate(['/tables']);
-   } catch (error) {
-     console.error('Failed to dispatch running item:', error);
-     // Optionally, you can show a user-facing error as well, e.g.:
-     // //alert('An error occurred while processing the order.');
-   }
+    // Add KOT Running Item
+    // Fix: Provide correct action payload key and type safety
+    // The correct property name is likely 'KOTrunningorder' (singular), not 'KOTrunningorders'
   
+
+    // Generate the invoice (may return a Promise or synchronous value)
+    const invoicePromise = this.genrateInvoice('Cooking', false);
+
+    const finalizeKOT = (invoice: any) => {
+      this.updateInvoiceFunction(invoice);
+      localStorage.removeItem(this.invoiceid);
+      this.productsByCategoryId = [];
+      this.runningItemKOT = {} as GenratedItemKOT;
+       
   
+    
+      // this.ManageService_.initKOT();
+      // this.ManageService_.loadRunningKOT();
+      this.RedirectToTable.emit("tables");
+    };
+
+    if (invoicePromise instanceof Promise) {
+      invoicePromise.then(finalizeKOT);
+    } else {
+      finalizeKOT(invoicePromise as any);
+    }
+
+  } catch (error) {
+    console.error('Failed to dispatch running item:', error);
+    // Optionally show a user-facing error here
+  }
+ // this.addSuccessSub?.unsubscribe();
   }
 kotprint()
 {
@@ -1767,11 +1757,11 @@ kotprint()
       // Handle if genrateInvoice is async (returns a promise)
       if (invoiceOrPromise instanceof Promise) {
         invoiceOrPromise.then(invoice => {
-          this.updateInvoice(invoice);
+          this.updateInvoiceFunction(invoice);
           // Insert any follow-up task here if needed in future
         });
       } else {
-        this.updateInvoice(invoiceOrPromise);
+        this.updateInvoiceFunction(invoiceOrPromise);
         // Insert any follow-up task here if needed in future
       }
     }, 0);

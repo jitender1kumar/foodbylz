@@ -20,6 +20,15 @@ export class KOTrunningordersService {
     return this.http.delete<void>(`${this.KOTrunningeurl}/${RecieptNumber}`);
   }
 
+deleteMultiple(RecieptNumber: string, KOTStatus?: string): Observable<void> {
+  // Assume backend API supports bulk delete as query params, e.g. /KOTrunning/delete-multiple?RecieptNumbers=1,2,3&KOTStatus=false
+  // let url = `${this.KOTrunningeurl}/delete-multiple?RecieptNumbers=${RecieptNumbers}`;
+  // if (KOTStatus == 'false') {
+  //   url += `&KOTStatus=${KOTStatus}`;
+  // }
+  return this.http.delete<void>(`${this.KOTrunningeurl}/${KOTStatus}/${RecieptNumber}`);
+ // return this.http.delete<void>(url);
+}
 
 getCategoryByName(name:string)
 {

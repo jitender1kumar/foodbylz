@@ -145,24 +145,29 @@ Status:boolean,
       }
       export interface GenratedItems
       {
+         _id:string,
         RecieptNumber:string,
-       Items:IItems[]
+        EmployeeId:string,
+        TableId:string,
+       Items:IItems[],
+       createdAt:Date
       }
       export interface KOTsUD
       {
-        KOTsUD: {
-          type: Object
-        },
+        ItemsID:string,
         RecieptNumber: string,
         deletedAt:Date,
         CommentId: string,
       }
       export interface GenratedItemKOT
       {
+        _id:string,
         quntityvalue: any;
         qvalue: any;
+        Comment:string;
         EmployeeId:string,
         TableId:string,
+        ItemsID:string,
         RecieptNumber:string,
         KOTStatus:string,
         createdAt:Date,

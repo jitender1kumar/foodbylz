@@ -54,7 +54,18 @@ const KOTreducer = createReducer(
     KOTrunningorder: [],
     error: null,
   })),
+
+  on(RunningItemKOTActions.removeMultipleKOTRunningItems, (state, { RecieptNumbers, KOTStatus }) => ({
+    ...state,
+    KOTrunningorder: state.KOTrunningorder.filter(item => 
+      !RecieptNumbers.split(',').includes(item.RecieptNumber) ||
+      (item.KOTStatus == 'false')
+    ),
+    error: null,
+  })),
 );
+
+
 
 // For AoT compatibility (Angular)
 export function runningItemKOTReducer(state: KOTRunningItemsState | undefined, action: Action) {

@@ -48,20 +48,24 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-   
+    //localStorage.clear();
+
     // Clear localStorage on app initialization
    
       // Remove all items from localStorage
       
     }
 
-  updateinvoiceidValue(newValue: any): void {
-    this.invoiceid = newValue;
+  updateinvoiceidValue(newValue: any): Promise<void> {
+    return new Promise((resolve) => {
+      this.invoiceid = '';
+      resolve();
+    });
   }
 
   gohomeinvoiceid($event: string): void {
    this.handleTokenSplit($event);
-  this.initializeManageforHome();
+  //this.initializeManageforHome();
     this.router.navigate(['/Home']);
     this.MenuName = 'home';
   }
@@ -100,7 +104,8 @@ export class AppComponent implements OnInit {
       // Step 4: Load invoice data by id
       if(this.invoiceid)
       await this.manageService.getInvoiceDataById(this.invoiceid);
-
+      await this.DineService_.loaddine();
+      this.dine$ = this.DineService_.dinedataSubject$;
       // Step 5: Assign synchronous values from service to component properties
       this.payBy = this.manageService.payByData$?.value;
       this.addOnProduct$ = this.manageService.addOnProductsData$;
@@ -113,7 +118,8 @@ export class AppComponent implements OnInit {
       this.subQuantityTtype$ = this.manageService.subQuantityTypeData$;
 
       this.tax = this.manageService.taxnamedata;
-
+      this.manageService.loadRunningKOT();
+      this.runningItems$ = this.manageService.runningKOTItems$;
       // Step 6: Logging as needed
       console.log(this.payBy);
       console.log(this.tax);
@@ -146,7 +152,7 @@ export class AppComponent implements OnInit {
     if(this.MenuName==='tables')
     {
       // Step 1: Load running KOT data
-      
+     // this.manageService.initObservables();
       console.log("Running KOT loaded successfully.");
       this.initializeManageforHome();
       // Step 2: Load token information
@@ -159,7 +165,7 @@ export class AppComponent implements OnInit {
           // Step 3: Get and set TokenNumber after loading token
           this.TokenNumber = this.manageService.TokenNumber$.getValue();
           console.log("TokenNumber set to:", this.TokenNumber);
-          await this.manageService.loadRunningKOT();
+        //  await this.manageService.loadRunningKOT();
           // Step 4: Load floor data
           await this.FloorService_.loadfloor();
           this.floor$ = this.FloorService_.FloordataSubject$;
@@ -176,11 +182,11 @@ export class AppComponent implements OnInit {
 
       // Step 6: Set floor$ and dine$ Observables
      
-     
-      console.log("floor$ and dine$ Observables set.");
+    
+      
 
       // Step 7: Set runningItems$ Observable
-      this.runningItems$ = this.manageService.runningItems$;
+     // this.runningItems$ = this.manageService.runningKOTItems$;
       console.log("runningItems$ Observable set.");
      
     }
@@ -200,6 +206,14 @@ export class AppComponent implements OnInit {
   }
   showTablePage(event: string)
   {
+   // this.receiveNotification(event);
+   //this.manageService.initKOt();
+     this.manageService.loadRunningKOT();
+    this.runningItems$ = this.manageService.runningKOTItems$;
+    // this.store.dispatch(
+    //   runningItemKOTActions.loadrunnigKOTITems()
+    // );
+   
     this.router.navigate(['/tables']);
     this.MenuName = 'tables';
   }

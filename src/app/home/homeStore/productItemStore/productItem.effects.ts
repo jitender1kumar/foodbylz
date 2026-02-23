@@ -50,7 +50,12 @@ export class ProductItemEffects {
     this.actions$.pipe(
       ofType(ProductItemActions.updateProductItem),
       mergeMap(action =>
-        this.itemsService.update(action.items).pipe(
+        this.itemsService.update(
+          action.RecieptNumber,
+          action.Productid,
+          action.SubQuantityTypeID,
+          action.items
+        ).pipe(
           map((item: any) =>
             ProductItemActions.updateProductItemSuccess({ item })
           ),

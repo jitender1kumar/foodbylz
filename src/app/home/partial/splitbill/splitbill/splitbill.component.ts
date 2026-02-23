@@ -1,5 +1,20 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import * as SplitBillActions from '../splitbillStore/splitbill.action';
+import { Store } from '@ngrx/store';
 
+export interface ItemWiseSplit
+{
+ 
+  SelectProductId:string;
+  selectSubQuantityTypeID:string;
+  isItemSelected:boolean;
+  KOTIndex:number;
+}
+export interface ItemWisePerson
+{
+  personId:number;
+  ItemWiseSplits:ItemWiseSplit;
+}
 @Component({
   selector: 'app-splitbill',
   standalone: false,
@@ -12,7 +27,61 @@ export class SplitbillComponent {
 @Input() closePopUp!: any;
 @Input() showPopUp!: any;
 @Output() closePopUpByChildSplitBill = new EventEmitter<boolean>();
+makeMeUniqueItem=0;
+splitBill$: any;
+  selectedPersonIndex: number = 0;
+  KotDataManage: any;
+ 
+constructor(private store: Store<{ splitBillReducer_: any }>)
+{
+  this.splitBill$ = store.select(state => state.splitBillReducer_.splitBills.data);
+}
+ngOnInit() {  
+  
+  this.initializeItemWise();
+}
+
+initializeItemWise()
+{
+  if (!this.KotData) return;
+  this.KotDataManage=this.KotData;
+}
+// INSERT_YOUR_CODE
+getKotItemsLength(): number {
+  if (!this.KotData || !Array.isArray(this.KotData)) {
+    return 0;
+  }
+  let count = 0;
+  for (let kot of this.KotData) {
+    if (kot?.KOTrunningorders && Array.isArray(kot.KOTrunningorders)) {
+      count += kot.KOTrunningorders.length;
+    }
+  }
+  return count;
+}
+// INSERT_YOUR_CODE
+/**
+ * Returns the total number of KOT items, each multiplied by its qvalue (quantity value).
+ * If qvalue is missing or falsy, counts as 1 for that item.
+ */
+getKotItemsLengthWithQValue(): number {
+  if (!this.KotData || !Array.isArray(this.KotData)) {
+    return 0;
+  }
+  let count = 0;
+  for (let kot of this.KotData) {
+    if (kot?.KOTrunningorders && Array.isArray(kot.KOTrunningorders)) {
+      for (let item of kot.KOTrunningorders) {
+        count += Number(item.qvalue) || 1;
+      }
+    }
+  }
+  return count;
+}
+
 close() {
+  this.ItemWisePersonList=[];
+  this.selectedItemList=[];
   this.closePopUpByChildSplitBill.emit(false);
 }
 selectedSplit: string | null = null;
@@ -50,11 +119,15 @@ percentSplitResults: any[] = [];
 
 addPercentPerson(): void {
   // Limit to 10 persons max
-  if (this.percentSplits.length >= 10) return;
+ 
+  if (this.percentSplits.length >= this.getKotItemsLengthWithQValue()) return;
   this.percentSplits.push(100 - this.percentSplits.reduce((acc, curr) => acc + curr, 0));
 }
+// INSERT_YOUR_CODE
+
 removePercentPerson()
 {
+
  if(this.percentSplits.length===2)return;
   this.percentSplits.splice(-1, 1);
 }
@@ -79,210 +152,316 @@ splitPercent() {
 }
 
 // Items Wise Split variables and methods
+// Item-wise split variables
 itemSelections: any[] = [];
-assignedItems: any[] = [];
+assignedItemsList: { items: any[] }[] = [{ items: [] }];
 
-// assignItemsToPerson() {
-//   if (!this.KotData || !this.KotData.length || !this.KotData[0]?.KOTrunningorders) {
-//     this.assignedItems = [];
-//     return;
-//   }
-//   const kotItems = this.KotData[0].KOTrunningorders;
-//   // Fill selections array for current KOT length if needed
-//   if (this.itemSelections.length < kotItems.length) {
-//     this.itemSelections.length = kotItems.length;
-//     this.itemSelections.fill(false, this.itemSelections.length, kotItems.length);
-//   }
-//   this.assignedItems = kotItems
-//     .map((item: any, idx: number) => (this.itemSelections[idx] ? item : null))
-//     .filter((item: any) => !!item);
-// }
-/**
- * Items Wise Split - Support assigning parts for split bill by items
- * The HTML expects:
- *  - this.itemSelections: boolean[] for current selection state by index in KOTrunningorders
- *  - this.assignedItems: array for currently assigned items (for preview)
- *  - if KotData/KotData[0]?.KOTrunningorders length changes, auto-adjust selection array
- */
-
-// Ensures itemSelections matches the number of items in the order
-
-
-// Assigns currently selected items to assignedItems[]
-/**
- * Ensures itemSelections matches the number of items available in KOTrunningorders across all KOTs.
- * Should be called whenever KotData or the running orders change.
- */
-autoAdjustItemSelections() {
-  // Flatten all KOTrunningorders in all KOTs
-  let totalLength = 0;
-  if (this.KotData && Array.isArray(this.KotData)) {
-    for (let kot of this.KotData) {
-      if (kot?.KOTrunningorders && Array.isArray(kot.KOTrunningorders)) {
-        totalLength += kot.KOTrunningorders.length;
-      }
-    }
-  }
-  console.log(this.itemSelections.length, totalLength);
-  if (this.itemSelections.length !== totalLength) {
-    // Fill false for unchecked
-    this.itemSelections = Array(totalLength).fill(false);
-  }
-}
-
-/**
- * Assigns the currently selected items from KOTrunningorders (from all KOTs) to assignedItems
- * Run when "Add Items" button clicked
- */
-/**
- * Assigns currently selected items (across all KOTs) to the selected "person" in assignedItemsList.
- * Each person can have their own panel containing assigned items. This function takes currently checked
- * items and assigns them to the given person's array, clearing selections after.
- * 
- * @param personIdx (number) - the "person" index to assign the checked items (from UI).
- */
-assignedItemsList:any;
-assignItemsToPerson(personIdx: number): void {
+// Helper: Check if item is already assigned to a different person
+isItemAssignedToOtherPerson(KOTIndex: number, itemIdx: number, excludePersonIdx?: number): boolean {
+  // Handles check for whether the item at [KOTIndex][itemIdx] is already assigned to another person
   if (
-    !Array.isArray(this.KotData) ||
-    !Array.isArray(this.itemSelections) ||
-    typeof personIdx !== 'number'
+    !this.KotDataManage ||
+    !Array.isArray(this.KotDataManage) ||
+    !this.KotDataManage[KOTIndex] ||
+    !Array.isArray(this.KotDataManage[KOTIndex]?.KOTrunningorders) ||
+    !this.KotDataManage[KOTIndex].KOTrunningorders[itemIdx]
   ) {
-    return;
+    return false;
   }
+  const targetItem = this.KotDataManage[KOTIndex].KOTrunningorders[itemIdx];
 
-  // Flatten all KOTrunningorders into linear array, mapping { item, kotIndex, itemIndex }
-  const allItemsWithRefs: { item: any, kotIndex: number, itemIndex: number }[] = [];
-  let runningIdx = 0;
+  for (let i = 0; i < this.ItemWisePersonList.length; i++) {
+    // Optional: allow current/selected person index to be excluded from the check (for edit scenarios)
+    if (excludePersonIdx !== undefined && i === excludePersonIdx) continue;
 
-  for (let kotIndex = 0; kotIndex < this.KotData.length; kotIndex++) {
-    const kot = this.KotData[kotIndex];
-    if (kot?.KOTrunningorders && Array.isArray(kot.KOTrunningorders)) {
-      for (let itemIndex = 0; itemIndex < kot.KOTrunningorders.length; itemIndex++) {
-        allItemsWithRefs.push({
-          item: kot.KOTrunningorders[itemIndex],
-          kotIndex,
-          itemIndex
-        });
-        runningIdx++;
+    const person = this.ItemWisePersonList[i];
+    const splits = Array.isArray(person?.ItemWiseSplits) ? person.ItemWiseSplits : [];
+    const items = Array.isArray(person?.items) ? person.items : [];
+
+    // Check ItemWiseSplits for this person
+    for (let split of splits) {
+      if (
+        split.SelectProductId === targetItem.SelectProductId &&
+        split.selectSubQuantityTypeID === targetItem.selectSubQuantityTypeID &&
+        split.KOTIndex === KOTIndex
+      ) {
+        return true;
+      }
+    }
+    // Legacy fallback: check person's "items" array (pre-upgrade code, if present)
+    for (let itm of items) {
+      if (
+        itm.SelectProductId === targetItem.SelectProductId &&
+        itm.selectSubQuantityTypeID === targetItem.selectSubQuantityTypeID &&
+        itm.KOTIndex === KOTIndex
+      ) {
+        return true;
+      }
+      // If legacy object doesn't have KOTIndex, fallback to deep equality as last resort
+      if (
+        !('KOTIndex' in itm) &&
+        itm === targetItem
+      ) {
+        return true;
       }
     }
   }
+  return false;
+}
+isItemAssignedToOther(KOTIndex: number, SelectProductId: any, selectSubQuantityTypeID: any, excludePersonIdx?: number): boolean {
+  // Check if the item has been assigned to any person (optionally excluding one person by index)
+  if (!this.KotDataManage || !Array.isArray(this.KotDataManage)) {
+    return false;
+  }
 
-  // Collect all items where their flattened index in itemSelections is true
-  const itemsToAssign = [];
-  for (let i = 0; i < allItemsWithRefs.length; i++) {
-    if (this.itemSelections[i]) {
-      itemsToAssign.push(allItemsWithRefs[i].item);
+  for (let i = 0; i < this.ItemWisePersonList.length; i++) {
+    if (excludePersonIdx !== undefined && i === excludePersonIdx) continue;
+    const person = this.ItemWisePersonList[i];
+    const splits = Array.isArray(person?.ItemWiseSplits) ? person.ItemWiseSplits : [];
+    const items = Array.isArray(person?.items) ? person.items : [];
+
+    // Check in main ItemWiseSplits array
+    for (let split of splits) {
+      if (
+        split.KOTIndex === KOTIndex &&
+        split.SelectProductId === SelectProductId &&
+        split.selectSubQuantityTypeID === selectSubQuantityTypeID
+      ) {
+        return true;
+      }
+    }
+    // Check in legacy items array (for compatibility)
+    for (let itm of items) {
+      if (
+        itm.KOTIndex === KOTIndex &&
+        itm.SelectProductId === SelectProductId &&
+        itm.selectSubQuantityTypeID === selectSubQuantityTypeID
+      ) {
+        return true;
+      }
+      // If legacy object doesn't have KOTIndex, fallback to deep matching
+      if (
+        !('KOTIndex' in itm) &&
+        itm.SelectProductId === SelectProductId &&
+        itm.selectSubQuantityTypeID === selectSubQuantityTypeID
+      ) {
+        return true;
+      }
     }
   }
+  return false;
+}
 
-  // Lazy-safe initialization of assignedItemsList
-  if (!Array.isArray(this.assignedItemsList) || !this.assignedItemsList[personIdx]) {
-    // Expand assignedItemsList up to personIdx if needed
-    if (!Array.isArray(this.assignedItemsList)) this.assignedItemsList = [];
-    while (this.assignedItemsList.length <= personIdx) {
-      this.assignedItemsList.push({ items: [] });
+ItemWisePersonList:any=[];
+// Assign selected items to the selected person
+assignSelectedItemsToPerson(personIdx: number): void {
+  // Check if this person already has ItemWiseSplits assigned (cannot assign to more than one person)
+  const existingPersonIndex = this.ItemWisePersonList.findIndex(
+    (person: any) => person.personId === personIdx
+  );
+  if (this.selectedItemList && this.selectedItemList.length > 0) {
+    if (existingPersonIndex !== -1) {
+      // If target person exists, update their ItemWiseSplits
+      // Concatenate with existing data instead of replacing it
+      const currentSplits = Array.isArray(this.ItemWisePersonList[existingPersonIndex].ItemWiseSplits) 
+        ? this.ItemWisePersonList[existingPersonIndex].ItemWiseSplits 
+        : [];
+      this.ItemWisePersonList[existingPersonIndex].ItemWiseSplits = [
+        ...currentSplits,
+        ...this.selectedItemList
+      ];
+    } else {
+      // Before adding new entry for personIdx, ensure this selectedItemList is not already assigned to any other person
+      let alreadyAssigned = false;
+      for (let i = 0; i < this.ItemWisePersonList.length; i++) {
+        const splits = this.ItemWisePersonList[i].ItemWiseSplits || [];
+        if (
+          splits.length > 0 
+         
+        ) {
+          splits.filter((split: any) =>
+           
+              (sel: any) =>
+                sel.SelectProductId != split.SelectProductId &&
+                sel.selectSubQuantityTypeID != split.selectSubQuantityTypeID &&
+                sel.KOTIndex != split.KOTIndex
+            
+          )
+          console.log(splits);
+          // alreadyAssigned = false;
+          // break;
+        }
+        // else
+        // {
+        //   this.ItemWisePersonList.push({
+        //     personId: personIdx,
+        //     ItemWiseSplits: [...this.selectedItemList],
+        //   });
+        // }
+      }
+      // if (!alreadyAssigned) {
+      //   // Only add if none of these items are already assigned in another person's ItemWiseSplits
+       
+      // }
+      // else do nothing if item(s) are already assigned
     }
   }
-
-  // Assign selected items to corresponding person
-  this.assignedItemsList[personIdx].items = [
-    ...this.assignedItemsList[personIdx].items,
-    ...itemsToAssign
-  ];
-
-  // Optional: Remove assigned items from other persons? (not required by HTML currently)
-
-  // After assignment, clear all checkboxes (itemSelections)
-  this.itemSelections = this.itemSelections.map(() => false);
+  //  else if (this.selectedItemList && this.selectedItemList.length === 0) {
+  //   // Remove if no selection
+  //   if (existingPersonIndex !== -1) {
+  //     this.ItemWisePersonList.splice(existingPersonIndex, 1);
+  //   }
+  // }
+  this.selectedItemList=[];
+  console.log(this.ItemWisePersonList);
 }
-/**
- * Adds a new assignment "person" to the assignedItemsList for item-wise split.
- * Ensures assignedItemsList is a valid mutable array. 
- * Prevents accidental mutation errors, and optionally you may wish to enforce max people.
- */
-addAssignmentPerson(): void {
-  // Defensive clone in case reference issues arise (future proofing, not strictly needed now)
-    if (!Array.isArray(this.assignedItemsList)) {
-    this.assignedItemsList = [];
+
+// Add a new person for item assignment
+addAssignmentPerson() {
+  // Ensure each new person gets a unique personId in ItemWisePersonList.
+ 
+  const newPersonId = this.ItemWisePersonList.length+1;
+  if (newPersonId >= this.getKotItemsLength()+1) return;
+  this.ItemWisePersonList.push({
+    personId: newPersonId,
+    ItemWiseSplits: []
+  });
+}
+// INSERT_YOUR_CODE
+getTotalAssignedItemsLength(): number {
+  if (!this.ItemWisePersonList || !Array.isArray(this.ItemWisePersonList)) {
+    return 0;
   }
-  // Optionally, avoid accidental push of redundant empty persons (future-guard)
-  // Enforce immutability for frameworks that expect it; else, use push.
-  this.assignedItemsList = [
-    ...this.assignedItemsList,
-    { items: [] }
-  ];
+  let total = 0;
+  for (const person of this.ItemWisePersonList) {
+    if (person.ItemWiseSplits && Array.isArray(person.ItemWiseSplits)) {
+      total += person.ItemWiseSplits.length;
+    }
+  }
+  return total;
+}
+showSplitButton(): boolean {
+  
+  return this.ItemWisePersonList.length > 0 
+    && this.getTotalAssignedItemsLength() === this.getKotItemsLengthWithQValue();
+}
+// INSERT_YOUR_CODE
+allItems: any[] = [];
+isItemChecked: boolean = false;
+selectedItem: ItemWiseSplit={
+  SelectProductId: '',
+  selectSubQuantityTypeID: '',
+  isItemSelected: false,
+  KOTIndex: -1
+}
+selectedItemList:any=[]
+initializeSelectd(order: any, kotindex: number, event: any): void {
+  // console.log(order);
+  // console.log(kotindex);
+   const checked = !!event?.target?.checked;
+  // console.log(checked);
+if(checked===true)
+{
+// INSERT_YOUR_CODE
+this.selectedItem = {
+  SelectProductId: order?.SelectProductId || '',
+  selectSubQuantityTypeID: order?.selectSubQuantityTypeID || '',
+  isItemSelected: checked,
+  KOTIndex: kotindex
+};
+// INSERT_YOUR_CODE
+// INSERT_YOUR_CODE
+// Check if item with same SelectProductId, selectSubQuantityTypeID, and KOTIndex already exists
+const existingIndex = this.selectedItemList.findIndex(
+  (item: any) =>
+    item.SelectProductId === this.selectedItem.SelectProductId &&
+    item.selectSubQuantityTypeID === this.selectedItem.selectSubQuantityTypeID &&
+    item.KOTIndex === this.selectedItem.KOTIndex
+);
+
+if (existingIndex !== -1) {
+  // If exists, update the existing entry
+  this.selectedItemList[existingIndex] = { ...this.selectedItem };
+} else {
+  // If not exists, push the new item
+  this.selectedItemList.push({ ...this.selectedItem });
 }
 
-ngOnInit() {  
-  this.autoAdjustItemSelections();
+
+
+}
+else
+{
+// INSERT_YOUR_CODE
+// Remove from selectedItem the item that matches all three fields: SelectProductId, selectSubQuantityTypeID, KOTIndex
+const index = this.selectedItemList.findIndex(
+  (item: any) =>
+    item.SelectProductId === order?.SelectProductId &&
+    item.selectSubQuantityTypeID === order?.selectSubQuantityTypeID &&
+    item.KOTIndex === kotindex
+);
+if (index !== -1) {
+  this.selectedItemList.splice(index, 1);
 }
 
+}
+console.log(this.selectedItemList);
+  // Initialize allItems if not already
+ 
+  
+  // // Determine the list of all items in order to figure out its index
+  // if (!this.KotData?.[kotindex]?.KOTrunningorders) return;
+  //  this.allItems = this.KotData[kotindex].KOTrunningorders;
+  // const idx = this.allItems.indexOf(order);
+
+  // if (idx === -1) return;
+  
+  // // Initialize itemSelections array length if not already done
+  // if (!Array.isArray(this.itemSelections) || this.itemSelections.length !== this.allItems.length) {
+  //   this.itemSelections = Array(this.allItems.length).fill(false);
+  // }
+  // // Do not assign itemSelections (boolean[]) to assignedItemsList
+  // // This line was incorrect and is not needed. Removing it.
+  // // Toggle selection status
+
+  // this.itemSelections[idx] = !this.itemSelections[idx];
+  // console.log(this.itemSelections);
+}
+// INSERT_YOUR_CODE
 /**
- * Checks if the given kotItem is already assigned to any person in assignedItemsList.
- * Returns true if assigned to any, else false.
+ * Removes the person at the given index from the ItemWisePersonList.
+ * Expects to be called as: ItemWisePersonList(personIdx, 1)
+ * (Matches the onclick in template: Delete Person)
  */
-isItemAssignedToAnyPerson(kotItem: any): boolean {
-  if (!Array.isArray(this.assignedItemsList)) return false;
-  // Compare using relevant properties; fallback to object identity if needed
-  return this.assignedItemsList.some(list =>
-    Array.isArray(list.items) && list.items.some(
-      (      i: { ProductName: any; ProductPrice: any; quntityvalue: any; }) =>
-        i.ProductName === kotItem.ProductName &&
-        i.ProductPrice === kotItem.ProductPrice &&
-        i.quntityvalue === kotItem.quntityvalue
-    )
+ItemWisePersonListDelete(personIdx: number, actionType: number) {
+  // For 'Delete Person' button, actionType is 1
+  console.log(this.ItemWisePersonList.length);
+  console.log(personIdx);
+  if(personIdx+1!==this.ItemWisePersonList.length) return;  
+  if (actionType === 1 && Array.isArray(this.ItemWisePersonList)) {
+    // Remove person at personIdx
+    this.ItemWisePersonList.splice(personIdx, 1);
+  }
+}
+
+// INSERT_YOUR_CODE
+/**
+ * Determines if the given item (by SelectProductId, selectSubQuantityTypeID, KOTIndex) 
+ * is currently checked for the selected person in the UI.
+ * Used by the 'checked' property of the item checkbox in the template.
+ * 
+ * Returns true if the item is in the selectedItemList.
+ */
+isItemCheckedForPerson(Item: any, KOTIndex: number): boolean {
+  if (!this.selectedItemList || !Array.isArray(this.selectedItemList)) {
+    return false;
+  }
+  return this.selectedItemList.some(
+    (selected: any) =>
+      selected.SelectProductId === Item.SelectProductId &&
+      selected.selectSubQuantityTypeID === Item.selectSubQuantityTypeID &&
+      selected.KOTIndex === KOTIndex
   );
 }
-/**
- * Returns the global/flat index for a specific item given its KOT index and item index.
- * This is useful for working with itemSelections, which is a flat array of all items across all KOTs.
- * 
- * @param kotIdx The index of the KOT in KotData
- * @param itmIdx The index of the item within KOTrunningorders of the specified KOT
- * @returns The global index in the flat itemSelections array
- */
-getGlobalIndexForItem(kotIdx: number, itmIdx: number): number {
-  let globalIdx = 0;
-  for (let i = 0; i < kotIdx; i++) {
-    if (this.KotData[i]?.KOTrunningorders) {
-      globalIdx += this.KotData[i].KOTrunningorders.length;
-    }
-  }
-  globalIdx += itmIdx;
-  return globalIdx;
-}
-
-/**
- * Call this in the HTML when a checkbox is clicked for item selection.
- * This function toggles the value in itemSelections at the computed global index.
- */
-toggleItemSelection(kotIndex: number, itemIndex: number, checked: boolean) {
-  // Compute the flat/global index among all KotData KOTrunningorders
-  let globalIdx = 0;
-  for (let i = 0; i < this.KotData.length; i++) {
-    if (i === kotIndex) {
-      globalIdx += itemIndex;
-      break;
-    }
-    if (this.KotData[i]?.KOTrunningorders) {
-      globalIdx += this.KotData[i].KOTrunningorders.length;
-    }
-  }
-  this.itemSelections[globalIdx] = checked;
-}
-
-
-
-/**
- * Optionally call autoAdjustItemSelections() from ngOnInit or ngOnChanges if components should react to such changes dynamically:
- */
-// ngOnInit() {
-//   this.autoAdjustItemSelections();
-// }
-// ngOnChanges() {
-//   this.autoAdjustItemSelections();
-// }
 
 }

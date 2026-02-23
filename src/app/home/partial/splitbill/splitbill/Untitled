@@ -1,0 +1,1 @@
+isItemAssignedToAnyPerson(kotItem, kotIdx, itmIdx, personIdx)

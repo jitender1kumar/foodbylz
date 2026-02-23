@@ -35,7 +35,7 @@ export const addProductItemFailure = createAction(
 // Update Product Item
 export const updateProductItem = createAction(
   '[Product Item] Update Product Item',
-  props<{ items: any[] }>()
+  props<{ RecieptNumber: string, Productid: (RecieptNumber: string, Productid: any, SubQuantityTypeID: any) => unknown, SubQuantityTypeID: (RecieptNumber: string, Productid: any, SubQuantityTypeID: any) => unknown, items: any[] }>()
 );
 
 export const updateProductItemSuccess = createAction(

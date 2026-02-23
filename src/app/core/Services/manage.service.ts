@@ -29,18 +29,48 @@ import { loadAllAddOnProducts } from '../../manage/ManageStore/addOnProductStore
 import { InvoiceService } from './invoice.service';
 import { IDine } from '../Model/crud.model';
 import { loadSubQuantityType } from '../../manage/ManageStore/subQuantityTypeStore/subQuantityType.actions';
-import * as runningItemActions from '../../home/homeStore/runningItemKOTStore/runningItemKOT.actions';
+//import * as RunningItemActions from '../../home/homeStore/runningItemKOTStore/runningItemKOT.actions';
+import * as RunningItemKOTActions from '../../home/homeStore/runningItemKOTStore/runningItemKOT.actions';
 import { GetOrderDetailsService } from '../commanFunction/getOrderDetails.service';
+import { RunningItems } from '../Model/RunningItemsHomeModel/RunningItem.model';
 @Injectable({
   providedIn: 'root'
 })
 export class ManageService {
+  /**
+   * Updates the notes for a KOT running order item within the provided array.
+   * @param KOTrunningorders - Array of running KOT items to update.
+   * @param SelectProductId_ - Product ID to find the matching item.
+   * @param selectSubQuantityTypeID_ - Sub quantity type ID to find the matching item.
+   * @param notes - New notes string to assign.
+   * @returns Updated array of KOTrunningorders.
+   */
+  updateNotesInRunningItems(
+    KOTrunningorders: RunningItems[],
+    SelectProductId_: any,
+    selectSubQuantityTypeID_: any,
+    notes: string
+  ): RunningItems[] {
+    if (!Array.isArray(KOTrunningorders)) return KOTrunningorders;
+    return KOTrunningorders.map(item => {
+      if (
+        item.SelectProductId === SelectProductId_ &&
+        item.selectSubQuantityTypeID === selectSubQuantityTypeID_
+      ) {
+        return {
+          ...item,
+          notes: notes
+        };
+      }
+      return item;
+    });
+  }
   // Observables for state
   loadAddOnProductsdata$!: Observable<any>;
   addOnProductsData$!: Observable<any>;
   error$!: Observable<any>;
   loading$!: Observable<boolean>;
-  runningItems$!: Observable<any>;
+  runningKOTItems$!: Observable<any>;
   categorynamedata$!: Observable<any>;
   Qtypenamedata$!: Observable<any>;
   subQuantityTypeData$!: Observable<any>;
@@ -133,7 +163,7 @@ export class ManageService {
     this.addOnProductsData$ = this.store.select(
       state => state.addOnProductReducer_?.addOnProducts?.data
     );
-    this.runningItems$ = this.store.select(
+    this.runningKOTItems$ = this.store.select(
       state => state.runningItemKOTReducer_?.KOTrunningorders?.data
     );
     this.categorynamedata$ = this.store.select(
@@ -219,10 +249,12 @@ export class ManageService {
       }
     });
   }
+
   loadRunningKOT()
   {
-    this.store.dispatch(runningItemActions.loadKOTRunningItems());
-    this.runningItems$ = this.store.select(
+   
+    this.store.dispatch(RunningItemKOTActions.loadKOTRunningItems());
+    this.runningKOTItems$ = this.store.select(
       state => state.runningItemKOTReducer_?.KOTrunningorders?.data
     );
   }

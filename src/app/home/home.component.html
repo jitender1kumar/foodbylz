@@ -103,7 +103,7 @@
               <ng-container *ngIf="kot.KOTrunningorders?.length">
                 <tr *ngFor="let item of kot.KOTrunningorders" style="background: #f6fbff;">
                   <td>
-                    <button class="action-button btn-xs" (click)="deleteRunningKOTItem(item,kot,'Delete')" style="background:#ececec; color:#b15e56;">
+                    <button class="action-button btn-xs" (click)="manageRunningKOTItem(item,kot,'Delete')" style="background:#ececec; color:#b15e56;">
                       <i class="fa fa-trash"></i>
                     </button>
                   </td>
@@ -145,7 +145,13 @@
             </ng-container>
           </ng-container>
        <!-- if kot running start -->
+       <th *ngFor="let d of (RunningItems_$ | async)">
+        <p *ngIf="d">
+        <button>Comment</button>
+      </p>
+      </th>
             <tr *ngFor="let d of (RunningItems_$ | async)">
+             
               <ng-container *ngIf="d">
                 <td>
                   <button class="action-button btn-xs" style="background:#ffe6c0;border:none; color:#b68746;"
@@ -157,7 +163,16 @@
                       <span>addon</span>
                     </ng-template>
                   </button>
-                </td>
+                  
+                <button class="action-button btn-xs" style="background:#ffe6c0;border:none; color:#b68746;"
+                  (click)="shownotesPopUp(d?.SelectProductId, d?.selectSubQuantityTypeID)">
+            <ng-container *ngIf="d?.AddOnItems?.length > 0; else nonotesSimple">
+              <span>notes({{ d?.AddOnItems?.length }})</span>
+            </ng-container>
+            <ng-template #nonotesSimple>
+              <span>notes</span>
+            </ng-template>
+          </button></td>
                 <td>
                   <span style="font-size:15px; color:#502c13;">{{ d?.ProductName || '-' }}</span>
                 </td>
@@ -234,6 +249,9 @@
         <div class="flex justify-between mb-2" style="font-size:17px; font-weight:bold; color:#954300;">
           <button class="btn-restaurant primary" (click)="splitBill()">
             <i class="fa fa-check-circle"></i> Split Bill
+          </button>
+          <button class="btn-restaurant primary" (click)="partPayment()">
+            <i class="fa fa-check-circle"></i> Part Payment
           </button>
           <span>Grand Total:</span><span>₹{{ itemtotalamount }}</span>
         </div>
@@ -498,17 +516,21 @@
 
 <app-comment-in-invoice
 [CommentType]="CommentType"
-[deleteKOTItem]="deleteKOTItem"
-[SearchDeletingKOTItems]="SearchDeletingKOTItems"
+[manageKOTItem]="manageKOTItem"
+[SearchManagingKOTItems]="SearchManagingKOTItems"
 [InvoiceDataKOT$]="InvoiceData$"
+[SelectProductId_]="SelectProductId_"
+[selectSubQuantityTypeID_]="selectSubQuantityTypeID_"
 [RecieptNumber]="RecieptNumber"
+[RunningItems$]="RunningItems_$"
 [showConfirme]="showCommentConfime"
   [showPopUp]="showCommentPopUp"
   [closePopUp]="closePopup"
   (closePopUpByComment)="closePopUpByCommentFun($event)"
   (CommentToInvoice)="initializeComment($event)"
+ 
 ></app-comment-in-invoice>
-
+<!-- (loadKOT)="loadKOTfun()" -->
 <app-add-on-items
 [selectedAddOnItems]="selectedAddOnItems"
 [invoice]="invoiceData"
@@ -525,3 +547,11 @@
 [closePopUp]="closePopup"
 (closePopUpByChildSplitBill)="closePopUpByChildSplitBill($event)"
  [KotData]="KOTItemsdata"></app-splitbill>
+
+ <app-partpayment 
+ [paybydata]="paybydata"
+ [itemtotalamount]="itemtotalamount"
+ [showPopUp]="showPartPaymentPopUp"
+[closePopUp]="closePopup"
+(closePopUpByChildPartPayment)="closePopUpByChildPartPayment($event)">
+</app-partpayment>

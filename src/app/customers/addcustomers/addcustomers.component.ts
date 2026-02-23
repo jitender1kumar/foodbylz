@@ -54,6 +54,26 @@ export class AddcustomersComponent implements OnInit {
     this.store.dispatch({ type: '[Customers] Load Customers' });
 this.Customersdata$ = this.store.select(state => state.customersReducer_.customers.data);
   }
+  // INSERT_YOUR_CODE
+  /**
+   * Handler for "Search Customer" button in template.
+   * Searches for customer using the MobileNo entered in the add form.
+   */
+  onSearchCustomer() {
+    // Use the MobileNo input from the add-customer form.
+    const mobileNo = this.myAddForm.get('MobileNo')?.value;
+   
+    this.CustomersService_.getbyMobileNumber(mobileNo).subscribe(Customer => {
+      console.log(Customer);
+      if (Customer) {
+        this.SearchedCustomerData = Customer;
+        if (this.SearchedCustomerData.data.length > 0) {
+          this.DisplayCustomers = "Customer Exists: " + this.SearchedCustomerData.data[0].name + " - " + this.SearchedCustomerData.data[0].MobileNo;
+        }
+      }
+   // this.SearchCustomer(mobileNo);
+  });
+}
   add(customer: Customers): void {
   
     this.CustomersService_.getbyMobileNumber(customer.MobileNo).subscribe(Customer => {

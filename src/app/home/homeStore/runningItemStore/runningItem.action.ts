@@ -24,7 +24,7 @@ export const updateRunningItemQuantity = createAction(
   '[RunningItem] Update Running Item Quantity',
   props<{
     id: string;
-    action: 'inc' | 'dcre';
+    action: 'inc' | 'dcre' | 'addNotes';
     SubQuantityTypeName: string;
     quntity: any;
     price: any;
@@ -44,6 +44,28 @@ export const updateRunningItemQuantityFailure = createAction(
   '[RunningItem] Update Running Item Quantity Failure',
   props<{ error: any }>()
 );
+
+export const updateRunningItemNotes = createAction(
+  '[RunningItem] Update Running Item Notes',
+  props<{
+    id: string;
+    selectSubQuantityTypeID: string;
+    notes: string;
+    RunningItemData: any;
+    invoiceid: string;
+  }>()
+);
+
+export const updateRunningItemNotesSuccess = createAction(
+  '[RunningItem] Update Running Item Notes Success',
+  props<{ RunningItems_: RunningItems[] }>()
+);
+
+export const updateRunningItemNotesFailure = createAction(
+  '[RunningItem] Update Running Item Notes Failure',
+  props<{ error: any }>()
+);
+
 
 export const loadRunningItemsByReceiptNumber = createAction(
   '[RunningItem] Load Running Items By Receipt Number',

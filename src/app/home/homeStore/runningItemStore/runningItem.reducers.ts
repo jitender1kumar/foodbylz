@@ -139,7 +139,8 @@ const _runningItemReducer = createReducer(
               taxvalues: '',
               totaltaxvalue: taxpercent,
               paidStatus: false,
-              AddOnItems: RunningItems_[runningItemIdx]?.AddOnItems ?? []
+              AddOnItems: RunningItems_[runningItemIdx]?.AddOnItems ?? [],
+              notes:''
             };
             RunningItems_ = [
               ...RunningItems_.slice(0, runningItemIdx),
@@ -169,7 +170,8 @@ const _runningItemReducer = createReducer(
               taxvalues: '',
               totaltaxvalue: taxpercent,
               paidStatus: false,
-              AddOnItems: []
+              AddOnItems: [],
+              notes:''
             };
             RunningItems_ = [...RunningItems_, newRunningItem];
             try {
@@ -196,7 +198,8 @@ const _runningItemReducer = createReducer(
             taxvalues: '',
             totaltaxvalue: taxpercent,
             paidStatus: false,
-            AddOnItems: []
+            AddOnItems: [],
+            notes:''
           };
           RunningItems_ = [newRunningItem];
           try {
@@ -242,7 +245,7 @@ const _runningItemReducer = createReducer(
           }
         }
       }
-
+      
       return {
         ...state,
         RunningItems_,
@@ -250,6 +253,57 @@ const _runningItemReducer = createReducer(
         error: null,
       };
   }),
+  on(
+    RunningItemActions.updateRunningItemNotes,
+    (state, { id, selectSubQuantityTypeID, notes, RunningItemData, invoiceid }) => {
+      // Clone the base array of running items from the passed RunningItemData if present, otherwise from state
+     
+      const baseArr: any[] = Array.isArray(RunningItemData) && RunningItemData.length > 0
+        ? [...RunningItemData]
+        : Array.isArray(state.RunningItems_)
+        ? [...state.RunningItems_]
+        : [];
+
+      // Find the index of the item to update by matching id/SelectProductId and SubQuantityTypeName
+      const idx = baseArr.findIndex((item: any) =>
+        item.SelectProductId === id && item.selectSubQuantityTypeID === selectSubQuantityTypeID
+      
+      );
+      
+      console.log(id);
+      console.log(selectSubQuantityTypeID);
+     
+console.log(idx);
+console.log(baseArr);
+      // If found, update notes on this item
+      if (idx !== -1) {
+        const updatedArr = baseArr.map((item, i) =>
+          i === idx
+            ? { ...item, notes }
+            : item
+        );
+
+        // Save updated array to localStorage if invoiceid is provided
+        if (invoiceid) {
+          try {
+            localStorage.setItem(invoiceid, JSON.stringify(updatedArr));
+          } catch (e) {
+            console.error('Error saving updated RunningItems_ (notes) to localStorage', e);
+          }
+        }
+
+        return {
+          ...state,
+          RunningItems_: updatedArr,
+          loading: false,
+          error: null
+        };
+      }
+
+      // Not found, return state
+      return state;
+    }
+  ),
   // Provide a failure handler for updateRunningItemQuantity
   on(RunningItemActions.updateRunningItemQuantityFailure, (state, { error }) => ({
     ...state,
