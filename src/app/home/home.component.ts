@@ -12,7 +12,7 @@ import {
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, Subscribable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscribable, Subscription } from 'rxjs';
 import { filter,take } from 'rxjs/operators';
 import * as InvoiceActions from '../core/store/invoiceStor/invoice.actions';
 
@@ -42,7 +42,7 @@ import { addAddOnProductService } from '../core/Services/addOnProduct.service';
 import { DatePipe } from '@angular/common';
 import { HomeEnvironment } from '../environment/homeEnvironment';
 import * as AddOnProductActions from '../manage/ManageStore/addOnProductStore/addOnProduct.action';
-import { Actions } from '@ngrx/effects';
+import { Actions,ofType  } from '@ngrx/effects';
 import { InitializeInvoice } from '../core/commanFunction/InitializeInvoice.service';
 import { subQuantityTypeService } from '../core/Services/subQuantityType.service';
 import { InvoiceService } from '../core/Services/invoice.service';
@@ -98,7 +98,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   @Input() addOnProductsData$!: Observable<any[]>;
   @Input() DineData$: any;
   CommentKOT:string='';
-   
+  successItems$: any;
+  
   @ViewChildren('dynamicInput') divs!: QueryList<ElementRef>;
   //TokenNumber:number=0;
   CommentType="";
@@ -250,7 +251,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public error$?: Observable<string | null>;
   public subQuantityTypeByIdData$?: Observable<any[]>;
   public RunningItems_$?: Observable<any[]>;
-  public runningItemsKOTHome$?: Observable<any[]>;
+  //public runningItemsKOTHome$?: Observable<any[]>;
   public loadAddOnProductsdata$!: Observable<any[]>;
   public myDiscountForm!: FormGroup;
 
@@ -322,11 +323,15 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.showtype = false;
     this.replacedInvoiceId = this.invoiceid;
     this.showCommentConfime=false;
-    
+    // this.successItems$ = this.store.select(
+    //   state => state.GenratedItemsReducer_.items
+    // );
+    // this.loading$ = store.select(state => state.GenratedItemsReducer_.loading);
+    // this.error$ = store.select(state => state.GenratedItemsReducer_.error);
     //this.dineData$ = this.store.select(state => state.dineTableReducer_?.dineData);
-    this.runningItemsKOTHome$ = store.select(state => state.runningItemKOTReducer_.KOTrunningorders.data);
-    this.loading$ = store.select(state => state.runningItemKOTReducer_.loading);
-    this.error$ = store.select(state => state.runningItemKOTReducer_.error);
+    // this.runningItemsKOTHome$ = store.select(state => state.runningItemKOTReducer_.KOTrunningorders.data);
+    // this.loading$ = store.select(state => state.runningItemKOTReducer_.loading);
+    // this.error$ = store.select(state => state.runningItemKOTReducer_.error);
     this.RunningItems_$ = store.select(state => state.runningItemReducer_.RunningItems_);
     this.loading$ = store.select(state => state.runningItemReducer_.loading);
     this.error$ = store.select(state => state.runningItemReducer_.error);
@@ -346,13 +351,8 @@ items: any[] = [];
     this.RecieptNumber = this.invoiceid;
 
     // Initialize KOTItemsdata based on available observable
-    if (this.runningItemsKOTHome$) {
-      this.KOTItemsdata = this.HomeManageService_.initializeKOTItems(this.runningItemsKOTHome$, this.invoiceid);
-    } else if (this.runningItemsKOT$) {
-      this.KOTItemsdata = this.HomeManageService_.initializeKOTItems(this.runningItemsKOT$, this.invoiceid);
-    } else {
-      this.KOTItemsdata = [];
-    }
+   
+   this.initializeKOTRunningItems();
 
     this.loadFood();
 
@@ -399,6 +399,7 @@ items: any[] = [];
       })
     );
   this.RunningItems_$ = this.store.select(state => state.runningItemReducer_.RunningItems_);
+  this.calculateTotalAmount();
   }
   quntityvalueNumber:number=0;
   onQuantityChange(d: any,quntityvalue:any): void {
@@ -499,14 +500,15 @@ if(deleted) console.log(deleted);
     // Find the dine record for the given table_id to retrieve the floor_id
     // If you have a collection of dine objects, you may need to search there.
     // But assuming you need to get the floor_id for the current table_id from existing dine or available tables:
-     this.dineDataSubscription = this.DineData$.subscribe((dineData: any) => {
+    // this.dineDataSubscription =
+      this.DineData$.subscribe((dineData: any) => {
       if (!dineData) return;
 
       const table = dineData.find((tbl: any) => tbl._id === table_id);
       const floor_id = table?.floor_id || '';
 
       if (!floor_id) {
-        this.dineDataSubscription?.unsubscribe();
+      //    this.dineDataSubscription?.unsubscribe();
         return;
       }
 
@@ -522,7 +524,7 @@ if(deleted) console.log(deleted);
       console.log('Updated dine object:', this.dine);
 
       this.store.dispatch(DineTableActions.updateDineTable({ IDine_: this.dine }));
-      this.dineDataSubscription?.unsubscribe();
+     // this.dineDataSubscription?.unsubscribe();
     });
   
    
@@ -539,20 +541,17 @@ if(deleted) console.log(deleted);
         this.genrateInvoice('Sattled', true).then(invoice => {
           this.updateInvoiceFunction(invoice);
 
-          // Ensure removerunningOrderKOT exists and is callable
-        
-          console.log(invoice);
-          console.log(invoice.table_id);
-          console.log(invoice.tablename);
           // Safely call updateTableStatusByTableId if invoice has needed properties
           if (
             invoice &&
             typeof this.updateTableStatusByTableId === 'function' &&
             invoice.table_id &&
-            invoice.tablename
+            invoice.tablename !== 'Pick Up'
           ) {
            
             this.updateTableStatusByTableId(invoice.table_id, invoice.tablename);
+            this.deleteRunningKOT();
+          //  alert("table updated");
           }
           if (typeof this.removerunningOrderKOT === 'function') {
             this.removerunningOrderKOT();
@@ -586,14 +585,48 @@ if(deleted) console.log(deleted);
           }
 
           // Ensure close2 exists and is callable
+          if (
+            invoice &&
+            typeof this.updateTableStatusByTableId === 'function' &&
+            invoice.table_id &&
+            invoice.tablename !== 'Pick Up'
+          ) {
+           
+            this.updateTableStatusByTableId(invoice.table_id, invoice.tablename);
+          //  alert("table updated");
+          this.deleteRunningKOT();
+          }
+          if (typeof this.removerunningOrderKOT === 'function') {
+            this.removerunningOrderKOT();
+          }
+
+          // Ensure ClearSomeVariable exists and is callable
+          if (typeof this.ClearSomeVariable === 'function') {
+            this.ClearSomeVariable();
+          }
+          // Ensure close2 exists and is callable
           if (typeof this.close2 === 'function') {
             this.close2();
           }
+        // After settling the order, redirect to 'tables' page for next table selection
+        if (this.router && typeof this.router.navigate === 'function') {
+          this.router.navigate(['/tables']);
+        }
+        if (typeof this.receiveNotification === 'function') {
+          this.receiveNotification('tables');
+        }
+        if(this.ordermode==='Pick Up')
+        {
+          localStorage.removeItem(this.invoiceid);
+        }
         }).catch(err => {
           console.error('Error generating invoice:', err);
         });
       }
 
+      this.store.dispatch(RunningItemActions.clearRunningItems());
+      this.RunningItems_$ = this.store.select(state => state.runningItemReducer_.RunningItems_);
+   
     // })();
   }
 deleteRunningKOT(): void {
@@ -629,7 +662,9 @@ ClearSomeVariable(): void {
   }
 
   async genrateInvoice(Orderstatus:string,paidstatus:boolean): Promise<Invoice> {
-  
+  if(this.paidamount>this.discountvalue){
+    paidstatus=true;
+  }
     return {
       Taxes: this.getTax(),
       Chairs: this.ichar,
@@ -1562,135 +1597,120 @@ console.log(FilteredRunningItemData);
       }
     });
   }
+  initializeKOTRunningItems()
+  {
+  //   if (this.runningItemsKOTHome$) {
+  //     this.KOTItemsdata = [];
+  //    this.KOTItemsdata = this.HomeManageService_.initializeKOTItems(this.runningItemsKOTHome$, this.invoiceid);
+  //  } 
+  //  else
+    if (this.runningItemsKOT$) {
+      this.KOTItemsdata = [];
+     this.KOTItemsdata = this.HomeManageService_.initializeKOTItems(this.runningItemsKOT$, this.invoiceid);
+   } 
+   else {
+     this.KOTItemsdata = [];
+   }
+  }
+  reloadKOTRunningItems(): void {
+  // Reinitialize Input decorator value for runningItemsKOT$ after load running KOT
+   // Run ManageService_.initRunningKOT(), then loadRunningKOT() after completion, then update runningItemsKOT$, then reinitialize KOTItemsdata.
+  // this.ManageService_.initRunningKOT();
+  /**
+   * Deep-refactored reloadKOTRunningItems method:
+   * 1. Dispatch reload action for KOT running items.
+   * 2. Use a single subscription to update runningItemsKOT$ and re-initialize KOTItemsdata
+   *    when store emits latest KOTRunningorders for this invoice.
+   * 3. Unsubscribe immediately after update to avoid leaks.
+   */
+  this.store.dispatch(runningItemKOTActions.loadKOTRunningItems());
 
-  initializeComment(_comment: any): void {}
+  const subscription = this.store
+    .select(state => state.runningItemKOTReducer_?.KOTrunningorders?.data)
+    .subscribe((latestKOTData) => {
+      this.runningItemsKOT$ = this.store.select(
+        state => state.runningItemKOTReducer_?.KOTrunningorders?.data
+      );
+      // Defensive: Ensure we only reinitialize on defined value.
+      if (latestKOTData !== undefined) {
+        this.KOTItemsdata = this.HomeManageService_.initializeKOTItems(this.runningItemsKOT$, this.invoiceid);
+        subscription.unsubscribe(); // Clean up after one update
+      }
+    });
+  }
 
   CancelOrder(): void {
     this.cancelOrder.emit(this.invoiceid);
   
   }
   addSuccessSub: Subscription | undefined;
-  successItems: any;
-ItemID:string='undefined';
-  async KOT(): Promise<void> {
-    // Ensure required fields for GenratedItemKOT:
-    this.paidamount = 0;
-  // Refactored KOT method for improved clarity and maintainability
  
-  this.GenratedItems_ = {
-    RecieptNumber: this.invoiceid,
-    EmployeeId: this.employeeId,
-    TableId: this.table_id,
-    Items: this.getRunningItemsValues(),
-    createdAt:new Date()
-  } as unknown as GenratedItems;
+ItemID:string='undefined';
+  /**
+   * Handles the KOT (Kitchen Order Ticket) process:
+   *  1. Resets paid amount.
+   *  2. Dispatches action to add the generated items to store.
+   *  3. Waits for the item _id response, then builds and dispatches the KOT running item.
+   *  4. Triggers invoice generation ("Cooking"), resets, and navigation.
+   * Deep refactored for clarity, proper subscription management, and logical separation.
+   */
+  itemSuccessData: any;
 
-  try {
-    // Add generated items
-    this.store.dispatch(GentratedItemsActions.addGenratedItems({ items: this.GenratedItems_ }));
-
-    // Unsubscribe logic when items state contains the current RecieptNumber
-    this.addSuccessSub = this.store.select('GenratedItemsReducer_').subscribe(state => {
-      if (state) {
-        console.log(state);
-        // Preferably, find the correct item matching the RecieptNumber and safely extract the ItemID
-        // Deep refactor: properly locate the item matching the current RecieptNumber, validate structure, and extract its _id
-        let itemId: string | undefined;
-
-        function deepFindId(obj: any): string | undefined {
-          if (!obj || typeof obj !== 'object') return undefined;
-          if (typeof obj._id === 'string') return obj._id;
-          for (const key of Object.keys(obj)) {
-            const val = obj[key];
-            if (Array.isArray(val)) {
-              for (const el of val) {
-                const found = deepFindId(el);
-                if (found) return found;
-              }
-            } else if (typeof val === 'object' && val !== null) {
-              const found = deepFindId(val);
-              if (found) return found;
-            }
-          }
-          return undefined;
-        }
-
-        if (Array.isArray(state?.items)) {
-          for (const item of state.items) {
-            const foundId = deepFindId(item);
-            if (foundId) {
-              itemId = foundId;
-             
-              break;
-            }
-          }
-        } else {
-          itemId = undefined;
-        }
-        console.log(itemId);
-        if (!itemId) {
-          console.warn('Cannot extract ItemID from GenratedItems state', state);
-          this.addSuccessSub?.unsubscribe();
-          return;
-        }
-
+  async KOT(): Promise<void> {
+    this.paidamount = 0;
+  
+    // ✅ Step 1: Prepare payload
+    this.GenratedItems_ = { RecieptNumber: this.invoiceid, EmployeeId: this.employeeId, TableId: this.table_id, Items: this.getRunningItemsValues(), createdAt:new Date() } as unknown as GenratedItems;
+  
+    // ✅ Step 2: Dispatch action
+    this.store.dispatch(
+      GentratedItemsActions.addGenratedItems({ items: this.GenratedItems_ })
+    );
+  
+    // ❌ Avoid multiple subscriptions
+    // ✅ Take only one success response
+    this.actions$
+      .pipe(
+        ofType(GentratedItemsActions.addGenratedItemsSuccess),
+        take(1) // ✅ auto unsubscribe
+      )
+      .subscribe(async (data) => {
+        if (!data) return;
+        this.itemSuccessData = data.items;
+        // ✅ Step 3: Extract ID
+        const itemId = this.itemSuccessData.data[0]._id;
         this.ItemID = itemId;
-
-        this.runningItemKOT = {
-          EmployeeId: this.employeeId,
-          TableId: this.table_id,
-          ItemsID: this.ItemID,
-          RecieptNumber: this.invoiceid,
-          createdAt: new Date().toISOString(),
-          KOTrunningorders: this.getRunningItemsValues(),
-          KOTStatus: false, // Use boolean, not string
-          Comment: this.CommentKOT || ''
-        } as unknown as GenratedItemKOT;
-
+  
+        // ✅ Step 4: Prepare KOT running order
+        this.runningItemKOT = { EmployeeId: this.employeeId, TableId: this.table_id, ItemsID: this.ItemID, RecieptNumber: this.invoiceid, createdAt: new Date().toISOString(), KOTrunningorders: this.getRunningItemsValues(), KOTStatus: false,  Comment: this.CommentKOT || '' } as unknown as GenratedItemKOT;
+  
+        // ✅ Step 5: Dispatch KOT actions
         this.store.dispatch(
-          runningItemKOTActions.addKOTRunningItem({ KOTrunningorder: this.runningItemKOT })
+          runningItemKOTActions.addKOTRunningItem({
+            KOTrunningorder: this.runningItemKOT
+          })
         );
-        this.addSuccessSub?.unsubscribe();
+  
         this.store.dispatch(
           runningItemKOTActions.loadKOTRunningItems()
         );
-        this.addSuccessSub?.unsubscribe();
-        //this.addSuccessSub?.unsubscribe();
-      }
-    });
-   
-    // Add KOT Running Item
-    // Fix: Provide correct action payload key and type safety
-    // The correct property name is likely 'KOTrunningorder' (singular), not 'KOTrunningorders'
   
-
-    // Generate the invoice (may return a Promise or synchronous value)
-    const invoicePromise = this.genrateInvoice('Cooking', false);
-
-    const finalizeKOT = (invoice: any) => {
-      this.updateInvoiceFunction(invoice);
-      localStorage.removeItem(this.invoiceid);
-      this.productsByCategoryId = [];
-      this.runningItemKOT = {} as GenratedItemKOT;
-       
+        // ✅ Step 6: Handle invoice
+        try {
+          const invoice = await this.genrateInvoice('Cooking', false);
+          this.updateInvoiceFunction(invoice);
+        } catch (err) {
+          console.error('Invoice error:', err);
+        }
   
-    
-      // this.ManageService_.initKOT();
-      // this.ManageService_.loadRunningKOT();
-      this.RedirectToTable.emit("tables");
-    };
-
-    if (invoicePromise instanceof Promise) {
-      invoicePromise.then(finalizeKOT);
-    } else {
-      finalizeKOT(invoicePromise as any);
-    }
-
-  } catch (error) {
-    console.error('Failed to dispatch running item:', error);
-    // Optionally show a user-facing error here
-  }
- // this.addSuccessSub?.unsubscribe();
+        // ✅ Step 7: Cleanup
+        localStorage.removeItem(this.invoiceid);
+        this.productsByCategoryId = [];
+        this.runningItemKOT = {} as GenratedItemKOT;
+  
+        // ✅ Step 8: Redirect
+        this.RedirectToTable.emit('tables');
+      });
   }
 kotprint()
 {

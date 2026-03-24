@@ -52,6 +52,18 @@ const _runningItemReducer = createReducer(
       error,
     })
   ),
+  // Reducer to clear RunningItems_
+  on(
+    RunningItemActions.clearRunningItems,
+    (state) => ({
+      ...state,
+      RunningItems_: [],
+      loading: false,
+      error: null,
+    })
+  ),
+
+  
   on(
     // Set loading true on loadfood
     RunningItemActions.loadfood, 

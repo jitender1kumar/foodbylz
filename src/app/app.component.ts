@@ -154,7 +154,7 @@ export class AppComponent implements OnInit {
       // Step 1: Load running KOT data
      // this.manageService.initObservables();
       console.log("Running KOT loaded successfully.");
-      this.initializeManageforHome();
+     // this.initializeManageforHome();
       // Step 2: Load token information
       // Step 2: Load token information (Async/Await)
       (async () => {
@@ -175,6 +175,9 @@ export class AppComponent implements OnInit {
           await this.DineService_.loaddine();
           this.dine$ = this.DineService_.dinedataSubject$;
           console.log("Dine data loaded successfully.");
+
+          this.manageService.loadRunningKOT();
+          this.runningItems$ = this.manageService.runningKOTItems$;
         } catch (error) {
           console.error("Error in loading table/tokens/floor/dine data", error);
         }

@@ -320,6 +320,7 @@ export class DisplayOrdersListComponent implements OnInit {
     this.ItemsService_.getbyid(RecieptNumber).subscribe(Items => {
       this.EditOrderItems2 = Items;
       this.EditOrderItems = this.EditOrderItems2.data;
+      console.log("EditOrderItems",this.EditOrderItems);
     })
   }
   closePopUpByChild(close: any) {

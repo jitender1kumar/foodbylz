@@ -20,8 +20,8 @@ export class ItemsService {
     return this.http.post<GenratedItems>(this.itemUrl, Items);
 
   }
-  getbyid(Invoiceid: string) {
-    return this.http.get(`${this.itemUrl}/${Invoiceid}`);
+  getbyid(RecieptNumber: string) {
+    return this.http.get(`${this.itemUrl}/${RecieptNumber}`);
   }
   get(): Observable<GenratedItems[]> {
     return this.http.get<GenratedItems[]>(this.itemUrl);

@@ -249,7 +249,12 @@ export class ManageService {
       }
     });
   }
-
+initRunningKOT()
+{
+  this.runningKOTItems$ = this.store.select(
+    state => state.runningItemKOTReducer_?.KOTrunningorders?.data
+  );
+}
   loadRunningKOT()
   {
    

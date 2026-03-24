@@ -91,6 +91,7 @@
           </thead>
           <tbody>
               <!-- if kot running start -->
+               <p>{{KOTItemsdata?.length}}  KOTItemsdata </p>
           <ng-container *ngIf="KOTItemsdata?.length">
             <ng-container *ngFor="let kot of KOTItemsdata">
               <tr style="background: #eaf6fd;">
@@ -310,21 +311,28 @@
           </ng-container>
         </div>
         <div class="flex gap-2 justify-center mt-2 mb-1">
-          <div *ngIf="KOTItemsdata?.length && KOTItemsdata.length > 0">
-          <button class="btn-restaurant primary" style="margin-right: 12px;" (click)="placeOrder()">
-            <i class="fa fa-check-circle"></i> Settle
-          </button>
-          <button class="btn-restaurant primary" (click)="printBill()">
-            <i class="fa fa-check-circle"></i> Print Bill
-          </button>
-          </div>
-          <div *ngIf="(RunningItems_$ | async)?.length && ((RunningItems_$ | async)?.length || 0) > 0">
+          <ng-container *ngIf="(KOTItemsdata?.length > 0) || (ordermode === 'Pick Up') ">
+            <button
+              class="btn-restaurant primary"
+              style="margin-right: 12px;"
+              (click)="placeOrder()"
+            >
+              <i class="fa fa-check-circle"></i> Settle
+            </button>
+            <button
+              class="btn-restaurant primary"
+              (click)="printBill()"
+            >
+              <i class="fa fa-check-circle"></i> Print Bill
+            </button>
+          </ng-container>
+          <div *ngIf="(RunningItems_$ | async)?.length && ((RunningItems_$ | async)?.length || 0) > 0  && ordermode != 'Pick Up'">
             <button class="btn-restaurant accent" (click)="KOT()">
               <i class="fa fa-cutlery"></i> KOT 
             </button>
           </div>
           <div *ngIf="(RunningItems_$ | async) as runningItems">
-            <ng-container *ngIf="runningItems?.length && runningItems.length > 0">
+            <ng-container *ngIf="runningItems?.length && runningItems.length > 0 && ordermode != 'Pick Up'">
               <button class="btn-restaurant accent" style="background-color: #8602bc; color: #fff;" (click)="KOT()">
                 <i class="fa fa-print"></i> Print KOT
               </button>
@@ -527,7 +535,7 @@
   [showPopUp]="showCommentPopUp"
   [closePopUp]="closePopup"
   (closePopUpByComment)="closePopUpByCommentFun($event)"
-  (CommentToInvoice)="initializeComment($event)"
+  (ReloadKOTRunningItems)="reloadKOTRunningItems()"
  
 ></app-comment-in-invoice>
 <!-- (loadKOT)="loadKOTfun()" -->

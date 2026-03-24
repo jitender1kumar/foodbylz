@@ -17,25 +17,45 @@
 </div> -->  
 
 <!-- Order Items -->
-<div *ngIf="EditOrderItems?.length" class="space-y-4">
-  <div *ngFor="let item of EditOrderItems" class="bg-white rounded-lg shadow p-4 border border-gray-200">
-    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-gray-700">
-      <div><strong>Invoice ID:</strong> {{ item.Invoiceid }}</div>
-      <div><strong>Product:</strong> {{ item.Productname }}</div>
-      <div><strong>Quantity:</strong> {{ item.Quantity }}</div>
-      <div><strong>Type:</strong> {{ item.SubQuantityTypeName }}</div>
-      <div><strong>Date:</strong> {{ item.createdAt }}</div>
-      <div><strong>Item Amount:</strong> ₹{{ item.itemamount }}</div>
-      <div><strong>Total:</strong> ₹{{ item.totalquantityamount }}</div>
-    </div>
-    <hr/>
-  </div>
-<hr/>
+ <!-- <p>EditOrderItems: {{ EditOrderItems | json }}</p> -->
+<div *ngIf="EditOrderItems?.length > 0" class="space-y-4">
+  <ng-container *ngFor="let item of EditOrderItems">
+    <ng-container *ngFor="let orderItem of item.Items">
+      <div class="bg-white rounded-lg shadow p-4 border border-gray-200 mb-2">
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-gray-700">
+          <div>
+            <strong>Product:</strong>
+            <span>{{ orderItem.ProductName || '-' }}</span>
+          </div>
+          <div>
+            <strong>Quantity:</strong>
+            <span>{{ orderItem.quntityvalue || 0 }}</span>
+          </div>
+          <div>
+            <strong>Type:</strong>
+            <span>{{ orderItem.SubQuantityTypeName || '-' }}</span>
+          </div>
+          <!-- <div>
+            <strong>Date: </strong>
+            <span>{{ orderItem.createdAt | date:'short' }}</span>
+          </div> -->
+          <div>
+            <strong>Item Amount: </strong>
+            <span>₹{{ orderItem.ProductPrice || 0 }}</span>
+          </div>
+          <div>
+            <strong>Total: </strong>
+            <span>₹{{ orderItem.ProductPrice*orderItem.quntityvalue || 0 }}</span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
 </div>
 
 <!-- Invoice Summary -->
 <div *ngIf="EditOrderInvoice" class="bg-white rounded-lg shadow p-4 mt-6 border border-gray-200">
-  <h3 class="text-lg font-bold mb-2">Invoice Summary</h3>
+  <h3 class="text-lg font-bold mb-2">Invoice Summary </h3><p>RecieptNumber: {{ EditOrderInvoice.RecieptNumber }}</p>
   <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-gray-800">
     <div><strong>Table:</strong> {{ EditOrderInvoice.tablename }}</div>
     <div><strong>Total Items Amount:</strong> ₹{{ EditOrderInvoice.TotalItemsAmount }}</div>

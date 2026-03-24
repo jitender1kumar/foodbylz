@@ -21,7 +21,8 @@ import { updateRunningItemNotes } from '../homeStore/runningItemStore/runningIte
 export class CommentInInvoiceComponent  implements OnInit{
    @Output() closePopUpByComment = new EventEmitter<boolean>();
   // @Output() loadKOT = new EventEmitter<boolean>();
-   
+  @Output() ReloadKOTRunningItems = new EventEmitter<boolean>();
+  
   //  @Output() CustomersDetail = new EventEmitter<Customers>();
 DisplayCustomers:string="";
 myAddForm!: FormGroup<any>;
@@ -214,6 +215,7 @@ constructor(
             };
             
             this.addKOTsUD(this.KOTsUD);
+            
             break;
           }
           case "Decrement": {
@@ -273,21 +275,29 @@ constructor(
       if(this.CommentType==="Increment")
         {
           this.updateGenratedItemKOT();
+          this.ReloadKOTRunningItems.emit(true);
         }
        else if(this.CommentType==="Decrement")
           {
             this.updateGenratedItemKOT();
+            this.ReloadKOTRunningItems.emit(true);
           }
          
         else if(this.CommentType==="Delete")
           {
-            this.deleteGenratedItemKOT();
+           // this.updateGenratedItemKOT();
+           this.deleteGenratedItemKOT();
+            this.ReloadKOTRunningItems.emit(true);
           }
          
           else if(this.CommentType==="Insert")
             {
               this.updateInvoice();
+              this.ReloadKOTRunningItems.emit(true);
             }
+           
+            
+            this.closePopUpByComment.emit(true);
       // Optionally, you may want to emit an event or close popup here
     } catch (error) {
       alert('Failed to add KOTsUD.');
@@ -318,7 +328,7 @@ constructor(
     // Replace 'updateItem' with your actual update action
     console.log(items);
     try {
-      this.store.dispatch(GentratedItemsActions.updateGenratedItems({ items:items }));
+      this.store.dispatch(GentratedItemsActions.updateGenratedItems({ items }));
       // Optionally close popup or refresh list
      // this.closePopUpByComment.emit(true);
     } catch (error) {
@@ -329,78 +339,70 @@ constructor(
   GenratedItemKOT:any;
   async updateGenratedItemKOT()
   {
-    // Streamlined update of KOT quantity and save logic with truly updated object
+  
+         /**
+          * Deep refactored logic for updating a GenratedItemKOT.
+          *  1. Find and merge the matching item in KOTrunningorders using ids.
+          *  2. Persist the change to KOTrunningorders via kOTrunningordersService.
+          *  3. Prepare a GenratedItems object for NGRX and dispatch update.
+          */
+         if (
+           this.SearchManagingKOTItems &&
+           Array.isArray(this.SearchManagingKOTItems.KOTrunningorders)
+         ) {
+           // Map KOTrunningorders, replacing the matching item with the new/updated details
+           const updatedKOTrunningorders = this.SearchManagingKOTItems.KOTrunningorders.map((item: any) => {
+             const isMatch = (
+               item.SelectProductId === this.manageKOTItem.SelectProductId &&
+               item.selectSubQuantityTypeID === this.manageKOTItem.selectSubQuantityTypeID
+             );
+             return isMatch ? { ...item, ...this.manageKOTItem } : item;
+           });
 
-       // this.SearchDeletingKOTItems.KOTrunningorders = updatedKOTrunningorders;
+           // Construct the updated GenratedItemKOT object with meaningful fallbacks
+           const updatedGenratedItemKOT: GenratedItemKOT = {
+             ...this.SearchManagingKOTItems,
+             KOTrunningorders: updatedKOTrunningorders,
+             EmployeeId: this.SearchManagingKOTItems.EmployeeId ?? '',
+             TableId: this.SearchManagingKOTItems.TableId ?? '',
+             RecieptNumber: this.SearchManagingKOTItems.RecieptNumber ?? '',
+             _id: this.SearchManagingKOTItems._id ?? '',
+             createdAt: this.SearchManagingKOTItems.createdAt ?? new Date()
+           };
 
-        // Build new GenratedItemKOT object
-        // Replace the item in KOTrunningorders with updated this.deleteKOTItem
-         this.GenratedItemKOT = [];
-        if (
-          this.SearchManagingKOTItems &&
-          Array.isArray(this.SearchManagingKOTItems.KOTrunningorders)
-        ) {
-          this.GenratedItemKOT = this.SearchManagingKOTItems.KOTrunningorders.map((item: any) => {
-            if (
-              item.SelectProductId === this.manageKOTItem.SelectProductId &&
-              item.selectSubQuantityTypeID === this.manageKOTItem.selectSubQuantityTypeID
-            ) {
-              // Replace with updated deleteKOTItem
-              return {
-                ...item,
-                ...this.manageKOTItem
-              };
-            }
-            return item;
-          });
+           // Log the changes for debugging
+           console.log('Updating KOTrunningorders:', updatedKOTrunningorders);
+           console.log('GenratedItemKOT update payload:', updatedGenratedItemKOT);
 
-          // Build new GenratedItemKOT object (if needed)
-         
-        
-        try {
-          const GenratedItemKOT = {
-            ...this.SearchManagingKOTItems,
-            _id:this.SearchManagingKOTItems._id ?? '',
-            KOTrunningorders: this.GenratedItemKOT,
-            EmployeeId: this.SearchManagingKOTItems.EmployeeId ?? '',
-            TableId: this.SearchManagingKOTItems.TableId ?? '',
-            RecieptNumber: this.SearchManagingKOTItems.RecieptNumber ?? '',
-            createdAt: this.SearchManagingKOTItems.createdAt ?? new Date()
-          };
-         
+           try {
+             // Persist KOTrunningorders update (to backend/service)
+             await firstValueFrom(
+               this.kOTrunningordersService.update(updatedGenratedItemKOT)
+             );
+             console.log('GenratedItemKOT successfully updated (quantity/increment).');
 
-          console.log(this.GenratedItemKOT);
-          await firstValueFrom(this.kOTrunningordersService.update(GenratedItemKOT as GenratedItemKOT));
-          console.log('GenratedItemKOT updated successfully (quantity increment).');
+             // Prepare the GenratedItems object for updating via Store/ngrx
+             const genratedItemsForStore: GenratedItems = {
+               Items: updatedKOTrunningorders,
+               EmployeeId: updatedGenratedItemKOT.EmployeeId,
+               TableId: updatedGenratedItemKOT.TableId,
+               RecieptNumber: updatedGenratedItemKOT.RecieptNumber,
+               _id: this.SearchManagingKOTItems?.ItemsID ?? '',
+               createdAt: updatedGenratedItemKOT.createdAt
+             };
 
-         
-         
-         
+             // Further debug logging if needed
+             console.log('Dispatching updateGenratedItems to NGRX:', genratedItemsForStore);
 
-
-          // Refactored: Construct GenratedItems payload with clearer object structure and meaningful defaults
-          const GenratedItems: GenratedItems = {
-            Items: this.GenratedItemKOT, // Updated KOTrunningorders
-            EmployeeId: this.SearchManagingKOTItems?.EmployeeId ?? '',
-            TableId: this.SearchManagingKOTItems?.TableId ?? '',
-            RecieptNumber: this.SearchManagingKOTItems?.RecieptNumber ?? '',
-            _id: this.SearchManagingKOTItems?.ItemsID ?? '',
-            createdAt: this.SearchManagingKOTItems?.createdAt ?? new Date()
-          };
-
-          // Log for debugging (shows the update payload)
-          console.log('Dispatching update for GenratedItems:', GenratedItems);
-
-          // Call the item update function with the new payload
-          this.updateItems(this.SearchManagingKOTItems?.ItemsID,GenratedItems as GenratedItems);
-        } catch (error) {
-          alert('Failed to update GenratedItemKOT.');
-          console.error(error);
-        }
-      }
+             // Dispatch update to store for state sync (NGRX)
+             this.updateItems(this.SearchManagingKOTItems?.ItemsID, genratedItemsForStore);
+           } catch (error) {
+             alert('Failed to update GenratedItemKOT.');
+             console.error(error);
+           }
+         }
      
-      this.closePopUpByComment.emit(true);
-      this.dispatchLoadKOTrunningorders();
+     // this.dispatchLoadKOTrunningorders();
       //this.loadKOT.emit();
       }
     
@@ -436,7 +438,7 @@ constructor(
           console.log('Updating GenratedItemKOT:', GenratedItemKOT);
           await firstValueFrom(this.kOTrunningordersService.update(GenratedItemKOT));
           console.log('GenratedItemKOT updated successfully.');
-          this.dispatchLoadKOTrunningorders();
+         // this.dispatchLoadKOTrunningorders();
         } catch (error) {
           alert('Failed to update GenratedItemKOT.');
           console.error(error);
@@ -447,7 +449,7 @@ constructor(
           await firstValueFrom(
             this.kOTrunningordersService.delete(this.SearchManagingKOTItems.RecieptNumber)
           );
-          this.dispatchLoadKOTrunningorders();
+         // this.dispatchLoadKOTrunningorders();
           console.log('GenratedItemKOT deleted successfully.');
         } catch (error) {
           alert('Failed to delete GenratedItemKOT.');
@@ -462,6 +464,7 @@ constructor(
     //this.loadKOT.emit();
   }
   dispatchLoadKOTrunningorders() {
+   // this.ManageService_.initRunningKOT();
     this.ManageService_.loadRunningKOT();
   }
   async confirmeKOTUpdatation()

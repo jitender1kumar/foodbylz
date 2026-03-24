@@ -14,6 +14,12 @@ export const loadfoodFailure = createAction(
   '[RunningItem] Load Food Failure',
   props<{ error: any }>()
 );
+
+export const clearRunningItems = createAction(
+  '[RunningItem] Clear Running Items'
+);
+
+
 export const addRunningItem = createAction(
   '[RunningItem] Add Running Item',
   props<{ item: any }>()
