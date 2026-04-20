@@ -91,8 +91,8 @@
           </thead>
           <tbody>
               <!-- if kot running start -->
-               <p>{{KOTItemsdata?.length}}  KOTItemsdata </p>
-          <ng-container *ngIf="KOTItemsdata?.length">
+               <p>{{KOTItemsdata.length}}  KOTItemsdata </p>
+          <ng-container *ngIf="KOTItemsdata.length">
             <ng-container *ngFor="let kot of KOTItemsdata">
               <tr style="background: #eaf6fd;">
                 <td colspan="9" style="font-size:13px; color:#1576b8; font-family:'Segoe UI', Verdana; padding: 5px 10px; border-radius: 6px 6px 0 0;">
@@ -238,7 +238,7 @@
 
       <!-- Summary and Actions -->
       <div *ngIf="(RunningItems_$ | async)?.length && ((RunningItems_$ | async)?.length! > 0)
-        || (!!KOTItemsdata && KOTItemsdata?.length > 0)"
+        || (KOTItemsdata.length > 0)"
         class="summary-section px-2 py-2" style="border-top: 1px solid #ffe6c2; background: #fdf8f2; border-radius:10px 10px 0 0; flex-shrink: 0;">
         <div class="flex justify-between mb-1" style="font-size:15px; font-weight: 500;">
           <span>Total: </span><span>₹{{ totalamount }}</span>
@@ -296,7 +296,7 @@
           </form>
         </div>
         <!-- Actions -->
-        <div *ngIf="KOTItemsdata?.length > 0" class="flex flex-row gap-4 items-center">
+        <div *ngIf="KOTItemsdata.length > 0" class="flex flex-row gap-4 items-center">
           <ng-container ><label class="font-semibold mr-1">Pay Mode:</label>
             <label class="flex items-center gap-1" *ngFor="let payMode of paybydata">
               <input
@@ -310,15 +310,16 @@
             </label>
           </ng-container>
         </div>
+        
         <div class="flex gap-2 justify-center mt-2 mb-1">
-          <ng-container *ngIf="(KOTItemsdata?.length > 0) || (ordermode === 'Pick Up') ">
-            <button
+          <ng-container *ngIf="(KOTItemsdata.length > 0) || (ordermode === 'Pick Up') ">
+            <!-- <button
               class="btn-restaurant primary"
               style="margin-right: 12px;"
               (click)="placeOrder()"
             >
               <i class="fa fa-check-circle"></i> Settle
-            </button>
+            </button> -->
             <button
               class="btn-restaurant primary"
               (click)="printBill()"
@@ -331,22 +332,42 @@
               <i class="fa fa-cutlery"></i> KOT 
             </button>
           </div>
+          <ng-container *ngIf="(RunningItems_$ | async) as runningItems">
+            <div *ngIf="(runningItems?.length || runningItems.length > 0) || (KOTItemsdata.length > 0) || (ordermode === 'Pick Up')">
+              <button
+              class="btn-restaurant accent"
+              style="margin-right: 12px;"
+              (click)="placeOrder()"
+            >
+              <i class="fa fa-check-circle"></i> Settle
+            </button>
+            </div>
+          </ng-container>
           <div *ngIf="(RunningItems_$ | async) as runningItems">
             <ng-container *ngIf="runningItems?.length && runningItems.length > 0 && ordermode != 'Pick Up'">
-              <button class="btn-restaurant accent" style="background-color: #8602bc; color: #fff;" (click)="KOT()">
+              <button class="btn-restaurant accent" style="background-color: #8602bc; color: #fff;" (click)="printBill()">
                 <i class="fa fa-print"></i> Print KOT
               </button>
             </ng-container>
           </div>
-          <ng-container *ngIf="(RunningItems_$ | async) as runningItems">
+          <!-- <ng-container *ngIf="(RunningItems_$ | async) as runningItems">
             <div *ngIf="runningItems?.length && runningItems.length > 0">
               <button class="btn-restaurant danger" (click)="CancelOrder()">
                 <i class="fa fa-times"></i> Cancel Order
               </button>
             </div>
-          </ng-container>
+          </ng-container> -->
+          
         </div>
+        
       </div>
+      <ng-container >
+        <div >
+          <button class="btn-restaurant danger" (click)="CancelOrder()">
+            <i class="fa fa-times"></i> Cancel Order
+          </button>
+        </div>
+      </ng-container>
     </div>
     <!-- Simple CSS for buttons (optional, Atomatic fallback) -->
     <style>
@@ -382,7 +403,7 @@
   <div class="row box" style="max-width: 60%;">
     <button class="close" (click)="close2()">Close</button>
     <div class="col">
-      <pre><h3>Invoice</h3></pre>
+      <pre><h3>Invoice by DELULU</h3></pre>
       <table  class=" w-4/5 mx-auto text-sm text-left text-gray-700 border border-aqua rounded-lg shadow-lg">
         <thead class="text-white bg-gradient-to-r from-cyan-500 to-blue-500">
           <tr>

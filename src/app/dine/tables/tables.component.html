@@ -82,26 +82,31 @@
                     <ng-container *ngFor="let item of runningItemsKOT">
                       <ng-container *ngIf="item.TableId === d._id">
                         <span 
-                        class="table-eye-icon" 
-                        title="Running KOT Order" 
-                        style=" background: rgba(190, 149, 149, 0.849); cursor: pointer; position: absolute;
-                        top: 90%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        z-index: 2;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        width: 30%;
-                        height: 30%;
-                        border: solid gray 1px;
-                        pointer-events: auto;"
-                        (click)="goToHomeKOTedTable(d._id, d.name)">
-                        <i class="fa fa-eye" style="color: #070303; font-size: 2.2em;">
-                          <p style="font-size: 10px;">KOT</p>
-                        </i>
-                      </span>
-                      
+                          class="table-eye-icon" 
+                          title="Running KOT Order" 
+                          style="background: rgba(190, 149, 149, 0.849); cursor: pointer; position: absolute;
+                          top: 90%;
+                          left: 50%;
+                          transform: translate(-50%, -50%);
+                          z-index: 2;
+                          display: flex;
+                          flex-direction: column;
+                          justify-content: center;
+                          align-items: center;
+                          width: 36%;
+                          height: 36%;
+                          border: solid gray 1px;
+                          pointer-events: auto;"
+                          (click)="goToHomeKOTedTable(d._id, d.name)">
+                          <!-- <i class="fa fa-eye" style="color: #070303; font-size: 2.2em; margin-bottom: -6px;"></i> -->
+                          <span style="font-size: 11px; font-weight: bold; color: #1a1a1a; line-height: 12px;">
+                            KOT 
+                            <span *ngIf="item.createdAt" style="display:block; font-size:10px; color:#555; margin-top:-2px;">
+                              {{ getMinutesAgo(item.createdAt) }} min
+                            </span>
+                          </span>
+                          
+                        </span>
                         <!-- We only want one icon, so break here -->
                         <ng-container *ngIf="false"></ng-container>
                         <!-- This hack ensures the rest aren't displayed -->

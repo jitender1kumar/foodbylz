@@ -53,12 +53,61 @@ export const dineTableReducer = createReducer(
     loading: true,
     error: null
   })),
-  on(DineTableActions.updateDineTableSuccess, (state, { IDine_ }) => ({
-    ...state,
-    IDine_: state.IDine_.map(t => t._id === IDine_._id ? IDine_ : t),
-    loading: false,
-    error: null
-  })),
+  // on(DineTableActions.updateDineTableSuccess, (state, { IDine_ }) => ({
+  //   ...state,
+  //   IDine_: state.IDine_.map(t => t._id === IDine_._id ? IDine_ : t),
+  //   loading: false,
+  //   error: null
+  // })),
+  //on(DineTableActions.updateDineTableSuccess, (state, { IDine_ }) => {
+  //   const updatedList = state.IDine_?.map(item =>
+  //     item._id === IDine_._id ? { ...item, ...IDine_ } : item
+  //   ) ?? [];
+  
+  //   return {
+  //     ...state,
+  //     IDine_: updatedList,
+  //     loading: false,
+  //     error: null
+  //   };
+  // }),
+  on(DineTableActions.updateDineTableSuccess, (state, { IDine_ }) => {
+    // Improved: Defensive, clear, and consistent state update on table update success
+    // 1. Ensure IDine_ is a valid update payload (must be object with a string/object _id)
+    if (!IDine_ || typeof IDine_ !== 'object' || !IDine_._id) {
+      return {
+        ...state,
+        loading: false,
+        error: 'Invalid update: missing or malformed IDine_ payload.',
+      };
+    }
+
+    // 2. Always treat state.IDine_ as array
+    const prevList = Array.isArray(state.IDine_) ? state.IDine_ : [];
+
+    // 3. Try to find index of the item to update
+    const idx = prevList.findIndex(item => item && item._id === IDine_._id);
+
+    let nextList: any[];
+    if (idx > -1) {
+      // Update in place and preserve previous items' referential integrity
+      nextList = [
+        ...prevList.slice(0, idx),
+        { ...prevList[idx], ...IDine_ }, // merge to keep any existing fields not present in payload
+        ...prevList.slice(idx + 1)
+      ];
+    } else {
+      // Not found: append as new
+      nextList = [...prevList, IDine_];
+    }
+
+    return {
+      ...state,
+      IDine_: nextList,
+      loading: false,
+      error: null
+    };
+  }),
   on(DineTableActions.updateDineTableFailure, (state, { error }) => ({
     ...state,
     loading: false,

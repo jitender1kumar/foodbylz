@@ -159,6 +159,8 @@ export class AppComponent implements OnInit {
       // Step 2: Load token information (Async/Await)
       (async () => {
         try {
+
+
           await this.manageService.loadToken();
           console.log("Token information loaded successfully.");
 
@@ -201,11 +203,12 @@ export class AppComponent implements OnInit {
   }
 
   cancelOrder(event: any): void {
+    this.MenuName = 'tables';
     this.CancelOrder = event;
    
     console.log(this.CancelOrder);
     this.router.navigate(['/tables']);
-    this.MenuName = 'tables';
+    
   }
   showTablePage(event: string)
   {

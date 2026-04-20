@@ -134,8 +134,8 @@ export class ProductformComponent implements OnInit {
     });
   }
   ngOnInit(): void {
-    // this.loadcategory()
-    // this.loadQtype()
+    this.loadcategory()
+    this.loadQtype()
      this.loadProducts();
   }
   loadcategory() {
@@ -179,34 +179,51 @@ this.loadSubQuantityTypeByQuantityTypeId(this.myAddForm.value.selectQtypeID);
     }
     //console.log(this.myEditForm.value);
   }
+ // ProductName:any;
   add(Product_: Products): void {
     // console.log(products);
     // console.log(products.name);
+   
     const valid = this.ValidationService_.checkNameExistforProductAddForm(this.myAddForm.value.name,this.Products$ );
     console.log(valid);
     console.log(valid.value);
+    console.log(Product_.name);
     // this.service.getbyname(Product_.name).subscribe(data => {
-    //   this.namedata2 = data;
-    //   this.name = this.namedata2.data
-      if (!valid.value) {
-        this.store.dispatch(addProduct({ Product_ }));
-          this.actions$.pipe(ofType(addProductSuccess)).subscribe(() => {
-                // this.args="Product Updated";
-                 this.popupenvironments.args$.next("Product Added");
-                  this.loadProducts();
-                });
-             this.actions$.pipe(ofType(ProductActions.addProductFailure)).subscribe(() => {
-                 
-                 this.popupenvironments.args$.next("Failed to add Product");
-                 
-                });
+    //   this.ProductName = data;
+    //   this.name = this.ProductName.data
+    //   console.log();
+    //   console.log(this.name.length);
+     // console.log(this.name.name);
+      // if(this.name.length>0) 
+      // {
+      //   this.popupenvironments.args$.next("Product Exists.");
+      //   return;
+      // }
+        
+      if (valid.value) {
+     
+                this.popupenvironments.args$.next("Item already exist and add another Item ");
         // this.loadProducts();
         // this.args="Product " + Product_.name + " added.";
         // this.Products$ = this.store.select(state => state.productLoad.Product_.data);
       }
-      else if (valid.value) {
+      else{
+        this.store.dispatch(addProduct({ Product_ }));
+        this.actions$.pipe(ofType(addProductSuccess)).subscribe(() => {
+              // this.args="Product Updated";
+               this.popupenvironments.args$.next("Product Added");
+              
+              });
+           this.actions$.pipe(ofType(ProductActions.addProductFailure)).subscribe(() => {
+               
+               this.popupenvironments.args$.next("Failed to add Product");
+               
+              });
+              this.store.dispatch(loadProduct());
+              this.Products$ = this.store.select(state => state.productLoad.Product_.data);
+    //  } if (valid.value) {
         //this.args="Item already exist and add another Item "+Product_.name;
-        this.popupenvironments.args$.next("Item already exist and add another Item ");
+       
         // +Product_.name
        // this.SweetAlert2_.showFancyAlertFail("Item already exist and add another Item " + Product_.name);
       }
@@ -317,10 +334,11 @@ this.loadSubQuantityTypeByQuantityTypeId(this.myAddForm.value.selectQtypeID);
         this.actions$.pipe(ofType(deleteProductSuccess)).subscribe(() => {
                  //this.args="Product Updated";
                   this.loadProducts();
+                  this.SweetAlert2_.showFancyAlertSuccess("Deleted");
                 });
-             this.actions$.pipe(ofType(ProductActions.deleteProductFailure)).subscribe(() => {
-                 this.SweetAlert2_.showFancyAlertFail("Failed to delete");
-                });
+            //  this.actions$.pipe(ofType(ProductActions.deleteProductFailure)).subscribe(() => {
+            //      this.SweetAlert2_.showFancyAlertFail("Failed to delete");
+            //     });
         // this.store.dispatch(loadProduct());
         // this.Products$ = this.store.select(state => state.productLoad.Product_.data);
         //this.SweetAlert2_.showFancyAlertSuccess("Deleted.");

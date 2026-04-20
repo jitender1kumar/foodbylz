@@ -67,6 +67,9 @@ import {
 } from 'rxjs/internal/Observable';
 import { ManageService } from '../../core/Services/manage.service';
 import * as InvoiceActions from '../../core/store/invoiceStor/invoice.actions';
+import * as DineTableActions from '../../dine/dineStore/dinetableStore/dinetable.action'
+import { Actions, ofType } from '@ngrx/effects';
+import { filter, take } from 'rxjs';
 //import * as runningItemActions from '';
 //import * as RunningItemKOTActions from '../../home/homeStore/runningItemKOTStore/runningItemKOT.action';
 @Component({
@@ -80,8 +83,8 @@ import * as InvoiceActions from '../../core/store/invoiceStor/invoice.actions';
 export class TablesComponent implements OnInit {
   @Input() Floordata$: any;
   @Input() DineData$: any;
- // @Input() TokenNumber: any;
- TokenNumber:number;
+  // @Input() TokenNumber: any;  
+  TokenNumber: number;
   @Input() runningItemsKOT$?: Observable<any[]>;
   @Input() pickupOrder: any;
   @Input() CancelOrder: any;
@@ -195,6 +198,7 @@ export class TablesComponent implements OnInit {
   reserveCustomer: any;
   invoiceRecords: any;
 
+
   constructor(
     private service: DineService,
     private quantitytypeService: QuantitytypeService,
@@ -208,18 +212,19 @@ export class TablesComponent implements OnInit {
     private customerservice: CustomresService,
     private reservedineservice: ReserveDineService,
     private datePipe: DatePipe,
-    private getOrderDetailsService: GetOrderDetailsService,
+    private getOrderDetailsService: GetOrderDetailsService, public actions$: Actions,
     private initializeInvoice: InitializeInvoice,
-    private store: Store<{ reserveTableReducer_: any,invoiceReducer_:any, runningItemKOTReducer_:any }>,
-    private manageService:ManageService
+    private store: Store<{ reserveTableReducer_: any, invoiceReducer_: any, dineTableReducer_: any, runningItemKOTReducer_: any }>,
+
+    private manageService: ManageService
   ) {
-   // this.loadrunnigKOTITems();
-   
+    // this.loadrunnigKOTITems();
+
     // this.runningItemsKOT$= this.store.select(
     //   state => state.runningItemKOTReducer_?.KOTrunningorders?.data
     // );
-    
-   // this.ReservedTable$ = this.store.select(state => state.reserveTableReducer_.ReserveTables.data);
+
+    // this.ReservedTable$ = this.store.select(state => state.reserveTableReducer_.ReserveTables.data);
     const today = new Date();
     this.currentTime = `${today.getHours() > 12 ? today.getHours() - 12 : today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
     this.currentDateOnly = today.toISOString().split('T')[0];
@@ -228,7 +233,7 @@ export class TablesComponent implements OnInit {
     // this.invoicedelete = this.initializeInvoice.initializeInvoice("Cancelled", this.employeeId, 0);
     // this.invoicepickup = this.initializeInvoice.initializeInvoice("New Order", this.employeeId, 0);
     // this.invoice = this.initializeInvoice.initializeInvoice("Cancelled", this.employeeId, 0);
-    this.TokenNumber=0;
+    this.TokenNumber = 0;
     this.args = null;
     this.tabactive0 = "table-tab active";
     this.tabactive1 = "table-tab ";
@@ -324,15 +329,17 @@ export class TablesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-   // alert("ng")
-   
-  
+    // //alert("ng")
+
+
     this.referesh();
+    console.log(this.CancelOrder);
     if (this.CancelOrder) {
-     // alert("Cancel "+this.CancelOrder);
-     //this.CancelOrder === invoiceID
+      //  //alert(this.CancelOrder)
+      // //alert("Cancel "+this.CancelOrder);
+      //this.CancelOrder === invoiceID
       this.cancel(this.CancelOrder);
-      this.clearCancelOrder.emit("");
+      // this.clearCancelOrder.emit("");
     }
     if (this.pickupOrder === "pickup") {
       this.TokenNumber = 0;
@@ -351,15 +358,15 @@ export class TablesComponent implements OnInit {
       //   }
       // });
     }
-  //  this.loadrunnigKOTITems();
+    //  this.loadrunnigKOTITems();
   }
   // INSERT_YOUR_CODE
   // If runningItemsKOT$ is not already loaded, load it using a service method
   // INSERT_YOUR_CODE
   // If runningItemsKOT$ is not already loaded, load it using a service method
- 
+
   // loadrunnigKOTITems() {
-   
+
   //     // Assuming you have a service to provide runningItemsKOT$
   //     // Refactored: Call method directly if service is present, drop unnecessary check for method existence
   //     this.store.dispatch(RunningItemActions.loadKOTRunningItems());
@@ -374,7 +381,7 @@ export class TablesComponent implements OnInit {
   }
 
   referesh(): void {
-   // this.datecurrent = this.gettoday();
+    // this.datecurrent = this.gettoday();
     this.loadrunningorder();
     this.loadReservedDineData();
     this.loadallchair();
@@ -429,7 +436,7 @@ export class TablesComponent implements OnInit {
     }
   }
   goToHomeKOTedTable(tableId: any, tableName: string): void {
-   
+
     const KOTTable = this.runningorder?.find((item: any) =>
       item?.Chairsrunningorder?.some((chair: any) => chair.table_id === tableId)
     );
@@ -487,7 +494,7 @@ export class TablesComponent implements OnInit {
   initializeCustomer(CustomerDetail: any): void {
     this.CustomerId = CustomerDetail._id;
     this.getCustomerName(this.CustomerId);
-    alert(this.CustomerId);
+    //alert(this.CustomerId);
   }
 
   getCustomerName(customer_id: string): void {
@@ -583,6 +590,23 @@ export class TablesComponent implements OnInit {
     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
     this.distanceday = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  }
+  // INSERT_YOUR_CODE
+  /**
+   * Returns the number of minutes (as an integer) between a date string and the current date.
+   * If createdAt or now is invalid, returns 'N/A'.
+   */
+  getMinutesAgo(createdAt: string | Date,): number | string {
+    try {
+      const now: Date = new Date()
+      const createdDate = new Date(createdAt);
+      if (isNaN(createdDate.getTime())) return 'N/A';
+      const diffMs = now.getTime() - createdDate.getTime();
+      if (diffMs < 0) return 0;
+      return Math.floor(diffMs / (1000 * 60));
+    } catch {
+      return 'N/A';
+    }
   }
 
   showreserveDine(): void {
@@ -730,110 +754,174 @@ export class TablesComponent implements OnInit {
   }
 
   cancel(InvoiceID: any): void {
-    this.chairsrunningorderservice.getbyid(InvoiceID).subscribe(data => {
-      if (!data) return;
+    // Fetch the running order by invoice ID.
+    //alert("cancel");
+    this.chairsrunningorderservice.getbyid(InvoiceID).subscribe(runningOrderResp => {
+      if (!runningOrderResp || !Array.isArray((runningOrderResp as any).data)) return;
+      //alert("cancel1");
+      // Normalize running orders.
+      const runningOrders: any[] = (runningOrderResp as any).data;
+      const runningOrder = runningOrders[0];
+      const chairs: any[] = runningOrder?.Chairsrunningorder || [];
+      //alert("cancel2");
+      if (!chairs.length) return;
+      //alert("cancel3");
+      const tableId = chairs[0]?.table_id;
+      console.log(tableId);
+      // Helper: Loads dine data, optionally triggers fetch if needed.
+      // const ensureDineDataLoaded = (onLoaded: () => void) => {
+      //   //alert("cancel4");
+      // Try to use existing dine data.
+      this.DineData$.pipe(take(1)).subscribe((dinedata: any) => {
+        console.log(dinedata);
 
-      this.runningorder2_cancel_by_id = data;
-      this.runningorder_cancel_by_id = this.runningorder2_cancel_by_id.data;
+        this.dinedata2 = dinedata;
 
-      const runningOrder = Array.isArray(this.runningorder_cancel_by_id)
-        ? this.runningorder_cancel_by_id[0]
-        : undefined;
-      const chairs = runningOrder?.Chairsrunningorder || [];
 
-      if (chairs.length > 0) {
-        const tableId = chairs[0]?.table_id;
-        // this.DineData$.subscribe((DineData: any) => {
-        //   this.dinedata2 = DineData.data;
-        // });
-        this.DineData$.subscribe((DineData: any) => {
-          this.dinedata2 = DineData?.data || DineData || [];
-        });
-        console.log(this.dinedata2);
-        if (Array.isArray(this.dinedata2)) {
-          const dine = this.dinedata2.find((itm: { _id: any }) => itm._id === tableId);
-          console.log(dine);
-          if (dine) {
-            const updatedDine = {
-              _id: dine._id,
-              name: dine.name,
-              description: dine.description,
-              status: true,
-              floor_id: dine.floor_id,
-              employee_id: this.employeeId
-            };
-            this.service.update(updatedDine).subscribe(resp => {
-              if (!resp) return;
-                this.referesh();
-                this.service.loaddine();
-                this.DineData$ = this.service.dinedataSubject$;
-                chairs.forEach((chair: any) => {
-                  const updatedChair = {
-                    ...this.chair2,
-                    _id: chair._id,
-                    name: chair.name,
-                    description: chair.description,
-                    status: true,
-                    table_id: chair.table_id,
-                    chairorderstatus: "1"
-                  };
-                  this.chairservice.update(updatedChair).subscribe(updated=>
-                  {
-                    if(!updated)return;
-                    this.chairsrunningorderservice.delete(InvoiceID).subscribe(deleted=>
-                    {
-                      if(!deleted)return;
-                      this.invoiceService.getbyid(InvoiceID).subscribe((invoiceResp: any) => {
-                        if (!invoiceResp) return;
-                        let invoices: any[] = [];
-                        if (Array.isArray(invoiceResp.data)) {
-                          invoices = invoiceResp.data;
-                        } else if (Array.isArray(invoiceResp)) {
-                          invoices = invoiceResp;
-                        } else {
-                          if (invoiceResp.data) invoices = [invoiceResp.data];
-                          else if (invoiceResp) invoices = [invoiceResp];
-                        }
-                        invoices.forEach((inv: any) => {
-                          const cancelInvoice = {
-                            ...inv,
-                            AddOnItems: [],
-                            taxpecentRate: 0,
-                            taxpercentValue: 0,
-                            Discountvalue: 0,
-                            Discountperstage: 0,
-                            AdditionaldiscountAmount: 0,
-                            Totalvaue: 0,
-                            grandtotal: 0,
-                            PaidAmount: 0,
-                            PendingAmount: 0,
-                            TotalTaxAmount: 0,
-                            TotalItemsAmount: 0,
-                            Orderstatus: "Cancelled",
-                            AssistToId: inv.AssistToId ?? '',
-                            CommentId: inv.Comment ?? '',
-                            returnAmount: inv.returnAmount ?? ''
-                          };
-                          this.store.dispatch(InvoiceActions.updateInvoice({ invoice: cancelInvoice }));
-                          // });
-                        });
-                      });
-                    }
-                    );
-                  }
-                  );
-                });
-               });
-          }
-        }
-      }
 
-     
+        const dine = this.dinedata2.find((itm: { _id: any }) => itm._id === tableId);
+        console.log(dine);
+        if (!dine) return;
 
-     
+        // Update table status to true (available/open).
 
-      
+        const updatedDine = {
+          _id: dine._id,
+          name: dine.name,
+          description: dine.description,
+          status: true,
+          floor_id: dine.floor_id,
+          employee_id: dine.employee_id,
+        };
+        //alert("cancel15");
+        this.dine = updatedDine; // For legacy logic/side effects elsewhere.
+        //alert("cancel16");
+        this.store.dispatch(DineTableActions.updateDineTable({ IDine_: updatedDine }));
+        alert("cancel17");
+        // Wait for DineTableActions.updateDineTableSuccess before proceeding with the rest of the cancel order cascade.
+        // This ensures the store update completes before deleting the running order/invoice.
+        this.actions$
+          .pipe(
+            ofType(DineTableActions.updateDineTableFailure),
+            // filter((action: any) => action?.IDine_?._id === dine._id),
+            // take(1)
+          )
+          .subscribe({
+            next: (error: any) => {
+              console.log("An error occurred while updating the table status.", error);
+            },
+            error: (error: any) => {
+              console.log("An error occurred while updating the table status.", error);
+            }
+          });
+          
+
+
+
+
+        alert("cancel18");
+        this.actions$
+          .pipe(
+            ofType(DineTableActions.updateDineTableSuccess),
+           // filter((action: any) => action?.IDine_?._id === dine._id),
+            take(1)
+          )
+          .subscribe({
+            next: () => {
+             this.deleteRunningOrder(InvoiceID);
+           //  alert("done");
+            },
+            error: (err: any) => {
+              console.log(err);
+             
+            }
+          });
+      });
     });
+
+  }
+  deleteRunningOrder(InvoiceID:string)
+  {
+    this.chairsrunningorderservice.delete(InvoiceID).subscribe((deleted: any) => {
+                if (!deleted) {
+                  //alert("cancel20");
+                  return;
+                }
+
+                this.invoiceService.getbyid(InvoiceID).subscribe((invoiceResp: any) => {
+                  if (!invoiceResp) {
+                    //alert("cancel21");
+                    return;
+                  }
+
+                  // Normalize invoices response into an array
+                  const invoices: any[] = (() => {
+                    if (invoiceResp.data && Array.isArray(invoiceResp.data)) {
+                      //alert("cancel22");
+                      return invoiceResp.data;
+                    }
+                    if (Array.isArray(invoiceResp)) {
+                      //alert("cancel23");
+                      return invoiceResp;
+                    }
+                    if (invoiceResp.data) {
+                      //alert("cancel24");
+                      return [invoiceResp.data];
+                    }
+                    if (invoiceResp) {
+                      //alert("cancel25");
+                      return [invoiceResp];
+                    }
+                    return [];
+                  })();
+
+                  invoices.forEach((inv: any) => {
+                    //alert("cancel26");
+                    const cancelInvoice = {
+                      ...inv,
+                      AddOnItems: [],
+                      taxpecentRate: 0,
+                      taxpercentValue: 0,
+                      Discountvalue: 0,
+                      Discountperstage: 0,
+                      AdditionaldiscountAmount: 0,
+                      Totalvaue: 0,
+                      grandtotal: 0,
+                      PaidAmount: 0,
+                      PendingAmount: 0,
+                      TotalTaxAmount: 0,
+                      TotalItemsAmount: 0,
+                      Orderstatus: "Cancelled",
+                      AssistToId: inv.AssistToId ?? '',
+                      CommentId: inv.Comment ?? '',
+                      returnAmount: inv.returnAmount ?? ''
+                    };
+                    //alert("cancel27");
+                    this.store.dispatch(InvoiceActions.updateInvoice({ invoice: cancelInvoice }));
+                    this.store.dispatch(DineTableActions.loadDineTables());
+                    this.DineData$ = this.store
+                      .select(state => state.dineTableReducer_.IDine_?.data);
+                    this.DineData$.subscribe((dinedata: any) => {
+                      console.log(dinedata);
+                      this.dinedata2 = dinedata;
+                    });
+                    this.loadrunningorder();
+
+                    this.dine = {
+                      _id: "",
+                      name: "",
+                      description: '',
+                      status: true,
+                      floor_id: '',
+                      employee_id: this.employeeId
+                    };
+                    
+                    this.clearCancelOrder.emit("");
+                    // alert("last");
+                    console.log("Table status updated successfully.");
+                  });
+                });
+              });
   }
   loadrunningorder(): void {
     this.chairsrunningorderservice.get().subscribe(data => {
@@ -845,7 +933,7 @@ export class TablesComponent implements OnInit {
     });
   }
   goToHomeBookedTable(_id: string, tablename: string): void {
-   // alert("Home");
+    // //alert("Home");
     const reservedTable = this.runningorder?.find((item: any) =>
       item?.Chairsrunningorder?.some((chair: any) => chair.table_id === _id)
     );
@@ -868,7 +956,7 @@ export class TablesComponent implements OnInit {
     this.notifyManage2.emit(combinedToken);
   }
 
-  
+
 
   mergeFloorNameWithDine(): void {
     this.DineData$.subscribe((dineArr: any) => {
@@ -945,8 +1033,7 @@ export class TablesComponent implements OnInit {
 
   loadchairsrunningorderselected(tablename: any): void {
     const now = new Date();
-    if(!this.TokenNumber || this.TokenNumber==0) 
-    {
+    if (!this.TokenNumber || this.TokenNumber == 0) {
       this.manageService.loadToken();
       this.TokenNumber = +this.manageService.TokenNumber$.getValue();
     }
@@ -1020,105 +1107,105 @@ export class TablesComponent implements OnInit {
             chairorderstatus: "1"
           }));
         this.chairsrunningorderarr3 = runningChairs;
-       let dineDataArray: any[] = [];
-       const dineDataSub = this.DineData$.subscribe((data: any[]) => {
-         dineDataArray = data;
-       });
+        let dineDataArray: any[] = [];
+        const dineDataSub = this.DineData$.subscribe((data: any[]) => {
+          dineDataArray = data;
+        });
 
 
-       
-          const tableObj = Array.isArray(dineDataArray)
-            ? dineDataArray.find((itm: { _id: any }) => itm._id === tablename)
-            : undefined;
-          this.tablename = tableObj && tableObj.name ? tableObj.name : "";
-          const chairsRunningOrder = {
-            Chairsrunningorder: this.chairsrunningorderarr3,
-            tablename: this.tablename,
-            receiptnumber: this.reserveCustomer?.RecieptNumber ?? this.invoiceidforpickup.toString(),
-            tokennumber: this.TokenNumber
-          };
-          this.chairsrunningorderservice.add(chairsRunningOrder).subscribe(res => {
-            if (res && res.data) {
-              for (const chair of this.chairsbytable_id.data) {
-                if (chair.table_id === tablename) {
-                  if (chair.chairorderstatus === "1" || chair.chairorderstatus === "2") {
-                    this.chair = {
-                      _id: chair._id,
-                      name: chair.name,
-                      description: chair.description,
-                      status: true,
-                      table_id: chair.table_id,
-                      chairorderstatus: "1"
-                    };
-                    this.chairservice.update(this.chair).subscribe(uData => {
-                      if (uData) {
-                        this.loadallchair();
-                        this.loadrunningorder();
-                      }
-                    });
-                  } else if (chair.chairorderstatus === "0") {
-                    this.loadallchair();
-                    this.loadrunningorder();
-                  }
+
+        const tableObj = Array.isArray(dineDataArray)
+          ? dineDataArray.find((itm: { _id: any }) => itm._id === tablename)
+          : undefined;
+        this.tablename = tableObj && tableObj.name ? tableObj.name : "";
+        const chairsRunningOrder = {
+          Chairsrunningorder: this.chairsrunningorderarr3,
+          tablename: this.tablename,
+          receiptnumber: this.reserveCustomer?.RecieptNumber ?? this.invoiceidforpickup.toString(),
+          tokennumber: this.TokenNumber
+        };
+        this.chairsrunningorderservice.add(chairsRunningOrder).subscribe(res => {
+          if (res && res.data) {
+            for (const chair of this.chairsbytable_id.data) {
+              if (chair.table_id === tablename) {
+                if (chair.chairorderstatus === "1" || chair.chairorderstatus === "2") {
+                  this.chair = {
+                    _id: chair._id,
+                    name: chair.name,
+                    description: chair.description,
+                    status: true,
+                    table_id: chair.table_id,
+                    chairorderstatus: "1"
+                  };
+                  this.chairservice.update(this.chair).subscribe(uData => {
+                    if (uData) {
+                      this.loadallchair();
+                      this.loadrunningorder();
+                    }
+                  });
+                } else if (chair.chairorderstatus === "0") {
+                  this.loadallchair();
+                  this.loadrunningorder();
                 }
               }
-              this.chairs2 = res;
-              this.invoiceid = this.reserveCustomer?.RecieptNumber ?? this.chairs2.data.receiptnumber;
-              const invoice = {
-                Taxes: [],
-                Chairs: [],
-                AddOnItems: [],
-                taxpecentRate: 0,
-                taxpercentValue: 0,
-                DiscountId: "",
-                Discountvalue: 0,
-                Discountperstage: 0,
-                AdditionaldiscountAmount: 0,
-                Totalvaue: 0,
-                RecieptNumber: +this.invoiceid,
-                grandtotal: 0,
-                OrderType: '',
-                PendingAmount: 0,
-                PaidAmount: 0,
-                AmountPaidstatus: false,
-                Orderstatus: "New Order",
-                TotalTaxAmount: 0,
-                TotalItemsAmount: 0,
-                paybyId: 'undefined',
-                OrderTypeName: "",
-                table_id: this.reserveCustomer ? this.reserveCustomer.TableId : tablename,
-                customer_id: this.reserveCustomer ? this.reserveCustomer.CustomerId : "undefined",
-                employee_id: this.employeeId,
-                tablename: this.reserveCustomer ? this.reserveCustomer.TableName : this.tablename,
-                AssistToId: 'undefined',
-                CommentId: 'undefined',
-                returnAmount: 0,
-                tokennumber: this.TokenNumber,
-                createdAt: new Date().toISOString()
-              };
-              (this.invoiceService.add(invoice as any)).subscribe(inv => {
-                if (inv) {
-                  this.dine.status = false;
-                  this.dine._id = tablename;
-                  this.DineData$.subscribe((updateDineArr: any[]) => {
-                    const dine = Array.isArray(updateDineArr)
-                      ? updateDineArr.find((item: any) => item._id === tablename)
-                      : null;
-                    this.dine.name = dine ? dine.name : '';
-                    this.dine.description = dine ? dine.description : '';
-                    this.dine.floor_id = dine ? dine.floor_id : '';
-                    this.service.update(this.dine).subscribe(data => {
-                      if (data) {
-                        this.notifyManage2.emit(`${this.invoiceid}jsk${this.TokenNumber}`);
-                      }
-                    });
-                  });
-                }
-              });
-              this.invoiceid2 = this.invoiceid.toString();
             }
-          });
-        
+            this.chairs2 = res;
+            this.invoiceid = this.reserveCustomer?.RecieptNumber ?? this.chairs2.data.receiptnumber;
+            const invoice = {
+              Taxes: [],
+              Chairs: [],
+              AddOnItems: [],
+              taxpecentRate: 0,
+              taxpercentValue: 0,
+              DiscountId: "",
+              Discountvalue: 0,
+              Discountperstage: 0,
+              AdditionaldiscountAmount: 0,
+              Totalvaue: 0,
+              RecieptNumber: +this.invoiceid,
+              grandtotal: 0,
+              OrderType: '',
+              PendingAmount: 0,
+              PaidAmount: 0,
+              AmountPaidstatus: false,
+              Orderstatus: "New Order",
+              TotalTaxAmount: 0,
+              TotalItemsAmount: 0,
+              paybyId: 'undefined',
+              OrderTypeName: "",
+              table_id: this.reserveCustomer ? this.reserveCustomer.TableId : tablename,
+              customer_id: this.reserveCustomer ? this.reserveCustomer.CustomerId : "undefined",
+              employee_id: this.employeeId,
+              tablename: this.reserveCustomer ? this.reserveCustomer.TableName : this.tablename,
+              AssistToId: 'undefined',
+              CommentId: 'undefined',
+              returnAmount: 0,
+              tokennumber: this.TokenNumber,
+              createdAt: new Date().toISOString()
+            };
+            (this.invoiceService.add(invoice as any)).subscribe(inv => {
+              if (inv) {
+                this.dine.status = false;
+                this.dine._id = tablename;
+                this.DineData$.subscribe((updateDineArr: any[]) => {
+                  const dine = Array.isArray(updateDineArr)
+                    ? updateDineArr.find((item: any) => item._id === tablename)
+                    : null;
+                  this.dine.name = dine ? dine.name : '';
+                  this.dine.description = dine ? dine.description : '';
+                  this.dine.floor_id = dine ? dine.floor_id : '';
+                  this.service.update(this.dine).subscribe(data => {
+                    if (data) {
+                      this.notifyManage2.emit(`${this.invoiceid}jsk${this.TokenNumber}`);
+                    }
+                  });
+                });
+              }
+            });
+            this.invoiceid2 = this.invoiceid.toString();
+          }
+        });
+
       });
     }
   }
@@ -1146,5 +1233,5 @@ export class TablesComponent implements OnInit {
     });
   }
 
-  
+
 }

@@ -2,16 +2,22 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { from, of } from 'rxjs';
-import { map, catchError, switchMap } from 'rxjs/operators';
+import { map, catchError, switchMap, take } from 'rxjs/operators';
 import * as RunningItemActions from './runningItem.action';
  import { HomeManageService } from '../../Services/homeManage.service';
  import { RunningItemsPouchdbService } from '../../../core/db/services/runningItemsPouchdb.service';
+import { Store } from '@ngrx/store';
 
 // No API call; all logic is handled in reducer as per reducer code/context.   ,private PouchdbService_:PouchdbService
 
 @Injectable()
 export class RunningItemEffects {
-  constructor(private actions$: Actions,private HomeManageService_:HomeManageService,private RunningItemsPouchdbService_:RunningItemsPouchdbService) {}
+  constructor(
+    private actions$: Actions,
+    private HomeManageService_:HomeManageService,
+    private RunningItemsPouchdbService_:RunningItemsPouchdbService,
+    private store: Store<{ runningItemReducer_: { RunningItems_: any[] } }>
+  ) {}
 //private HomeManageService_:HomeManageService,
   // updateRunningItemQuantity$ = createEffect(() =>
   //   this.actions$.pipe(
@@ -103,6 +109,46 @@ export class RunningItemEffects {
       }),
       catchError(error =>
         of(RunningItemActions.loadfoodFailure({ error }))
+      )
+    )
+  );
+
+  updateRunningItemQuantity$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(RunningItemActions.updateRunningItemQuantity),
+      switchMap(({ invoiceid }) =>
+        this.store.select(state => state.runningItemReducer_.RunningItems_).pipe(
+          take(1),
+          map((updatedRunningItems) => {
+            localStorage.setItem(invoiceid, JSON.stringify(updatedRunningItems));
+            return RunningItemActions.updateRunningItemQuantitySuccess({
+              updatedRunningItem: updatedRunningItems
+            });
+          }),
+          catchError(error =>
+            of(RunningItemActions.updateRunningItemQuantityFailure({ error }))
+          )
+        )
+      )
+    )
+  );
+
+  updateRunningItemNotes$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(RunningItemActions.updateRunningItemNotes),
+      switchMap(({ invoiceid }) =>
+        this.store.select(state => state.runningItemReducer_.RunningItems_).pipe(
+          take(1),
+          map((updatedRunningItems) => {
+            localStorage.setItem(invoiceid, JSON.stringify(updatedRunningItems));
+            return RunningItemActions.updateRunningItemNotesSuccess({
+              RunningItems_: updatedRunningItems
+            });
+          }),
+          catchError(error =>
+            of(RunningItemActions.updateRunningItemNotesFailure({ error }))
+          )
+        )
       )
     )
   );

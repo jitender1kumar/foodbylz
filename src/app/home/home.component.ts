@@ -336,8 +336,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.loading$ = store.select(state => state.runningItemReducer_.loading);
     this.error$ = store.select(state => state.runningItemReducer_.error);
   }
-KOTItemsdata:any;
-AllProductWithPrice:any;
+KOTItemsdata: GenratedItemKOT[] = [];
+AllProductWithPrice: ProductPriceDetails[] = [];
 items: any[] = [];
   dineData$: any;
 
@@ -355,6 +355,13 @@ items: any[] = [];
    this.initializeKOTRunningItems();
 
     this.loadFood();
+    const runningItemsSub = this.RunningItems_$
+      ?.subscribe((items: RunningItems[]) => {
+        this.runningItemsArr = Array.isArray(items) ? [...items] : [];
+      });
+    if (runningItemsSub) {
+      this.subscriptions.push(runningItemsSub);
+    }
 
     this.myDiscountForm = this.fb.group({
       discount: '',
@@ -374,9 +381,6 @@ items: any[] = [];
   loadFood()
   {
     this.store.dispatch(RunningItemActions.loadfood({ invoiceid: this.invoiceid }));
-    this.RunningItems_$ = this.store.select(state => state.runningItemReducer_.RunningItems_);
-    this.loading$ = this.store.select(state => state.runningItemReducer_.loading);
-    this.error$ = this.store.select(state => state.runningItemReducer_.error);
     this.calculateTotalAmount();
   
   }
@@ -398,12 +402,10 @@ items: any[] = [];
         allppdata: FilteredRunningItemData
       })
     );
-  this.RunningItems_$ = this.store.select(state => state.runningItemReducer_.RunningItems_);
   this.calculateTotalAmount();
   }
   quntityvalueNumber:number=0;
   onQuantityChange(d: any,quntityvalue:any): void {
-    console.log("d", d, "quntityvalue", quntityvalue);
     // If input is not a positive number, set to 1 as minimum
     this.quntityvalueNumber=quntityvalue;
     if (!quntityvalue || quntityvalue < 1) {
@@ -423,7 +425,6 @@ const FilteredRunningItemData=this.filterProductwithPriceRunningItem(d.SelectPro
         allppdata: FilteredRunningItemData
       })
     );
-    this.RunningItems_$ = this.store.select(state => state.runningItemReducer_.RunningItems_);
     
   }
 filterProductwithPriceRunningItem(ProductId:string,SubQuantityTypeName:string)
@@ -456,7 +457,6 @@ filterProductwithPriceRunningItem(ProductId:string,SubQuantityTypeName:string)
     });
     //const invoiceData = this.HomeManageService_.loadinvoice(this.invoiceid, this.InvoiceData$) 
     
-    console.log(this.InvoiceTableData_);
   }
   getid(event: any): void {
     if (!this.chardata) return;
@@ -469,14 +469,11 @@ filterProductwithPriceRunningItem(ProductId:string,SubQuantityTypeName:string)
   getpaybyid(_id:string): void {
     //this.paybydata;
     this.paybyId=_id;
-    console.log(this.paybyId);
   }
 
   getproductbycategory(_id: any): void {
    
     if (this.ordermode) {
-      console.log(_id);
-     
       this.loadproductpricename(_id);
     }
   }
@@ -490,9 +487,8 @@ filterProductwithPriceRunningItem(ProductId:string,SubQuantityTypeName:string)
     KOTStatus: 'false',
     RecieptNumbers: this.invoiceid // Fixed property: should be RecieptNumbers, not RecieptNumber
   }));
-  this.chairsrunningorderservice.delete(this.invoiceid).subscribe(deleted=>
+  this.chairsrunningorderservice.delete(this.invoiceid).subscribe(() =>
   {
-if(deleted) console.log(deleted);
   })
   }
   dineDataSubscription:Subscription | undefined;
@@ -521,15 +517,52 @@ if(deleted) console.log(deleted);
         employee_id: this.employeeId,
       };
 
-      console.log('Updated dine object:', this.dine);
-
       this.store.dispatch(DineTableActions.updateDineTable({ IDine_: this.dine }));
+      this.actions$
+      .pipe(
+        ofType(DineTableActions.updateDineTableFailure),
+       //  filter((action: any) => action?.IDine_ && action.IDine_._id === dine._id),
+        take(1)
+      )
+      .subscribe({
+        next: (error: any) => {
+          console.error("An error occurred while updating the table status.", error);
+        },
+        error: (error: any) => {
+          console.error("An error occurred while updating the table status.", error);
+        }
+      });
      // this.dineDataSubscription?.unsubscribe();
     });
   
-   
+    this.actions$
+    .pipe(
+      ofType(DineTableActions.updateDineTableSuccess),
+     //  filter((action: any) => action?.IDine_ && action.IDine_._id === dine._id),
+      take(1)
+    )
+    .subscribe( {
+      next: () => {
+        
+      },
+      error: (error: any) => {
+        console.error("An error occurred while updating the table status.", error);
+      }
+    }); 
   }
-  genrateOrder(): void {
+  CancelOrder(): void {
+    // Clear localStorage entries related to the given invoice ID
+    this.genrateOrderFinal('Cancelled',false); 
+    // this.ClearLocalStorage();
+    // this.cancelOrder.emit(this.invoiceid);
+    // this.ClearSomeVariable();
+  
+  }
+  genrateOrder()
+  {
+    this.genrateOrderFinal('Sattled',true); 
+  }
+  genrateOrderFinal(InvoiceStatus:string,PaidStatus:boolean): void {
     
       const r = this.getRunningItemsValues();
       this.RunningItems_2 = Array.isArray(r) ? [...r] : [];
@@ -538,7 +571,7 @@ if(deleted) console.log(deleted);
       this.gitems2 = [];
      // let invoice;
       if (this.discountvalue === this.paidamount) {
-        this.genrateInvoice('Sattled', true).then(invoice => {
+        this.genrateInvoice(InvoiceStatus, PaidStatus).then(invoice => {
           this.updateInvoiceFunction(invoice);
 
           // Safely call updateTableStatusByTableId if invoice has needed properties
@@ -550,7 +583,7 @@ if(deleted) console.log(deleted);
           ) {
            
             this.updateTableStatusByTableId(invoice.table_id, invoice.tablename);
-            this.deleteRunningKOT();
+           // this.deleteRunningKOT();
           //  alert("table updated");
           }
           if (typeof this.removerunningOrderKOT === 'function') {
@@ -576,7 +609,7 @@ if(deleted) console.log(deleted);
           console.error('Error generating invoice:', err);
         });
       } else {
-        this.genrateInvoice('Sattled', false).then(invoice => {
+        this.genrateInvoice(InvoiceStatus, false).then(invoice => {
           this.updateInvoiceFunction(invoice);
 
           // Ensure getCustomerName exists and is callable
@@ -594,7 +627,7 @@ if(deleted) console.log(deleted);
            
             this.updateTableStatusByTableId(invoice.table_id, invoice.tablename);
           //  alert("table updated");
-          this.deleteRunningKOT();
+        //  this.deleteRunningKOT();
           }
           if (typeof this.removerunningOrderKOT === 'function') {
             this.removerunningOrderKOT();
@@ -625,7 +658,6 @@ if(deleted) console.log(deleted);
       }
 
       this.store.dispatch(RunningItemActions.clearRunningItems());
-      this.RunningItems_$ = this.store.select(state => state.runningItemReducer_.RunningItems_);
    
     // })();
   }
@@ -652,7 +684,17 @@ ClearSomeVariable(): void {
 
   updateInvoiceFunction(invoice: any): void {
     if (invoice) {
-      console.log(invoice);
+      this.actions$
+        .pipe(
+          ofType(InvoiceActions.updateInvoiceSuccess, InvoiceActions.updateInvoiceFailure),
+          take(1)
+        )
+        .subscribe((action: any) => {
+          if (action.type === InvoiceActions.updateInvoiceFailure.type) {
+            console.error('Invoice update failed:', action.error);
+            return;
+          }
+        });
       this.store.dispatch(InvoiceActions.updateInvoice({ invoice:invoice }));
     } else {
       console.error('No invoice provided for update.');
@@ -766,7 +808,6 @@ this.increment(productpricedata.SelectProductId);
   }
   onSubmit(form: any): void {
    // this.AllProductWithPrice
-console.log(this.AllProductWithPrice);
   //  const allppdata = this.loadAllProductPriceDatabyProductId();
     const selectedValue = form.value.option;
     this.item_subQuantityType_ID = this.ppalsoavailable.find(
@@ -796,7 +837,6 @@ console.log(this.AllProductWithPrice);
         allppdata: FilteredRunningItemData
       })
     );
-    this.RunningItems_$ = this.store.select(state => state.runningItemReducer_.RunningItems_);
     } else {
       const FilteredRunningItemData=this.filterProductwithPriceRunningItem(this.item_subQuantityType_ID.id, this.item_subQuantityType_ID.SubQuantityTypeName);
       //this.RunningItems_ =  this.HomeManageService_.loadqunityvalue(this.item_subQuantityType_ID.id, 'inc', this.item_subQuantityType_ID.SubQuantityTypeName, 0, this.item_subQuantityType_ID.price,this.RunningItems_,this.invoiceid,FilteredRunningItemData);
@@ -812,7 +852,6 @@ console.log(this.AllProductWithPrice);
         allppdata: FilteredRunningItemData
       })
     );
-    this.RunningItems_$ = this.store.select(state => state.runningItemReducer_.RunningItems_);
     }
     this.calculateTotalAmount();
     this.showtype = false;
@@ -917,10 +956,8 @@ console.log(this.AllProductWithPrice);
   }
   increment(_id: any): void {
     this.showtype = false;
-    console.log(_id);
     this.ppalsoavailable = this.getallproducttypeprice(_id);
     const runningItemsArr = Array.isArray(this.getRunningItemsValues()) ? this.getRunningItemsValues() : [];
-console.log(runningItemsArr);
     // Ensure only one product type is available to increment
     if (
       Array.isArray(this.ppalsoavailable) &&
@@ -997,7 +1034,6 @@ console.log(runningItemsArr);
         // This is just a pass-through filter since result isn't used
         preview.filter(item => item?.ProductName !== undefined);
       }
-      console.log(preview);
     } catch (err) {
       console.error('Error previewing running items:', err);
     }
@@ -1027,7 +1063,6 @@ console.log(runningItemsArr);
    // const allppdata = this.loadAllProductPriceDatabyProductId();
    // console.log(this.RunningItems_);
    const FilteredRunningItemData=this.filterProductwithPriceRunningItem( _id, SubQuantityTypeName);
-console.log(FilteredRunningItemData);
     //this.RunningItems_ =  this.HomeManageService_.loadqunityvalue(_id, 'inc', SubQuantityTypeName, qvalue, price,this.RunningItems_,this.invoiceid,FilteredRunningItemData);
     this.store.dispatch(
       updateRunningItemQuantity({
@@ -1041,7 +1076,6 @@ console.log(FilteredRunningItemData);
         allppdata: FilteredRunningItemData
       })
     );
-    this.RunningItems_$ = this.store.select(state => state.runningItemReducer_.RunningItems_);
     this.calculateTotalAmount();
     // console.log(this.RunningItems_);
   }
@@ -1061,7 +1095,6 @@ console.log(FilteredRunningItemData);
         allppdata: FilteredRunningItemData
       })
     );
-    this.RunningItems_$ = this.store.select(state => state.runningItemReducer_.RunningItems_);
     this.calculateTotalAmount();
 }
   changKOTItemsD(kotitem:any,kot:any,qvalue:number)
@@ -1125,7 +1158,6 @@ console.log(FilteredRunningItemData);
           this.loadProductByTopSelling();
           return;
         }
-        console.log(Productnamedata);
         this.initializeVegType(Productnamedata, _id);
       });
       this.subscriptions.push(sub);
@@ -1198,7 +1230,6 @@ console.log(FilteredRunningItemData);
               );
             });
 
-            console.log("Top Selling Items: ", filteredItems);
           });
       });
   }
@@ -1377,60 +1408,9 @@ console.log(FilteredRunningItemData);
   {
     this.showPartPaymentPopUp = close;
   }
-  runningItemsArr:any;
- getRunningItemsValues(): RunningItems {
-   // If already an array, return as is.
-   if (Array.isArray(this.RunningItems_$)) {
-     this.runningItemsArr = this.RunningItems_$;
-     return this.runningItemsArr;
-   }
-
-   // If it's an observable (has .subscribe), try to get the latest value synchronously.
-   if (
-     this.RunningItems_$ &&
-     typeof (this.RunningItems_$ as any).subscribe === 'function'
-   ) {
-     let items: any[] = [];
-     // Try to use getValue() for BehaviorSubject/ReplaySubject if available
-     if (typeof (this.RunningItems_$ as any).getValue === 'function') {
-       items = (this.RunningItems_$ as any).getValue();
-     } else {
-       // Fallback: try synchronous subscription. Only works if hot observable (BehaviorSubject).
-       const observable = this.RunningItems_$ as any;
-       let subscription = observable.subscribe(
-         (value: any[] | undefined) => { items = value ?? []; }
-       );
-       if (subscription && typeof subscription.unsubscribe === 'function') {
-         subscription.unsubscribe();
-       }
-     }
-     this.runningItemsArr = Array.isArray(items) ? items : [];
-     return this.runningItemsArr;
-   }
-
-   // If it's a function (very rarely, but keeping as fallback), call it.
-   // If it's a function (very rarely, but keeping as fallback), call it.
-   // Fix: Ensure RunningItems_$ cannot be called if its type is never to avoid TS error.
-   if (typeof this.RunningItems_$ === 'function') {
-     try {
-       // Type guard: Only call if not 'never'
-       const fn = this.RunningItems_$ as unknown;
-       if (typeof fn === 'function') {
-         const result = (fn as (...args: any[]) => any)();
-         this.runningItemsArr = Array.isArray(result) ? result : [];
-       } else {
-         this.runningItemsArr = [];
-       }
-     } catch {
-       this.runningItemsArr = [];
-     }
-   }
-    
-   
-
-   // Default: empty array
-   this.runningItemsArr = [];
-   return this.runningItemsArr;
+  runningItemsArr: RunningItems[] = [];
+ getRunningItemsValues(): RunningItems[] {
+   return Array.isArray(this.runningItemsArr) ? [...this.runningItemsArr] : [];
  }
   InitializeselectedAddOnItemsCallbackFun(selectedAddOnItems: any) {
     this.selectedAddOnItems = selectedAddOnItems;
@@ -1606,7 +1586,10 @@ console.log(FilteredRunningItemData);
   //  else
     if (this.runningItemsKOT$) {
       this.KOTItemsdata = [];
-     this.KOTItemsdata = this.HomeManageService_.initializeKOTItems(this.runningItemsKOT$, this.invoiceid);
+     this.HomeManageService_.initializeKOTItems(this.runningItemsKOT$, this.invoiceid);
+     this.KOTItemsdata = Array.isArray(this.HomeManageService_.KOTItemsdata)
+      ? this.HomeManageService_.KOTItemsdata
+      : [];
    } 
    else {
      this.KOTItemsdata = [];
@@ -1633,16 +1616,29 @@ console.log(FilteredRunningItemData);
       );
       // Defensive: Ensure we only reinitialize on defined value.
       if (latestKOTData !== undefined) {
-        this.KOTItemsdata = this.HomeManageService_.initializeKOTItems(this.runningItemsKOT$, this.invoiceid);
+        this.HomeManageService_.initializeKOTItems(this.runningItemsKOT$, this.invoiceid);
+        this.KOTItemsdata = Array.isArray(this.HomeManageService_.KOTItemsdata)
+          ? this.HomeManageService_.KOTItemsdata
+          : [];
         subscription.unsubscribe(); // Clean up after one update
       }
     });
   }
-
-  CancelOrder(): void {
-    this.cancelOrder.emit(this.invoiceid);
+   ClearLocalStorage(): void {
+    if (this.invoiceid) {
+      const keysToRemove: string[] = [];
+      // Gather all keys with the invoiceid as part of key
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.includes(this.invoiceid)) {
+          keysToRemove.push(key);
+        }
+      }
+      // Remove after iteration to avoid index issues
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+    }
+   }
   
-  }
   addSuccessSub: Subscription | undefined;
  
 ItemID:string='undefined';
@@ -1654,7 +1650,7 @@ ItemID:string='undefined';
    *  4. Triggers invoice generation ("Cooking"), resets, and navigation.
    * Deep refactored for clarity, proper subscription management, and logical separation.
    */
-  itemSuccessData: any;
+  itemSuccessData: GenratedItems | null = null;
 
   async KOT(): Promise<void> {
     this.paidamount = 0;
@@ -1678,7 +1674,12 @@ ItemID:string='undefined';
         if (!data) return;
         this.itemSuccessData = data.items;
         // ✅ Step 3: Extract ID
-        const itemId = this.itemSuccessData.data[0]._id;
+        const itemResponse = data.items as any;
+        const itemId = itemResponse?._id || itemResponse?.data?.[0]?._id;
+        if (!itemId) {
+          console.error('Generated item id not found in success payload.');
+          return;
+        }
         this.ItemID = itemId;
   
         // ✅ Step 4: Prepare KOT running order
@@ -1732,9 +1733,17 @@ kotprint()
     }
   }
 }
+billFormate="";
+getBillFormat()
+{
+  this.billFormate = "<div><h6>Delulu</h6> Invoice: "+this.invoiceid+""
+  +"<table><th><td>Name</td><td>Type</td><td>Qty</td></th>"
+  
+  +"</table></div>"
+}
   printBill(): void {
     // Attempt to locate the printable invoice section by its id or fallback to body
-    const invoiceCard = document.getElementById('printable-section-INVOICE');
+    const invoiceCard = document.getElementById('printable-section-KOT');
     let printContent = '';
     if (invoiceCard) {
       // Clone the node to avoid manipulating DOM structure directly

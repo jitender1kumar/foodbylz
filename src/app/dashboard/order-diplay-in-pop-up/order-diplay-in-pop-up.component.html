@@ -2,12 +2,27 @@
   <div class="comman">
   <div  id="printable-section-order">
    <!-- Header -->
-<div class="flex justify-between bg-white items-center  from-white to-wheat-800 text-black font-semibold py-4 px-6 rounded shadow mb-0">
-  <h2 class="text-xl font-bold">Invoice Details</h2>
-  <div class="space-x-2">
-    <button class="bg-cyan-500 text-white px-4 py-2 rounded shadow" (click)="print()">Print</button>
-    <button *ngIf="customers?.Name" class="bg-orange-800 text-white px-4 py-2 rounded shadow" >{{ customers.Name }}</button>
-    <button class="bg-red-500 text-white px-4 py-2 rounded shadow" (click)="close()">Close</button>
+<div class="bg-gradient-to-r from-white via-gray-50 to-wheat-200 text-black py-4 px-6 rounded-lg shadow flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 border border-gray-100 gap-y-2">
+  <div class="flex flex-col gap-1">
+    <h4 class="text-2xl font-bold tracking-tight mb-1">Invoice Details <span class="text-xs font-normal text-gray-500">(DELULU)</span></h4>
+    <ng-container *ngIf="customers?.name">
+      <div class="text-base font-medium text-gray-700 leading-tight">
+        <span class="block">Name: <span class="font-semibold">{{ customers.name }} </span></span>
+        <span class="block">Mobile No: <span class="font-semibold">{{ customers.MobileNo }} </span></span>
+      </div>
+    </ng-container>
+  </div>
+  <div class="flex space-x-2 mt-3 sm:mt-0">
+    <button class="flex items-center bg-cyan-600 hover:bg-cyan-700 transition text-white px-4 py-2 rounded-full shadow focus:outline-none focus:ring-2 focus:ring-cyan-300 font-semibold text-sm"
+      (click)="print()">
+      <i class="fa fa-print mr-2"></i>
+      Print
+    </button>
+    <button class="flex items-center bg-red-500 hover:bg-red-600 transition text-white px-4 py-2 rounded-full shadow focus:outline-none focus:ring-2 focus:ring-red-300 font-semibold text-sm"
+      (click)="close()">
+      <i class="fa fa-times mr-2"></i>
+      Close
+    </button>
   </div>
 </div>
 

@@ -159,11 +159,6 @@ const _runningItemReducer = createReducer(
               updatedRunningItem,
               ...RunningItems_.slice(runningItemIdx + 1)
             ];
-            try {
-              localStorage.setItem(invoiceid, JSON.stringify(RunningItems_));
-            } catch (e) {
-              console.error('Error saving RunningItemsTable to localStorage', e);
-            }
           } else {
             // Add new running item if not already present
             const newRunningItem = {
@@ -186,11 +181,6 @@ const _runningItemReducer = createReducer(
               notes:''
             };
             RunningItems_ = [...RunningItems_, newRunningItem];
-            try {
-              localStorage.setItem(invoiceid, JSON.stringify(RunningItems_));
-            } catch (e) {
-              console.error('Error saving RunningItemsTable to localStorage', e);
-            }
           }
         } else {
           // If RunningItems_ is empty, start with a single new item
@@ -214,11 +204,6 @@ const _runningItemReducer = createReducer(
             notes:''
           };
           RunningItems_ = [newRunningItem];
-          try {
-            localStorage.setItem(invoiceid, JSON.stringify(RunningItems_));
-          } catch (e) {
-            console.error('Error saving RunningItemsTable to localStorage', e);
-          }
         }
       }
       else if (incrementType === 'dcre' && runningItemIdx !== -1) {
@@ -239,22 +224,12 @@ const _runningItemReducer = createReducer(
             updatedRunningItem,
             ...RunningItems_.slice(runningItemIdx + 1)
           ];
-          try {
-            localStorage.setItem(invoiceid, JSON.stringify(RunningItems_));
-          } catch (e) {
-            console.error('Error updating RunningItemsTable in localStorage', e);
-          }
         } else {
           // Remove the item if val becomes 0 or less
           RunningItems_ = [
             ...RunningItems_.slice(0, runningItemIdx),
             ...RunningItems_.slice(runningItemIdx + 1)
           ];
-          try {
-            localStorage.setItem(invoiceid, JSON.stringify(RunningItems_));
-          } catch (e) {
-            console.error('Error updating RunningItemsTable in localStorage', e);
-          }
         }
       }
       
@@ -294,15 +269,6 @@ console.log(baseArr);
             ? { ...item, notes }
             : item
         );
-
-        // Save updated array to localStorage if invoiceid is provided
-        if (invoiceid) {
-          try {
-            localStorage.setItem(invoiceid, JSON.stringify(updatedArr));
-          } catch (e) {
-            console.error('Error saving updated RunningItems_ (notes) to localStorage', e);
-          }
-        }
 
         return {
           ...state,
