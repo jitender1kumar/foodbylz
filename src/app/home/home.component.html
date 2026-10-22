@@ -1,523 +1,380 @@
-<!-- <app-homedata loadRefeshed()="loadRefresh()"></app-homedata> -->
-<h4 class="titleh4">Billing Orders</h4>
-<table>
-  <tr>
-   
-    <td class=" align-top p-0">
-<app-homeleftpanel (topselling)="loadProductByTopSelling()" (getproductbycategoryclicked)="getproductbycategory($event)" ></app-homeleftpanel>
-</td>
+<div class="pos-container" style="min-height: 100vh; height: 100%;">
+  <!-- Main POS Structure -->
+  <div class="pos-flex">
+    <!-- Left: Categories & Navigation -->
+    <div class="pos-left">
+      <app-homeleftpanel (topselling)="loadProductByTopSelling()"
+        (getproductbycategoryclicked)="getproductbycategory($event)">
+      </app-homeleftpanel>
+    </div>
 
-    <!-- Center Panel: Product Search & Grid -->
-    <td class="billing-container align-top p-0"> 
-      <app-home-center-panel [productitembackup]="productitembackup" [productPriceData$]="productPriceData$"  [productsByCategoryId]="productsByCategoryId" (incrementclicked)="increment($event)" (shorcodeEnteredbychild)=shortCode($event)></app-home-center-panel>
-      </td>  
-       <!-- Right Panel: Invoice & Order Summary -->
-<td >
-  
-   
-  <td class="align-top p-0 fooditems" style="height: 700px; min-height: 700px; max-height: 700px; background: #fffaf7;">
-    <div class="invoice-card" id="printable-section-KOT" style="height: 100%; min-height: 100%; max-height: 100%; display: flex; flex-direction: column; border-radius: 18px; box-shadow: 0 4px 18px rgba(0,0,0,0.08); background: #fff;">
-      <!-- Header: Invoice Info -->
-      <div class="flex items-center justify-between p-2 mb-2" style="border-bottom: 1px solid #ece7e3;">
-        <div>
-          <span *ngIf="ordermode" style="font-family: 'Segoe UI', Verdana; font-size: 15px; font-weight: bold; color: #7c4931;">
-            <i class="fa fa-bookmark me-1" style="color: #de7350;"></i>
-            Invoice #{{ invoiceid }}
-          </span>
-        </div>
-        <div>
-          <span *ngIf="ordermode" style="font-family: 'Segoe UI', Verdana; font-size: 15px; font-weight: bold; color: #7c4931;">
-            <i class="fa fa-user-circle me-1" style="color: #4a90e2;"></i>
-            (biller) {{ employeeId }}
-          </span>
-        </div>
-        <div>
-          <span *ngIf="ordermode" class="text-xs" style="color: #b68746;">
-            Token: <b>{{ TokenNumber }}</b>
-          </span>
-        </div>
-      </div>
+    <!-- Center: Product Display -->
+    <div class="pos-center">
+      <app-home-center-panel [productitembackup]="productitembackup" [productPriceData$]="productPriceData$"
+        [productsByCategoryId]="productsByCategoryId" (incrementclicked)="increment($event)"
+        (shorcodeEnteredbychild)="shortCode($event)">
+      </app-home-center-panel>
+    </div>
 
-      <!-- Order Mode & Actions -->
-      <div class="flex items-center gap-2 px-2 py-2 mb-2" style="background: #fbeedb; border-radius: 10px;">
-        <div class="flex-1">
-          <span style="font-weight:bold; color: #7e5422;">
-            🍽️ {{ ordermode }}
-          </span>
-        </div>
-        <div>
-          <button (click)="showCustomersPopUp()" class="btn-restaurant" [ngClass]="{'primary': CustomerName!='Guest', 'accent': CustomerName=='Guest'}" style="margin-right:4px;">
-              {{ CustomerName!='Guest' ? 'Change Customer' : '+Customer' }}
-          </button>
-        </div>
-        <div>
-          <button (click)="showCommentsPopUp()" class="btn-restaurant" style="margin-right:4px;">
-            <i class="fa fa-comment"></i> Comment
-          </button>
-        </div>
-        <div>
-          <button class="btn-restaurant" style="background:#fde4ec; color: #c4709a; border:none;">
-            <i class="fa fa-handshake-o"></i> Assist To
-          </button>
-        </div>
-        <div *ngIf="CustomerName" style="margin-left:8px; display: flex; align-items: center;">
-          <span style="display: flex; align-items: center; font-weight: bold; color: #6e4126; background: #ffe3b3; border-radius: 14px; padding: 4px 10px;">
-            <i class="fa fa-user" style="color:#bd8549; margin-right: 8px;"></i> 
-            <span style="white-space: nowrap;">{{ CustomerName }}</span>
-            <div *ngIf="CustomerName!='Guest'"><button class="btn-restaurant" style="background: #fde4ec; color: #c4709a; border:none; margin-left: 12px;" (click)="removeCustomer()">
-              <i class="fa fa-trash"></i> 
-            </button>
+    <!-- Right: Invoice & Order Summary -->
+    <div class="pos-right">
+      <div class="pos-invoice" id="printable-section-KOT">
+
+        <!-- Invoice Header -->
+        <div class="pos-invoice-header">
+          <div>
+            <span *ngIf="ordermode">
+              Invoice #{{ invoiceid }}
+            </span>
           </div>
-          </span>
-         
+          <div>
+            <span *ngIf="ordermode">
+              {{ employeeId }}
+            </span>
+          </div>
+          <div>
+            <span *ngIf="ordermode">
+              Token: <span>{{ TokenNumber }}</span>
+            </span>
+          </div>
         </div>
-      </div>
 
-      <!-- Item List Table -->
-      <div class="item-list px-1" style="overflow-y: auto; flex:1 1 0; min-height:0;">
-        <table style="width: 100%; border-collapse: separate; border-spacing: 0 5px; font-family:'Segoe UI', Verdana;">
-          <thead>
-            <tr style="background: #f9f5f2;">
-              <th style="padding:4px; font-size:13px;">Addon</th>
-              <th style="padding:4px; font-size:13px;">Name</th>
-              <th style="padding:4px; font-size:13px;">Type</th>
-              <th></th>
-              <th style="padding:4px; font-size:13px;">Qty</th>
-              <th></th>
-              <th style="padding:4px; font-size:13px;">Price</th>
-              <th style="padding:4px; font-size:13px;">Total</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-              <!-- if kot running start -->
-               <p>{{KOTItemsdata.length}}  KOTItemsdata </p>
-          <ng-container *ngIf="KOTItemsdata.length">
-            <ng-container *ngFor="let kot of KOTItemsdata">
-              <tr style="background: #eaf6fd;">
-                <td colspan="9" style="font-size:13px; color:#1576b8; font-family:'Segoe UI', Verdana; padding: 5px 10px; border-radius: 6px 6px 0 0;">
-                  <span class="font-semibold" style="font-weight:bold;">
-                    KOT Time: {{ kot.createdAt | date: 'dd MMM, yyyy h:mm a' }}
-                  </span>
-                </td>
-              </tr>
-              <ng-container *ngIf="kot.KOTrunningorders?.length">
-                <tr *ngFor="let item of kot.KOTrunningorders" style="background: #f6fbff;">
+        <!-- Invoice Quick Actions -->
+        <div class="pos-invoice-actions">
+          <div class="pos-flexmode">
+            <i class="fa fa-cutlery"></i> {{ ordermode }}
+          </div>
+          <button class="btn-lux accent" (click)="showCustomersPopUp()">
+            <i class="fa fa-user"></i>
+            {{ CustomerName!='Guest' ? 'Change Customer' : '+Customer' }}
+          </button>
+          <button class="btn-lux" (click)="showCommentsPopUp()">
+            <i class="fa fa-comment"></i>
+          </button>
+          <button class="btn-lux">
+            <i class="fa fa-handshake-o"></i>
+          </button>
+          <span *ngIf="CustomerName" class="pos-customer">
+            <i class="fa fa-user"></i>
+            <span>{{ CustomerName }}</span>
+            <app-remove-customer [CustomerName]="CustomerName" [CustomerId]="CustomerId" [invoiceId]="invoiceid" (removeCustomerbyChild)="removeCustomer($event)"></app-remove-customer>
+            <!-- <button *ngIf="CustomerName!='Guest'" class="btn-lux" (click)="removeCustomer('Guest', 'undefined')">
+              <i class="fa fa-trash"></i>
+            </button> -->
+          </span>
+        </div>
+
+        <!-- Items/Order Table -->
+        <div class="pos-order-table-wrapper">
+          <div class="pos-order-table-scroll">
+            <table class="pos-order-table">
+              <thead>
+                <tr>
+                  <th>Addon</th>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th></th>
+                  <th>Qty</th>
+                  <th></th>
+                  <th>Price</th>
+                  <th>Total</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- KOT Orders Heading -->
+                
+                <!-- KOT Items -->
+                <ng-container *ngFor="let kot of KOTItemsdata">
+                  <tr >
+                  <td colspan="9" class="kot-row">
+                    <b>KOT</b> <span>{{ kot.createdAt | date: 'dd MMM, yyyy h:mm a' }}</span>
+                  </td>
+                </tr>
+                  <ng-container *ngFor="let item of kot.KOTrunningorders; let itemIndex = index">
+                    <ng-container *ngIf="item?.KOT_Changed; else kotItemNotDeleted">
+                      <!-- <ng-container *ngFor="let kotUD of KOTsUD_Data2;let kotUDIndex = index"> -->
+                        <!-- <tr *ngIf="KOTsUD_Data2[kotUDIndex]?.Type === 'Delete' && KOTsUD_Data2[kotUDIndex]?.IndexNumber === itemIndex"> -->
+                          <!-- ; else kotItemDeleted -->
+                       <tr *ngIf="isKOTItemDeleted(itemIndex); else kotItemDeleted" style="background-color:#d45c66;"> 
+                        
+                         <!-- <td><span>{{ item.ProductName }} jsk1  {{isKOTItemDeleted(itemIndex)|json}}  </span></td>
+                        <td><span>{{ item.SubQuantityTypeName }}</span></td>
+                        <td></td>
+                        <td></td>
+                        <td><span>{{ item.quntityvalue }}</span></td>
+                        <td></td>
+                        <td><span>₹{{ item.ProductPrice }}</span></td>
+                        <td>
+                          <span class="pos-total">
+                            ₹{{ ((+item.ProductPrice) || 0) * ((item.quntityvalue) || 0) }} 
+                          </span>
+                        </td> -->
+                        <!-- m -->
+                   
+                        
+                        </tr>
+                      
+
+                       <ng-template #kotItemDeleted>
+                        <tr style="background-color:  rgba(255, 255, 255, 0.959);">
+                             <td>
+                          <button class="btn-tiny danger" type="button"
+                            (click)="manageRunningKOTItem(item, kot, 'Delete')">
+                            <i class="fa fa-trash"></i>
+                          </button>
+                        </td>
+                        <td><span>{{ item.ProductName }} jsk {{isKOTItemDeleted(itemIndex)|json}}</span></td>
+                        <td><span>{{ item.SubQuantityTypeName }}</span></td>
+                        <td></td>
+                        <td>
+                          <button class="btn-tiny green" type="button"
+                            (click)="changKOTItemsI(item, kot, item.quntityvalue)">+</button>
+                        </td>
+                        <td>
+                          <input type="number" class="pos-input" [value]="item.quntityvalue"
+                            min="1" max="100000" (change)="onQuantityChange(item, $event)" />
+                        </td>
+                        <td>
+                          <button class="btn-tiny red" type="button"
+                            (click)="changKOTItemsD(item, kot, item.quntityvalue)">-</button>
+                        </td>
+                        <td><span>₹{{ item.ProductPrice }}</span></td>
+                        <td>
+                          <span class="pos-total">
+                            ₹{{ ((+item.ProductPrice) || 0) * ((item.quntityvalue) || 0) }}
+                          </span>
+                        </td>
+                        </tr>
+                       </ng-template>
+                      <!-- </ng-container> -->
+                    </ng-container>
+                    <ng-template #kotItemNotDeleted>
+                      <tr>
+                        <td>
+                          <button class="btn-tiny danger" type="button"
+                            (click)="manageRunningKOTItem(item, kot, 'Delete')">
+                            <i class="fa fa-trash"></i>
+                          </button>
+                        </td>
+                        <td><span>{{ item.ProductName }} jsk2</span></td>
+                        <td><span>{{ item.SubQuantityTypeName }}</span></td>
+                        <td></td>
+                        <td>
+                          <button class="btn-tiny green" type="button"
+                            (click)="changKOTItemsI(item, kot, item.quntityvalue)">+</button>
+                        </td>
+                        <td>
+                          <input type="number" class="pos-input" [value]="item.quntityvalue"
+                            min="1" max="100000" (change)="onQuantityChange(item, $event)" />
+                        </td>
+                        <td>
+                          <button class="btn-tiny red" type="button"
+                            (click)="changKOTItemsD(item, kot, item.quntityvalue)">-</button>
+                        </td>
+                        <td><span>₹{{ item.ProductPrice }}</span></td>
+                        <td>
+                          <span class="pos-total">
+                            ₹{{ ((+item.ProductPrice) || 0) * ((item.quntityvalue) || 0) }}
+                          </span>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  
+                  </ng-container>
+                </ng-container>
+                <!-- Current Running Items -->
+                <tr *ngFor="let d of (RunningItems_$ | async)">
                   <td>
-                    <button class="action-button btn-xs" (click)="manageRunningKOTItem(item,kot,'Delete')" style="background:#ececec; color:#b15e56;">
+                    <button class="btn-tiny" (click)="showAddonsPopUp(d?.SelectProductId, d?.selectSubQuantityTypeID, d?.SubQuantityTypeName, d?.qvalue, d?.ProductPrice)">
+                      <span *ngIf="d?.AddOnItems?.length > 0; else noAddonsSimple">Addons({{ d?.AddOnItems?.length
+                        }})</span>
+                      <ng-template #noAddonsSimple><span>Addons</span></ng-template>
+                    </button>
+                    <button class="btn-tiny" (click)="shownotesPopUp(d?.SelectProductId, d?.selectSubQuantityTypeID)">
+                      <span>Notes</span>
+                    </button>
+                  </td>
+                  <td><span>{{ d?.ProductName || '-' }}</span></td>
+                  <td><span>{{ d?.SubQuantityTypeName || '-' }}</span></td>
+                  <td>
+                    <button class="btn-tiny green"
+                      (click)="increment2(d?.SelectProductId, d?.SubQuantityTypeName, d?.quntityvalue, d?.ProductPrice)"
+                      [disabled]="!d">+</button>
+                  </td>
+                  <td>
+                    <input type="number" [(ngModel)]="d.quntityvalue" (ngModelChange)="onQuantityChange(d, $event)"
+                      min="1" max="100000" class="pos-input" [disabled]="!d" />
+                  </td>
+                  <td>
+                    <button class="btn-tiny red"
+                      (click)="decrement2(d?.SelectProductId, d?.SubQuantityTypeName, d?.qvalue, d?.ProductPrice)"
+                      [disabled]="!d">-</button>
+                  </td>
+                  <td>
+                    <span>₹{{ d?.ProductPrice || 0 }}</span>
+                  </td>
+                  <td>
+                    <span class="pos-total">₹{{ (d?.ProductPrice ? (+d.ProductPrice) : 0) * (d?.quntityvalue || 0)
+                      }}</span>
+                  </td>
+                  <td>
+                    <button class="btn-tiny danger" (click)="deleteRunningItem(d)" [disabled]="!d">
                       <i class="fa fa-trash"></i>
                     </button>
                   </td>
-                  <td>
-                    <span style="font-size:14px; color:#3768a0;">
-                      {{ item.ProductName }}
-                    </span>
-                  </td>
-                  <td>
-                    <span style="font-size:13px; color:#689f38;">{{ item.SubQuantityTypeName }}</span>
-                  </td>
-                 
-                  <td></td>
-                  <td>
-                    <button class="action-button btn-xs" (click)="changKOTItemsI(item,kot,item.quntityvalue)" style="background:#bee0a2; color:#34700f;">+</button>
-                  </td>
-                  <td>
-                    <input type="number" value="{{item.quntityvalue}}"
-                      (change)="onQuantityChange(item, $event)"
-                      min="1" max="100000"
-                      style="width: 40px; text-align: center; border: 1px solid #eee; border-radius:7px; font-size:13px;"/>
-                  </td>
-                  <td>
-                    <button class="action-button btn-xs" (click)="changKOTItemsD(item,kot,item.quntityvalue)" style="background:#ffe7e7; color:#d24d4d;">-</button>
-                  </td>
-                  <!-- <td>
-                    <span style="color:#575253;">{{ item.quntityvalue }}</span>
-                  </td> -->
-                  <td></td>
-                  <td>
-                    <span style="color:#735a28;">₹{{ item.ProductPrice }}</span>
-                  </td>
-                  <td>
-                    <span style="color:#507d2a; font-weight:600;">₹{{ (+item.ProductPrice) * item.quntityvalue }}</span>
-                  </td>
-                  <td colspan="4"></td>
                 </tr>
-              </ng-container>
-            </ng-container>
-          </ng-container>
-       <!-- if kot running start -->
-       <th *ngFor="let d of (RunningItems_$ | async)">
-        <p *ngIf="d">
-        <button>Comment</button>
-      </p>
-      </th>
-            <tr *ngFor="let d of (RunningItems_$ | async)">
-             
-              <ng-container *ngIf="d">
-                <td>
-                  <button class="action-button btn-xs" style="background:#ffe6c0;border:none; color:#b68746;"
-                          (click)="showAddonsPopUp(d?.SelectProductId, d?.selectSubQuantityTypeID)">
-                    <ng-container *ngIf="d?.AddOnItems?.length > 0; else noAddonsSimple">
-                      <span>addon({{ d?.AddOnItems?.length }})</span>
-                    </ng-container>
-                    <ng-template #noAddonsSimple>
-                      <span>addon</span>
-                    </ng-template>
-                  </button>
-                  
-                <button class="action-button btn-xs" style="background:#ffe6c0;border:none; color:#b68746;"
-                  (click)="shownotesPopUp(d?.SelectProductId, d?.selectSubQuantityTypeID)">
-            <ng-container *ngIf="d?.AddOnItems?.length > 0; else nonotesSimple">
-              <span>notes({{ d?.AddOnItems?.length }})</span>
-            </ng-container>
-            <ng-template #nonotesSimple>
-              <span>notes</span>
-            </ng-template>
-          </button></td>
-                <td>
-                  <span style="font-size:15px; color:#502c13;">{{ d?.ProductName || '-' }}</span>
-                </td>
-                <td>
-                  <span style="font-size:14px; color:#8a634d;">{{ d?.SubQuantityTypeName || '-' }}</span>
-                </td>
-                <td>
-                  <button class="action-button btn-xs" 
-                          (click)="increment2(d?.SelectProductId, d?.SubQuantityTypeName, d?.quntityvalue, d?.ProductPrice)" 
-                          style="background:#bee0a2; color:#34700f;" [disabled]="!d">
-                    +
-                  </button>
-                </td>
-                <td>
-                  <input type="number" [(ngModel)]="d.quntityvalue"
-                         (ngModelChange)="onQuantityChange(d, $event)"
-                         min="1" max="100000"
-                         style="width: 40px; text-align: center; border: 1px solid #eee; border-radius:7px; font-size:13px;"
-                         [disabled]="!d"/>
-                </td>
-                <td>
-                  <button class="action-button btn-xs" 
-                          (click)="decrement2(d?.SelectProductId, d?.SubQuantityTypeName, d?.qvalue, d?.ProductPrice)" 
-                          style="background:#ffe7e7; color:#d24d4d;" [disabled]="!d">
-                    -
-                  </button>
-                </td>
-                <td>
-                  <span style="color:#735a28;">₹{{ d?.ProductPrice || 0 }}</span>
-                </td>
-                <td>
-                  <span style="color:#507d2a; font-weight:600;">₹{{ (d?.ProductPrice ? (+d.ProductPrice) : 0) * (d?.quntityvalue || 0) }}</span>
-                </td>
-                <td>
-                  <button class="action-button btn-xs" 
-                          (click)="deleteRunningItem(d)" 
-                          style="background:#ececec; color:#b15e56;" [disabled]="!d">
-                    <i class="fa fa-trash"></i>
-                  </button>
-                </td>
-              </ng-container>
-            </tr>
-            <!-- Addon display row -->
-            <tr *ngFor="let d of RunningItems_$ | async">
-              <td colspan="9" style="padding:0;">
-                <div *ngIf="d?.AddOnItems && d.AddOnItems.length > 0" style="font-size:13px; margin:4px 0 2px 35px; color:#8d5e19;">
-                  <span *ngFor="let addonItem of d.AddOnItems">
-                    <ng-container *ngFor="let addonProductdata of loadAddOnProductsdata$ | async">
-                      <span *ngIf="addonItem._id===addonProductdata._id">
-                        {{ addonProductdata.name || 'Addon' }}
-                        <ng-container *ngIf="addonItem.numberofQuantity">x {{ addonItem.numberofQuantity }}</ng-container>
-                        <ng-container *ngIf="addonProductdata.Price">+ ₹{{ addonProductdata.Price }}</ng-container>
+                <!-- Add-on Details Row -->
+                <tr *ngFor="let d of RunningItems_$ | async">
+                  <td colspan="9">
+                    <div *ngIf="d?.AddOnItems && d.AddOnItems.length > 0" class="addon-detail">
+                      <span *ngFor="let addonItem of d.AddOnItems">
+                        <ng-container *ngFor="let addonProductdata of loadAddOnProductsdata$ | async">
+                          <span *ngIf="addonItem._id===addonProductdata._id">
+                            {{ addonProductdata.name || 'Addon' }}
+                            <ng-container *ngIf="addonItem.numberofQuantity">x {{ addonItem.numberofQuantity
+                              }}</ng-container>
+                            <ng-container *ngIf="addonProductdata.Price">(+₹{{ addonProductdata.Price }})</ng-container>
+                          </span>
+                        </ng-container>
                       </span>
-                    </ng-container>&nbsp;
-                  </span>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-      <!-- Summary and Actions -->
-      <div *ngIf="(RunningItems_$ | async)?.length && ((RunningItems_$ | async)?.length! > 0)
-        || (KOTItemsdata.length > 0)"
-        class="summary-section px-2 py-2" style="border-top: 1px solid #ffe6c2; background: #fdf8f2; border-radius:10px 10px 0 0; flex-shrink: 0;">
-        <div class="flex justify-between mb-1" style="font-size:15px; font-weight: 500;">
-          <span>Total: </span><span>₹{{ totalamount }}</span>
-        </div>
-        <div class="flex justify-between mb-1" style="font-size:13px;">
-          <span>Tax: <b>{{ taxname }}</b></span>
-          <span>+ ₹{{ totaltax }}</span>
-        </div>
-        <div class="flex justify-between mb-2" style="font-size:17px; font-weight:bold; color:#954300;">
-          <button class="btn-restaurant primary" (click)="splitBill()">
-            <i class="fa fa-check-circle"></i> Split Bill
-          </button>
-          <button class="btn-restaurant primary" (click)="partPayment()">
-            <i class="fa fa-check-circle"></i> Part Payment
-          </button>
-          <span>Grand Total:</span><span>₹{{ itemtotalamount }}</span>
-        </div>
-        
-        <!-- Discount Dropdown Simple -->
-        <div style="text-align: right;">
-          <button (click)="showDiscountForm = !showDiscountForm"
-                  class="btn-restaurant accent" style="padding:2px 12px;font-size: 13px; margin-bottom:6px; margin-top:2px;">
-            <i class="fa fa-percent"></i>
-            {{ showDiscountForm ? "Hide Discount" : "Add Discount" }}
-          </button>
-        </div>
-        <div *ngIf="showDiscountForm" class="py-1" style="animation: fadeIn 0.2s;">
-          <form [formGroup]="myDiscountForm" (ngSubmit)="discountChange()" class="flex items-center gap-2 flex-nowrap">
-            <div style="display: flex; align-items: center; gap: 1em;">
-              <label style="margin-right:0.5em; display:flex; align-items:center;">
-                Select Discount By:
-              </label>
-              <label style="margin-right:0.5em; display:flex; align-items:center;">
-                <input type="radio" name="discount" formControlName="discount" value="%" style="margin-right:4px;" checked /> %
-              </label>
-              <label style="margin-right:0.5em; display:flex; align-items:center;">
-                <input type="radio" name="discount" formControlName="discount" value="Rupees"  style="margin-right:4px;" /> ₹
-              </label>
-              <input
-                type="number"
-                name="discountvalue"
-                formControlName="numberInput"
-                required
-                placeholder="Discount"
-                style="width: 80px; border-radius:5px; border:1px solid #eee; margin-right:1em;"
-              />
-              <button class="btn-restaurant small primary" style="font-size:14px;" type="submit">
-                Apply
-              </button>
-              <ng-container *ngIf="percent || discountvalue">
-                <span *ngIf="percent"><b>{{ percent }}%</b></span>
-                <span *ngIf="discountvalue" style="margin-left: 8px;">| <b>Settle: ₹{{ discountvalue }}</b></span>
-              </ng-container>
-            </div>
-          </form>
-        </div>
-        <!-- Actions -->
-        <div *ngIf="KOTItemsdata.length > 0" class="flex flex-row gap-4 items-center">
-          <ng-container ><label class="font-semibold mr-1">Pay Mode:</label>
-            <label class="flex items-center gap-1" *ngFor="let payMode of paybydata">
-              <input
-                type="radio"
-                name="payby"
-                [value]="payMode._id"
-                (change)="getpaybyid(payMode._id)"
-                [checked]="payMode.makeMeDefault"
-              />
-              <span> {{ payMode.name }}</span>
-            </label>
-          </ng-container>
-        </div>
-        
-        <div class="flex gap-2 justify-center mt-2 mb-1">
-          <ng-container *ngIf="(KOTItemsdata.length > 0) || (ordermode === 'Pick Up') ">
-            <!-- <button
-              class="btn-restaurant primary"
-              style="margin-right: 12px;"
-              (click)="placeOrder()"
-            >
-              <i class="fa fa-check-circle"></i> Settle
-            </button> -->
-            <button
-              class="btn-restaurant primary"
-              (click)="printBill()"
-            >
-              <i class="fa fa-check-circle"></i> Print Bill
-            </button>
-          </ng-container>
-          <div *ngIf="(RunningItems_$ | async)?.length && ((RunningItems_$ | async)?.length || 0) > 0  && ordermode != 'Pick Up'">
-            <button class="btn-restaurant accent" (click)="KOT()">
-              <i class="fa fa-cutlery"></i> KOT 
+        <!-- Invoice Summary & Actions -->
+        <div class="pos-summary">
+          <div class="pos-row pos-row-total">
+            <span>Total</span><span>₹{{ totalamount }}</span>
+          </div>
+          <div class="pos-row">
+            <span>Tax: <b>{{ taxname }}</b></span><span>+ ₹{{ totaltax }}</span>
+          </div>
+          <div class="pos-row pos-row-grand">
+            <span>Grand Total</span>
+            <span>₹{{ itemtotalamount }}</span>
+          </div>
+          <div class="pos-payment-summary">
+            <!-- <label for="paidAmount">Paid Amount:</label> -->
+            <!-- <input id="paidAmount" type="number" name="paidAmount" placeholder="Paiying Amount" ngModel paidamount class="paid-input" /> -->
+            <form [formGroup]="paymentForm">
+              <!-- (ngSubmit)="pay()" -->
+              <table>
+                <tr>
+                  <td><input id="paidAmount" type="number" min="0" max="999999" formControlName="paidAmount"
+                      placeholder="Paying Amount" class="paid-input" (input)="onPaidAmountChange()" /></td>
+                  <td>
+                    <label class="return-amount"> Return : <b>₹{{ (paidamount - itemtotalamount) | number:'1.2-2'
+                        }}</b></label>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- <button type="submit">
+                Pay
+              </button> -->
+
+            </form>
+
+          </div>
+          <!-- Discount Toggle Button -->
+          <div class="pos-discount-btn">
+            <button class="btn-lux accent" (click)="showDiscountForm = !showDiscountForm">
+              <i class="fa fa-percent"></i>
+              {{ showDiscountForm ? "Hide Discount" : "Add Discount" }}
             </button>
           </div>
-          <ng-container *ngIf="(RunningItems_$ | async) as runningItems">
-            <div *ngIf="(runningItems?.length || runningItems.length > 0) || (KOTItemsdata.length > 0) || (ordermode === 'Pick Up')">
+          <!-- Discount Form -->
+          <div *ngIf="showDiscountForm" class="pos-discount-form">
+            <form [formGroup]="myDiscountForm" (ngSubmit)="discountChange()" class="discount-form-flex">
+              <div class="discount-inner-flex">
+                <label class="discount-label">Discount By:</label>
+                <label class="discount-radio">
+                  <input type="radio" name="discount" formControlName="discount" value="%" checked /> %
+                </label>
+                <label class="discount-radio">
+                  <input type="radio" name="discount" formControlName="discount" value="Rupees" /> ₹
+                </label>
+                <input type="number" name="discountvalue" formControlName="numberInput" placeholder="Discount" required
+                  class="discount-input" />
+                <button class="btn-lux" type="submit">Apply</button>
+                <span *ngIf="percent" class="discount-percent"><b>{{ percent }}%</b></span>
+                <span *ngIf="discountvalue" class="discount-settle">Settle: <b>₹{{ discountvalue }}</b></span>
+              </div>
+            </form>
+          </div>
+          <!-- Payment Mode -->
+          <div *ngIf="(KOTItemsdata.length > 0 || ordermode === 'Pick Up') || (RunningItems_$ | async)?.length && ((RunningItems_$ | async)?.length || 0) > 0  " class="pos-paymode">
+            <span>Pay Mode:</span>
+            <label *ngFor="let payMode of paybydata">
+              <input type="radio" name="payby" [value]="payMode._id" (change)="getpaybyid(payMode._id)"
+                [checked]="payMode.makeMeDefault" />
+              <span>{{ payMode.name }}</span>
+            </label>
+          </div>
+
+          <!-- Summary Actions -->
+          <div class="pos-actions">
+            
+            <ng-container *ngIf="(RunningItems_$ | async) as runningItems">
+              <!-- || (ordermode === 'Pick Up') -->
               <button
-              class="btn-restaurant accent"
-              style="margin-right: 12px;"
-              (click)="placeOrder()"
-            >
-              <i class="fa fa-check-circle"></i> Settle
-            </button>
-            </div>
-          </ng-container>
-          <div *ngIf="(RunningItems_$ | async) as runningItems">
-            <ng-container *ngIf="runningItems?.length && runningItems.length > 0 && ordermode != 'Pick Up'">
-              <button class="btn-restaurant accent" style="background-color: #8602bc; color: #fff;" (click)="printBill()">
-                <i class="fa fa-print"></i> Print KOT
+                *ngIf="(RunningItems_$ | async)?.length && ((RunningItems_$ | async)?.length || 0) > 0   || (KOTItemsdata.length > 0) "
+                class="btn-lux accent" (click)="placeOrder()">
+                <i class="fa fa-check-circle"></i> Settle
               </button>
+              <button 
+             *ngIf="(RunningItems_$ | async)?.length && ((RunningItems_$ | async)?.length || 0) > 0  || (KOTItemsdata.length > 0) "
+             class="btn-lux primary"
+              (click)="printBill()">
+              <i class="fa fa-print"></i> Bill
+            </button>
+            <!-- && ordermode != 'Pick Up' -->
+            <button
+            
+              *ngIf="(RunningItems_$ | async)?.length && ((RunningItems_$ | async)?.length || 0) > 0  "
+              class="btn-lux accent" (click)="KOT()">
+              <i class="fa fa-cutlery"></i> KOT
+            </button>
+              <button
+                *ngIf="((runningItems?.length || runningItems.length > 0) || (KOTItemsdata.length > 0)) && (ordermode === 'Pick Up')"
+                class="btn-lux accent" (click)="placeOrderAndNext()">
+                <i class="fa fa-check-circle"></i> Settle & Next
+              </button>
+              <button *ngIf="runningItems?.length && runningItems.length > 0 && ordermode != 'Pick Up'" class="btn-lux"
+                (click)="printBill()">
+                <i class="fa fa-print"></i> KOT
+              </button>
+              <button class="btn-lux danger" (click)="CancelOrder()">
+                <i class="fa fa-times"></i> Cancel
+              </button>
+              <!-- <div class="pos-cancel">
+           
+          </div>   -->
             </ng-container>
           </div>
-          <!-- <ng-container *ngIf="(RunningItems_$ | async) as runningItems">
-            <div *ngIf="runningItems?.length && runningItems.length > 0">
-              <button class="btn-restaurant danger" (click)="CancelOrder()">
-                <i class="fa fa-times"></i> Cancel Order
-              </button>
-            </div>
-          </ng-container> -->
-          
+
+
         </div>
-        
       </div>
-      <ng-container >
-        <div >
-          <button class="btn-restaurant danger" (click)="CancelOrder()">
-            <i class="fa fa-times"></i> Cancel Order
-          </button>
-        </div>
-      </ng-container>
-    </div>
-    <!-- Simple CSS for buttons (optional, Atomatic fallback) -->
-    <style>
-      .btn-restaurant {
-        border: none;
-        border-radius: 7px;
-        padding: 7px 16px;
-        font-size: 14px;
-        background: #fff8f1;
-        color: #bb7a2b;
-        font-weight: 500;
-        box-shadow: 0 1px 3px rgba(155,121,75,0.05);
-        cursor: pointer;
-        transition: background 0.14s, color 0.14s, transform 0.1s;
-        outline:none;
-      }
-      .btn-restaurant.primary { background: #ffedcb; color: #7c4b11; }
-      .btn-restaurant.accent { background: #dde6ff; color: #424089; }
-      .btn-restaurant.danger { background: #ffe7e7; color: #cc1515; }
-      .btn-restaurant.small { padding: 3px 10px; font-size: 13px;}
-      .btn-restaurant:hover, .btn-restaurant:focus { background:#ffe2bc; color: #875c2a; transform: scale(1.04);}
-      .btn-xs { padding: 2px 6px; font-size:11px; border-radius:4px; }
-      @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
-    </style>
-  </td>
-
-
-  </tr>
- </table>
-
-<!-- Place Order Popup -->
-<div class="comman " style="position: fixed;" *ngIf="showplaceorderPopup">
-  <div class="row box" style="max-width: 60%;">
-    <button class="close" (click)="close2()">Close</button>
-    <div class="col">
-      <pre><h3>Invoice by DELULU</h3></pre>
-      <table  class=" w-4/5 mx-auto text-sm text-left text-gray-700 border border-aqua rounded-lg shadow-lg">
-        <thead class="text-white bg-gradient-to-r from-cyan-500 to-blue-500">
-          <tr>
-            <th class="px-4 py-2">Name</th>
-            <th class="px-4 py-2">Type</th>
-            <th class="px-4 py-2">Price</th>
-            <th class="px-4 py-2">Quantity</th>
-            <th class="px-4 py-2">Item Quantity Price</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td colspan="2">
-              <p *ngIf="ordermode" class="font-bold text-xs" style="font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">
-                Invoice No.: {{ invoiceid }}
-              </p>
-            </td>
-            <td colspan="2">
-              <p *ngIf="ordermode" class="font-bold text-xs" style="font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">
-                Token Number.: {{ TokenNumber }}
-              </p>
-            </td>
-          </tr>
-        
-          <tr *ngFor="let d of RunningItems_$ | async; index as i" class="hover:bg-blue-50">
-            <td class="px-4 py-2">{{ d.ProductName }}</td>
-            <td class="px-4 py-2">{{ d.SubQuantityTypeName }}</td>
-            <td class="px-4 py-2">{{ d.ProductPrice }}</td>
-            <td class="px-4 py-2">{{ d.quntityvalue }}</td>
-            <td class="px-4 py-2">{{ (+d.ProductPrice) * d.quntityvalue }}</td>
-          </tr>
-          <tr class="font-semibold bg-gray-50">
-            <td class="px-4 py-2">Total Items Amount</td>
-            <td colspan="3"></td>
-            <td class="px-4 py-2">{{ totalamount }}</td>
-          </tr>
-          <tr class="bg-gray-100">
-            <td class="px-4 py-2">Total Tax</td>
-            <td colspan="3">
-              <div *ngFor="let t of Tax">
-                <div *ngIf="t.Status">
-                  {{ t.name }} - {{ t.perscentRate }}% = {{ ((+totalamount) * t.perscentRate) / 100 }}
-                </div>
-              </div>
-            </td>
-            <td class="px-4 py-2">{{ totaltax }}</td>
-          </tr>
-          <tr class="bg-gray-50">
-            <td class="px-4 py-2">Grand Total</td>
-            <td colspan="3"></td>
-            <td class="px-4 py-2">{{ itemtotalamount }}</td>
-          </tr>
-          <tr class="bg-gray-100">
-            <td class="px-4 py-2">Discount Percent</td>
-            <td colspan="3"></td>
-            <td class="px-4 py-2">{{ percent }}%</td>
-          </tr>
-          <tr class="font-bold text-green-700">
-            <td class="px-4 py-2">Total</td>
-            <td colspan="3"></td>
-            <td class="px-4 py-2">{{ discountvalue }}</td>
-          </tr>
-          <tr>
-            <td class="px-4 py-2">Pay Mode</td>
-            <td colspan="4">
-              <div class="flex flex-row gap-4 items-center">
-                <ng-container *ngFor="let dd of paybydata">
-                  <label class="flex items-center gap-1">
-                    <input
-                      type="radio"
-                      name="payby"
-                      [value]="dd._id"
-                      
-                      (change)="getpaybyid(dd._id)"
-                      [checked]="dd.makeMeDefault"
-                    />
-                    
-                    <span>{{ dd.name }}</span>
-                  </label>
-                </ng-container>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td class="px-4 py-2">Customer Paid</td>
-            <td colspan="4">
-              <input
-                type="number"
-                min="0"
-                max="paidamount+500"
-                [(ngModel)]="paidamount"
-                placeholder="Paid Amount"
-                class="w-full px-2 py-1 border rounded"
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <button (click)="genrateOrder()">Satle</button>
     </div>
   </div>
-</div>
 
-<!-- Quantity Modal -->
+  <!-- Quantity Modal -->
 <div class="common-modal" *ngIf="showtype">
   <div class="modal-box">
     <button class="close-btn" (click)="close()">×</button>
     <h6 class="modal-title">Add Quantity: </h6>
     <p>
-      <!-- Safely display ProductName only if ppalsoavailable[0] exists -->
-      {{ ppalsoavailable && ppalsoavailable.length > 0 ? ppalsoavailable[0].ProductName : '' }}
+      <!-- Safely display ProductName only if ProductPrice[0] exists -->
+      {{ ProductPrice && ProductPrice.length > 0 ? ProductPrice[0].ProductName : '' }}
     </p>
     <form #myForm="ngForm" (ngSubmit)="onSubmit(myForm)">
-      <div *ngFor="let dd of ppalsoavailable" class="option-row">
+      <div *ngFor="let dd of ProductPrice" class="option-row">
         <label class="radio-option">
           <input type="radio" name="option" [value]="dd.SubQuantityTypeName" ngModel />
           <span class="option-label">{{ dd.SubQuantityTypeName }}</span>
@@ -535,52 +392,237 @@
     {{ item.name }} - ₹{{ item.price }}
   </li>
 </ul>
-<!-- Customer and Comment Popups -->
-<app-addcustomers
-  [showPopUp]="showCustomerPopUp"
-  [closePopUp]="closePopup"
-  (closePopUpByChild)="closePopUpBychild($event)"
-  (CustomersDetail)="initializeCustomer($event)"
-></app-addcustomers>
 
-<app-comment-in-invoice
-[CommentType]="CommentType"
-[manageKOTItem]="manageKOTItem"
-[SearchManagingKOTItems]="SearchManagingKOTItems"
-[InvoiceDataKOT$]="InvoiceData$"
-[SelectProductId_]="SelectProductId_"
-[selectSubQuantityTypeID_]="selectSubQuantityTypeID_"
-[RecieptNumber]="RecieptNumber"
-[RunningItems$]="RunningItems_$"
-[showConfirme]="showCommentConfime"
-  [showPopUp]="showCommentPopUp"
-  [closePopUp]="closePopup"
-  (closePopUpByComment)="closePopUpByCommentFun($event)"
-  (ReloadKOTRunningItems)="reloadKOTRunningItems()"
- 
-></app-comment-in-invoice>
-<!-- (loadKOT)="loadKOTfun()" -->
-<app-add-on-items
-[selectedAddOnItems]="selectedAddOnItems"
-[invoice]="invoiceData"
-[addOnProducts]="addOnProduct"
-[showPopUp]="showAddonPopUp"
-[closePopUp]="closePopup"
-(InitializeselectedAddOnItemsCallback)="InitializeselectedAddOnItemsCallbackFun($event)"
-(closePopUpByChildAddOn)="closePopUpByChildAddon($event)"
-></app-add-on-items>
+  <!-- --- POPUPS/MODALS --- -->
+  <app-addcustomers [showPopUp]="showCustomerPopUp" [closePopUp]="closePopup"
+    (closePopUpByChild)="closePopUpBychild($event)" (CustomersDetail)="initializeCustomer($event)">
+  </app-addcustomers>
 
-<app-splitbill
-[totalAmount]="itemtotalamount || totalamount || 0"
-[showPopUp]="showSplitBillPopUp"
-[closePopUp]="closePopup"
-(closePopUpByChildSplitBill)="closePopUpByChildSplitBill($event)"
- [KotData]="KOTItemsdata"></app-splitbill>
+  <app-comment-in-invoice 
+  [EmployeeId]="employeeId"
+  [CommentType]="CommentType" [manageKOTItem]="manageKOTItem"
+    [SearchManagingKOTItems]="SearchManagingKOTItems" [InvoiceDataKOT$]="InvoiceData$"
+    [SelectProductId_]="SelectProductId_" [selectSubQuantityTypeID_]="selectSubQuantityTypeID_"
+    [RecieptNumber]="RecieptNumber" [RunningItems$]="RunningItems_$" [showConfirme]="showCommentConfime"
+    [showPopUp]="showCommentPopUp" [closePopUp]="closePopup" (closePopUpByComment)="closePopUpByCommentFun($event)"
+    (ReloadKOTRunningItems)="reloadKOTRunningItems()">
+  </app-comment-in-invoice>
 
- <app-partpayment 
- [paybydata]="paybydata"
- [itemtotalamount]="itemtotalamount"
- [showPopUp]="showPartPaymentPopUp"
-[closePopUp]="closePopup"
-(closePopUpByChildPartPayment)="closePopUpByChildPartPayment($event)">
-</app-partpayment>
+
+  
+  <app-add-on-items
+  [SubQuantityTypeName]="SubQuantityTypeName" [invoiceid]="invoiceid"
+  [SelectProductId]="SelectProductId"
+  [selectSubQuantityTypeID]="selectSubQuantityTypeID"
+  [qvalue]="qvalue"
+  [Productprice]="Productprice"
+  [runningItemsArray]="runningItemsArray"
+  [filteredData]="filteredData"
+  [selectedAddOnItems]="selectedAddOnItems" [invoice]="invoiceData" [addOnProducts]="addOnProduct"
+    [showPopUp]="showAddonPopUp" [closePopUp]="closePopup"
+    (InitializeselectedAddOnItemsCallback)="InitializeselectedAddOnItemsCallbackFun($event)"
+    (closePopUpByChildAddOn)="closePopUpByChildAddon($event)">
+  </app-add-on-items>
+
+  <app-splitbill [totalAmount]="itemtotalamount || totalamount || 0" [showPopUp]="showSplitBillPopUp"
+    [closePopUp]="closePopup" (closePopUpByChildSplitBill)="closePopUpByChildSplitBill($event)"
+    [KotData]="KOTItemsdata">
+  </app-splitbill>
+
+  <app-partpayment [paybydata]="paybydata" [itemtotalamount]="itemtotalamount" [showPopUp]="showPartPaymentPopUp"
+    [closePopUp]="closePopup" (closePopUpByChildPartPayment)="closePopUpByChildPartPayment($event)">
+  </app-partpayment>
+</div>
+
+<style>
+  /* Responsive Design Styles - Added for all devices */
+  :host {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  .pos-container {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding: clamp(8px, 1.2vw, 18px);
+  }
+
+  .pos-flex {
+    display: grid;
+    grid-template-columns: minmax(170px, 0.85fr) minmax(280px, 1.7fr) minmax(320px, 1.35fr);
+    align-items: stretch;
+    gap: clamp(8px, 1vw, 16px);
+    width: 100%;
+    min-width: 0;
+  }
+
+  .pos-left, .pos-center, .pos-right,
+  .pos-invoice, .pos-order-table-wrapper,
+  .pos-order-table-scroll {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .pos-left, .pos-center, .pos-right {
+    width: 100%;
+  }
+
+  .pos-right {
+    min-height: 0;
+  }
+
+  .pos-invoice {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-height: calc(100vh - 2 * clamp(8px, 1.2vw, 18px));
+    overflow: hidden;
+  }
+
+  .pos-order-table-wrapper {
+    flex: 1 1 auto;
+    min-height: 120px;
+    overflow: hidden;
+  }
+
+  .pos-order-table-scroll {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .pos-order-table {
+    width: 100%;
+    min-width: 610px;
+    border-collapse: collapse;
+  }
+
+  .pos-order-table th,
+  .pos-order-table td {
+    white-space: nowrap;
+  }
+
+  .pos-invoice-header,
+  .pos-invoice-actions,
+  .pos-summary,
+  .pos-actions,
+  .pos-payment-summary,
+  .pos-paymode,
+  .discount-inner-flex {
+    min-width: 0;
+  }
+
+  .pos-invoice-actions,
+  .pos-actions,
+  .pos-paymode,
+  .discount-inner-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .pos-invoice-actions > *, .pos-actions > * {
+    max-width: 100%;
+  }
+
+  .pos-payment-summary table {
+    width: 100%;
+  }
+
+  .paid-input, .discount-input {
+    width: min(100%, 220px);
+    max-width: 100%;
+  }
+
+  .common-modal {
+    padding: 12px;
+  }
+
+  .modal-box {
+    width: min(100%, 480px);
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+  }
+
+  @media (max-width: 1200px) {
+    .pos-flex {
+      grid-template-columns: minmax(150px, 0.7fr) minmax(260px, 1.3fr);
+    }
+
+    .pos-right {
+      grid-column: 1 / -1;
+    }
+
+    .pos-invoice {
+      max-height: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .pos-container {
+      padding: 6px;
+    }
+
+    .pos-flex {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .pos-left, .pos-center, .pos-right {
+      flex: 0 0 auto;
+    }
+
+    .pos-invoice-header,
+    .pos-invoice-actions {
+      padding: 8px;
+    }
+
+    .pos-invoice-actions > button,
+    .pos-actions > button {
+      flex: 1 1 auto;
+    }
+
+    .pos-summary {
+      padding: 8px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .pos-order-table {
+      min-width: 560px;
+    }
+
+    .pos-invoice-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+    }
+
+    .pos-invoice-actions > *,
+    .pos-actions > button {
+      flex: 1 1 45%;
+    }
+
+    .pos-payment-summary table,
+    .pos-payment-summary tbody,
+    .pos-payment-summary tr,
+    .pos-payment-summary td {
+      display: block;
+      width: 100%;
+    }
+
+    .paid-input, .discount-input {
+      width: 100%;
+    }
+  }
+</style>

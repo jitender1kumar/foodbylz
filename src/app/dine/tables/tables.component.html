@@ -1,4 +1,4 @@
-<h4 class="titleh4">Tables Management</h4>
+<h4 class="titleh4">Food On Tables Order Management</h4>
 <div class="restaurant-dashboard">
   <!-- First Div -->
   <div class="header restaurant-header">
@@ -53,38 +53,30 @@
           <div class="table-layout">
             <ng-container *ngFor="let d of DineData$ | async; ">
               <ng-container *ngIf="floor._id === d.floor_id">
-                <ng-container *ngIf="d.status; else bookedTable">
-                  <a (click)="booktable(d._id)" class="table">
-                    <p><b>{{ d.name }}</b> Available</p>
-                    <div>
-                      <div class="circle top-left"></div>
-                      <div class="circle top-right"></div>
-                      <div class="circle bottom-left"></div>
-                      <div class="circle bottom-right"></div>
-                    </div>
-                  </a>
-                </ng-container>
-                <ng-template #bookedTable >
-                  <div class="table">
-                  <span  style="background-color: #007BFF" (click)="goToHomeBookedTable(d._id,d.name)" class="table">
-                    <b style="color: #070303;">{{ d.name }} Booked</b>
+                <!-- <div>{{runningorder|json}}</div> -->
+                <ng-container *ngIf="runningorder!=''; else noRunningOrders">
+                  
+                  <!-- <ng-container *ngFor="let runningorder_ of runningorder">
                     
-                      <!-- INSERT_YOUR_CODE -->
-                     
-                      <div class="circle top-left"></div>
-                      <div class="circle top-right"></div>
-                      <div class="circle bottom-left"></div>
-                      <div class="circle bottom-right">
+                          <ng-container *ngIf="runningorder_.Chairsrunningorder.length > 0; "> -->
 
-                      </div>
-                  </span>
-                  <ng-container class="eyes" *ngIf="runningItemsKOT$ | async as runningItemsKOT">
-                    <ng-container *ngFor="let item of runningItemsKOT">
-                      <ng-container *ngIf="item.TableId === d._id">
-                        <span 
-                          class="table-eye-icon" 
-                          title="Running KOT Order" 
-                          style="background: rgba(190, 149, 149, 0.849); cursor: pointer; position: absolute;
+                  <!-- <ng-container *ngFor=" let d of DineData$ | async"> -->
+                  <ng-container *ngIf="isTableBooked(d._id); else notbooked">
+                    <div class="table">
+                      <span style="background-color: #007BFF" (click)="goToHomeBookedTable(d._id,d.name)" class="table">
+                        <b style="color: #070303;">{{ d.name }} Booked</b>
+
+                        <div class="circle top-left"></div>
+                        <div class="circle top-right"></div>
+                        <div class="circle bottom-left"></div>
+                        <div class="circle bottom-right">
+
+                        </div>
+                      </span>
+                      <ng-container class="eyes" *ngIf="runningItemsKOT$ | async as runningItemsKOT">
+                        <ng-container *ngFor="let item of runningItemsKOT">
+                          <ng-container *ngIf="item.TableId === d._id">
+                            <span class="table-eye-icon" title="Running KOT Order" style="background: rgba(190, 149, 149, 0.849); cursor: pointer; position: absolute;
                           top: 90%;
                           left: 50%;
                           transform: translate(-50%, -50%);
@@ -96,29 +88,85 @@
                           width: 36%;
                           height: 36%;
                           border: solid gray 1px;
-                          pointer-events: auto;"
-                          (click)="goToHomeKOTedTable(d._id, d.name)">
-                          <!-- <i class="fa fa-eye" style="color: #070303; font-size: 2.2em; margin-bottom: -6px;"></i> -->
-                          <span style="font-size: 11px; font-weight: bold; color: #1a1a1a; line-height: 12px;">
-                            KOT 
-                            <span *ngIf="item.createdAt" style="display:block; font-size:10px; color:#555; margin-top:-2px;">
-                              {{ getMinutesAgo(item.createdAt) }} min
-                            </span>
-                          </span>
-                          
-                        </span>
-                        <!-- We only want one icon, so break here -->
-                        <ng-container *ngIf="false"></ng-container>
-                        <!-- This hack ensures the rest aren't displayed -->
-                      </ng-container>
-                    </ng-container>
-                  </ng-container>
-                </div>
-                  <!-- start  -->
-                
-<!-- end  -->
+                          pointer-events: auto;" (click)="goToHomeKOTedTable(d._id, d.name)">
+                              <!-- <i class="fa fa-eye" style="color: #070303; font-size: 2.2em; margin-bottom: -6px;"></i> -->
+                              <span style="font-size: 11px; font-weight: bold; color: #1a1a1a; line-height: 12px;">
+                                KOT
+                                <span *ngIf="item.createdAt"
+                                  style="display:block; font-size:10px; color:#555; margin-top:-2px;">
+                                  {{ getMinutesAgo(item.createdAt) }} min
+                                </span>
+                              </span>
 
+                            </span>
+                            <!-- We only want one icon, so break here -->
+                            <!-- <ng-container *ngIf="false"></ng-container> -->
+                            <!-- This hack ensures the rest aren't displayed -->
+                          </ng-container>
+                        </ng-container>
+                      </ng-container>
+                    </div>
+                  </ng-container>
+                  <!-- </ng-container> -->
+
+
+                  <ng-template #notbooked>
+
+                    <a (click)="booktable(d._id)" class="table">
+                      <p><b>{{ d.name }}</b> Available</p>
+                      <div>
+                        <div class="circle top-left"></div>
+                        <div class="circle top-right"></div>
+                        <div class="circle bottom-left"></div>
+                        <div class="circle bottom-right"></div>
+                      </div>
+                    </a>
+
+                  </ng-template>
+                </ng-container>
+                <!-- </ng-container>
+                </ng-container> -->
+                <ng-template #noRunningOrders>
+                  <a (click)="booktable(d._id)" class="table">
+                    <p><b>{{ d.name }}</b> Available</p>
+                    <div>
+                      <div class="circle top-left"></div>
+                      <div class="circle top-right"></div>
+                      <div class="circle bottom-left"></div>
+                      <div class="circle bottom-right"></div>
+                    </div>
+                  </a>
                 </ng-template>
+                <!-- </ng-container>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </ng-container> -->
+
+
+
+
+                <!-- <ng-container *ngIf="d.status; else bookedTable">
+                  
+                  <a (click)="booktable(d._id)" class="table">
+                    <p><b>{{ d.name }}</b> Available</p>
+                    <div>
+                      <div class="circle top-left"></div>
+                      <div class="circle top-right"></div>
+                      <div class="circle bottom-left"></div>
+                      <div class="circle bottom-right"></div>
+                    </div>
+                  </a>
+                </ng-container> -->
+
+                <!-- start  -->
+
+                <!-- end  -->
+                <!-- <ng-template #bookedTable >
+                
+
+                </ng-template> -->
               </ng-container>
             </ng-container>
           </div>
@@ -134,38 +182,37 @@
       <div class="table-layout">
         <div *ngFor="let d of reservedinedata index as ii">
           <b>{{d.TableName}}</b>
-         
+
           <div>
-            
-            <a  class="table" style="background-color: #FFC107;">
+
+            <a class="table" style="background-color: #FFC107;">
               <div style="font-size:small;"> {{d.ReservedDate.split('T')}}
                 <br>
-               
+
                 <br>
                 <b *ngIf="d.MobileNo"> Mobile No: {{d.MobileNo}}</b>
                 <br>
                 <!-- (d.DateTimeStart.split('T')[1].split(':')[0]}=== currentDateOnly.split(':'[0]))&& (d.DateTimeStart.split('T')[1].split(':')[0]}===currentTime.split(:)[0]) -->
                 <!-- <div *ngIf="(d.ReservedDate.split('T')[0]=== currentDateOnly) && (d.ReservedDate.split('T')[1].split(':')[0].trim()===currentTime.split(':')[0].trim() || ((+1+(+d.ReservedDate.split('T')[1].split(':')[0].trim())))===(+1+currentTime.split(':')[0].trim()))"> -->
-                <div
-                  *ngIf="
-                    d.ReservedDate.split('T')[0] === currentDateOnly &&
+               <!-- <p>{{d.ReservedDate}} === {{currentDateOnly}} {{d.ReservedTimeSlot}} === {{currentTime}}</p> -->
+                  <div *ngIf="
+                    d.ReservedDate === currentDateOnly &&
                     (
-                      d.ReservedDate.split('T')[1].split(':')[0].trim() === currentTime.split(':')[0].trim() ||
-                      (+d.ReservedDate.split('T')[1].split(':')[0].trim() + 1) === (+currentTime.split(':')[0].trim() + 1)
+                      d.ReservedTimeSlot === currentTime ||
+                      (+d.ReservedTimeSlot + 1) === (+currentTime + 1)
                     )
-                  "
-                >
-                 
-                 
-                      <!-- <div>
+                  ">
+
+
+                  <!-- <div>
                       <button class="btn-primary" (click)="gotohome(runningorder_.receiptnumber,runningorder_.tokennumber)">goToHome</button>
                     </div> -->
-                  
-                    @if (d.Bookingstatus) {
-                      <button class="btn-primary" (click)="redirectto_gotohome(d.RecieptNumber)">goToMenu</button>
-                    }@else{
-                      <button class="btn-primary" (click)="confirmReserveDine(d._id)">Confirme</button>
-                    }
+
+                  @if (d.Bookingstatus) {
+                  <button class="btn-primary" (click)="redirectto_gotohome(d.RecieptNumber)">goToMenu</button>
+                  }@else{
+                  <button class="btn-primary" (click)="confirmReserveDine(d._id)">Confirme</button>
+                  }
                 </div>
               </div>
               <div>
@@ -179,7 +226,7 @@
               </div>
             </a>
           </div>
-          
+
           <b>{{d.Name}}</b>
           <a (click)="deletereservedine(d._id)">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill"
@@ -233,15 +280,14 @@
                 </ng-template>
 
                 <div class="order-actions">
-                  
+
                   <button class="btn-primary"
                     (click)="gotohome(runningorder_.receiptnumber, runningorder_.tokennumber)">
                     goToMenu
                   </button>
-                  <ng-container *ngIf="runningItemsKOT$ | async as runningItemsKOT">
+                  <!-- <ng-container *ngIf="runningItemsKOT$ | async as runningItemsKOT">
                     <ng-container *ngIf="hasRunningItem(runningItemsKOT, runningorder_.receiptnumber); else noKotRunning">
                       <div class="btn-info">
-                        <!-- <button class="btn-info" (click)="loadRunningKOT(runningorder_.receiptnumber)">KOT Running</button> -->
                       </div>
                     </ng-container>
                     <ng-template #noKotRunning>
@@ -249,9 +295,9 @@
                         <button class="btn-danger" (click)="cancel(runningorder_.receiptnumber)">🗑️</button>
                       </div>
                     </ng-template>
-                  </ng-container>
-                  
-               
+                  </ng-container> -->
+
+
                 </div>
 
               </div>
@@ -289,49 +335,62 @@
   <ng-container *ngIf="tab === 4">
     <div class="order-list-container">
       <div class="running-layout">
-          <!-- <h4 style="margin-bottom: 12px;">KOT Running Items</h4> -->
-          <div class="kot-section" *ngIf="runningItemsKOT$ | async as runningItemsKOT">
-            <div class="kot-header">
-              <b>
-                Current KOT Items ({{ runningItemsKOT.length }}):
-              </b>
-            </div>
-            <div *ngIf="runningItemsKOT.length > 0; else noKotItems" class="kot-list">
-              <ng-container *ngFor="let rec of groupByReceiptNumber(runningItemsKOT)">
-                <div class="kot-item-box">
-                  <div class="kot-receipt">
-                    <strong>Receipt:</strong> {{ rec.RecieptNumber }}
-                   
-                    
-                  </div>
-                  <div class="kot-count">
-                    <strong>KOT Items ({{ rec.items.length }}):</strong>
-                    
-                  </div>
-                  <div class="kot-items-row">
-                    <ng-container *ngFor="let item of rec.items">
-                      <div class="kot-box-item">
-                        <strong>Time:</strong> {{ item?.createdAt ? (item?.createdAt | date:'short') : 'N/A' }}
+        <!-- <h4 style="margin-bottom: 12px;">KOT Running Items</h4> -->
+        <div class="kot-section" *ngIf="runningItemsKOT$ | async as runningItemsKOT">
+          <div class="kot-header">
+            <b>
+              Current KOT Items ({{ runningItemsKOT.length }}):
+            </b>
+          </div>
+          <div *ngIf="runningItemsKOT.length > 0; else noKotItems" class="kot-list">
+            <ng-container *ngFor="let rec of groupByReceiptNumber(runningItemsKOT)">
+              <div class="kot-item-box">
+                <div class="kot-receipt">
+                  <strong></strong> {{ rec.RecieptNumber }}
+                  <strong></strong> {{ getTableName(rec.TableId) }}
+
+                </div>
+                <div class="kot-count">
+                  <strong>KOT Items ({{ rec.items.length }}):</strong>
+
+                </div>
+                <div class="kot-items-row">
+                  <ng-container *ngFor="let item of rec.items">
+                    <div class="kot-box-item">
+                      <strong> {{ item?.createdAt ? (item?.createdAt | date:'short') : 'N/A' }} </strong>
+                      <!-- <span class="kot-table"><strong>Token:</strong> {{ item?.Chairsrunningorder?.tokennumber || item?.Chairsrunningorder?.[0]?.tokennumber || item?.tokennumber || 'N/A' }}</span> -->
                       <ng-container *ngFor="let kotItem of item.KOTrunningorders">
-                       
-                          <span class="kot-table"><strong>Item:</strong> {{ kotItem.ProductName || 'Unnamed Item' }} ({{ kotItem.quntityvalue  }})</span>
-                          <span *ngIf="!!item.status" class="kot-status"><strong>Status:</strong> {{ item.status }}</span>
+
+                        <span class="kot-table"><strong>({{ kotItem.SubQuantityTypeName || 'N/A' }})</strong> {{
+                          kotItem.ProductName || 'Unnamed Item' }} ({{ kotItem.quntityvalue }}) </span>
+
+                        <span *ngFor="let addOn of kotItem.AddOnItems" class="kot-table">
+                          <ng-container *ngFor="let product of (AddOnItems$ | async)">
+                            <ng-container *ngIf="product._id === (addOn._id || addOn)">
+                              <strong>Add-on:</strong> {{ product.name }} ({{ addOn.numberofQuantity || 1 }})
+                            </ng-container>
+                          </ng-container>
+                        </span>
+
+
+
+                        <span *ngIf="!!item.status" class="kot-status"><strong>Status:</strong> {{ item.status }}</span>
                         <pre>{{ kotItem.notes || '' }}</pre>
                       </ng-container>
                     </div>
-                    </ng-container>
-                  </div>
+                  </ng-container>
                 </div>
-              </ng-container>
-            </div>
-            <ng-template #noKotItems>
-              <div class="no-kot-items">No running KOT items.</div>
-            </ng-template>
+              </div>
+            </ng-container>
           </div>
+          <ng-template #noKotItems>
+            <div class="no-kot-items">No running KOT items.</div>
+          </ng-template>
+        </div>
 
-          <style>
-           
-          </style>
+        <style>
+
+        </style>
       </div>
     </div>
   </ng-container>
@@ -342,15 +401,15 @@
   @if (show) {
   <div class="comman">
     <div class="row box">
-     <span>{{args}}</span>
+      <span>{{args}}</span>
 
-      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" >
+      <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()">
 
         <!-- Close Button -->
-       
+
         <!-- Header -->
         <div class="row lbl">
-          <button class="close"  (click)="close()">Close</button>
+          <button class="close" (click)="close()">Close</button>
           <h4>Reserve a Dine (Validity for 2 hour)</h4>
         </div>
 
@@ -375,8 +434,8 @@
             <label for="DateOnly">Pick Date:</label>
           </div>
           <div class="col">
-            <input id="DateOnly" type="date" formControlName="ReservedDate" class="form-control" [min]="currentDateOnly" [value]="selectedDate"
-              (change)="onDateChange($event)" />
+            <input id="DateOnly" type="date" formControlName="ReservedDate" class="form-control" [min]="currentDateOnly"
+              [value]="selectedDate" (change)="onDateChange($event)" />
           </div>
         </div>
 
@@ -386,20 +445,22 @@
             <label for="TimeOnly">Pick Time (2 hour slots):</label>
           </div>
           <div class="col">
-            <select id="TimeOnly" formControlName="ReservedTimeSlot" class="form-control" [value]="selectedTime" (change)="onTimeChange($event)">
+            <select id="TimeOnly" formControlName="ReservedTimeSlot" class="form-control" [value]="selectedTime"
+              (change)="onTimeChange($event)">
               <option *ngFor="let time of availableTimeSlots" [value]="time">{{ time }}</option>
             </select>
           </div>
         </div>
 
         <!-- Hidden field bound to the form's DateTimeStart -->
-        <input type="hidden" id="dateTimeStartControl" name="dateTimeStartControl" [formControl]="dateTimeStartControl" />
+        <input type="hidden" id="dateTimeStartControl" name="dateTimeStartControl"
+          [formControl]="dateTimeStartControl" />
 
 
         <!-- Customer Selection -->
         <div class="form-group row">
           <div class="col">
-            <label for="CustomerId">Select Customer:</label>
+            <label for="CustomerId">Search Customer:</label>
           </div>
           <div class="col">
             <!-- <select id="CustomerId" formControlName="CustomerId" class="form-control" (click)="bindcustomer()">
@@ -408,15 +469,13 @@
               <option [value]="customer._id">{{ customer.Name }}</option>
               }
             </select> -->
-            <input type="hidden" id="CustomerId" formControlName="CustomerId"/>
-            <a
-            (click)="showCustomersPopUp()"
-            class="bg-gradient-to-r from-indigo-500 to-purple-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
-          >
-            +Customer
-          </a>
+            <input type="hidden" id="CustomerId" formControlName="CustomerId" />
+            <a (click)="showCustomersPopUp()"
+              class="bg-gradient-to-r from-indigo-500 to-purple-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition">
+              <span>🔍</span>Customer
+            </a>
           </div>
-           <!-- <button (click)="showCustomersPopUp()" 
+          <!-- <button (click)="showCustomersPopUp()" 
               class="bg-gradient-to-r from-indigo-500 to-purple-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition">
               +Customer
             </button> -->
@@ -428,7 +487,7 @@
             <label for="Name">Name:</label>
           </div>
           <div class="col">
-            <input id="Name"  type="text" formControlName="Name" class="form-control" />
+            <input id="Name" type="text" formControlName="Name" class="form-control" />
           </div>
         </div>
 
@@ -438,9 +497,16 @@
             <label for="MobileNo">Mobile No:</label>
           </div>
           <div class="col">
-            <input id="MobileNo"  type="number" formControlName="MobileNo" minlength="10" maxlength="20"  pattern="[0-9]{10,20}"
-              title="Enter valid mobile number (10 to 20 digits)" />
+            <input id="MobileNo" type="number" formControlName="MobileNo" minlength="10" maxlength="20"  inputmode="numeric"
+              pattern="[0-9]{10,20}" title="Enter valid mobile number (10 to 20 digits)" (input)="onMobileNoChange($event)" />
           </div>
+          
+          <!-- <p>{{ myAddForm.get('MobileNo')?.value }}</p> -->
+         
+          <div class="col" *ngIf="!myAddForm.get('CustomerId')?.value && myAddForm.get('MobileNo')?.value?.toString()?.length === 10 && myAddForm.get('Name')?.value?.toString()?.length>=2">
+            <button type="button"  class="btn btn-success">+ Customer</button>
+            <!-- (click)="addCustomer()" -->
+            </div>
         </div>
 
         <!-- Booking Amount -->
@@ -489,10 +555,17 @@
 
   <!-- reserve edit start -->
   @if (editshow) {
-  <div class="comman" *ngIf="editreservedinefata">
+  <div class="comman" *ngIf="EditReserveDineData">
     <div class="row box">
+       <!-- Error or Info Message -->
+        <div class="form-group row">
+          <div class="col">
+            <p class="text-danger">{{ args }}</p>
+          </div>
+        </div>
+
       <form [formGroup]="myEditForm" (ngSubmit)="onFormEditSubmit()" class="col lbl2">
-         <!-- Close Button -->
+        <!-- Close Button -->
         <button class="close" type="button" (click)="close()">Close</button>
 
         <!-- Header -->
@@ -508,7 +581,7 @@
           <div class="col">
             <select class="lbl" formControlName="TableId">
               <option class="lbl" *ngFor="let d of FloorWithDineData index as i"
-                [selected]="d._id===editreservedinefata[0].TableId">{{d.FloorName}}/ {{d.name}}</option>
+                [selected]="d._id===EditReserveDineData[0].TableId" [value]="d._id">{{d.FloorName}}/ {{d.name}}</option>
             </select>
           </div>
         </div>
@@ -520,8 +593,8 @@
             <label for="DateOnly">Pick Date:</label>
           </div>
           <div class="col">
-            <input id="DateOnly" formControlName="ReservedDate" type="date" class="form-control" [min]="currentDateOnly" [value]="selectedDate"
-              (change)="onDateChange($event)" />
+            <input id="DateOnly" formControlName="ReservedDate" type="date" class="form-control" [min]="currentDateOnly"
+              [value]="selectedDate" (change)="onDateChange($event)" />
           </div>
         </div>
 
@@ -533,18 +606,11 @@
           <div class="col">
             <!--[value]="selectedTimeforEdit"-->
             <!-- <option *ngFor="let time of availableTimeSlots index as i"  [value]="selectedTimeforEdit" [selected]="selectedTimeforEdit.trim()==availableTimeSlots[i] || (1+selectedTimeforEdit.trim())==(1-(+availableTimeSlots[i]))" >{{ time  }}</option> -->
-            <select
-              id="TimeOnly"
-              formControlName="ReservedTimeSlot"
-              class="form-control"
-              (change)="onTimeChange($event)"
-            >
+            <select id="TimeOnly" formControlName="ReservedTimeSlot" class="form-control"
+              (change)="onTimeChange($event)">
               <option value="" disabled selected>Select a time slot</option>
-              <option
-                *ngFor="let time of availableTimeSlots; let i = index"
-                [value]="time"
-                [selected]="selectedTimeforEdit === time"
-              >
+              <option *ngFor="let time of availableTimeSlots; let i = index" [value]="time"
+                [selected]="selectedTimeforEdit === time">
                 {{ time }}
               </option>
             </select>
@@ -552,7 +618,8 @@
         </div>
 
         <!-- Hidden field bound to the form's DateTimeStart -->
-        <input type="hidden" id="dateTimeStartControl" name="dateTimeStartControl" [formControl]="dateTimeStartControl" />
+        <input type="hidden" id="dateTimeStartControl" name="dateTimeStartControl"
+          [formControl]="dateTimeStartControl" />
 
 
         <!-- Customer Selection -->
@@ -567,15 +634,13 @@
               <option [value]="customer._id">{{ customer.Name }}</option>
               }
             </select> -->
-            <input type="hidden" id="CustomerId" formControlName="CustomerId"/>
-            <a
-            (click)="showCustomersPopUp()"
-            class="bg-gradient-to-r from-indigo-500 to-purple-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition"
-          >
-            +Customer
-          </a>
+            <input type="hidden" id="CustomerId" formControlName="CustomerId" />
+            <a (click)="showCustomersPopUp()"
+              class="bg-gradient-to-r from-indigo-500 to-purple-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition">
+              +Customer
+            </a>
           </div>
-           <!-- <button (click)="showCustomersPopUp()" 
+          <!-- <button (click)="showCustomersPopUp()" 
               class="bg-gradient-to-r from-indigo-500 to-purple-600 text-black font-semibold py-1 px-3 rounded shadow hover:scale-105 transition">
               +Customer
             </button> -->
@@ -587,7 +652,8 @@
             <label for="Name">Name:</label>
           </div>
           <div class="col">
-            <input id="Name" type="text"  formControlName="Name" class="form-control" [value]="editreservedinefata[0].Name" />
+            <input id="Name" type="text" formControlName="Name" class="form-control"
+              [value]="EditReserveDineData[0].Name" />
           </div>
         </div>
 
@@ -597,8 +663,9 @@
             <label for="MobileNo">Mobile No:</label>
           </div>
           <div class="col">
-            <input id="MobileNo"  type="number" formControlName="MobileNo" minlength="10" maxlength="20"  pattern="[0-9]{10,20}"
-              title="Enter valid mobile number (10 to 20 digits)" [value]="editreservedinefata[0].MobileNo" />
+            <input id="MobileNo" type="number" formControlName="MobileNo" minlength="10" maxlength="20"
+              pattern="[0-9]{10,20}" title="Enter valid mobile number (10 to 20 digits)"
+              [value]="EditReserveDineData[0].MobileNo" (input)="onMobileNoChange($event)" />
           </div>
         </div>
 
@@ -608,7 +675,8 @@
             <label for="BookingAmount">Booking Amount:</label>
           </div>
           <div class="col">
-            <input id="BookingAmount" type="number" formControlName="BookingAmount" [value]="editreservedinefata[0].BookingAmount" class="form-control" min="0" />
+            <input id="BookingAmount" type="number" formControlName="BookingAmount"
+              [value]="EditReserveDineData[0].BookingAmount" class="form-control" min="0" />
           </div>
         </div>
 
@@ -618,18 +686,13 @@
             <label for="Paymentstatus">Payment Status:</label>
           </div>
           <div class="col">
-            <input id="Paymentstatus" type="checkbox" formControlName="Paymentstatus" [value]="editreservedinefata[0].Paymentstatus" class="form-check-input" />
+            <input id="Paymentstatus" type="checkbox" formControlName="Paymentstatus"
+              [value]="EditReserveDineData[0].Paymentstatus" class="form-check-input" />
           </div>
         </div>
 
-        <!-- Error or Info Message -->
+       
         <div class="form-group row">
-          <div class="col">
-            <p class="text-danger">{{ args }}</p>
-          </div>
-        </div>
-
-     <div class="form-group row">
           <div class="col"><button style="border: solid black; padding: 10px;" [disabled]="myEditForm.invalid "
               class="bt1n" type="submit">Update</button>
           </div>
@@ -663,12 +726,9 @@
   <!-- end  -->
 
   <!-- add customer -->
-<!-- <app-addcustomers [showPopUp]="showCustomerPopUp" [closePopUp]="closePopUp"
+  <!-- <app-addcustomers [showPopUp]="showCustomerPopUp" [closePopUp]="closePopUp"
   (closePopUpByChild)="closePopUpByChild($event)" (CustomersDetail)="initializeCustomer($event)"></app-addcustomers> -->
   <!-- end -->
-  <app-addcustomers
-  [showPopUp]="showCustomerPopUp"
-  [closePopUp]="closePopUp"
-  (closePopUpByChild)="closePopUpByChild($event)"
-  (CustomersDetail)="initializeCustomer($event)"
-></app-addcustomers>
+  <app-addcustomers [showPopUp]="showCustomerPopUp" [closePopUp]="closePopUp"
+    (closePopUpByChild)="closePopUpByChild($event)" (CustomersDetail)="initializeCustomer($event)"></app-addcustomers>
+</div>

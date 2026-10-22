@@ -58,7 +58,15 @@ export class EmployeeComponent implements OnInit {
     desc: "undefined",
     userId: "undefined",
     password: "undefined",
-    employee_id: "undefined"
+    employee_id: "undefined",
+    employeeCode: '',
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
+    salary: 0,
+    joiningDate: new Date(),
+    isActive: false,
+    mobile: ''
   }
  
   employeenamedata: any;

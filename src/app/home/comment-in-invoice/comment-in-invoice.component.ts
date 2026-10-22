@@ -31,6 +31,7 @@ commentData:any;
 commentData2:any;
 //runningItems$!: Observable<any>;
 // @Input() RunningItems$!: Observable<any>;
+@Input() EmployeeId!:string;
 @Input() RunningItems$!:any;
 @Input() selectSubQuantityTypeID_!: any;
 @Input() SelectProductId_!: any;
@@ -43,10 +44,13 @@ commentData2:any;
 @Input() SearchManagingKOTItems:GenratedItemKOT | undefined;
 @Input() CommentType!:string;
 KOTsUD: KOTsUD = {
-  ItemsID:'',
+  ItemsID: '',
   RecieptNumber: '',
-  deletedAt: undefined as any,
-  CommentId: ''
+  //deletedAt: undefined as any,
+  CommentId: '',
+  EmployeeId: '',
+  Type: '',
+  IndexNumber: ''
 };
 // GenratedItemKOT: GenratedItemKOT = {
 //   EmployeeId: '',
@@ -199,53 +203,40 @@ constructor(
               // this.updateGenratedItemKOT();
             break;
           case "Increment": {
-            // Add data KOTrunning item increment data in KOTsUD table
             const response = await firstValueFrom(this.CommentService_.add(comment));
-            // Since 'Comment' type does not have '_id', just log response for now
-            // Concatenate/increment the 'quntityvalue' field by 1 in this.deleteKOTItem before calling add
             if (this.manageKOTItem && typeof this.manageKOTItem.quntityvalue === 'number') {
               this.manageKOTItem = { ...this.manageKOTItem, quntityvalue: this.manageKOTItem.quntityvalue + 1 };
             }
+
+            const indexNumber = this.getMatchingIndexNumber();
             console.log('Add comment response:', response);
-            this.KOTsUD = {
-              ItemsID: this.SearchManagingKOTItems?.ItemsID?.toString() || '',
-              RecieptNumber: response?.RecieptNumber || '',
-              deletedAt: new Date(),
-              CommentId: response?._id || '',
-            };
-            
+            console.log('Manage KOT Item after increment:', this.SearchManagingKOTItems?.KOTrunningorders);
+            console.log('Index number of the updated item:', indexNumber);
+
+            this.KOTsUD = this.buildKOTsUDPayload(response, indexNumber);
             this.addKOTsUD(this.KOTsUD);
-            
             break;
           }
           case "Decrement": {
             const response = await firstValueFrom(this.CommentService_.add(comment));
-            // Since 'Comment' type does not have '_id', just log response for now
-            // Concatenate/increment the 'quntityvalue' field by 1 in this.deleteKOTItem before calling add
             if (this.manageKOTItem && typeof this.manageKOTItem.quntityvalue === 'number') {
               this.manageKOTItem = { ...this.manageKOTItem, quntityvalue: this.manageKOTItem.quntityvalue - 1 };
             }
+
+            const indexNumber = this.getMatchingIndexNumber();
             console.log('Add comment response:', response);
-            this.KOTsUD = {
-              ItemsID: this.SearchManagingKOTItems?.ItemsID?.toString() || '',
-              RecieptNumber: response?.RecieptNumber || '',
-              deletedAt: new Date(),
-              CommentId: response?._id || '',
-            };
+            console.log('Index number of the updated item:', indexNumber);
+
+            this.KOTsUD = this.buildKOTsUDPayload(response, indexNumber);
             this.addKOTsUD(this.KOTsUD);
             break;
           }
           case "Delete": {
-            // Add data KOTrunning item deleted data in KOTsUD table
             const response = await firstValueFrom(this.CommentService_.add(comment));
-            // Since 'Comment' type does not have '_id', just log response for now
             console.log('Add comment response:', response);
-            this.KOTsUD = {
-              ItemsID: this.SearchManagingKOTItems?.ItemsID?.toString() || '',
-              RecieptNumber: response?.RecieptNumber || '',
-              deletedAt: new Date(),
-              CommentId: response?._id || ''
-            };
+
+            const indexNumber = this.getMatchingIndexNumber();
+            this.KOTsUD = this.buildKOTsUDPayload(response, indexNumber);
             this.addKOTsUD(this.KOTsUD);
             break;
           }
@@ -265,6 +256,10 @@ constructor(
     } else {
       alert('Form invalid!');
     }
+     this.myAddForm.reset({
+       RecieptNumber: { value: this.RecieptNumber || 0, disabled: true },
+       Comment: ''
+     });
   }
   
   async addKOTsUD(kotsudData: any) {
@@ -285,8 +280,8 @@ constructor(
          
         else if(this.CommentType==="Delete")
           {
-           // this.updateGenratedItemKOT();
-           this.deleteGenratedItemKOT();
+            this.updateGenratedItemKOT();
+           //this.deleteGenratedItemKOT();
             this.ReloadKOTRunningItems.emit(true);
           }
          
@@ -304,6 +299,32 @@ constructor(
       console.error(error);
     }
   }
+
+  private buildKOTsUDPayload(response: any, indexNumber: number): KOTsUD {
+    const commentId = response?._id ?? response?.id ?? response?.CommentId ?? '';
+
+    return {
+      ItemsID: this.SearchManagingKOTItems?.ItemsID ?? '',
+      RecieptNumber: String(this.RecieptNumber ?? ''),
+      CommentId: String(commentId),
+      EmployeeId: String(this.EmployeeId ?? ''),
+      Type: this.CommentType ?? '',
+      IndexNumber: String(indexNumber)
+    };
+  }
+
+  private getMatchingIndexNumber(): number {
+    const orders = this.SearchManagingKOTItems?.KOTrunningorders;
+    if (!Array.isArray(orders)) {
+      return -1;
+    }
+
+    return orders.findIndex((item: any) =>
+      item.SelectProductId === this.manageKOTItem?.SelectProductId &&
+      item.selectSubQuantityTypeID === this.manageKOTItem?.selectSubQuantityTypeID
+    );
+  }
+
   async updateInvoice()
   {
 
@@ -356,7 +377,7 @@ constructor(
                item.SelectProductId === this.manageKOTItem.SelectProductId &&
                item.selectSubQuantityTypeID === this.manageKOTItem.selectSubQuantityTypeID
              );
-             return isMatch ? { ...item, ...this.manageKOTItem } : item;
+             return isMatch ? { ...item, ...this.manageKOTItem, KOT_Changed: true } : item;
            });
 
            // Construct the updated GenratedItemKOT object with meaningful fallbacks
@@ -402,7 +423,7 @@ constructor(
            }
          }
      
-     // this.dispatchLoadKOTrunningorders();
+      this.dispatchLoadKOTrunningorders();
       //this.loadKOT.emit();
       }
     
@@ -417,12 +438,15 @@ constructor(
       this.SearchManagingKOTItems.KOTrunningorders &&
       Array.isArray(this.SearchManagingKOTItems.KOTrunningorders)
     ) {
-      const filteredOrders = this.SearchManagingKOTItems.KOTrunningorders.filter(
-        (item: any) =>
-          item.SelectProductId !== this.manageKOTItem.SelectProductId ||
-          item.selectSubQuantityTypeID !== this.manageKOTItem.selectSubQuantityTypeID
-      );
-//console.log(filteredOrders);
+      let filteredOrders = this.SearchManagingKOTItems.KOTrunningorders
+        .filter(
+          (item: any) =>
+            item.SelectProductId !== this.manageKOTItem.SelectProductId ||
+            item.selectSubQuantityTypeID !== this.manageKOTItem.selectSubQuantityTypeID
+        )
+        .map((item: any) => ({ ...item, KOT_Changed: true }));
+      
+      // filteredOrders is an array; KOT_Changed must not be assigned to it.
       if (filteredOrders.length > 0) {
         // Update KOTrunningorders array in the backend
         // Refactored: Create a new GenratedItemKOT object and update via service.
@@ -438,7 +462,7 @@ constructor(
           console.log('Updating GenratedItemKOT:', GenratedItemKOT);
           await firstValueFrom(this.kOTrunningordersService.update(GenratedItemKOT));
           console.log('GenratedItemKOT updated successfully.');
-         // this.dispatchLoadKOTrunningorders();
+          this.dispatchLoadKOTrunningorders();
         } catch (error) {
           alert('Failed to update GenratedItemKOT.');
           console.error(error);
@@ -449,7 +473,7 @@ constructor(
           await firstValueFrom(
             this.kOTrunningordersService.delete(this.SearchManagingKOTItems.RecieptNumber)
           );
-         // this.dispatchLoadKOTrunningorders();
+          this.dispatchLoadKOTrunningorders();
           console.log('GenratedItemKOT deleted successfully.');
         } catch (error) {
           alert('Failed to delete GenratedItemKOT.');
@@ -464,7 +488,7 @@ constructor(
     //this.loadKOT.emit();
   }
   dispatchLoadKOTrunningorders() {
-   // this.ManageService_.initRunningKOT();
+    this.ManageService_.initRunningKOT();
     this.ManageService_.loadRunningKOT();
   }
   async confirmeKOTUpdatation()

@@ -18,7 +18,7 @@ export const floorLoadReducer = createReducer(
   initialState,
 
   // Load Floors
-  on(FloorActions.loadFloors, state => ({
+  on(FloorActions.loadFloor, state => ({
     ...state,
     loading: true,
     error: null

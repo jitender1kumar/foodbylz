@@ -9,7 +9,7 @@ import { GenratedItems } from '../Model/crud.model';
 })
 export class ItemsService {
 
-  private itemUrl: string = environment.api+"item";
+  private itemUrl: string = environment.api+"items";
 
   constructor(private http: HttpClient) { }
 

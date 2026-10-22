@@ -29,6 +29,8 @@ import { loadAllAddOnProducts } from '../../manage/ManageStore/addOnProductStore
 import { InvoiceService } from './invoice.service';
 import { IDine } from '../Model/crud.model';
 import { loadSubQuantityType } from '../../manage/ManageStore/subQuantityTypeStore/subQuantityType.actions';
+import { loadDineTables } from '../../dine/dineStore/dinetableStore/dinetable.action';
+import { loadFloor } from '../../dine/dineStore/floorStore/floor.action';
 //import * as RunningItemActions from '../../home/homeStore/runningItemKOTStore/runningItemKOT.actions';
 import * as RunningItemKOTActions from '../../home/homeStore/runningItemKOTStore/runningItemKOT.actions';
 import { GetOrderDetailsService } from '../commanFunction/getOrderDetails.service';
@@ -77,6 +79,8 @@ export class ManageService {
   subQuantityTypeByIdData$!: Observable<any>;
   Productnamedata$!: Observable<any>;
   productPriceData$!: Observable<any>;
+  dineData$!: Observable<any>;
+  floorData$!: Observable<any>;
 
   // State tracking values
   invoiceid: any;
@@ -142,7 +146,7 @@ export class ManageService {
       addOnProductReducer_: any;
       runningItemKOTReducer_: any;
       loadAddOnProductReducer_: any;
-      
+      loadFloor:any;loadDineTables:any;
     }>,
     private CustomerService_: CustomresService,
     private InitializeInvoice_: InitializeInvoice,
@@ -153,6 +157,12 @@ export class ManageService {
   }
 
    initObservables(): void {
+    // this.dineData$ = this.store.select(
+    // state => state.loadDineTables?.Dine_?.data);
+    // this.floorData$ = this.store.select(
+    //   state => state.loadFloor?.Floor_?.data
+    // );
+  
   //  console.log("Hi!");
     this.getCustomer$ = this.store.select(
       state => state['customerLoad']?.customers?.data
@@ -232,7 +242,10 @@ export class ManageService {
     this.loadSubQuantityTypeName();
     this.loadProducts('jsk');
     this.loadProductPrices();
-
+// this.loaddine();
+//     this.loadfloor();
+    this.loadRunningKOT();
+    this.loadpaybyMode();
   }
  
 
@@ -241,8 +254,10 @@ export class ManageService {
     // this.TokenNumber = 0;
     this.getOrderDetailsService.loadToday().subscribe(data => {
       const items = (data && typeof data === 'object' && Array.isArray((data as any).data)) ? (data as any).data : [];
-    //  console.log(items);
-      this.TokenNumber$.next(items.length + 1);
+      // console.log(items);
+      //  console.log(items.length);
+      this.TokenNumber$.next(+items.length + 1);
+      // console.log(this.TokenNumber$.value);
       if (!Array.isArray(items)) {
         const d = new Date();
         this.TokenNumber$.next(d.getDay() + d.getTime());
@@ -255,6 +270,21 @@ initRunningKOT()
     state => state.runningItemKOTReducer_?.KOTrunningorders?.data
   );
 }
+
+// loaddine(): void {
+//   this.store.dispatch(loadDineTables());
+//   this.dineData$ = this.store.select(
+//     state => state['dineLoad']?.Dine_?.data
+//   );
+// }
+
+// loadfloor(): void {
+//   this.store.dispatch(loadFloor());
+//   this.floorData$ = this.store.select(
+//     state => state['floorLoad']?.Floor_?.data
+//   );
+// }
+
   loadRunningKOT()
   {
    
@@ -362,7 +392,8 @@ getInvoiceDataById(invoiceid:string)
         return;
       }
       this.taxnamedata2 = data;
-     return this.taxnamedata = data.data;
+      console.log(this.taxnamedata2.data);
+     return this.taxnamedata = this.taxnamedata2.data;
       // this.initializeTax();
     });
   }

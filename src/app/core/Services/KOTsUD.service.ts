@@ -18,9 +18,16 @@ export class KOTsUDService {
   }
 
   // Get KOTsUD by Receipt Number
-  getKOTsUDByReceiptNumber(recieptNumber: string): Observable<KOTsUD> {
-    return this.http.get<KOTsUD>(`${this.KOTsUD}/${recieptNumber}`);
+  getKOTsUDByReceiptNumber(RecieptNumber: string): Observable<KOTsUD> {
+    return this.http.get<KOTsUD>(`${this.KOTsUD}/${RecieptNumber}`);
   }
+
+  // Get KOTsUD by IndexNumber and ItemsID
+  getKOTsUDByIndexNumberAndItemsID(IndexNumber: string, ItemsID: string): Observable<KOTsUD> {
+    return this.http.get<KOTsUD>(`${this.KOTsUD}/${IndexNumber}/${ItemsID}`);
+  }
+
+  
 
   // Create new KOTsUD entry
   createKOTsUD(kotsud: KOTsUD): Observable<KOTsUD> {

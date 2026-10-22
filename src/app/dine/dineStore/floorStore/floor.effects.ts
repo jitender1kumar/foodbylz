@@ -13,7 +13,7 @@ export class FloorEffects {
 
   loadFloors$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(FloorActions.loadFloors),
+      ofType(FloorActions.loadFloor),
       mergeMap(() =>
         this.floorService.get().pipe(
           map((Floor_) => FloorActions.loadFloorsSuccess({ Floor_ })),

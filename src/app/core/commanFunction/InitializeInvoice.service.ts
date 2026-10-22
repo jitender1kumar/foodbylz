@@ -10,7 +10,7 @@ export class InitializeInvoice {
     datecurrent: any;
     date: any;
     ichar: IChair[] = [];
-    itaxarr: ITax[] = [{ id: "", name: "", percentt: 0, amount: 0, productid: "", productname: "" }];
+    itaxarr: ITax[] = [{ id: "", name: "", percent: 0, amount: 0, productid: "", productname: "" }];
 invoice: Invoice = {
     Taxes: this.itaxarr,
     Chairs: this.ichar,

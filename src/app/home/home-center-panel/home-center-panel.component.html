@@ -1,78 +1,417 @@
-    <div class="billing-app max-w-5xl mx-auto py-8 px-3 sm:px-5" style="width: 100%;">
-      <div class="flex items-center justify-between mb-2 px-1">
-        <h5 class="text-base font-semibold text-cyan-800 tracking-tight mb-0">Menu Explorer</h5>
-        <span class="text-cyan-600 text-xs font-medium ml-2">Delicious choices for every mood! 🍴</span>
-      </div>
-      <div *ngIf="productsByCategoryId" class="flex flex-wrap items-center justify-center gap-3 text-base mb-4 bg-gray-50 rounded-lg py-3 px-2 shadow-sm">
+<!-- Simplified layout for autofit to parent; removed z-index usage and unnecessary complex styling. -->
+<div class="center-panel">
+  <!-- HEADER & SEARCH -->
+  <header class="panel-header">
+    <div *ngIf="productsByCategoryId" class="search-bar">
+      <i class="ti ti-search search-icon"></i>
+      <input
+        class="search-input"
+        type="text"
+        [(ngModel)]="selectedType"
+        placeholder="🔍 Discover amazing dishes..."
+        (keyup)="getFilteredProductsByCategoryId()"
+      />
+    </div>
+    <div class="filter-actions">
+      <label class="filter-option filter-all">
         <input
-          type="text"
+          type="radio"
+          name="foodType"
+          value=""
           [(ngModel)]="selectedType"
-          placeholder="🔍 Search food..."
-          (keyup)="getFilteredProductsByCategoryId()"
-          class="px-4 py-2 w-60 border border-cyan-200 rounded-full bg-white shadow focus:outline-none focus:border-cyan-500 transition-all"
+          (change)="getFilteredProductsByCategoryId()"
+          class="accent-primary form-radio"
         />
-
-        <div class="flex items-center gap-2 ml-3">
-          <label class="inline-flex items-center gap-1 cursor-pointer font-medium text-cyan-800">
-            <input type="radio" name="foodType" value="" [(ngModel)]="selectedType" (change)="getFilteredProductsByCategoryId()" class="accent-cyan-600"/>
-            <span class="ml-1">All</span>
-          </label>
-          <label class="inline-flex items-center gap-1 cursor-pointer font-medium text-green-700">
-            <input type="radio" name="foodType" value="false" [(ngModel)]="selectedType" (change)="getFilteredProductsByCategoryId()" class="accent-green-600"/>
-            <span class="ml-1">🍃 Veg</span>
-          </label>
-          <label class="inline-flex items-center gap-1 cursor-pointer font-medium text-red-700">
-            <input type="radio" name="foodType" value="true" [(ngModel)]="selectedType" (change)="getFilteredProductsByCategoryId()" class="accent-red-600"/>
-            <span class="ml-1">🍗 Non-Veg</span>
-          </label>
-        </div>
-
-        <span class="ml-auto">
-          <app-shortcode (shortcodeEntered)="shortcodeEnteredBySubParent($event)"></app-shortcode>
-        </span>
-      </div>
-
-      <!-- Product Grid -->
-      <div *ngIf="productsByCategoryId && productsByCategoryId.length; else noItems" class="mt-8 px-1 mb-8">
-        <div class="grid gap-5 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          <div *ngFor="let product of productsByCategoryId" class="group">
-            <div 
-              class="bg-white rounded-xl shadow hover:shadow-xl border border-gray-100 hover:border-cyan-400 transition-all duration-200 p-6 flex flex-col items-center cursor-pointer relative min-h-[160px]"
-              (click)="product && product._id ? increment(product._id) : null"
-            >
-              <!-- Veg/Non-Veg Mark -->
-              <span
-                *ngIf="product?.veg_nonveg === true"
-                class="absolute top-2 right-2 flex items-center justify-center" title="Non-Veg"
+        <span class="font-serif">All</span>
+      </label>
+      <label class="filter-option filter-veg">
+        <input
+          type="radio"
+          name="foodType"
+          value="false"
+          [(ngModel)]="selectedType"
+          (change)="getFilteredProductsByCategoryId()"
+          class="accent-green-600 form-radio"
+        />
+        <span>🍃 Veg</span>
+      </label>
+      <label class="filter-option filter-nonveg">
+        <input
+          type="radio"
+          name="foodType"
+          value="true"
+          [(ngModel)]="selectedType"
+          (change)="getFilteredProductsByCategoryId()"
+          class="accent-red-500 form-radio"
+        />
+        <span>🍗 Non-Veg</span>
+      </label>
+      <span class="shortcode-container">
+        <app-shortcode (shortcodeEntered)="shortcodeEnteredBySubParent($event)"></app-shortcode>
+      </span>
+    </div>
+  </header>
+  
+  <!-- PRODUCTS GRID -->
+  <!-- <section *ngIf="productsByCategoryId && productsByCategoryId.length > 0; else noItems" class="products-grid-section"> -->
+    <div class="product-grid">
+      <ng-container *ngFor="let product of productsByCategoryId">
+        <div
+          *ngIf="product"
+          class="product-card"
+          (mouseenter)="product.hovered = true"
+          (mouseleave)="product.hovered = false"
+          (click)="product._id ? increment(product._id) : null"
+        >
+          <!-- Food Image (placeholder or real) -->
+          <div class="product-img-wrap">
+            <img
+              *ngIf="product.Image"
+              [src]="product.Image"
+              [alt]="product.ProductName || 'Dish image'"
+              class="product-img"
+            />
+            
+            <!-- Veg/Non-Veg Icon -->
+            <span *ngIf="product.veg_nonveg === true" class="veg-nonveg-icon non-veg">
+              <span class="veg-nonveg-dot bg-red-500"></span>
+            </span>
+            <span *ngIf="product.veg_nonveg === false" class="veg-nonveg-icon veg">
+              <span class="veg-nonveg-dot bg-green-500"></span>
+            </span>
+          </div>
+          <!-- Card Body Content -->
+          <div class="product-card-body">
+            <span class="product-name">
+              {{ product.ProductName || 'No Name' }}
+            </span>
+            <div class="product-price-actions">
+              <!-- <span class="product-price">
+                ₹{{ product.price || '--' }}
+              </span> -->
+              <button
+                class="add-btn"
+                (click)="increment(product._id); $event.stopPropagation();"
+                title="Add to Order"
+                [ngStyle]="{
+                  background: product.hovered
+                    ? 'linear-gradient(90deg,#fa7e84 0%,#ffd6e0 100%)'
+                    : 'linear-gradient(125deg,#ffb4b9 0%,#fa7e84 100%)'
+                }"
               >
-                <span class="inline-block w-4 h-4 rounded-full border-2 border-red-600 bg-white flex items-center justify-center">
-                  <span class="block w-2 h-2 bg-red-600 rounded-full"></span>
-                </span>
-              </span>
-              <span
-                *ngIf="product?.veg_nonveg === false"
-                class="absolute top-2 right-2 flex items-center justify-center" title="Veg"
-              >
-                <span class="inline-block w-4 h-4 rounded-full border-2 border-green-600 bg-white flex items-center justify-center">
-                  <span class="block w-2 h-2 bg-green-600 rounded-full"></span>
-                </span>
-              </span>
-              <div
-                class="w-12 h-12 flex items-center justify-center mb-3 rounded-lg bg-cyan-50 group-hover:bg-cyan-100"
-              >
-                <span class="text-3xl text-cyan-500 font-bold">+</span>
-              </div>
-              <span class="text-base font-semibold text-cyan-900 group-hover:text-cyan-700 transition text-center">
-                {{ product?.ProductName || 'No Name' }}
-              </span>
+                <span>+</span>
+              </button>
             </div>
           </div>
         </div>
-      </div>
-      <ng-template #noItems>
-        <div class="flex flex-col items-center mt-16">
-          <span class="text-4xl text-cyan-300 mb-2">🍽️</span>
-          <span class="text-lg text-cyan-700 font-semibold">No foods found!</span>
-        </div>
-      </ng-template>
+      </ng-container>
     </div>
+  <!-- </section> -->
+  <!-- No Results Message -->
+  <ng-template #noItems>
+    <div class="no-items-message">
+      <span class="no-items-emoji">🙁</span>
+      <span class="no-items-title">Sorry, no dishes found!</span>
+      <span class="no-items-tip">Try searching for something else or use the filters above.</span>
+    </div>
+  </ng-template>
+</div>
+
+<style>
+.center-panel {
+  position: relative;
+  background: #fff;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  min-height: 0;
+  min-width: 0;
+  border-radius: 1.35rem;
+  box-shadow: 0 0 24px 0 rgba(90,40,40,0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-width: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+}
+
+/* Header styling remains consistent */
+.panel-header {
+  background: #faf7f5;
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  display: flex;
+ position: relative;
+  align-items: center;
+  gap: 0.6rem;
+  justify-content: center;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0 auto;
+  font-size: 1rem;
+  box-shadow: 0 1px 6px #ba537012;
+}
+@media (min-width: 768px) {
+  .panel-header { 
+    flex-direction: row;
+    align-items: center; 
+    justify-content: center;
+    max-width: 100%;
+  }
+}
+
+.search-bar {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.25rem;
+  color: #ba5370;
+}
+.search-input {
+  width: 100%;
+  padding: 0.7rem 1rem 0.7rem 2.6rem;
+  border-radius: 0.6rem;
+  border: 1.5px solid #ebbed4;
+  color: #ba5370;
+  background: #fff9;
+  font-size: 1rem;
+  font-family: Montserrat, sans-serif;
+  box-shadow: none;
+  transition: border 0.12s, background 0.12s;
+  min-width: 0;
+  max-width: 100%;
+}
+.search-input::placeholder { color:#d18890; font-size: 1rem;}
+.search-input:focus {
+  border-color: #ba5370;
+  background: #fff4fa;
+  outline: none;
+}
+
+.filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem;
+  min-width:0;
+  flex: 1 1 0;
+  justify-content: flex-end;
+}
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  font-weight: 600;
+  min-width: 0;
+  font-size: 1rem;
+}
+.filter-all { color: #ba5370; }
+.filter-veg { color: #3fa271; }
+.filter-nonveg { color: #e6534f; }
+.filter-option .font-serif { font-family: 'Playfair Display', serif; }
+input[type="radio"].form-radio {
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  vertical-align: middle;
+  accent-color: inherit;
+  margin-right: 0.3em;
+}
+.shortcode-container {
+  margin-left: 1.2rem;
+  flex-shrink: 0;
+}
+
+.products-grid-section {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 1.2rem;
+  padding: 1.2rem 1.2rem 0;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+.product-card {
+  background: #fff6f9;
+  position: relative;
+  border: 1px solid #ebbed4;
+  border-radius: 1rem;
+  box-shadow: 0 0.5px 8px #ba537012;
+  transition: transform 0.14s cubic-bezier(.4,0,.2,1), box-shadow 0.15s, border-color 0.14s;
+  cursor: pointer;
+  user-select: none;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  min-width:0;
+  max-width:100%;
+}
+.product-card:hover {
+ 
+  box-shadow: 0 1.5px 16px #ba537024;
+  border-color: #fa7e84;
+}
+
+.product-img-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 3rem;
+  overflow: hidden;
+  width: 100%;
+  background: #fff;
+}
+.product-img {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+}
+.product-img-placeholder {
+  font-size: 2.2rem;
+  color: #f9bfc6;
+}
+
+.veg-nonveg-icon {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  border-width: 2px;
+  background: #fff;
+  box-shadow: 0 1px 3px #e6534f13;
+  /* removed z-index */
+}
+.veg-nonveg-icon.non-veg {
+  border: 2px solid #e6534f;
+}
+.veg-nonveg-icon.veg {
+  border: 2px solid #3fa271;
+}
+.veg-nonveg-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  display: block;
+}
+.bg-red-500 { background: #e6534f !important; }
+.bg-green-500 { background: #3fa271 !important; }
+
+.product-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0.7rem 0 0.6rem 0;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.product-name {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #ba5370;
+  margin-bottom: 0.35rem;
+  max-width: 100%;
+  word-break: break-word;
+  display: block;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.product-price-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  min-width: 0;
+}
+.product-price {
+  font-size: 1rem;
+  color: #b24d5a;
+  font-weight: 600;
+  background: #feeeed;
+  padding: 0.15rem 0.75rem;
+  border-radius: 0.5rem;
+  white-space: nowrap;
+  max-width: 100%;
+}
+.add-btn {
+  width: 2em;
+  height: 2em;
+  font-size: 1em;
+  border: none;
+  outline: none;
+  border-radius: 0.5rem;
+  color: #fff;
+  background: linear-gradient(125deg,#ffb4b9 0%,#fa7e84 100%);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, transform 0.12s;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.add-btn:active {
+  transform: scale(0.97);
+}
+
+.no-items-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 3rem;
+  padding: 1.3rem;
+  overflow: hidden;
+  max-width: 100%;
+}
+.no-items-emoji {
+  font-size: 2.2rem;
+  color: #f9bfc6;
+  margin-bottom: 0.6rem;
+}
+.no-items-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ba5370;
+  font-family: 'Playfair Display', serif;
+  margin-bottom: 0.4rem;
+}
+.no-items-tip {
+  font-size: 0.95rem;
+  color: #d18890e6;
+  margin-top: 0.15rem;
+}
+</style>

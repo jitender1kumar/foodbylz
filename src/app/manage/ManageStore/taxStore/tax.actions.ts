@@ -3,7 +3,7 @@ import { Tax } from '../../../core/Model/crud.model';
 
 // Load
 export const loadTax = createAction('[Tax] Load ProductCategories');
-export const loadTaxSuccess = createAction('[Tax] Load ProductCategories Success', props<{ Tax_: any[] }>());
+export const loadTaxSuccess = createAction('[Tax] Load ProductCategories Success', props<{ Tax_: Tax[] }>());
 export const loadTaxFailure = createAction('[Tax] Load ProductCategories Failure', props<{ error: string }>());
 
 // Add

@@ -1,4 +1,110 @@
 
+<style>
+  :host {
+    display: block;
+    width: 100%;
+  }
+
+  .sales-info,
+  .total-sales-amount {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .sales-header,
+  .total-sales-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .sales-summary,
+  .sales-tabs-container,
+  .tabs-group {
+    min-width: 0;
+  }
+
+  .tabs-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+
+  .tab,
+  .sales-dropdown select {
+    max-width: 100%;
+  }
+
+  .graph-container {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    box-sizing: border-box;
+  }
+
+  .bar-group {
+    flex: 1 0 clamp(2.5rem, 8vw, 5rem);
+    min-width: 2.5rem;
+  }
+
+  .sales-container {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(12rem, 1fr);
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .sales-legend,
+  .sales-pie-chart {
+    min-width: 0;
+  }
+
+  .sales-pie-chart canvas {
+    display: block;
+    width: 100% !important;
+    max-width: 100%;
+    height: auto !important;
+  }
+
+  @media (max-width: 700px) {
+    .sales-header,
+    .total-sales-info {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .sales-summary,
+    .sales-tabs-container,
+    .sales-dropdown,
+    .sales-dropdown select {
+      width: 100%;
+    }
+
+    .tabs-group .tab {
+      flex: 1 1 calc(50% - .5rem);
+    }
+
+    .sales-container {
+      grid-template-columns: 1fr;
+    }
+
+    .sales-pie-chart {
+      width: min(100%, 20rem);
+      margin-inline: auto;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .tabs-group .tab {
+      flex-basis: 100%;
+    }
+  }
+</style>
+
 <!-- Third Div -->
 <div class="sales-info">
   <div class="sales-graph">

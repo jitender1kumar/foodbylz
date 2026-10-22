@@ -10,9 +10,9 @@ import { IDine } from '../Model/crud.model';
 export class DineService {
 
   private DineUrl: string = environment.api+"dine";
-  public dinedataSubject$ = new BehaviorSubject<any[]>([]);
+   dinedataSubject2 = new BehaviorSubject<IDine[]>([]);
  
-
+   dinedataSubject$ = this.dinedataSubject2.asObservable();
  
   constructor(private http: HttpClient) { }
 
@@ -35,6 +35,7 @@ export class DineService {
   }
   update(dine: IDine) {
     return this.http.put(this.DineUrl, { dine });
+    
   }
  
   loaddine() {
@@ -42,11 +43,11 @@ export class DineService {
     this.get().subscribe({
       next: (data: any) => {
         const dineData = Array.isArray(data?.data) ? data.data : [];
-        this.dinedataSubject$.next(dineData);
+        this.dinedataSubject2.next(dineData);
       },
       error: error => {
         console.error('Failed to load dine data:', error);
-        this.dinedataSubject$.next([]);
+        this.dinedataSubject2.next([]);
       }
     });
   }

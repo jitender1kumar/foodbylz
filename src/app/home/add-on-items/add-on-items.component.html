@@ -35,6 +35,7 @@
         <span class="text-red-500">Add-on item already exists.</span>
       </div>
       <ng-template #notExists></ng-template>
+      <!-- <p>{{selectedAddOnItems | json}}</p> -->
       <div *ngIf="selectedAddOnItems && selectedAddOnItems.length > 0">
         <h4 class="font-semibold mb-2">Selected Add-On Items:</h4>
         <div class="flex flex-wrap gap-2">

@@ -1,4 +1,4 @@
-import {  IAddOnItems } from "../crud.model";
+import {  IAddOnItems, Tax } from "../crud.model";
 
 export interface RunningItems
 {
@@ -14,9 +14,8 @@ export interface RunningItems
       selectSubQuantityTypeID: string;
       SubQuantityTypeName:string;
       quntityvalue:number;
-qvalue:number
-taxnames:string;
-taxvalues:string;
+      KOT_Changed:boolean;
+Taxes:any[];
 totaltaxvalue:number;
 paidStatus:boolean;
 notes:string;

@@ -133,7 +133,7 @@ export class DineComponent implements OnInit {
 
   loadfloor(): void {
     // Fix: Import FloorActions and use correct state property
-    this.store.dispatch(FloorActions.loadFloors());
+    this.store.dispatch(FloorActions.loadFloor());
     this.Floordata$ = this.store.select(state => state.LoadFloor.Floor_.data);
   }
 

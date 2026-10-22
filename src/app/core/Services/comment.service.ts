@@ -16,16 +16,20 @@ export class CommentService {
     return this.http.post<Comment>(this.commentUrl, comment);
   }
 
+  getById(_id: string): Observable<Comment> {
+    return this.http.get<Comment>(`${this.commentUrl}/${_id}`);
+  }
+
   get(): Observable<Comment[]> {
     return this.http.get<Comment[]>(this.commentUrl);
   }
 
-  getByRecieptNumber(recieptNumber: string): Observable<Comment> {
-    return this.http.get<Comment>(`${this.commentUrl}/${recieptNumber}`);
+  getByRecieptNumber(RecieptNumber: string): Observable<Comment> {
+    return this.http.get<Comment>(`${this.commentUrl}/${RecieptNumber}`);
   }
 
-  delete(recieptNumber: string): Observable<any> {
-    return this.http.delete(`${this.commentUrl}/${recieptNumber}`);
+  delete(RecieptNumber : string): Observable<any> {
+    return this.http.delete(`${this.commentUrl}/${RecieptNumber}`);
   }
 
   update(comment: Comment): Observable<Comment> {

@@ -32,7 +32,7 @@ const routes: Routes = [
   {path:'AddOn',component:AddOnProductComponent},
   { path: 'companylogin', component: CompanyloginComponent },
   { path: 'admin', component: AdminComponent },
-  { path: 'employeelogin', component: EmployeeComponent },
+  { path: 'employee', component: EmployeeComponent },
   { path: 'discount', component: DiscountComponent },
 ];
 

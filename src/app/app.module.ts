@@ -117,15 +117,21 @@ import { splitBillReducer } from './home/partial/splitbill/splitbillStore/splitb
 import { SplitBillEffects } from './home/partial/splitbill/splitbillStore/splitbill.effects';
 import { GenratedItemsReducer } from './home/homeStore/GentratedItemsStore/GenratedItems.reducer';
 import { GenratedItemsEffects } from './home/homeStore/GentratedItemsStore/GenratedItems.effects';
+import { loadDineTables } from './dine/dineStore/dinetableStore/dinetable.action';
+import { customerPaymentHistoryReducer } from './home/homeStore/CustomerPaymentHistoryStore/CustomerPaymentHistory.reducer';
+import { CustomerPaymentHistoryEffects } from './home/homeStore/CustomerPaymentHistoryStore/CustomerPaymentHistory.effects';
+
+// CompanyModule is already imported above, ensure it is listed under imports below
 
 const routes: Routes = [
   { path: 'popup', component: PopupmodelComponent },
   { path: '', component: HomeComponent },
- 
   { path: 'dashboard', component: DashboardComponent },
   { path: 'Payby', component: PaybymanageComponent },
   { path: 'manage', component: ManageComponent },
   { path: 'Home', component: HomeComponent },
+  // Add company routes if CompanyModule is lazy loaded
+  // { path: 'company', loadChildren: () => import('./company/company.module').then(m => m.CompanyModule) },
 ];
 
 @NgModule({
@@ -143,7 +149,7 @@ const routes: Routes = [
     FormsModule,
     GridTableModule,
     AppRoutingModule,
-    CompanyModule,
+    CompanyModule, // <-- company module is included here
     ManageModule,
     DashboardModule,
     HomeModule,
@@ -153,7 +159,6 @@ const routes: Routes = [
     InventoryModule,
     PaymentModule,
     DiscountModule,
-    // Remove PopupmodelComponent from imports, as it should be declared, not imported as a module
     StoreModule.forRoot(
       {
         categoryLoad: categoryLoadReducer,
@@ -194,6 +199,7 @@ const routes: Routes = [
         UpdateFloor: floorUpdateReducer,
         DeleteFloor: floorDeleteReducer,
         dineTableReducer_: dineTableReducer,
+      //  dineTableReducer2_: dineTableReducer2,
         invoiceReducer_: invoiceReducer,
         customersReducer_: customersReducer,
         addOnProductReducer_: addOnProductReducer,
@@ -207,12 +213,13 @@ const routes: Routes = [
         discountReducer_:discountReducer,
         runningItemReducer_:runningItemReducer,
         splitBillReducer_: splitBillReducer,
-        GenratedItemsReducer_: GenratedItemsReducer
+        GenratedItemsReducer_: GenratedItemsReducer,
+        customerPaymentHistoryReducer_: customerPaymentHistoryReducer as any
       },
       { metaReducers }
     ),
-    // Remove duplicate StoreModule.forFeature('runningItem', runningItemsReducer)
     EffectsModule.forRoot([
+      CustomerPaymentHistoryEffects,
       ProductCategoryEffects,
       ProductPriceEffects,
       ProductEffects,
@@ -235,7 +242,7 @@ const routes: Routes = [
       SplitBillEffects,
       GenratedItemsEffects
     ]),
-    
+    StoreModule.forFeature('IDine_', loadDineTables),
   ],
   providers: [
     provideClientHydration(),

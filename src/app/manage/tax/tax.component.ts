@@ -102,6 +102,7 @@ export class TaxComponent implements OnInit {
     this.Update(this.myEditForm.value);
   }
   Update(Tax_: Tax) {
+    this.args = "";
     if (this.ValidationService_.checkNameExist(this.myEditForm.value.name, this.myEditForm.value._id, this.tax$)) {
       this.args = `Tax Name: ${this.myEditForm.value.name} Exists. Please create another name.`;
     }
@@ -125,26 +126,25 @@ export class TaxComponent implements OnInit {
   }
 
   add(Tax_: Tax): void {
-    //alert("Successfully Created quantity types...");
-    const valid = this.ValidationService_.checkNameExistforAddForm(this.myAddForm.value.name, this.tax$);
-    console.log(valid.value);
-    if (!valid.value) {
-      this.store.dispatch(addTax({ Tax_: Tax_ }));
-      // this.args = "Successfully Added quantity types..." + Tax_.name;
+    this.args = '';
 
-      this.actions$.pipe(ofType(TaxAction.addTaxSuccess)).subscribe(() => {
-        this.args = "Successfully Added Tax: " + Tax_.name;
-        this.loadTaxFunction();
-      });
-      this.actions$.pipe(ofType(TaxAction.addTaxFailure)).subscribe(() => {
-        this.args = "Something went wrong";
+    const isDuplicate = this.ValidationService_
+      .checkNameExistforAddForm(this.myAddForm.value.name, this.tax$);
 
-      });
-    }
-    else {
+    if (isDuplicate?.value) {
       this.args = `Tax Name: ${this.myAddForm.value.name} Exists. Please create another name.`;
-
+      return;
     }
+
+    this.store.dispatch(addTax({ Tax_ }));
+    this.args = `Successfully Added Tax: ${Tax_.name}`;
+    this.loadTaxFunction();
+    this.myAddForm.reset({
+      name: '',
+      Description: '',
+      perscentRate: 0,
+      Status: true
+    });
   }
   onRowClick(r: any) { console.log('clicked row', r);
     // console.log(this.colDefs);

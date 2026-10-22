@@ -9,6 +9,24 @@ export class NavbarComponent {
 
   constructor() {}
   @Output() notifyManage: EventEmitter<string> = new EventEmitter<string>();
+  showMobileNav: boolean = false;
+  profileOptions = [
+    {
+      label: 'Profile',
+      value: 'profile',
+      icon: 'fa fa-user'
+    },
+    {
+      label: 'Settings',
+      value: 'settings',
+      icon: 'fa fa-cog'
+    },
+    {
+      label: 'Logout',
+      value: 'logout',
+      icon: 'fa fa-sign-out'
+    }
+  ];
   showtablefun()
 {
   this.notifyManage.emit("tables");

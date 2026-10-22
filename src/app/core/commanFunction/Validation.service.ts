@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
+import { take } from 'rxjs/operators';
 import { Validationenvironment } from '../../environment/validtionEnvironment';
+//import { CustomersService } from '../../services/customers.service';
 
 @Injectable({
   providedIn: 'root',
@@ -9,6 +11,7 @@ export class ValidationService {
   NameExistOrNot = false;
   Validationenvironments: any
   MobileNoExist:any;
+ // constructor(CustomersService_:CustomersService) { }
   checkNameExistforAddForm(checkName: string, Data$: any) {
     try {
       this.Validationenvironments = Validationenvironment;
@@ -148,20 +151,19 @@ export class ValidationService {
     });
     return this.Validationenvironments.nameExists$;
   }
-  checkAnotherMobileNumberExist(MobileNo: string, _id: string, Data$: any) {
-    this.Validationenvironments = Validationenvironment;
-    this.Validationenvironments.MobileNoExist$.next(false);
-    console.log(MobileNo);
-    Data$?.subscribe((getMobile: any[]) => {
-    // console.log(getMobile);
-    // console.log(_id);
-       const mobileNoExists = getMobile.some(item => item.MobileNo === MobileNo && item._id !== _id);
-       console.log('Mobile number exists:', mobileNoExists);
-       this.Validationenvironments.MobileNoExist$.next(mobileNoExists);
-       return this.Validationenvironments.MobileNoExist$;
-    });
-    return this.Validationenvironments.MobileNoExist$;
-  }
+  // checkAnotherMobileNumberExist(MobileNo: string, _id: string, Data$: any) {
+  //   this.Validationenvironments = Validationenvironment;
+  //   this.Validationenvironments.MobileNoExist$.next(false);
+  //   console.log(MobileNo);
+  //   Data$?.pipe(take(1)).subscribe((getMobile: any[]) => {
+  //     const mobileNoExists = getMobile.some(item => item.MobileNo === MobileNo && item._id !== _id);
+  //     console.log('Mobile number exists:', mobileNoExists);
+  //     console.log(getMobile);
+  //     this.Validationenvironments.MobileNoExist$.next(mobileNoExists);
+  //   });
+  //   return this.Validationenvironments.MobileNoExist$;
+  // }
+ 
   checkNameExist2(name: string, _id: string, Data: any) {
     this.Validationenvironments = Validationenvironment;
     this.Validationenvironments.nameExists$.next(false);

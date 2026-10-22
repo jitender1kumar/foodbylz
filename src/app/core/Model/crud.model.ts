@@ -1,19 +1,19 @@
 import { RunningItems } from "./RunningItemsHomeModel/RunningItem.model"
 
 export interface ProductCategory {
-    _id:string,
-    name: string,
-    categorydesc: string,
-    createdAt:string,
-  }
+  _id: string,
+  name: string,
+  categorydesc: string,
+  createdAt: string,
+}
 
-  export interface subQuantityType{
-    _id:string,
-    name:string,
-    description:string,
-    selectQtypeID:string,
-    
-  }
+export interface subQuantityType {
+  _id: string,
+  name: string,
+  description: string,
+  selectQtypeID: string,
+
+}
 export interface Payment {
   _id: string;
   amount: number;
@@ -38,450 +38,515 @@ export interface Discount {
   employee_id?: string;
 }
 
-  export interface ProductPrice{
-    _id:string,
-    ProductPrice: number,
-    SelectProductId:string,
-    selectcategoryID:string,
-      selectQtypeID:string,
-      selectSubQuantityTypeID:string,
-      ShortCodeNumber:number,
-      ShortCodeString: string,
-      mostSelling:boolean,
-      employee_id:string
+export interface ProductPrice {
+  _id: string,
+  ProductPrice: number,
+  SelectProductId: string,
+  selectcategoryID: string,
+  selectQtypeID: string,
+  selectSubQuantityTypeID: string,
+  ShortCodeNumber: number,
+  ShortCodeString: string,
+  mostSelling: boolean,
+  employee_id: string
 
-  }
+}
 
-    export interface  Products{
-     
-        _id:string,
-        name: string,
-        Productdesc:string,
-        selectcategoryID: string,
-          selectQtypeID: string,
-          selectSubQuantityTypeID: string,
-          availablity: boolean,
-           veg_nonveg: boolean,
-           Status: boolean,
-           employee_id:string
-      }
-      
-      export interface Quantitytype{
-        _id:string,
-        name: string,
-        Desc: string,
-       
-      }
-      export interface ProductPriceDetails{
-        _id:string,
-        veg_nonveg:boolean,
-        ProductPrice: string,
-        SelectProductId:string,
-        ProductName:any,
-        selectcategoryID:string,
-        categoryName:any,
-          selectQtypeID:string,
-          QtypeName:any,
-          ShortCodeNumber: number,
-          ShortCodeString: string,
-          mostSelling: boolean,
-          selectSubQuantityTypeID: string,
-          SubQuantityTypeName:any,
-          quntityvalue:number,
-      }
-      export interface ProductPriceAllName{
-        _id:string,
-        ProductPrice: string,
-        ProductName:string,
-        categoryName:string,
-          QtypeName:string,
-          SubQuantityTypeName:string,
-      }
-      export interface Tax{
-        _id:string,
-        name:string,
-Description:string,
-perscentRate:number,
-Status:boolean,
-      }
-      
-      export interface Invoice
-      {
-      Chairs:IChair[],
-          Taxes:  ITax[],
-          AddOnItems:IAddOnItems[],
-          taxpecentRate:number,
-          taxpercentValue:  number, 
-          DiscountId: string,
-          Discountvalue: number, 
-          Discountperstage: number,
-          AdditionaldiscountAmount:number,
-          Totalvaue: number,
-          grandtotal: number,
-          RecieptNumber: number,
-          OrderType:string,
-          PendingAmount:number,
-          PaidAmount:number,
-          AmountPaidstatus:boolean,
-          Orderstatus:string,
-          TotalTaxAmount:number,
-          TotalItemsAmount:number,
-          OrderTypeName:string,
-          paybyId:string,
-          table_id:string,
-          customer_id:string,
-          employee_id:string,
-          AssistToId:string,  
-          CommentId:string,
-          returnAmount:string,
-          tablename:string,
-          tokennumber:number,
-          createdAt:Date                          
-      } 
-      export interface IAddOnItems
-      {
-       _id:string,
-       numberofQuantity:number
-      }
-      export interface GenratedItems
-      {
-         _id:string,
-        RecieptNumber:string,
-        EmployeeId:string,
-        TableId:string,
-       Items:IItems[],
-       createdAt:Date
-      }
-      export interface KOTsUD
-      {
-        ItemsID:string,
-        RecieptNumber: string,
-        deletedAt:Date,
-        CommentId: string,
-      }
-      export interface GenratedItemKOT
-      {
-        _id:string,
-        quntityvalue: any;
-        qvalue: any;
-        Comment:string;
-        EmployeeId:string,
-        TableId:string,
-        ItemsID:string,
-        RecieptNumber:string,
-        KOTStatus:string,
-        createdAt:Date,
-        KOTrunningorders:RunningItems[]
-      }
-      export interface Comment
-      {
-        _id:string,
-        CommentType:string,
-        RecieptNumber: string,
-        Comment: Text,
-      }
-      export interface IItems
-      {
-        Productid:  string,
-        Productname: string,
-        SubQuantityTypeID:string,
-        SubQuantityTypeName: string,
-        Qauntityid:string,
-        Qauntityname:  string,
-        Quantity:number,
-        itemamount:number,
-        totalquantityamount:number,
-        employee_id:string
-      }
-      export interface ITax{
-        id:string,
-        name:string,
-        percentt:number,
-        amount:number,
-        productid:string,
-        productname:string
-      }
-      export interface IDine{
-        _id:string,
-        name:string,
-        description:string,
-        status:boolean,
-        floor_id:string,
-        employee_id:string
-      } 
-      export interface Floor{
-        _id:string,
-        name:string,
-        description:string,
-        status:boolean,
-        
-      }
-      export interface IChair{
-        _id:string,
-        name:string,
-        description:string,
-        status:boolean,
-        table_id:string,
-      
-        chairorderstatus:string
-      }
-      export interface IChairDefault{
-        name:string,
-        description:string,
-        status:boolean,
-        table_id:string,
-        chairorderstatus:string
-      }
-       export interface IFloorMergeWithDine{
-        _id:string,
-       floor_id:string,
-        name:string,
-        FloorName:string,
-        description:string,
-        status:boolean
-      }
-      export interface IChairMergeDineName{
-        _id:string,
-        DineTable:string,
-        table_id:string,
-        name:string,
-        FloorName:string,
-        
-        description:string,
-        status:boolean
-      }
-      export interface Customers
-      {
-         
-      name:string,
-      MobileNo: string,
-      DOB: string,
-      type: string,
-      tag:  string,
-      DueAmount: number,
-      Anniversary: string,
-      Paymentstatus:number,
-      RecieptNumber: number,
-      employee_id:string
-      }
-      export interface CustomersEdit
-      {
-      _id:string,   
-      name:string,
-      MobileNo: string,
-      DOB: string,
-      type: string,
-      tag:  string,
-      DueAmount: number,
-      Anniversary: string,
-      Paymentstatus:number,
-      RecieptNumber: number,
-      employee_id:string
-      }
-      export interface IChairsrunningorder
-      {
-        Chairsrunningorder:IChair[],
-        tablename:string,
-        receiptnumber:string,
-        tokennumber:number
-      }
+export interface Products {
 
-      export interface Goodscollection
-      {
-      IventoryFoodMainId:string,
-      quantiyval: number
-      }
-      export interface GoodscollectionMergename
-      {
-      IventoryFoodMainId:string,
-      Name:string,
-      quantiyval: number
-      }
-      export interface InventoryFoodwithProduct2
-      {
-        ProductId:string,
-        ProductPrcieId: string,
-        ProductName: string,
-        SubQuantityTypeID: string,
-        SubQuantityTypeName:string,
-      }
-      export interface  InventoryFoodwithProductforEdit
-  {
-    _id:string,
-    ProductId:string,
-    ProductPrcieId: string,
-    ProductName: string,
-    SubQuantityTypeID: string,
-    SubQuantityTypeName:string,
-  goodscollections:GoodscollectionMergename[],
-  employee_id:string
-  }
-      export interface InventoryFoodwithProduct
-      {
-        ProductId:string,
-        ProductPrcieId: string,
-        ProductName: string,
-        SubQuantityTypeID: string,
-        SubQuantityTypeName:string,
-      goodscollections:GoodscollectionMergename[]
-      }
+  _id: string,
+  Taxes: Tax[],
+  name: string,
+  Productdesc: string,
+  selectcategoryID: string,
+  selectQtypeID: string,
+  selectSubQuantityTypeID: string,
+  availablity: boolean,
+  veg_nonveg: boolean,
+  Status: boolean,
+  employee_id: string
+}
 
-    
-     export interface InventoryMainFood{
-        _id: any
-        name:             string,
-        description:      string,
-        quantitytypeID:   string,
-        quantitytypename: string,
-        quantitytypevalue: number,
-        employee_id:string
-       
-     }
-     export interface InventoryFoodMain2{
-      _id:string,
-      name:             string,
-      description:      string,
-      quantitytypeID:   string,
-      quantitytypename: string,
-      quantitytypevalue: number,
-      employee_id:string,
-      createdAt:string
-   }
-     export interface InventoryFoodQuantityType{
-      _id: any
-      name: string,
-      description:string
-    }
-    
-    export interface ReserveDine {
+export interface Quantitytype {
+  _id: string,
+  name: string,
+  Desc: string,
 
-      TableId:  string,
-      ReservedDate:  string,
-      ReservedTimeSlot:  string,
-        CustomerId: string,
-        Name: string,
-        TableName:string,
-         MobileNo: string,
-        BookingAmount: number,
-        Bookingstatus:boolean,
-        ConfirmStatus:boolean,
-        Paymentstatus: boolean,
-          RecieptNumber:string,
-          employee_id:string
-    }
-    export interface KOTrunning{
-      KOTsRunning:IKOTsRunning[]
-      RecieptNumber:string,
-      DateTime:string,
-    }
-    export interface IKOTsRunning
-    {
-itemsId:string,
-ifCancelledId:string,
-isKotPrinted:boolean,
-KOTPrintedAt:Date,
-    }
-    export interface ReserveDineEdit {
-         _id:string,
-      TableId:  string,
-      ReservedDate:  string,
-      ReservedTimeSlot:  string,
-        CustomerId: string,
-        Name: string,
-        TableName:string,
-         MobileNo: string,
-        BookingAmount: number,
-        Bookingstatus:boolean,
-        ConfirmStatus:boolean,
-        Paymentstatus: boolean,
-          RecieptNumber:string,
-          employee_id:string
-    }
-export interface Paybymanage{
-      name:string,
-      desc: string
-      }
-    
-    export interface Employee {
-        name: string,
-        role: string,
-          type: string,
-          status:  boolean,
-          managepermission: boolean,
-          title: string,
-        desc:string,
-        userId: string,
-        password:string,
-        employee_id:string
-        }
-      export interface CompanyProfile{
-          name: string,
-          tilte: string,
-           desc:  string,
-           GSTNumber:string,
-            turnover: string,
-            address:  string,
-            mobilenumber:  string,
-            mobilenumber2: string,
-            customercarenumber: string,
-            maplocation1: string,
-            maplocation2:  string,
-            telephonenumber:  string,
-            companyId:  string,
-            companyphoto: string,
-            websitelink:  string,
-            logo: string,
-            employee_id:string
-        }
-        export interface permission
-        {
-          employee_id:string,
-          read:boolean,
-          write:boolean,
-          create:boolean,
-          update:boolean,
-        }
-        export interface permissionGrant
-        {
-          employee_id:string,
-          permissionGrant:boolean
-        }
+}
+export interface ProductPriceDetails {
+  _id: string,
+  veg_nonveg: boolean,
+  ProductPrice: string,
+  SelectProductId: string,
+  ProductName: any,
+  selectcategoryID: string,
+  categoryName: any,
+  selectQtypeID: string,
+  QtypeName: any,
+  ShortCodeNumber: number,
+  ShortCodeString: string,
+  mostSelling: boolean,
+  selectSubQuantityTypeID: string,
+  SubQuantityTypeName: any,
+  quntityvalue: number,
+}
+export interface ProductPriceAllName {
+  _id: string,
+  ProductPrice: string,
+  ProductName: string,
+  categoryName: string,
+  QtypeName: string,
+  SubQuantityTypeName: string,
+}
+export interface Tax {
+  _id: string,
+  name: string,
+  Description: string,
+  perscentRate: number,
+  Status: boolean,
+}
 
-        export interface AddOnProduct
-        {
-          name:string,
-          description: string,
-        Price: number,
-        SelectProductId: string,
-        SubQuantityTypeID: string,
-        employee_id: string
-        }
-        export interface AddOnProductMerge
-        {
-          _id:string,
-          name:string,
-          description: string,
-        Price: number,
-        SelectProductId: string,
-        ProductName:string,
-        SubQuantityTypeID: string,
-        SubQuantityTypeName:string,
-        employee_id: string,
-        createdAt:Date,
-        updatedAt:Date,
-        __v:any
-        }
-        export interface AddOnProductEdit
-        {
-          _id:string,
-          name:string,
-          description: string,
-        Price: number,
-        SelectProductId: string,
-        SubQuantityTypeID: string,
-        employee_id: string,
-        createdAt:Date,
-        updatedAt:Date,
-        __v:any
-        }
-       
+export interface Invoice {
+  Chairs: IChair[],
+  Taxes: ITax[],
+  AddOnItems: IAddOnItems[],
+  taxpecentRate: number,
+  taxpercentValue: number,
+  DiscountId: string,
+  Discountvalue: number,
+  Discountperstage: number,
+  AdditionaldiscountAmount: number,
+  Totalvaue: number,
+  grandtotal: number,
+  RecieptNumber: number,
+  OrderType: string,
+  PendingAmount: number,
+  PaidAmount: number,
+  AmountPaidstatus: boolean,
+  Orderstatus: string,
+  TotalTaxAmount: number,
+  TotalItemsAmount: number,
+  OrderTypeName: string,
+  paybyId: string,
+  table_id: string,
+  customer_id: string,
+  employee_id: string,
+  AssistToId: string,
+  CommentId: string,
+  returnAmount: string,
+  tablename: string,
+  tokennumber: number,
+  createdAt: Date
+}
+export interface IAddOnItems {
+  _id: string,
+  numberofQuantity: number
+}
+export interface GenratedItems {
+  _id: string,
+  RecieptNumber: string,
+  EmployeeId: string,
+  TableId: string,
+  Items: IItems[],
+  createdAt: Date
+}
+export interface KOTsUD {
+  ItemsID: string,
+  RecieptNumber: string,
+  EmployeeId:string,
+  Type:string,
+  IndexNumber:string,
+  //deletedAt: Date,
+  CommentId: string,
+  
+}
+export interface GenratedItemKOT {
+  _id: string,
+  quntityvalue: any;
+  qvalue: any;
+  Comment: string;
+  EmployeeId: string,
+  TableId: string,
+  ItemsID: string,
+  RecieptNumber: string,
+  KOTStatus: string,
+  createdAt: Date,
+  KOTrunningorders: RunningItems[]
+}
+export interface Comment {
+  _id: string,
+  CommentType: string,
+  RecieptNumber: string,
+  Comment: Text,
+}
+export interface IItems {
+  Productid: string,
+  Taxes: Tax[],
+  Productname: string,
+  SubQuantityTypeID: string,
+  SubQuantityTypeName: string,
+  Qauntityid: string,
+  Qauntityname: string,
+  Quantity: number,
+  itemamount: number,
+  totalquantityamount: number,
+  employee_id: string
+}
+export interface ITax {
+  id: string,
+  name: string,
+  percent: number,
+  amount: number,
+  productid: string,
+  productname: string
+}
+export interface IDine {
+  _id: string,
+  name: string,
+  description: string,
+  status: boolean,
+  floor_id: string,
+  employee_id: string
+}
+export interface Floor {
+  _id: string,
+  name: string,
+  description: string,
+  status: boolean,
+
+}
+export interface IChair {
+  _id: string,
+  name: string,
+  description: string,
+  status: boolean,
+  table_id: string,
+
+  chairorderstatus: string
+}
+export interface IChairDefault {
+  name: string,
+  description: string,
+  status: boolean,
+  table_id: string,
+  chairorderstatus: string
+}
+export interface IFloorMergeWithDine {
+  _id: string,
+  floor_id: string,
+  name: string,
+  FloorName: string,
+  description: string,
+  status: boolean
+}
+export interface IChairMergeDineName {
+  _id: string,
+  DineTable: string,
+  table_id: string,
+  name: string,
+  FloorName: string,
+
+  description: string,
+  status: boolean
+}
+export interface Customers {
+
+
+  name: string,
+  MobileNo: string,
+  DOB: string,
+  type: string,
+  tag: string,
+  DueAmount: number,
+  Anniversary: string,
+  Paymentstatus: number,
+  RecieptNumber: number,
+  employee_id: string
+}
+export interface CustomersEdit {
+  _id: string,
+  name: string,
+  MobileNo: string,
+  DOB: string,
+  type: string,
+  tag: string,
+  DueAmount: number,
+  Anniversary: string,
+  Paymentstatus: number,
+  RecieptNumber: number,
+  employee_id: string
+}
+export interface IChairsrunningorder {
+  Chairsrunningorder: IChair[],
+  tablename: string,
+  receiptnumber: string,
+  tokennumber: number
+}
+
+export interface Goodscollection {
+  IventoryFoodMainId: string,
+  quantiyval: number
+}
+export interface GoodscollectionMergename {
+  IventoryFoodMainId: string,
+  Name: string,
+  quantiyval: number
+}
+export interface InventoryFoodwithProduct2 {
+  ProductId: string,
+  ProductPrcieId: string,
+  ProductName: string,
+  SubQuantityTypeID: string,
+  SubQuantityTypeName: string,
+}
+export interface InventoryFoodwithProductforEdit {
+  _id: string,
+  ProductId: string,
+  ProductPrcieId: string,
+  ProductName: string,
+  SubQuantityTypeID: string,
+  SubQuantityTypeName: string,
+  goodscollections: GoodscollectionMergename[],
+  employee_id: string
+}
+export interface InventoryFoodwithProduct {
+  ProductId: string,
+  ProductPrcieId: string,
+  ProductName: string,
+  SubQuantityTypeID: string,
+  SubQuantityTypeName: string,
+  goodscollections: GoodscollectionMergename[]
+}
+
+
+export interface InventoryMainFood {
+  _id: any
+  name: string,
+  description: string,
+  quantitytypeID: string,
+  quantitytypename: string,
+  quantitytypevalue: number,
+  employee_id: string
+
+}
+export interface InventoryFoodMain2 {
+  _id: string,
+  name: string,
+  description: string,
+  quantitytypeID: string,
+  quantitytypename: string,
+  quantitytypevalue: number,
+  employee_id: string,
+  createdAt: string
+}
+export interface InventoryFoodQuantityType {
+  _id: any
+  name: string,
+  description: string
+}
+
+export interface ReserveDine {
+
+  TableId: string,
+  ReservedDate: string,
+  ReservedTimeSlot: string,
+  CustomerId: string,
+  Name: string,
+  TableName: string,
+  MobileNo: string,
+  BookingAmount: number,
+  Bookingstatus: boolean,
+  ConfirmStatus: boolean,
+  Paymentstatus: boolean,
+  RecieptNumber: string,
+  employee_id: string
+}
+export interface KOTrunning {
+  KOTsRunning: IKOTsRunning[]
+  RecieptNumber: string,
+  DateTime: string,
+}
+export interface IKOTsRunning {
+  itemsId: string,
+  ifCancelledId: string,
+  isKotPrinted: boolean,
+  KOTPrintedAt: Date,
+}
+export interface ReserveDineEdit {
+  _id: string,
+  TableId: string,
+  ReservedDate: string,
+  ReservedTimeSlot: string,
+  CustomerId: string,
+  Name: string,
+  TableName: string,
+  MobileNo: string,
+  BookingAmount: number,
+  Bookingstatus: boolean,
+  ConfirmStatus: boolean,
+  Paymentstatus: boolean,
+  RecieptNumber: string,
+  employee_id: string
+}
+export interface Paybymanage {
+  name: string,
+  desc: string
+}
+
+export interface Employee {
+  name: string,
+  role: string,
+  type: string,
+  status: boolean,
+  managepermission: boolean,
+  title: string,
+  desc: string,
+  userId: string,
+  password: string,
+  employee_id: string
+}
+export interface CompanyProfile {
+  name: string,
+  tilte: string,
+  desc: string,
+  GSTNumber: string,
+  turnover: string,
+  address: string,
+  mobilenumber: string,
+  mobilenumber2: string,
+  customercarenumber: string,
+  maplocation1: string,
+  maplocation2: string,
+  telephonenumber: string,
+  companyId: string,
+  companyphoto: string,
+  websitelink: string,
+  logo: string,
+  employee_id: string
+}
+export interface permission {
+  employee_id: string,
+  read: boolean,
+  write: boolean,
+  create: boolean,
+  update: boolean,
+}
+export interface permissionGrant {
+  employee_id: string,
+  permissionGrant: boolean
+}
+
+export interface AddOnProduct {
+  name: string,
+  description: string,
+  Price: number,
+  SelectProductId: string,
+  SubQuantityTypeID: string,
+  employee_id: string
+}
+export interface AddOnProductMerge {
+  _id: string,
+  name: string,
+  description: string,
+  Price: number,
+  SelectProductId: string,
+  ProductName: string,
+  SubQuantityTypeID: string,
+  SubQuantityTypeName: string,
+  employee_id: string,
+  createdAt: Date,
+  updatedAt: Date,
+  __v: any
+}
+export interface AddOnProductEdit {
+  _id: string,
+  name: string,
+  description: string,
+  Price: number,
+  SelectProductId: string,
+  SubQuantityTypeID: string,
+  employee_id: string,
+  createdAt: Date,
+  updatedAt: Date,
+  __v: any
+}
+
+export interface Employee {
+  _id?: string;
+  employeeCode: string;
+  firstName: string;
+  lastName: string;
+  fullName?: string;
+
+  email?: string;
+  phoneNumber: string;
+
+  role: string;
+
+  address?: string;
+
+  salary: number;
+
+  shift?: Shift;
+
+  joiningDate: Date;
+
+  isActive: boolean;
+
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+export enum EmployeeRole {
+  ADMIN = 'ADMIN',
+  MANAGER = 'MANAGER',
+  CASHIER = 'CASHIER',
+  WAITER = 'WAITER',
+  CHEF = 'CHEF',
+  KITCHEN_STAFF = 'KITCHEN_STAFF',
+  DELIVERY_BOY = 'DELIVERY_BOY',
+  CLEANER = 'CLEANER'
+}
+export interface Shift {
+  shiftName: string;
+  startTime: string;
+  endTime: string;
+}
+
+export interface Employee {
+  _id?: string;
+  employeeCode: string;
+  name: string;
+  email?: string;
+  mobile: string;
+  role: string;
+  salary: number;
+  attendance?: {
+    presentDays: number;
+    absentDays: number;
+  };
+
+  permissions?: {
+    canCreateOrder: boolean;
+    canEditOrder: boolean;
+    canDeleteOrder: boolean;
+    canViewReports: boolean;
+    canManageEmployees: boolean;
+  };
+
+  joiningDate: Date;
+  isActive: boolean;
+
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface CustomerPaymentHistory {
+  CustomerId: string;
+  desc: string;
+  PaidAt: string;
+  PaidAmount: string;
+  PendingAmount: string;
+  InvoiceId: string;
+  EmployeeId:string;
+  createdAt?: Date
+}

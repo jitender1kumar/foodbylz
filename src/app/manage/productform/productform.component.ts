@@ -4,7 +4,7 @@ import { subQuantityTypeService } from '../../core/Services/subQuantityType.serv
 import { CategoryService } from '../../core/Services/category.service';
 import { QuantitytypeService } from '../../core/Services/quantitytype.service';
 import { Router } from '@angular/router';
-import { Products } from '../../core/Model/crud.model';
+import { Products, Tax } from '../../core/Model/crud.model';
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
 import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
@@ -12,6 +12,7 @@ import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 
 import * as ProductActions from '../ManageStore/productStore/product.actions';
+import * as TaxActions from '../ManageStore/taxStore/tax.actions';
 import { loadCategories } from '../ManageStore/categoryStore/category.actions';
 import { loadSubQuantityTypeById } from '../ManageStore/subQuantityTypeStore/subQuantityType.actions';
 import { loadQuantityType } from '../ManageStore/quntityTypeStore/quntityType.actions';
@@ -23,6 +24,7 @@ import { ValidationService } from '../../core/commanFunction/Validation.service'
 import { ManageDataEnvironment } from '../../environment/dataEnvironment';
 import { popupenvironment } from '../../environment/popupEnvironment';
 import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
+
 @Component({
   selector: 'app-productform',
   templateUrl: './productform.component.html',
@@ -34,6 +36,7 @@ export class ProductformComponent implements OnInit {
   ManageDataEnvironments:any;
   popupenvironments:any;
   isChecked = false;
+  Tax$: Observable<Tax[]>;
  
   myEditForm: FormGroup;
   employeeId = "JSK";
@@ -57,7 +60,8 @@ export class ProductformComponent implements OnInit {
     availablity: true,
     veg_nonveg: false,
     Status: true,
-    employee_id: "undefined"
+    employee_id: "undefined",
+    Taxes: []
   }
   name: any;
   Productdesc: any;
@@ -81,7 +85,11 @@ export class ProductformComponent implements OnInit {
 
   constructor(private service: ProductService, public actions$: Actions,
     private ValidationService_:ValidationService,
-    private ProductPriceService_: ProductPriceService, private QuantitytypeService_: QuantitytypeService, private CategoryService_: CategoryService, private subQuantityTypeService_: subQuantityTypeService, private router: Router, private formedit: FormBuilder, private store: Store<{ categoryLoad: any, productLoad: any, quantityTypeLoad: any, subQuantityTypeLoad: any, subQuantityTypeByIdLoad: any }>, private SweetAlert2_: SweetAlert2) {
+    private ProductPriceService_: ProductPriceService, private QuantitytypeService_: QuantitytypeService, private CategoryService_: CategoryService, private subQuantityTypeService_: subQuantityTypeService, private router: Router, private formedit: FormBuilder, private store: Store<{ categoryLoad: any, productLoad: any, quantityTypeLoad: any, subQuantityTypeLoad: any, subQuantityTypeByIdLoad: any,taxLoad:any }>, private SweetAlert2_: SweetAlert2) {
+    
+this.Tax$ = store.select(state => state.taxLoad.Tax_.data);
+ this.loading$ = store.select(state => state.taxLoad.loading);
+    this.error$ = store.select(state => state.taxLoad.error);
 
     this.subQuantityTypeData$ = store.select(state => state.subQuantityTypeLoad.SubQuantityType_.data);
     this.loading$ = store.select(state => state.subQuantityTypeLoad.loading);
@@ -111,6 +119,7 @@ export class ProductformComponent implements OnInit {
 
     this.myEditForm = this.formedit.group({
       _id: [''],
+      Taxes: [[]],
       name: ['', Validators.required],
       Productdesc: [''],
       selectcategoryID: ['', [Validators.required]],
@@ -123,6 +132,7 @@ export class ProductformComponent implements OnInit {
     });
     this.myAddForm = this.formedit.group({
       name: ['', Validators.required],
+      Taxes: [[]],
       Productdesc: [''],
       selectcategoryID: ['', [Validators.required]],
       selectQtypeID: ['', [Validators.required]],
@@ -134,10 +144,70 @@ export class ProductformComponent implements OnInit {
     });
   }
   ngOnInit(): void {
+     this.loadTax();
     this.loadcategory()
     this.loadQtype()
      this.loadProducts();
+   
   }
+
+  loadTax() {
+     this.Tax$ = this.store.select(state => state.taxLoad.Tax_.data);
+    this.Tax$.subscribe(taxData => {
+      console.log('Tax data:', taxData);
+    });
+    this.loading$ = this.store.select(state => state.taxLoad.loading);
+    this.error$ = this.store.select(state => state.taxLoad.error);
+    this.error$.subscribe(error => {
+      console.error('Error loading tax data:', error);
+    });
+     this.loading$.subscribe(loading => {
+      console.log('Loading tax data:', loading);
+    });
+    this.store.dispatch(TaxActions.loadTax());
+   
+  }
+taxes:any[] = [];
+  isTaxSelected(taxId: string): boolean {
+     this.taxes = this.myEditForm?.get('Taxes')?.value;
+    return Array.isArray(this.taxes) && this.taxes.includes(taxId);
+  }
+
+  onTaxChange(taxId: string, checked: boolean): void {
+      this.taxes = this.myEditForm.get('Taxes')?.value;
+    const selectedTaxes: string[] = Array.isArray(this.taxes) ? this.taxes : [];
+
+    this.myEditForm.get('Taxes')?.setValue(checked
+      ? selectedTaxes.includes(taxId)
+        ? selectedTaxes
+        : [...selectedTaxes, taxId]
+      : selectedTaxes.filter(id => id !== taxId));
+      // console.log(this.myEditForm.get('Taxes')?.value);
+      // console.log(this.myEditForm.value);
+      console.log(this.myEditForm.value.Taxes);
+  }
+
+  isAddTaxSelected(taxId: string): boolean {
+     this.taxes = this.myAddForm?.get('Taxes')?.value;
+    return Array.isArray(this.taxes) && this.taxes.includes(taxId);
+  }
+
+  onAddTaxChange(taxId: string, checked: boolean): void {
+     this.taxes = this.myAddForm.get('Taxes')?.value;
+    const selectedTaxes: string[] = Array.isArray(this.taxes)
+      ? this.taxes
+      : [];
+
+    this.myAddForm.get('Taxes')?.setValue(checked
+      ? selectedTaxes.includes(taxId)
+        ? selectedTaxes
+        : [...selectedTaxes, taxId]
+      : selectedTaxes.filter(id => id !== taxId));
+  }
+
+  
+
+  
   loadcategory() {
     this.categorynamedata$ = this.store.select(state => state.categoryLoad.ProductCategory_.data);
     this.store.dispatch(loadCategories());
@@ -181,13 +251,14 @@ this.loadSubQuantityTypeByQuantityTypeId(this.myAddForm.value.selectQtypeID);
   }
  // ProductName:any;
   add(Product_: Products): void {
-    // console.log(products);
+    // console.log(Product_);
+    // return;
     // console.log(products.name);
    
     const valid = this.ValidationService_.checkNameExistforProductAddForm(this.myAddForm.value.name,this.Products$ );
-    console.log(valid);
-    console.log(valid.value);
-    console.log(Product_.name);
+    // console.log(valid);
+    // console.log(valid.value);
+    // console.log(Product_.name);
     // this.service.getbyname(Product_.name).subscribe(data => {
     //   this.ProductName = data;
     //   this.name = this.ProductName.data
@@ -276,6 +347,7 @@ this.loadSubQuantityTypeByQuantityTypeId(this.myAddForm.value.selectQtypeID);
       
       this.myEditForm = this.formedit.group({
         _id: [r[0].row._id],
+        Taxes: [r[0].row.Taxes],
         name: [r[0].row.name, Validators.required],
         Productdesc: [r[0].row.Productdesc],
         selectcategoryID: [r[0].row.selectcategoryID, [Validators.required]],

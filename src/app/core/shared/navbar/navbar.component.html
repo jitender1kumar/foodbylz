@@ -1,161 +1,87 @@
-<nav class="navbar simple-navbar">
+<nav class="navbar enhanced-navbar top-navbar" aria-label="Main navigation">
   <div class="navbar-content">
-    <!-- <div class="navbar-left">
-      <img src="../../../src/app/images/Bylz_logo.svg" alt="Bylz Logo" class="logo" style="height:48px; border-radius:8px;">
-      <span class="restaurant-name">Books & Beans Cafe</span>
-    </div> -->
-    <ul class="nav-items simple-nav">
-      <li><a routerLink="/manage" (click)="showmanagefun()">
-        <span class="nav-icon">🛠️</span> Manage
-      </a></li>
-      <li><a routerLink="/dashboard" (click)="showdashboardfun()">
-        <span class="nav-icon">🏠</span> Dashboard
-      </a></li>
-      <li><a routerLink="/tables" (click)="showtablefun()">
-        <span class="nav-icon">🍽️</span> Tables
-      </a></li>
-      <li><a routerLink="/orders" (click)="showordersfun()">
-        <span class="nav-icon">🧾</span> Orders
-      </a></li>
-      <li><a routerLink="/home" (click)="showhomefun()">
-        <span class="nav-icon">📑</span> Menu
-      </a></li>
-      <li><a routerLink="/customers" (click)="showcustomersfun()">
-        <span class="nav-icon">👥</span> Customers
-      </a></li>
-      <li><a routerLink="/imf">
-        <span class="nav-icon">📦</span> Inventory
-      </a></li>
+    <a class="navbar-logo" routerLink="/home" aria-label="Books and Beans Cafe home">
+      <span class="logo-mark">
+        <img src="../../../src/app/images/Bylz_logo.svg" alt="Books and Beans Cafe logo" />
+      </span>
+      <span class="navbar-title">
+        <span class="main-title">Books & Beans Cafe</span>
+        <span class="subtitle"><span class="subtitle-dot">●</span> Sip. Read. Repeat.</span>
+      </span>
+    </a>
+    <button 
+      class="hamburger"
+      type="button"
+      aria-label="Toggle navigation menu"
+      aria-haspopup="true"
+      [attr.aria-expanded]="showMobileNav"
+      aria-controls="main-navigation"
+      (click)="showMobileNav = !showMobileNav"
+    >
+      <span></span><span></span><span></span>
+    </button>
+
+    <ul id="main-navigation" class="nav-items enhanced-nav" [class.show]="showMobileNav" [attr.aria-hidden]="!showMobileNav">
+      <ng-container *ngFor="let nav of [
+        { link: '/manage', icon: '🛠️', text: 'Manage', click: 'showmanagefun()' },
+        { link: '/dashboard', icon: '🏠', text: 'Dashboard', click: 'showdashboardfun()' },
+        { link: '/tables', icon: '🍽️', text: 'Tables', click: 'showtablefun()' },
+        { link: '/orders', icon: '🧾', text: 'Orders', click: 'showordersfun()' },
+        { link: '/home', icon: '📑', text: 'Menu', click: 'showhomefun()' },
+        { link: '/customers', icon: '👥', text: 'Customers', click: 'showcustomersfun()' },
+        { link: '/imf', icon: '📦', text: 'Inventory', click: null }
+      ]">
+        <li>
+          <a 
+            [routerLink]="nav.link"
+            *ngIf="nav.click; else noClick"
+            (click)="
+              showMobileNav = false;
+              nav.click === 'showmanagefun()' ? showmanagefun()
+              : nav.click === 'showdashboardfun()' ? showdashboardfun()
+              : nav.click === 'showtablefun()' ? showtablefun()
+              : nav.click === 'showordersfun()' ? showordersfun()
+              : nav.click === 'showhomefun()' ? showhomefun()
+              : nav.click === 'showcustomersfun()' ? showcustomersfun()
+              : null
+            "
+          >
+            <span class="nav-icon" aria-hidden="true">{{nav.icon}}</span><span class="nav-label">{{nav.text}}</span>
+          </a>
+          <ng-template #noClick>
+            <a [routerLink]="nav.link" (click)="showMobileNav = false">
+              <span class="nav-icon" aria-hidden="true">{{nav.icon}}</span><span class="nav-label">{{nav.text}}</span>
+            </a>
+          </ng-template>
+        </li>
+      </ng-container>
     </ul>
-    <div class="profile">
-      <div class="profile-initials">
-        <span>B&B</span>
-      </div>
+
+    <details class="profile profile-menu">
+      <summary class="profile-initials" aria-label="Open profile menu">B&amp;B</summary>
       <div class="dropdown-menu" id="profileDropdown">
+        <div class="profile-details">
+          <div class="profile-avatar" aria-hidden="true">
+            <i class="fa fa-user-circle"></i>
+          </div>
+          <div>
+            <span class="profile-name">Welcome back</span>
+            <div class="profile-email">info@booksnbeans.cafe</div>
+          </div>
+        </div>
         <ul>
-          <li><a href="#">Profile</a></li>
-          <li><a href="#">Restaurant Details</a></li>
-          <li><a href="#">Team</a></li>
-          <li><a href="#">Settings</a></li>
-          <li><a href="#">Logout</a></li>
+          <li *ngFor="let option of profileOptions">
+            <a href="#" (click)="$event.preventDefault()">
+              <i class="fa" [ngClass]="option.icon"></i> {{ option.label }}
+            </a>
+          </li>
         </ul>
       </div>
-    </div>
+    </details>
   </div>
 </nav>
-<style>
-.simple-navbar {
-  background: #fff;
-  border-bottom: 1px solid #eee;
-  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.04);
-  padding: 0 40px;
-  font-family: 'Montserrat', Arial, sans-serif;
-}
-.navbar-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 70px;
-}
-.navbar-left {
-  display: flex;
-  align-items: center;
-}
-.logo {
-  margin-right: 14px;
-}
-.restaurant-name {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #334e68;
-}
-.simple-nav {
-  display: flex;
-  align-items: center;
-  gap: 1.7rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.simple-nav li a {
-  display: flex;
-  align-items: center;
-  color: #22577a;
-  font-size: 1rem;
-  font-weight: 500;
-  text-decoration: none;
-  padding: 7px 14px;
-  border-radius: 6px;
-  transition: background 0.18s, color 0.18s;
-}
-.simple-nav li a:hover, .simple-nav li.active a {
-  background: #f6faff;
-  color: #1666be;
-}
-.nav-icon {
-  font-size: 1.2em;
-  margin-right: 7px;
-}
-.profile {
-  position: relative; 
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  margin-left: 28px;
-}
-.profile-initials {
-  background: #22577a;
-  color: #fff;
-  border-radius: 50%;
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 1.15em;
-  box-shadow: 0 2px 8px 0 rgba(34,87,122,0.1);
-}
-.profile:hover .dropdown-menu,
-.profile:focus .dropdown-menu {
-  display: block;
-}
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: 30px;
-  background: #fff;
-  border: 1px solid #e8e8e8;
-  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.06);
-  border-radius: 7px;
-  min-width: 170px;
-  z-index: 20;
-}
-.dropdown-menu ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.dropdown-menu li a {
-  display: block;
-  color: #22577a;
-  padding: 12px 18px;
-  text-decoration: none;
-  transition: background 0.15s;
-  font-size: 0.97rem;
-}
-.dropdown-menu li a:hover {
-  background: #f0f5f8;
-  color: #135fa6;
-}
-@media (max-width: 850px) {
-  .simple-navbar { padding: 0 5vw; }
-  /* .simple-nav { gap: 1.1rem; } */
-  .restaurant-name { display: none; }
-}
-@media (max-width: 600px) {
-  .navbar-content { flex-direction: column; align-items: stretch; }
-  .simple-nav { justify-content: center; }
-}
-</style>
+<!-- 
+  ----- CSS MOVED TO navbar.component.css -------
+  Refactored: All styles previously inline are now extracted to the CSS file.
+  Please ensure the CSS below is placed in navbar.component.css 
+-->

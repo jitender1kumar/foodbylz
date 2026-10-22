@@ -9,6 +9,7 @@ import { Actions } from '@ngrx/effects';
 import { InitializeInvoice } from '../../core/commanFunction/InitializeInvoice.service';
 import { filter } from 'rxjs';
 import * as InvoiceActions from '../../core/store/invoiceStor/invoice.actions';
+import { updateRunningItemAddOnItems } from '../homeStore/runningItemStore/runningItem.action';
 @Component({
   selector: 'app-add-on-items',
   standalone: false,
@@ -18,11 +19,17 @@ import * as InvoiceActions from '../../core/store/invoiceStor/invoice.actions';
 export class AddOnItemsComponent implements OnInit {
   @Input() showPopUp!: any;
   @Input() closePopUp!: any;
-  @Input()
-  addOnProducts: any[] = [];
-  @Input()
-  selectedAddOnItems!: any[];
+  @Input() addOnProducts!: any[];
+  @Input() SubQuantityTypeName!:string;
+  @Input() SelectProductId!:string;
+  @Input() selectSubQuantityTypeID!:string;
+  @Input() qvalue!:number;
+  @Input() Productprice!:number;
+  @Input() runningItemsArray:any;
+  @Input() filteredData:any;
+  @Input() selectedAddOnItems!: any[];
   @Input() invoice: any;
+  @Input() invoiceid!:string;
   @Output() InitializeselectedAddOnItemsCallback = new EventEmitter<any>();
   @Output() closePopUpByChildAddOn = new EventEmitter<boolean>();
   @Output() ReturnChildAddOn = new EventEmitter<boolean>();
@@ -106,30 +113,50 @@ export class AddOnItemsComponent implements OnInit {
   }
   ngOnInit(): void {
     this.alreadyExists=false;
+    
   }
+
+  
   
   toggleAddOnItems() {
     this.showAddOnItems = !this.showAddOnItems;
     this.showHideToggled.emit(this.showAddOnItems.toString());
   }
   removeAddOnItem(_id: string) {
-    const item = this.selectedAddOnItems?.find(items => items._id === _id);
-    let index:number|undefined  = this.selectedAddOnItems?.findIndex(items => items._id === _id);
-    if (item) {
-
-      this.selectedAddOnItems?.splice(index, 1);
-      console.log(this.selectedAddOnItems);
-      this.updateInvoice(this.selectedAddOnItems);
-      this.InitializeselectedAddOnItemsCallback.emit(this.selectedAddOnItems);
-      this.alreadyExists=false;
+    if (!this.selectedAddOnItems) {
+      return;
     }
 
+    const index = this.selectedAddOnItems.findIndex(item => item._id === _id);
+    if (index === -1) {
+      return;
+    }
+
+    // Store-managed arrays may be frozen, so replace the array instead of mutating it.
+    this.AddOnItemsArray = this.selectedAddOnItems;
+    const addOnArray = this.selectedAddOnItems.filter(item => item._id !== _id);
+    this.AddOnItemsArray = addOnArray;
+    this.selectedAddOnItems = this.AddOnItemsArray;
+     this.store.dispatch(updateRunningItemAddOnItems({
+        id: this.SelectProductId,
+        AddOnItems: this.AddOnItemsArray,
+        RunningItemData: this.filteredData,
+        invoiceid: this.invoiceid,
+        SubQuantityTypeName: this.SubQuantityTypeName,
+        allppdata: this.filteredData
+      }));
+    this.alreadyExists = false;
+
+// this.updateInvoice(this.selectedAddOnItems);
+    //  this.InitializeselectedAddOnItemsCallback.emit(this.selectedAddOnItems);
   }
   onAddOnProductSelect() {
     this.AddOnItemsArray=[];
     console.log(this.selectedAddOnProduct);
     console.log(this.selectedAddOnItems);
     console.log(this.invoice);
+   
+    console.log(this.AddOnItemsArray);
     const item = this.addOnProducts.find(items => items._id === this.selectedAddOnProduct);
     const index = this.addOnProducts.findIndex(items => items._id === this.selectedAddOnProduct);
     console.log(item);
@@ -147,10 +174,23 @@ export class AddOnItemsComponent implements OnInit {
         _id: this.selectedAddOnProduct,
         numberofQuantity: 1
       };
-      this.AddOnItemsArray.push(this.AddOnItems);
+      // Store-derived arrays may be frozen; create a mutable copy instead of pushing.
+      this.AddOnItemsArray = [...(this.AddOnItemsArray || []), this.AddOnItems];
+      this.selectedAddOnItems = this.AddOnItemsArray;
+      //this.selectedAddOnItems=this.AddOnItemsArray;
       console.log(this.AddOnItemsArray);
-      this.updateInvoice(this.AddOnItemsArray);
-      this.InitializeselectedAddOnItemsCallback.emit(this.selectedAddOnItems);
+       console.log(this.addOnProducts);
+
+      this.store.dispatch(updateRunningItemAddOnItems({
+        id: this.SelectProductId,
+        AddOnItems: this.AddOnItemsArray,
+        RunningItemData: this.runningItemsArray,
+        invoiceid: this.invoiceid,
+        SubQuantityTypeName: this.SubQuantityTypeName,
+        allppdata: this.filteredData
+      }));
+     // this.updateInvoice(this.AddOnItemsArray);
+    //  this.InitializeselectedAddOnItemsCallback.emit(this.selectedAddOnItems);
     } else {
       // Optionally, alert the user or just log and do nothing if already present
       this.alreadyExists=true;
@@ -164,38 +204,39 @@ export class AddOnItemsComponent implements OnInit {
   updateInvoice(AddOnItemsArray:any) {
     
     console.log(AddOnItemsArray);
-    console.log(this.invoice[0]);
+    console.log(this.invoice);
+    //return;
     this.invoiceUpdate = {
-      Chairs: this.invoice[0].Chairs,
-      Taxes: this.invoice[0].Taxes,
+      Chairs: [], //this.invoice.Chairs.length > 0 ? this.invoice.Chairs :[],
+      Taxes: [],//this.invoice.Taxes,
       AddOnItems: AddOnItemsArray,
-      taxpecentRate: this.invoice[0].taxpecentRate,
-      taxpercentValue: this.invoice[0].taxpercentValue,
-      DiscountId: this.invoice[0].DiscountId,
-      Discountvalue: this.invoice[0].Discountvalue,
-      Discountperstage: this.invoice[0].Discountperstage,
-      AdditionaldiscountAmount: this.invoice[0].AdditionaldiscountAmount,
-      Totalvaue: this.invoice[0].Totalvaue,
-      grandtotal: this.invoice[0].grandtotal,
-      RecieptNumber: this.invoice[0].RecieptNumber,
-      OrderType: this.invoice[0].OrderType,
-      PendingAmount: this.invoice[0].PendingAmount,
-      PaidAmount: this.invoice[0].PaidAmount,
-      AmountPaidstatus: this.invoice[0].AmountPaidstatus,
-      Orderstatus: this.invoice[0].Orderstatus,
-      TotalTaxAmount: this.invoice[0].TotalTaxAmount,
-      TotalItemsAmount: this.invoice[0].TotalItemsAmount,
-      OrderTypeName: this.invoice[0].OrderTypeName,
-      paybyId: this.invoice[0].paybyId,
-      table_id: this.invoice[0].table_id,
-      customer_id: this.invoice[0].customer_id,
-      employee_id: this.invoice[0].employee_id,
-      AssistToId: this.invoice[0].AssistToId,
-      CommentId: this.invoice[0].CommentId,
-      returnAmount: this.invoice[0].returnAmount,
-      tablename: this.invoice[0].tablename,
-      tokennumber: this.invoice[0].tokennumber,
-      createdAt: this.invoice[0].createdAt
+      taxpecentRate: this.invoice.taxpecentRate,
+      taxpercentValue: this.invoice.taxpercentValue,
+      DiscountId: this.invoice.DiscountId,
+      Discountvalue: this.invoice.Discountvalue,
+      Discountperstage: this.invoice.Discountperstage,
+      AdditionaldiscountAmount: this.invoice.AdditionaldiscountAmount,
+      Totalvaue: this.invoice.Totalvaue,
+      grandtotal: this.invoice.grandtotal,
+      RecieptNumber: this.invoice.RecieptNumber,
+      OrderType: this.invoice.OrderType,
+      PendingAmount: this.invoice.PendingAmount,
+      PaidAmount: this.invoice.PaidAmount,
+      AmountPaidstatus: this.invoice.AmountPaidstatus,
+      Orderstatus: this.invoice.Orderstatus,
+      TotalTaxAmount: this.invoice.TotalTaxAmount,
+      TotalItemsAmount: this.invoice.TotalItemsAmount,
+      OrderTypeName: this.invoice.OrderTypeName,
+      paybyId: this.invoice.paybyId,
+      table_id: this.invoice.table_id,
+      customer_id: this.invoice.customer_id,
+      employee_id: this.invoice.employee_id,
+      AssistToId: this.invoice.AssistToId,
+      CommentId: this.invoice.CommentId,
+      returnAmount: this.invoice.returnAmount,
+      tablename: this.invoice.tablename,
+      tokennumber: this.invoice.tokennumber,
+      createdAt: this.invoice.createdAt
     }
     // // Dispatch an action to update the invoice using ngrx
     // // Dispatch the update invoice action
@@ -222,6 +263,7 @@ export class AddOnItemsComponent implements OnInit {
   }
   increamentAddOnItem(_id:string)
   {
+    this.AddOnItemsArray = this.selectedAddOnItems;
     this.selectedAddOnProduct=_id
     console.log(_id);
     console.log(this.selectedAddOnProduct);
@@ -229,20 +271,21 @@ export class AddOnItemsComponent implements OnInit {
     console.log(this.selectedAddOnItems.length);
    console.log(this.AddOnItemsArray);
     // console.log(this.selectedAddOnItems);
-    const item = this.selectedAddOnItems.find(items => items._id === _id);
-    const index = this.selectedAddOnItems.findIndex(items => items._id === _id);
+    const item = this.AddOnItemsArray.find(items => items._id === _id);
+    const index = this.AddOnItemsArray.findIndex(items => items._id === _id);
     console.log(item);
     console.log(index);
-    console.log(item.numberofQuantity);
+    console.log(item?.numberofQuantity);
     if(item)
     {
-      this.increament_decreament(item._id,+item.numberofQuantity+1,index);
+      this.increament_decreament(item?._id,+item?.numberofQuantity+1,index);
 
     }
     
   }
   decrementAddOnItem(_id:string)
   {
+    this.AddOnItemsArray = this.selectedAddOnItems;
     this.selectedAddOnProduct=_id
     console.log(this.selectedAddOnProduct);
     console.log(this.selectedAddOnItems);
@@ -250,15 +293,19 @@ export class AddOnItemsComponent implements OnInit {
     console.log(this.AddOnItemsArray);
     console.log(_id);
     
-    const item = this.selectedAddOnItems.find(items => items._id === _id);
-    const index = this.selectedAddOnItems.findIndex(items => items._id === _id);
-    // console.log(item.numberofQuantity);
+    const item = this.AddOnItemsArray.find(items => items._id === _id);
+    const index = this.AddOnItemsArray.findIndex(items => items._id === _id);
+     console.log(item );
     // console.log(item.numberofQuantity[index]);
     if(item)
     {
-      if(item.numberofQuantity>0)
+      if(item.numberofQuantity>1)
       {
         this.increament_decreament(item._id,+item.numberofQuantity-1,index);
+      }
+      else{
+        //alert("d else");
+        this.removeAddOnItem(item._id);
       }
     }
   }
@@ -268,32 +315,44 @@ export class AddOnItemsComponent implements OnInit {
      index = this.selectedAddOnItems?.findIndex(items => items._id === _id);
     if(quantity==0)
     {
+      this.AddOnItemsArray=[];
       this.selectedAddOnItems?.splice(index, 1);
     //  this.updateInvoice(this.selectedAddOnItems);
-    this.updateInvoice(this.selectedAddOnItems);
-    this.InitializeselectedAddOnItemsCallback.emit(this.selectedAddOnItems);
+    //this.updateInvoice(this.selectedAddOnItems);
+   // this.InitializeselectedAddOnItemsCallback.emit(this.selectedAddOnItems);
+    this.store.dispatch(updateRunningItemAddOnItems({
+      id: this.SelectProductId,
+      AddOnItems: this.AddOnItemsArray,
+      RunningItemData: this.runningItemsArray,
+      invoiceid: this.invoiceid,
+      SubQuantityTypeName: this.SubQuantityTypeName,
+      allppdata: this.filteredData
+    }));
     this.alreadyExists=false;
       return;
     }
     if(quantity>0)
-    {this.AddOnItemsArray=[];
-      this.selectedAddOnItems[index]._id=_id;
-      this.selectedAddOnItems[index].numberofQuantity=quantity;
-      for(let ii =0; ii<this.selectedAddOnItems.length; ii++)
-      {
-        this.AddOnItems = {
-          _id: this.selectedAddOnItems[ii]._id, //this.selectedAddOnItems[i]._id,
-          numberofQuantity: this.selectedAddOnItems[ii].numberofQuantity
-        };
-        this.AddOnItemsArray.push(this.AddOnItems);
-      }
-     // this.selectedAddOnItems;
+    {
+      const currentItems = this.selectedAddOnItems ?? [];
+      this.AddOnItemsArray = currentItems.map(item =>
+        item._id === _id
+          ? { ...item, numberofQuantity: quantity }
+          : { ...item }
+      );
+      this.selectedAddOnItems = this.AddOnItemsArray;
      
      
+     this.store.dispatch(updateRunningItemAddOnItems({
+      id: this.SelectProductId,
+      AddOnItems: this.AddOnItemsArray,
+      RunningItemData: this.runningItemsArray,
+      invoiceid: this.invoiceid,
+      SubQuantityTypeName: this.SubQuantityTypeName,
+      allppdata: this.filteredData
+    }));
      
-     
-      this.updateInvoice( this.AddOnItemsArray);
-      this.InitializeselectedAddOnItemsCallback.emit( this.AddOnItemsArray);
+     // this.updateInvoice( this.AddOnItemsArray);
+     // this.InitializeselectedAddOnItemsCallback.emit( this.AddOnItemsArray);
       return;
     }
 

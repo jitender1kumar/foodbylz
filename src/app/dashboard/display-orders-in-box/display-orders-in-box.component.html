@@ -1,19 +1,53 @@
- <div class="states restaurant-states">
-                <div class="state-column restaurant-state-column state-1">
-                    <p class="order-count">₹{{ordercount}}</p>
-                    <p class="order-text">Total Orders</p>
-                </div>
-                <div class="state-column restaurant-state-column state-2">
-                    <p class="order-count">₹{{totaldiscountamount | number }}</p>
-                    <p class="order-text">Total Discount</p>
-                </div>
-                <div class="state-column restaurant-state-column state-3">
-                    <p class="order-count">₹{{totalpendingamount | number:'1.2-2'}}</p>
-                    <p class="order-text">Total Pending Amount</p>
-                </div>
-                <div class="state-column restaurant-state-column state-4">
-                    <p class="order-count">₹{{totalorderamount}}</p>
-                    <p class="order-text">Grand Total</p>
-                </div>
-            </div>
+<style>
+    .restaurant-states {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: clamp(0.75rem, 2vw, 1.5rem);
+        width: 100%;
+    }
+
+    .restaurant-state-column {
+        min-width: 0;
+        text-align: center;
+        padding: clamp(0.75rem, 2vw, 1.25rem);
+    }
+
+    .restaurant-state-column .order-count,
+    .restaurant-state-column .order-text {
+        overflow-wrap: anywhere;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    @media (max-width: 768px) {
+        .restaurant-states {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 420px) {
+        .restaurant-states {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="states restaurant-states">
+    <div class="state-column restaurant-state-column state-1">
+        <p class="order-count">₹{{ordercount}}</p>
+        <p class="order-text">Total Orders</p>
+    </div>
+    <div class="state-column restaurant-state-column state-2">
+        <p class="order-count">₹{{totaldiscountamount | number }}</p>
+        <p class="order-text">Total Discount</p>
+    </div>
+    <div class="state-column restaurant-state-column state-3">
+        <p class="order-count">₹{{totalpendingamount | number:'1.2-2'}}</p>
+        <p class="order-text">Total Pending Amount</p>
+    </div>
+    <div class="state-column restaurant-state-column state-4">
+        <p class="order-count">₹{{totalorderamount}}</p>
+        <p class="order-text">Grand Total</p>
+    </div>
+</div>
            

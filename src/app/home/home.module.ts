@@ -15,6 +15,7 @@ import { ManageModule } from '../manage/manage.module';
 import { ShortcodeComponent } from './partial/shortcode/shortcode.component';
 import { SplitbillComponent } from './partial/splitbill/splitbill/splitbill.component';
 import { PartpaymentComponent } from './partial/partpayment/partpayment.component';
+import { RemoveCustomerComponent } from './partial/remove-customer/remove-customer.component';
 
 @NgModule({
   declarations: [ HomeComponent,
@@ -28,6 +29,7 @@ import { PartpaymentComponent } from './partial/partpayment/partpayment.componen
     AddOnItemsComponent,
     SplitbillComponent,
     PartpaymentComponent,
+    RemoveCustomerComponent,
   ],
   imports: [
     CommonModule,

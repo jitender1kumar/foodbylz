@@ -82,7 +82,7 @@ export class HomeManageService {
   initializeKOTItems(runningItemsKOT$: Observable<any[]> | null, invoiceid: string): void {
     console.log(runningItemsKOT$);
     if (!runningItemsKOT$) return;
-    runningItemsKOT$.subscribe(KOTItems => {
+  const sub =  runningItemsKOT$.subscribe(KOTItems => {
       if (KOTItems) {
         if (Array.isArray(KOTItems)) {
           this.KOTItemsdata = KOTItems.filter(
@@ -97,6 +97,8 @@ export class HomeManageService {
         }
       }
     });
+    sub.unsubscribe(); // Unsubscribe immediately after getting the data
+   // this.subscriptions.push(sub);
     return  this.KOTItemsdata
   }
 
@@ -173,13 +175,15 @@ export class HomeManageService {
         selectSubQuantityTypeID: item.selectSubQuantityTypeID,
         SubQuantityTypeName: item.SubQuantityTypeName,
         quntityvalue: item.quntityvalue,
-        qvalue: item.qvalue,
-        taxnames: "",
-        taxvalues: 'taxpercentValues', // Placeholder; adjust if you have tax values
+        // taxnames: "",
+        // taxvalues: 'taxpercentValues', // Placeholder; adjust if you have tax values
         totaltaxvalue: 0,
         AddOnItems: item.AddOnItems || [], // Assign AddOnItems if present
         paidStatus: false,
-        notes: ''
+        notes: '',
+        Taxes: item.Taxes || [] // Assign Taxes if present
+        ,
+        KOT_Changed: false,
       });
       this.itemtotalamount += (item.ProductPrice || 0) * (item.quntityvalue || 0);
       this.totalamount += (parseFloat(item.ProductPrice) || 0) * (item.quntityvalue || 0);
@@ -366,7 +370,9 @@ this.allppdata=allppdata;
             totaltaxvalue: taxpercent,
             paidStatus: false,
             AddOnItems: [],
-            notes:''
+            Taxes: [],
+            notes:'',
+            KOT_Changed:false
           };
           this.gitems2 = [getGItem(allPPItem, val)];
           this.RunningItems_ = [...this.RunningItems_, newRunningItem];
@@ -396,7 +402,9 @@ this.allppdata=allppdata;
           totaltaxvalue: taxpercent,
           paidStatus: false,
           AddOnItems: [],
-          notes:''
+          Taxes: allPPItem.Taxes || [], // Assign Taxes if present
+          notes:'',
+          KOT_Changed:false
         };
         this.gitems2 = [getGItem(allPPItem, val)];
         this.RunningItems_ = [newRunningItem];

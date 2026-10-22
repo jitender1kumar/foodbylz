@@ -1,4 +1,65 @@
                                                                                 
+<style>
+    .order-list-container {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        padding: clamp(0.75rem, 2vw, 1.5rem);
+        overflow: hidden;
+    }
+
+    .order-list-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .sales-tabs-container {
+        flex: 1 1 30rem;
+        min-width: 0;
+    }
+
+    .search-bar {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .tabs-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .orders-table-wrapper {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    @media (max-width: 600px) {
+        .order-list-header h2 {
+            width: 100%;
+            margin-bottom: 0;
+        }
+
+        .tabs-group {
+            align-items: stretch;
+        }
+
+        .tabs-group .tab,
+        .tabs-group input[type="date"] {
+            flex: 1 1 100%;
+            width: 100%;
+        }
+    }
+</style>
+
 <app-display-orders-in-box [ordercount]="ordercount" [totaldiscountamount]="totaldiscountamount" [totalpendingamount]="totalpendingamount" [totalorderamount]="totalorderamount"></app-display-orders-in-box>
 <div class="order-list-container">
     <!-- Top Section -->
@@ -17,7 +78,16 @@
         </div>
     </div>
     <div>
-<app-order-diplay-in-pop-up [customers]="customersRecord" [EditOrderInvoice]="EditOrder" [EditOrderItems]="EditOrderItems" [showPopUp]="showPopUp" [closePopUp]="closePopUp" (closePopUpByChild)="closePopUpByChild($event)" (ReInitializeEditOrderInvoice)="reInitializeEditOrderInvoice($event)"></app-order-diplay-in-pop-up>
+<app-order-diplay-in-pop-up
+    [customers]="customersRecord"
+    [EditOrderInvoice]="EditOrder"
+    [EditOrderItems]="EditOrderItems"
+    [showPopUp]="showPopUp"
+    [closePopUp]="closePopUp"
+    [CustomerPaymentHistory$]="CustomerPaymentHistory$"
+    (closePopUpByChild)="closePopUpByChild($event)"
+    (ReInitializeEditOrderInvoice)="reInitializeEditOrderInvoice($event)">
+</app-order-diplay-in-pop-up>
     </div>
 <!-- <ag-grid-angular class=" ag-theme-quartz agtable"
 style="height:500px;width: 95%;margin: auto;" 
@@ -28,11 +98,10 @@ style="height:500px;width: 95%;margin: auto;"
 [paginationPageSizeSelector]="paginationPageSizeSelector"
 (cellClicked)="onCellClick($event)"
     />                 -->
-    <div style="width: 100%;">
+        <div class="orders-table-wrapper" style="display: block; box-sizing: border-box;">
       <app-gird-table
         class="order-list-table"
-        style="width: 100% !important; display: block !important;"
-        [style.width.%]="100"
+                style="display: block; width: 100%; max-width: 100%; min-width: 100%; box-sizing: border-box;"
         [columns]="colDefs"
         [data]="ordersdata"
         (rowClicked)="onRowClick($event)">

@@ -1,108 +1,261 @@
 @if(showPopUp){
-  <div class="comman">
-  <div  id="printable-section-order">
-   <!-- Header -->
-<div class="bg-gradient-to-r from-white via-gray-50 to-wheat-200 text-black py-4 px-6 rounded-lg shadow flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 border border-gray-100 gap-y-2">
-  <div class="flex flex-col gap-1">
-    <h4 class="text-2xl font-bold tracking-tight mb-1">Invoice Details <span class="text-xs font-normal text-gray-500">(DELULU)</span></h4>
-    <ng-container *ngIf="customers?.name">
-      <div class="text-base font-medium text-gray-700 leading-tight">
-        <span class="block">Name: <span class="font-semibold">{{ customers.name }} </span></span>
-        <span class="block">Mobile No: <span class="font-semibold">{{ customers.MobileNo }} </span></span>
+<div class="comman w-full">
+  <div id="printable-section-order" class="w-full max-w-full overflow-x-hidden">
+    <div class="mb-4 flex flex-wrap gap-2 border-b border-gray-200" role="tablist" aria-label="Order details">
+      <button type="button" role="tab" [attr.aria-selected]="activeTab === 'invoice'" (click)="activeTab = 'invoice'"
+        [class.border-cyan-600]="activeTab === 'invoice'" [class.text-cyan-700]="activeTab === 'invoice'"
+        class="border-b-2 border-transparent px-4 py-2 font-semibold text-gray-600 hover:text-cyan-700">Invoice
+        Details</button>
+      <button type="button" role="tab" [attr.aria-selected]="activeTab === 'payments'" (click)="activeTab = 'payments'"
+        [class.border-cyan-600]="activeTab === 'payments'" [class.text-cyan-700]="activeTab === 'payments'"
+        class="border-b-2 border-transparent px-4 py-2 font-semibold text-gray-600 hover:text-cyan-700">Customer Payment
+        History</button>
+      <button type="button" role="tab" [attr.aria-selected]="activeTab === 'kots'" (click)="activeTab = 'kots'"
+        [class.border-cyan-600]="activeTab === 'kots'" [class.text-cyan-700]="activeTab === 'kots'"
+        class="border-b-2 border-transparent px-4 py-2 font-semibold text-gray-600 hover:text-cyan-700">KOTsUDsorders</button>
+
+
+      <div
+        class="w-full bg-gradient-to-r from-white via-gray-50 to-wheat-200 text-black py-4 px-3 sm:px-6 rounded-lg shadow flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 border border-gray-100 gap-3">
+        <div class="flex flex-col gap-1 min-w-0">
+          <h4 class="text-xl sm:text-2xl font-bold tracking-tight mb-1 break-words">Invoice Details <span
+              class="text-xs font-normal text-gray-500">(DELULU)</span></h4>
+          <ng-container *ngIf="customers?.name">
+            <div class="text-base font-medium text-gray-700 leading-tight">
+              <span class="block">Name: <span class="font-semibold">{{ customers.name }} </span></span>
+              <span class="block">Mobile No: <span class="font-semibold">{{ customers.MobileNo }} </span></span>
+            </div>
+          </ng-container>
+        </div>
+        <div class="flex w-full sm:w-auto gap-2 mt-1 sm:mt-0">
+          <button
+            class="flex flex-1 sm:flex-none justify-center items-center bg-cyan-600 hover:bg-cyan-700 transition text-white px-3 sm:px-4 py-2 rounded-full shadow focus:outline-none focus:ring-2 focus:ring-cyan-300 font-semibold text-sm"
+            (click)="print()">
+            <i class="fa fa-print mr-2"></i>
+            Print
+          </button>
+          <button
+            class="flex flex-1 sm:flex-none justify-center items-center bg-red-500 hover:bg-red-600 transition text-white px-3 sm:px-4 py-2 rounded-full shadow focus:outline-none focus:ring-2 focus:ring-red-300 font-semibold text-sm"
+            (click)="close()">
+            <i class="fa fa-times mr-2"></i>
+            Close
+          </button>
+        </div>
       </div>
-    </ng-container>
-  </div>
-  <div class="flex space-x-2 mt-3 sm:mt-0">
-    <button class="flex items-center bg-cyan-600 hover:bg-cyan-700 transition text-white px-4 py-2 rounded-full shadow focus:outline-none focus:ring-2 focus:ring-cyan-300 font-semibold text-sm"
-      (click)="print()">
-      <i class="fa fa-print mr-2"></i>
-      Print
-    </button>
-    <button class="flex items-center bg-red-500 hover:bg-red-600 transition text-white px-4 py-2 rounded-full shadow focus:outline-none focus:ring-2 focus:ring-red-300 font-semibold text-sm"
-      (click)="close()">
-      <i class="fa fa-times mr-2"></i>
-      Close
-    </button>
-  </div>
-</div>
+    </div>
+    <section *ngIf="activeTab === 'invoice'" role="tabpanel">
+      <!-- Header -->
 
-<!-- Customer Name -->
-<!-- <div *ngIf="customers?.Name" class="bg-gradient-to-r from-blue-600 to-green-600 text-white font-semibold py-2 px-4 rounded mb-4 shadow">
+
+      <!-- Customer Name -->
+      <!-- <div *ngIf="customers?.Name" class="bg-gradient-to-r from-blue-600 to-green-600 text-white font-semibold py-2 px-4 rounded mb-4 shadow">
   
-</div> -->  
+</div> -->
 
-<!-- Order Items -->
- <!-- <p>EditOrderItems: {{ EditOrderItems | json }}</p> -->
-<div *ngIf="EditOrderItems?.length > 0" class="space-y-4">
-  <ng-container *ngFor="let item of EditOrderItems">
-    <ng-container *ngFor="let orderItem of item.Items">
-      <div class="bg-white rounded-lg shadow p-4 border border-gray-200 mb-2">
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-gray-700">
-          <div>
-            <strong>Product:</strong>
-            <span>{{ orderItem.ProductName || '-' }}</span>
-          </div>
-          <div>
-            <strong>Quantity:</strong>
-            <span>{{ orderItem.quntityvalue || 0 }}</span>
-          </div>
-          <div>
-            <strong>Type:</strong>
-            <span>{{ orderItem.SubQuantityTypeName || '-' }}</span>
-          </div>
-          <!-- <div>
+      <!-- Order Items -->
+      <!-- <p>EditOrderItems: {{ EditOrderItems | json }}</p> -->
+      <div *ngIf="EditOrderItems?.length > 0" class="space-y-3 sm:space-y-4">
+        <ng-container *ngFor="let item of EditOrderItems">
+          <ng-container *ngFor="let orderItem of item.Items">
+            <div class=" rounded-lg shadow p-3 sm:p-4 border border-gray-200 mb-2"
+              [class.bg-red-100]="orderItem.KOT_Changed===true">
+              <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-gray-700">
+                <div class="min-w-0 break-words">
+                  <strong>Product:</strong>
+                  <span>{{ orderItem.KOT_Changed  || '-' }}</span>
+                </div>
+                <div class="min-w-0 break-words">
+                  <strong>Product:</strong>
+                  <span>{{ orderItem.ProductName || '-' }}</span>
+                </div>
+                <div class="min-w-0 break-words">
+                  <strong>Quantity:</strong>
+                  <span>{{ orderItem.quntityvalue || 0 }}</span>
+                </div>
+                <div class="min-w-0 break-words">
+                  <strong>Type:</strong>
+                  <span>{{ orderItem.SubQuantityTypeName || '-' }}</span>
+                </div>
+                <!-- <div>
             <strong>Date: </strong>
             <span>{{ orderItem.createdAt | date:'short' }}</span>
           </div> -->
-          <div>
-            <strong>Item Amount: </strong>
-            <span>₹{{ orderItem.ProductPrice || 0 }}</span>
-          </div>
-          <div>
-            <strong>Total: </strong>
-            <span>₹{{ orderItem.ProductPrice*orderItem.quntityvalue || 0 }}</span>
-          </div>
+                <div class="min-w-0 break-words">
+                  <strong>Item Amount: </strong>
+                  <span>₹{{ orderItem.ProductPrice || 0 }}</span>
+                </div>
+                <div class="min-w-0 break-words">
+                  <strong>Total: </strong>
+                  <span>₹{{ orderItem.ProductPrice*orderItem.quntityvalue || 0 }}</span>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+
+      <!-- Invoice Summary -->
+      <div *ngIf="EditOrderInvoice" class="bg-white rounded-lg shadow p-3 sm:p-4 mt-4 sm:mt-6 border border-gray-200">
+        <h3 class="text-lg font-bold mb-2">Invoice Summary </h3>
+        <p class="break-words">RecieptNumber: {{ EditOrderInvoice.RecieptNumber }}</p>
+        <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-gray-800">
+          <div><strong>Table:</strong> {{ EditOrderInvoice.tablename }}</div>
+          <div><strong>Total Items Amount:</strong> ₹{{ EditOrderInvoice.TotalItemsAmount }}</div>
+          <div><strong>Tax:</strong> ₹{{ EditOrderInvoice.TotalTaxAmount }}</div>
+          <div><strong>Total Amount:</strong> ₹{{ EditOrderInvoice.Totalvaue }}</div>
+          <div *ngIf="EditOrderInvoice.Discountperstage!=0"><strong>Discount:</strong> {{
+            EditOrderInvoice.Discountperstage }}% (₹{{ EditOrderInvoice.Discountvalue }})</div>
+          <div><strong>Grand Total:</strong> ₹{{ EditOrderInvoice.grandtotal }}</div>
+          <div><strong>Paid:</strong> ₹{{ EditOrderInvoice.PaidAmount }}</div>
+          <div><strong>Return Amount:</strong> ₹{{ EditOrderInvoice.returnAmount }}</div>
+          <div><strong>Pending:</strong> ₹{{ EditOrderInvoice.PendingAmount }}</div>
+          <div><strong>Created At:</strong> {{ EditOrderInvoice.createdAt }}</div>
         </div>
       </div>
-    </ng-container>
-  </ng-container>
-</div>
 
-<!-- Invoice Summary -->
-<div *ngIf="EditOrderInvoice" class="bg-white rounded-lg shadow p-4 mt-6 border border-gray-200">
-  <h3 class="text-lg font-bold mb-2">Invoice Summary </h3><p>RecieptNumber: {{ EditOrderInvoice.RecieptNumber }}</p>
-  <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-gray-800">
-    <div><strong>Table:</strong> {{ EditOrderInvoice.tablename }}</div>
-    <div><strong>Total Items Amount:</strong> ₹{{ EditOrderInvoice.TotalItemsAmount }}</div>
-    <div><strong>Tax:</strong> ₹{{ EditOrderInvoice.TotalTaxAmount }}</div>
-    <div><strong>Total Amount:</strong> ₹{{ EditOrderInvoice.Totalvaue }}</div>
-    <div *ngIf="EditOrderInvoice.Discountperstage!=0"><strong>Discount:</strong> {{ EditOrderInvoice.Discountperstage }}% (₹{{ EditOrderInvoice.Discountvalue }})</div>
-    <div><strong>Grand Total:</strong> ₹{{ EditOrderInvoice.grandtotal }}</div>
-    <div><strong>Paid:</strong> ₹{{ EditOrderInvoice.PaidAmount }}</div>
-    <div><strong>Return Amount:</strong> ₹{{ EditOrderInvoice.returnAmount }}</div>
-    <div><strong>Pending:</strong> ₹{{ EditOrderInvoice.PendingAmount }}</div>
-    <div><strong>Created At:</strong> {{ EditOrderInvoice.createdAt }}</div>
+      <!-- Payment Form -->
+      <div class="mt-4 sm:mt-6">
+        <ng-container *ngIf="EditOrderInvoice.PendingAmount !== 0; else notPendingAmount">
+          <form [formGroup]="myEditForm" (ngSubmit)="onFormEdit()"
+            class="bg-gray-100 p-3 sm:p-4 rounded shadow space-y-4">
+            <label class="block text-sm font-medium text-gray-700">
+              Pay Pending Amount:
+              <input type="number" placeholder="{{EditOrderInvoice.PendingAmount}}" min="0"
+                max="{{EditOrderInvoice.PendingAmount}}" formControlName="PendingAmount"
+                class="mt-1 block w-full min-w-0 px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+            </label>
+            <button type="submit" [disabled]="myEditForm.invalid"
+              class="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700">
+              Update
+            </button>
+          </form>
+        </ng-container>
+        <ng-template #notPendingAmount>
+          <h4 class="text-green-600 font-semibold mt-4">No Pending Amount</h4>
+        </ng-template>
+      </div>
+
+    </section>
+    <section *ngIf="activeTab === 'payments'" role="tabpanel"
+      class="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow">
+      <h3 class="p-4 text-lg font-bold">Customer Payment History</h3>
+      <table class="w-full min-w-[600px] border-collapse text-left text-sm">
+        <thead class="bg-gray-100 text-gray-700">
+          <tr>
+            <th class="p-3">Receipt Number</th>
+            <th class="p-3">Date</th>
+            <th class="p-3">Paid Amount</th>
+            <th class="p-3">Return Amount</th>
+            <th class="p-3">Pending Amount</th>
+            <th class="p-3">Grand Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container
+            *ngIf="{ invoice: EditOrderInvoice, payments: (CustomerPaymentHistory$ | async) } as paymentData">
+            <ng-container *ngIf="paymentData.payments?.length; else noPaymentHistory">
+              <ng-container *ngFor="let payment of paymentData.payments">
+                <!-- <p>{{EditOrderInvoice|json}}</p> -->
+                <!-- <pre>{{EditOrderInvoice.RecieptNumber}}==={{payment.InvoiceId}}</pre> -->
+                <tr class="border-t border-gray-200"
+                  [class.bg-cyan-100]="EditOrderInvoice?.RecieptNumber == payment.InvoiceId"
+                  [class.font-medium]="EditOrderInvoice?.RecieptNumber == payment.InvoiceId">
+                  <td class="p-3">{{ payment.InvoiceId ?? '-' }}</td>
+                  <ng-container *ngIf="EditOrderInvoice?.RecieptNumber == payment.InvoiceId; else loadInvoiceAction">
+                    <td class="p-3">{{ payment.createdAt ?? '-' }}</td>
+                    <td class="p-3">₹{{ payment.PaidAmount ?? 0 }}</td>
+                    <td class="p-3">₹{{ payment.returnAmount ?? 0 }}</td>
+                    <td class="p-3">₹{{ payment['Pending Amount'] ?? 0 }}</td>
+                    <td class="p-3">₹{{ payment.grandtotal ?? 0 }}</td>
+                  </ng-container>
+                  <ng-template #loadInvoiceAction>
+                    <td colspan="5" class="p-3 text-right">
+                      <button type="button" class="rounded bg-cyan-600 px-3 py-1 text-white hover:bg-cyan-700"
+                        (click)="loadInvoice(payment.InvoiceId)">
+                        Load Invoice
+                      </button>
+                    </td>
+                  </ng-template>
+                </tr>
+              </ng-container>
+            </ng-container>
+            <tr *ngIf="EditOrderInvoice as invoice" style="background-color: rgb(234, 230, 238);"
+              class="border-t border-gray-200 bg-cyan-50 font-medium">
+              <td class="p-3">{{ invoice.RecieptNumber ?? '-' }}</td>
+              <td class="p-3">{{ invoice.createdAt ?? '-' }}</td>
+              <td class="p-3">₹{{ invoice.PaidAmount ?? 0 }}</td>
+              <td class="p-3">₹{{ invoice.returnAmount ?? 0 }}</td>
+              <td class="p-3">₹{{ invoice.PendingAmount ?? 0 }} </td>
+              <td class="p-3">₹{{ invoice.grandtotal ?? 0 }}</td>
+            </tr>
+
+          </ng-container>
+          <ng-template #noPaymentHistory>
+            <tr>
+              <td colspan="6" class="p-4 text-center text-gray-500">No payment history available.</td>
+            </tr>
+          </ng-template>
+        </tbody>
+      </table>
+    </section>
+    <section *ngIf="activeTab === 'kots'" role="tabpanel"
+      class="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow">
+      <h3 class="p-4 text-lg font-bold">KOTsUDsorders</h3>
+      <table class="w-full min-w-[600px] border-collapse text-left text-sm">
+        <thead class="bg-gray-100 text-gray-700">
+          <tr>
+            <th class="p-3">Product</th>
+            <th class="p-3">Quantity</th>
+            <th class="p-3">Type</th>
+            <th class="p-3">Item Amount</th>
+            <th class="p-3">Total</th>
+            <th class="p-3">Update Type</th>
+            <th class="p-3">Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let item of EditOrderItems">
+            <tr *ngFor="let orderItem of item.Items; let itemIndex = index" [class.hidden]="orderItem.KOT_Changed != true"
+              class="border-t border-gray-200">
+              <td class="p-3">{{ orderItem.ProductName || '-' }} - {{itemIndex}}</td>
+              <td class="p-3">{{ orderItem.quntityvalue || 0 }}</td>
+              <td class="p-3">{{ orderItem.SubQuantityTypeName || '-' }}</td>
+              <td class="p-3">₹{{ orderItem.ProductPrice || 0 }}</td>
+              <td class="p-3">₹{{ orderItem.ProductPrice * orderItem.quntityvalue || 0 }}</td>
+
+              <ng-container *ngIf="MergDataOfCommentAndKOTsUD?.length">
+                <td class="p-3">
+                  <ng-container *ngFor="let commentData of MergDataOfCommentAndKOTsUD">
+                    <div *ngIf="commentData.IndexNumber == itemIndex && commentData.ItemsID === item?._id" class="font-medium text-gray-800">
+                      {{ commentData.CommentType || '-' }}
+                    </div>
+                  </ng-container>
+                </td>
+                <td class="p-3">
+                  <ng-container *ngFor="let commentData of MergDataOfCommentAndKOTsUD">
+                    <div *ngIf="commentData.IndexNumber == itemIndex && commentData.ItemsID === item?._id" class="text-gray-600">
+                      {{ commentData.Comment || '-' }}
+                    </div>
+                  </ng-container>
+                </td>
+              </ng-container>
+
+              
+                <td colspan="2" class="p-3 cursor-pointer text-center font-medium text-cyan-600" role="button"
+                  tabindex="0" (click)="loadKOTOrder(itemIndex, item?._id)"
+                  (keydown.enter)="loadKOTOrder(itemIndex, item?._id)">
+                  Load comment
+                </td>
+             
+            </tr>
+          </ng-container>
+          <tr *ngIf="!EditOrderItems?.length">
+            <td colspan="5" class="p-4 text-center text-gray-500">No KOT/order data available.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
   </div>
 </div>
 
-<!-- Payment Form -->
-<div class="mt-6">
-  <ng-container *ngIf="EditOrderInvoice.PendingAmount !== 0; else notPendingAmount">
-    <form [formGroup]="myEditForm" (ngSubmit)="onFormEdit()" class="bg-gray-100 p-4 rounded shadow space-y-4">
-      <label class="block text-sm font-medium text-gray-700">
-        Pay Pending Amount:
-        <input type="number" placeholder="{{EditOrderInvoice.PendingAmount}}" min="0" max="{{EditOrderInvoice.PendingAmount}}" formControlName="PendingAmount" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
-      </label>
-      <button type="submit" [disabled]="myEditForm.invalid" class="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700">
-        Update
-      </button>
-    </form>
-  </ng-container>
-  <ng-template #notPendingAmount>
-    <h4 class="text-green-600 font-semibold mt-4">No Pending Amount</h4>
-  </ng-template>
-</div>
-
-    </div>
-    </div>
 }

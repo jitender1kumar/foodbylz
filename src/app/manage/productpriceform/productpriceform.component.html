@@ -65,38 +65,32 @@
           <input class="lbl" type="number" min="0" max="100000" formControlName="ProductPrice" id="ProductPricetxt" />
         </div>
       </div>
-      <div class="form-group row">
+      <div class="form-group row align-items-start mb-3">
         <div class="col">
-          <label class="lbl" for="Shortcode">Shortcode (number) :</label>
+          <label class="lbl" for="Shortcode">Shortcode (number):</label>
         </div>
         <div class="col">
           <input
-            type="number"
+            type="text"
+            inputmode="numeric"
             id="Shortcode"
-            class="lbl"
+            class="form-control lbl"
             formControlName="ShortCodeNumber"
-            minlength="0"
             maxlength="10"
-            pattern="^[0-9]{0,10}$"
-            placeholder="Enter shortcode (numbers only)"
+            pattern="^[0-9]{1,10}$"
+            placeholder="Enter shortcode (up to 10 digits)"
             required
+            [class.is-invalid]="(myAddForm.get('ShortCodeNumber')?.invalid && myAddForm.get('ShortCodeNumber')?.touched) || shortcodeNumberDuplicate"
+            (input)="checkDuplicateShortcodeNumber()"
           />
           <div
-            *ngIf="myAddForm.get('Shortcode')?.invalid && myAddForm.get('Shortcode')?.touched"
-            class="text-danger"
+            *ngIf="(myAddForm.get('ShortCodeNumber')?.invalid && myAddForm.get('ShortCodeNumber')?.touched) || shortcodeNumberDuplicate"
+            class="invalid-feedback d-block"
           >
-            <div *ngIf="myAddForm.get('Shortcode')?.errors?.['required']">
-              Shortcode is required.
-            </div>
-            <div *ngIf="myAddForm.get('Shortcode')?.errors?.['pattern']">
-              Shortcode must be numeric.
-            </div>
-            <div *ngIf="myAddForm.get('Shortcode')?.errors?.['maxlength']">
-              Shortcode cannot be more than 10 digits.
-            </div>
-            <div *ngIf="shortcodeStringDuplicate" class="text-danger">
-              Shortcode already exists. Please enter a unique value.
-            </div>
+            <div *ngIf="myAddForm.get('ShortCodeNumber')?.errors?.['required']">Shortcode is required.</div>
+            <div *ngIf="myAddForm.get('ShortCodeNumber')?.errors?.['pattern']">Shortcode must contain 1–10 digits.</div>
+            <div *ngIf="myAddForm.get('ShortCodeNumber')?.errors?.['maxlength']">Shortcode cannot be more than 10 digits.</div>
+            <div *ngIf="shortcodeNumberDuplicate">Shortcode already exists. Please enter a unique value.</div>
           </div>
         </div>
       </div>
@@ -114,7 +108,7 @@
             maxlength="10"
             placeholder="Enter shortcode (max 10 chars)"
             required
-            (blur)="checkDuplicateShortcode()"
+            (input)="checkDuplicateShortcodeString()"
           />
           <div
             *ngIf="myAddForm.get('ShortcodeString')?.invalid && myAddForm.get('ShortcodeString')?.touched"
@@ -217,73 +211,76 @@
           <input style="width: 114px; margin: 3px;" type="number" min="0" max="100000" formControlName="ProductPrice" />
         </div>
       </div>
-      <div class="form-group row">
-        <div class="col">
-          <label class="lbl" for="Shortcode">Shortcode (number) :</label>
+      <div class="form-group row align-items-start">
+        <div class="col-md-4">
+          <label class="lbl mb-2" for="Shortcode">Shortcode (number):</label>
         </div>
-        <div class="col">
+        <div class="col-md-8">
           <input
             type="number"
             id="Shortcode"
-            class="lbl"
+            class="form-control"
             formControlName="ShortCodeNumber"
-            minlength="0"
-            maxlength="10"
-            pattern="^[0-9]{0,10}$"
+            min="0"
+            max="9999999999"
+            step="1"
             placeholder="Enter shortcode (numbers only)"
-            required
+            style="width: 100%; max-width: 320px;"
+            (input)="checkDuplicateShortcodeNumberByEditForm()"
+            [class.is-invalid]="(myAddForm.get('ShortCodeNumber')?.invalid && myAddForm.get('ShortCodeNumber')?.touched) || shortcodeNumberDuplicate"
+            aria-describedby="shortcodeNumberFeedback"
           />
           <div
-            *ngIf="myAddForm.get('Shortcode')?.invalid && myAddForm.get('Shortcode')?.touched"
-            class="text-danger"
+            id="shortcodeNumberFeedback"
+            class="invalid-feedback d-block"
+            *ngIf="(myAddForm.get('ShortCodeNumber')?.invalid && myAddForm.get('ShortCodeNumber')?.touched) || shortcodeNumberDuplicate"
           >
-            <div *ngIf="myAddForm.get('Shortcode')?.errors?.['required']">
+            <div *ngIf="myAddForm.get('ShortCodeNumber')?.errors?.['required']">
               Shortcode is required.
             </div>
-            <div *ngIf="myAddForm.get('Shortcode')?.errors?.['pattern']">
-              Shortcode must be numeric.
-            </div>
-            <div *ngIf="myAddForm.get('Shortcode')?.errors?.['maxlength']">
+            <div *ngIf="myAddForm.get('ShortCodeNumber')?.errors?.['max']">
               Shortcode cannot be more than 10 digits.
             </div>
-            <div *ngIf="shortcodeStringDuplicate" class="text-danger">
+            <div *ngIf="shortcodeNumberDuplicate">
               Shortcode already exists. Please enter a unique value.
             </div>
           </div>
         </div>
       </div>
-      <div class="form-group row">
-        <div class="col">
-          <label class="lbl" for="ShortcodeString">Shortcode (string):</label>
-        </div>
-        <div class="col">
-          <input
-            type="text"
-            id="ShortcodeString"
-            class="lbl"
-            formControlName="ShortCodeString"
-            minlength="0"
-            maxlength="10"
-            placeholder="Enter shortcode (max 10 chars)"
-            required
-            (blur)="checkDuplicateShortcode()"
-          />
-          <div
-            *ngIf="myAddForm.get('ShortcodeString')?.invalid && myAddForm.get('ShortcodeString')?.touched"
-            class="text-danger"
-          >
-            <div *ngIf="myAddForm.get('ShortcodeString')?.errors?.['required']">
-              Shortcode is required.
+      <div class="form-group row align-items-start">
+              <div class="col-md-4">
+                <label class="lbl mb-2" for="ShortcodeString">Shortcode (string)</label>
+              </div>
+              <div class="col-md-8">
+                <input
+                  type="text"
+                  id="ShortcodeString"
+                  class="form-control"
+                  formControlName="ShortCodeString"
+                  minlength="0"
+                  maxlength="10"
+                  placeholder="Enter shortcode (max 10 characters)"
+                  (input)="checkDuplicateShortcodeStringByEditForm()"
+                  [class.is-invalid]="(myAddForm.get('ShortCodeString')?.invalid && myAddForm.get('ShortCodeString')?.touched) || shortcodeStringDuplicate"
+                  aria-describedby="shortcodeStringFeedback"
+                />
+                <div
+                  id="shortcodeStringFeedback"
+                  class="invalid-feedback d-block"
+                  *ngIf="(myAddForm.get('ShortCodeString')?.invalid && myAddForm.get('ShortCodeString')?.touched) || shortcodeStringDuplicate"
+                >
+                  <div *ngIf="myAddForm.get('ShortCodeString')?.errors?.['required']">
+                    Shortcode is required.
+                  </div>
+                  <div *ngIf="myAddForm.get('ShortCodeString')?.errors?.['maxlength']">
+                    Shortcode cannot be more than 10 characters.
+                  </div>
+                  <div *ngIf="shortcodeStringDuplicate">
+                    Shortcode already exists. Please enter a unique value.
+                  </div>
+                </div>
+              </div>
             </div>
-            <div *ngIf="myAddForm.get('ShortcodeString')?.errors?.['maxlength']">
-              Shortcode cannot be more than 10 characters.
-            </div>
-          </div>
-          <div *ngIf="shortcodeStringDuplicate" class="text-danger">
-            Shortcode already exists. Please enter a unique value.
-          </div>
-        </div>
-      </div>
       <div class="form-group row">
         <div class="col">
           <label class="lbl" for="mostSelling">Most Selling Item</label>

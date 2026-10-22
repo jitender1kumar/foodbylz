@@ -1,4 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
+import { map } from 'rxjs/operators';
 import * as DineTableActions from './dinetable.action';
 import { IDine } from '../../../core/Model/crud.model';
 
@@ -14,6 +15,16 @@ export const initialState: DineTableState = {
   error: null
 };
 
+// export interface DineTableState2 {
+//     IDine_: IDine[];
+//   loading: boolean;
+//   error: string | null;
+// }
+// export const initialState2: DineTableState2 = {
+//     IDine_: [],
+//   loading: false,
+//   error: null
+// };
 export const dineTableReducer = createReducer(
   initialState,
   on(DineTableActions.loadDineTables, (state) => ({
@@ -23,7 +34,7 @@ export const dineTableReducer = createReducer(
   })),
   on(DineTableActions.loadDineTablesSuccess, (state, { IDine_ }) => ({
     ...state,
-    IDine_,
+    IDine_: IDine_,
     loading: false,
     error: null
   })),
@@ -32,6 +43,10 @@ export const dineTableReducer = createReducer(
     loading: false,
     error
   })),
+// );
+
+//   export const dineTableReducer2 = createReducer(
+//   initialState2,
   on(DineTableActions.addDineTable, (state) => ({
     ...state,
     loading: true,
@@ -53,24 +68,15 @@ export const dineTableReducer = createReducer(
     loading: true,
     error: null
   })),
-  // on(DineTableActions.updateDineTableSuccess, (state, { IDine_ }) => ({
-  //   ...state,
-  //   IDine_: state.IDine_.map(t => t._id === IDine_._id ? IDine_ : t),
-  //   loading: false,
-  //   error: null
-  // })),
-  //on(DineTableActions.updateDineTableSuccess, (state, { IDine_ }) => {
-  //   const updatedList = state.IDine_?.map(item =>
-  //     item._id === IDine_._id ? { ...item, ...IDine_ } : item
-  //   ) ?? [];
-  
-  //   return {
-  //     ...state,
-  //     IDine_: updatedList,
-  //     loading: false,
-  //     error: null
-  //   };
+  // on(DineTableActions.updateDineTableSuccess, (state, { IDine_ }) => {
+  //   const updatedItems = (state.IDine_ ?? []).map(item => {
+  //     const updatedItem = IDine_.find(updated => updated._id === item._id);
+  //     return updatedItem ? { ...item, ...updatedItem } : item;
+  //   });
+
+  //   return { ...state, IDine_: updatedItems };
   // }),
+
   on(DineTableActions.updateDineTableSuccess, (state, { IDine_ }) => {
     // Improved: Defensive, clear, and consistent state update on table update success
     // 1. Ensure IDine_ is a valid update payload (must be object with a string/object _id)
@@ -87,7 +93,10 @@ export const dineTableReducer = createReducer(
 
     // 3. Try to find index of the item to update
     const idx = prevList.findIndex(item => item && item._id === IDine_._id);
+ console.log(prevList);
 
+console.log(IDine_);
+console.log(state.IDine_);
     let nextList: any[];
     if (idx > -1) {
       // Update in place and preserve previous items' referential integrity
@@ -100,6 +109,7 @@ export const dineTableReducer = createReducer(
       // Not found: append as new
       nextList = [...prevList, IDine_];
     }
+   console.log(nextList);
 
     return {
       ...state,

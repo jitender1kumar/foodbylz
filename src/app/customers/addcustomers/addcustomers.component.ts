@@ -63,7 +63,12 @@ this.Customersdata$ = this.store.select(state => state.customersReducer_.custome
     // Use the MobileNo input from the add-customer form.
     const mobileNo = this.myAddForm.get('MobileNo')?.value;
    
-    this.CustomersService_.getbyMobileNumber(mobileNo).subscribe(Customer => {
+ 
+    this.searchCustomer(mobileNo);
+ 
+}
+searchCustomer(MobileNo: string) {
+       this.CustomersService_.getbyMobileNumber(MobileNo).subscribe(Customer => {
       console.log(Customer);
       if (Customer) {
         this.SearchedCustomerData = Customer;
@@ -71,9 +76,8 @@ this.Customersdata$ = this.store.select(state => state.customersReducer_.custome
           this.DisplayCustomers = "Customer Exists: " + this.SearchedCustomerData.data[0].name + " - " + this.SearchedCustomerData.data[0].MobileNo;
         }
       }
-   // this.SearchCustomer(mobileNo);
-  });
-}
+    });
+  }
   add(customer: Customers): void {
   
     this.CustomersService_.getbyMobileNumber(customer.MobileNo).subscribe(Customer => {
@@ -88,6 +92,7 @@ this.Customersdata$ = this.store.select(state => state.customersReducer_.custome
             if (addedCustomer) {
               this.customersdata2 = addedCustomer;
               this.customersdata = this.customersdata2.data;
+              this.DisplayCustomers = 'Customer added successfully.';
               //poiurewpoiurewconsole.log(this.customersdata);
               this.CustomersDetail.emit(this.customersdata);
               this.close();

@@ -106,7 +106,7 @@ export class FloorComponent implements OnInit {
   }
 
   loadFloor(): void {
-    this.store.dispatch(FloorActions.loadFloors());
+    this.store.dispatch(FloorActions.loadFloor());
     this.Floordata$ = this.store.select(state => state.LoadFloor.Floor_.data);
   }
   onRowClick(r: any) { console.log('clicked row', r);

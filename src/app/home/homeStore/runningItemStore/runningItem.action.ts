@@ -25,19 +25,44 @@ export const addRunningItem = createAction(
   props<{ item: any }>()
 );
 
+
+
 // Action to update quantity value of a running item
 export const updateRunningItemQuantity = createAction(
   '[RunningItem] Update Running Item Quantity',
   props<{
     id: string;
-    action: 'inc' | 'dcre' | 'addNotes';
+    action: 'inc' | 'dcre' | 'addNotes' | 'AddOnItemsUpdate';
     SubQuantityTypeName: string;
     quntity: any;
     price: any;
     RunningItemData: any;
     invoiceid: string;
     allppdata: any;
+   
   }>()
+);
+
+export const updateRunningItemAddOnItems = createAction(
+  '[RunningItem] Update Running Item AddOnItems',
+  props<{
+    id: string;
+    SubQuantityTypeName: string;
+    AddOnItems: any;
+    RunningItemData: any;
+    allppdata: any;
+    invoiceid: string;
+  }>()
+);
+
+export const updateRunningItemAddOnItemsSuccess = createAction(
+  '[RunningItem] Update Running Item AddOnItems Success',
+  props<{ RunningItems_: RunningItems[] }>()
+);
+
+export const updateRunningItemAddOnItemsFailure = createAction(
+  '[RunningItem] Update Running Item AddOnItems Failure',
+  props<{ error: any }>()
 );
 
 // Success and failure actions (optional, depending on effect/reducer needs)

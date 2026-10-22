@@ -9,15 +9,15 @@ import { GenratedItems} from '../Model/crud.model';
 })
 export class GenratedItemsService {
 
-  private itemUrl: string = environment.api+"item";
+  private itemUrl: string = environment.api+"items";
 
   constructor(private http: HttpClient) { }
 
   
-  add(Items: GenratedItems[]): Observable<GenratedItems> {
+  add(items: GenratedItems[]): Observable<GenratedItems[]> {
 
     //return this.http.post(this.url+ '/users', {id,name,email,pass});
-    return this.http.post<GenratedItems>(this.itemUrl, Items);
+    return this.http.post<GenratedItems[]>(this.itemUrl, items);
 
   }
   getbyid(Invoiceid: string) {

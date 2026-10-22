@@ -13,6 +13,7 @@ import * as CustomersActions from './customersStore/customers.actions';
 import { ValidationService } from '../core/commanFunction/Validation.service';
 import { Actions, ofType } from '@ngrx/effects';
 import { ColumnDef } from '../core/shared/dynamicTable/gird-table/gird-table.component';
+import { take } from 'rxjs';
 // import { customersReducer } from './customersStore/customers.reducer'; 
 @Component({
   selector: 'app-customers',
@@ -61,18 +62,7 @@ export class CustomersComponent implements OnInit {
     { field: "Edit", cellRenderer: BasetypEditButtun }
 
   ];
-  customer: Customers = {
-    name: "undefined",
-    MobileNo: "undefined",
-    DOB: "",
-    type: "",
-    tag: "Friend",
-    DueAmount: 0,
-    Anniversary: "undefined",
-    Paymentstatus: 0,
-    RecieptNumber: 0,
-    employee_id: "undefined"
-  }
+  
 
   
  
@@ -118,10 +108,7 @@ export class CustomersComponent implements OnInit {
     //alert(selectcategoryID);
     this.store.dispatch(CustomersActions.loadCustomers());//state => state.LoadFloor.Floor_.data
     this.Customersdata$ = this.store.select(state => state.customersReducer_.customers.data);
-    this.Customersdata$?.subscribe(data => {
-     // console.log(data);
-    }
-    );
+   
   }
   onRowClick(r: any) { console.log('clicked row', r);
     // console.log(this.colDefs);
@@ -164,6 +151,7 @@ export class CustomersComponent implements OnInit {
   SearchedCustomerData: any;
   add(customer: Customers): void {
     this.SearchedCustomerData = "";
+    this.args = "";
     // this.store.dispatch(CustomersActions.getCustomerByMobileNumber({ mobileNo: cutomer.MobileNo }));
     // this.customerservice.getbyMobileNumber(cutomer.MobileNo)
     // this.Customersdata$ = this.store.select(state => state.customersReducer_.customers.data); 
@@ -176,15 +164,22 @@ export class CustomersComponent implements OnInit {
         }
         else {
           this.store.dispatch(CustomersActions.addCustomer({ customer: customer }));
-          this.actions$.pipe(ofType(CustomersActions.addCustomerSuccess)).subscribe(() => {
-            this.args = "Added: " + this.SearchedCustomerData.data[0].name + " - " + this.SearchedCustomerData.data[0].MobileNo;
-            this.loadCustomers();
+      // const subsuccess =  
+        this.actions$.pipe(ofType(CustomersActions.addCustomerSuccess)).subscribe((SearchedCustomerData: any) => {
+        console.log(SearchedCustomerData);
+         const addedCustomer = SearchedCustomerData.customer;
+         console.log(addedCustomer.data.MobileNo);
+        // const addedCustomerData = addedCustomer.data;
+            this.args = "Added: " + addedCustomer.data.name + " - " + addedCustomer.data.MobileNo;
+           // this.loadCustomers();
           });
-    
-          this.actions$.pipe(ofType(CustomersActions.addCustomerFailure)).subscribe((error) => {
+    //subsuccess.unsubscribe();
+         // const subfailure =
+           this.actions$.pipe(ofType(CustomersActions.addCustomerFailure)).subscribe((error) => {
             // Show a more descriptive error message for failed update
             this.args = "Failed to Add: " + this.SearchedCustomerData.data[0].name ;
           });
+        //  subfailure.unsubscribe();
         }
       }
     }
@@ -200,38 +195,44 @@ export class CustomersComponent implements OnInit {
     // this.store.dispatch(CustomersActions.getCustomerByMobileNumber({ mobileNo: customer.MobileNo }));
     // this.customerservice.getbyMobileNumber(customerEdit.MobileNo).subscribe(Customer => {
     //   console.log(Customer);
-    this.Customersdata$ = this.store.select(state => state.customersReducer_.customers.data);
+   // this.Customersdata$ = this.store.select(state => state.customersReducer_.customers.data);
     
-      const valid = this.validationService.checkAnotherMobileNumberExist(this.myEditForm.value.MobileNo,this.myEditForm.value._id,Customersdata$);
-      console.log(valid.value);
-      
-      if (valid.value) {
+     // const valid = this.validationService.checkAnotherMobileNumberExist(this.myEditForm.value.MobileNo,this.myEditForm.value._id,Customersdata$);
+     // const valid =
+       this.customerservice.getbyMobileNumber(this.myEditForm.value.MobileNo).pipe(take(1)).subscribe((Customer: any) => {
+        if (Customer) {
+          this.SearchedCustomerData = Customer;
+          //const NameExist = this.SearchedCustomerData.data.find((item: { MobileNo: string; _id: string }) => item.MobileNo === customerEdit.MobileNo && item._id != customerEdit._id);
+          if (this.SearchedCustomerData.data.length > 0 && this.SearchedCustomerData.data[0]._id != customerEdit._id) {
+            console.log(this.SearchedCustomerData.data.length);
+               
        // this.SearchedCustomerData = Customer;
         //if (this.SearchedCustomerData.data.length > 0 && customerEdit.name != customerEdit.name) {
-          this.args = "Another Customer Exists: " + customerEdit.name + " - " + customerEdit.MobileNo;
+          this.args = "Another Customer Exists: " + this.SearchedCustomerData.data[0].name + " - " + this.SearchedCustomerData.data[0].MobileNo;
         }
-        else {
+          else {
           this.store.dispatch(CustomersActions.updateCustomer({ customerEdit: customerEdit }));
-          this.actions$.pipe(ofType(CustomersActions.updateCustomerSuccess)).subscribe(() => {
+          const subsuccess = this.actions$.pipe(ofType(CustomersActions.updateCustomerSuccess)).subscribe(() => {
             this.args = "Updated: " + customerEdit.name + " - " + customerEdit.MobileNo;
-            this.loadCustomers();
-
-           
           });
-    
-          this.actions$.pipe(ofType(CustomersActions.updateCustomerFailure)).subscribe((error) => {
+    subsuccess.unsubscribe();
+        const subfailure = this.actions$.pipe(ofType(CustomersActions.updateCustomerFailure)).subscribe((error) => {
             // Show a more descriptive error message for failed update
             this.args = "Failed to Updated: " + customerEdit.name ;
           });
+           subfailure.unsubscribe();
         }
-        
-      }
-    // }
-    // );
+       
+        }
+     // console.log(valid);
+      
+      
+    }
+    );
 
 
 
-  //}
+  }
   cDelete(_id: any) {
     //this.loadbasetype();
     this.loadCustomers();
@@ -275,6 +276,7 @@ export class CustomersComponent implements OnInit {
         DueAmount: [this.myEditForm.value.DueAmount],
         Anniversary: [this.myEditForm.value.Anniversary],
       });
+
   }
 
   //show addbasetype
@@ -303,15 +305,16 @@ export class CustomersComponent implements OnInit {
   deletedConfirmed(_id: any) {
     this.store.dispatch(CustomersActions.deleteCustomer({ _id: _id }));
 
-    this.actions$.pipe(ofType(CustomersActions.deleteCustomerSuccess)).subscribe(() => {
+    const subsuccess = this.actions$.pipe(ofType(CustomersActions.deleteCustomerSuccess)).subscribe(() => {
       this.args = "Deleted: " + this.SearchedCustomerData.data[0].name + " - " + this.SearchedCustomerData.data[0].MobileNo;
       this.loadCustomers();
     });
-
-    this.actions$.pipe(ofType(CustomersActions.deleteCustomerFailure)).subscribe((error) => {
+ subsuccess.unsubscribe();
+    const subfailure = this.actions$.pipe(ofType(CustomersActions.deleteCustomerFailure)).subscribe((error) => {
       // Show a more descriptive error message for failed update
       this.args = "Failed to Delete: " + this.SearchedCustomerData.data[0].name ;
     });
+    subfailure.unsubscribe();
     this.display = "display:none;";
     this.loadCustomers();
     this.args = " Record Deleted Successfully ";

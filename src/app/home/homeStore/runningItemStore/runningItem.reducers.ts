@@ -108,6 +108,7 @@ const _runningItemReducer = createReducer(
         price,RunningItemData,
         invoiceid,
         allppdata,
+       
       }
     ) => {
       let RunningItems_ = Array.isArray(state.RunningItems_) ? [...state.RunningItems_] : [];
@@ -131,79 +132,47 @@ const _runningItemReducer = createReducer(
       if (incrementType === 'inc' && allPPItem && allPPItem.SelectProductId) {
         val = Number(quntity) + 1;
 
-        if (RunningItems_.length > 0) {
-          if (runningItemIdx !== -1) {
-            // Update the quantity in the existing running item
-            const updatedRunningItem = {
-              ...RunningItems_[runningItemIdx],
-              SelectProductId: id,
-              quntityvalue: val,
-              qvalue: val,
-              ProductPrice: price,
-              ProductName: allPPItem.ProductName,
-              selectcategoryID: allPPItem.selectcategoryID,
-              categoryName: allPPItem.categoryName,
-              selectQtypeID: allPPItem.selectQtypeID,
-              QtypeName: allPPItem.QtypeName,
-              selectSubQuantityTypeID: allPPItem.selectSubQuantityTypeID,
-              SubQuantityTypeName: allPPItem.SubQuantityTypeName,
-              taxnames: '',
-              taxvalues: '',
-              totaltaxvalue: taxpercent,
-              paidStatus: false,
-              AddOnItems: RunningItems_[runningItemIdx]?.AddOnItems ?? [],
-              notes:''
-            };
-            RunningItems_ = [
-              ...RunningItems_.slice(0, runningItemIdx),
-              updatedRunningItem,
-              ...RunningItems_.slice(runningItemIdx + 1)
-            ];
-          } else {
-            // Add new running item if not already present
-            const newRunningItem = {
-              SelectProductId: id,
-              ProductPrice: price,
-              ProductName: allPPItem.ProductName,
-              selectcategoryID: allPPItem.selectcategoryID,
-              categoryName: allPPItem.categoryName,
-              selectQtypeID: allPPItem.selectQtypeID,
-              QtypeName: allPPItem.QtypeName,
-              selectSubQuantityTypeID: allPPItem.selectSubQuantityTypeID,
-              SubQuantityTypeName: allPPItem.SubQuantityTypeName,
-              quntityvalue: val,
-              qvalue: val,
-              taxnames: '',
-              taxvalues: '',
-              totaltaxvalue: taxpercent,
-              paidStatus: false,
-              AddOnItems: [],
-              notes:''
-            };
-            RunningItems_ = [...RunningItems_, newRunningItem];
-          }
-        } else {
-          // If RunningItems_ is empty, start with a single new item
-          const newRunningItem = {
+        const newRunningItem = {
+          SelectProductId: id,
+          ProductPrice: price,
+          ProductName: allPPItem.ProductName,
+          selectcategoryID: allPPItem.selectcategoryID,
+          categoryName: allPPItem.categoryName,
+          selectQtypeID: allPPItem.selectQtypeID,
+          QtypeName: allPPItem.QtypeName,
+          selectSubQuantityTypeID: allPPItem.selectSubQuantityTypeID,
+          SubQuantityTypeName: allPPItem.SubQuantityTypeName,
+          quntityvalue: val,
+          qvalue: val,
+          totaltaxvalue: taxpercent,
+          paidStatus: false,
+          AddOnItems: allPPItem.AddOnItems || [],
+          Taxes: allPPItem.Taxes || [],
+          notes: ''
+        };
+// console.log('Adding/Updating Running Item:', newRunningItem, 'Current RunningItems_:', RunningItems_);
+// console.log('Running Item Index:', runningItemIdx, 'All PP Item:', allPPItem);
+        if (runningItemIdx !== -1) {
+          const updatedRunningItem = {
+            ...newRunningItem,
+            ...RunningItems_[runningItemIdx],
             SelectProductId: id,
-            ProductPrice: price,
-            ProductName: allPPItem.ProductName,
-            selectcategoryID: allPPItem.selectcategoryID,
-            categoryName: allPPItem.categoryName,
-            selectQtypeID: allPPItem.selectQtypeID,
-            QtypeName: allPPItem.QtypeName,
-            selectSubQuantityTypeID: allPPItem.selectSubQuantityTypeID,
-            SubQuantityTypeName: allPPItem.SubQuantityTypeName,
             quntityvalue: val,
             qvalue: val,
-            taxnames: '',
-            taxvalues: '',
+            ProductPrice: price,
+            ProductName: allPPItem.ProductName,
             totaltaxvalue: taxpercent,
             paidStatus: false,
-            AddOnItems: [],
-            notes:''
+            Taxes: RunningItems_[runningItemIdx]?.Taxes ?? [],
+            AddOnItems: RunningItems_[runningItemIdx]?.AddOnItems ?? [],
+            notes: '',
+           KOT_Changed:false
           };
-          RunningItems_ = [newRunningItem];
+          RunningItems_ = RunningItems_.map((item, index) =>
+            index === runningItemIdx ? updatedRunningItem : item
+          );
+        } else {
+          RunningItems_ = [...RunningItems_, { ...newRunningItem, KOT_Changed: false }];
         }
       }
       else if (incrementType === 'dcre' && runningItemIdx !== -1) {
@@ -232,7 +201,25 @@ const _runningItemReducer = createReducer(
           ];
         }
       }
-      
+      // if (incrementType === 'AddOnItemsUpdate' && allPPItem && allPPItem.SelectProductId) {
+      //   const addonRunningItemIdx = RunningItems_.findIndex(
+      //     (item: any) =>
+      //       item.SelectProductId === id &&
+      //       item.SubQuantityTypeName === SubQuantityTypeName
+      //   );
+
+      //   if (addonRunningItemIdx !== -1) {
+      //     const updatedRunningItem = {
+      //       ...RunningItems_[addonRunningItemIdx],
+      //       AddOnItems: Array.isArray(allPPItem.AddOnItems)
+      //         ? [...allPPItem.AddOnItems]
+      //         : []
+      //     };
+      //     RunningItems_ = RunningItems_.map((item, index) =>
+      //       index === addonRunningItemIdx ? updatedRunningItem : item
+      //     );
+      //   }
+      // }
       return {
         ...state,
         RunningItems_,
@@ -240,6 +227,50 @@ const _runningItemReducer = createReducer(
         error: null,
       };
   }),
+  
+  on(
+    RunningItemActions.updateRunningItemAddOnItems,
+    (
+      state,
+      { id, SubQuantityTypeName, AddOnItems, RunningItemData, allppdata }
+    ) => {
+      const matches = (left: unknown, right: unknown): boolean =>
+        left != null && right != null && String(left) === String(right);
+
+      const currentItems: any[] = Array.isArray(state.RunningItems_)
+        ? [...state.RunningItems_]
+        : [];
+      const sourceItems: any[] = Array.isArray(RunningItemData)
+        ? RunningItemData
+        : Array.isArray(allppdata)
+        ? allppdata
+        : currentItems;
+      const target = sourceItems.find((item: any) =>
+        matches(item.SelectProductId, id) &&
+        (SubQuantityTypeName == null ||
+          matches(item.SubQuantityTypeName, SubQuantityTypeName))
+      );
+
+      if (!target) return state;
+
+      const updatedArr = currentItems.map((item: any) =>
+        matches(item.SelectProductId, target.SelectProductId) &&
+        matches(item.SubQuantityTypeName, target.SubQuantityTypeName)
+          ? {
+              ...item,
+              AddOnItems: Array.isArray(AddOnItems) ? [...AddOnItems] : [],
+            }
+          : item
+      );
+
+      return {
+        ...state,
+        RunningItems_: updatedArr,
+        loading: false,
+        error: null,
+      };
+    }
+  ),
   on(
     RunningItemActions.updateRunningItemNotes,
     (state, { id, selectSubQuantityTypeID, notes, RunningItemData, invoiceid }) => {
@@ -257,11 +288,6 @@ const _runningItemReducer = createReducer(
       
       );
       
-      console.log(id);
-      console.log(selectSubQuantityTypeID);
-     
-console.log(idx);
-console.log(baseArr);
       // If found, update notes on this item
       if (idx !== -1) {
         const updatedArr = baseArr.map((item, i) =>

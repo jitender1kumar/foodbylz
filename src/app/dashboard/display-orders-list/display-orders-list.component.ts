@@ -6,11 +6,14 @@ import { Router } from '@angular/router';
 import { InvoiceService } from '../../core/Services/invoice.service';
 import { DatePipe } from '@angular/common';
 import { GetOrderDetailsService } from '../../core/commanFunction/getOrderDetails.service';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { ItemsService } from '../../core/Services/items.service';
 import { CustomresService } from '../../core/Services/customers.service';
-import { Customers } from '../../core/Model/crud.model';
+import { CustomerPaymentHistory, Customers } from '../../core/Model/crud.model';
 import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
+import { Store } from '@ngrx/store';
+import * as CustomerPaymentHistoryActions from '../../home/homeStore/CustomerPaymentHistoryStore/CustomerPaymentHistory.action';
+
 @Component({
   selector: 'app-display-orders-list',
   templateUrl: './display-orders-list.component.html',
@@ -20,15 +23,15 @@ import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.
 })
 export class DisplayOrdersListComponent implements OnInit {
   dateValue: string = new Date().toISOString().split('T')[0]; // "2025-09-03"
-
+  CustomerPaymentHistory$: Observable<CustomerPaymentHistory[]>;
   t_element: any;
   showPopUp = false;
   closePopUp = false;
   EditOrderItems: any;
   EditOrderItems2: any;
-  backupstoredataforsearch: any = ""; 
-  from_date: string= new Date().toISOString().split('T')[0];
-  to_date: string= new Date().toISOString().split('T')[0];
+  backupstoredataforsearch: any = "";
+  from_date: string = new Date().toISOString().split('T')[0];
+  to_date: string = new Date().toISOString().split('T')[0];
   EditOrder: any;
   customersRecord: Customers = {
     name: 'Guest',
@@ -42,37 +45,37 @@ export class DisplayOrdersListComponent implements OnInit {
     RecieptNumber: 0,
     employee_id: 'undefined'
   }
-  
+
   ordersdata: any;
   //rowData=ordersdataloaded;
   customerdata: any;
   customers: any;
   pagination = true;
   paginationPageSize = 10;
-  paginationPageSizeSelector = [10,200, 500, 1000];
+  paginationPageSizeSelector = [10, 200, 500, 1000];
   colDefs: ColumnDef[] = [
-    { field: "RecieptNumber",sortable:true },
+    { field: "RecieptNumber", sortable: true },
     ///  { field: "OrderTypeName" ,maxWidth:100},
-    { field: "Orderstatus",sortable:true },
-    { field: "createdAt", header: "Date",sortable:true },
-    { field: "tablename", header: "Table",sortable:true },
+    { field: "Orderstatus", sortable: true },
+    { field: "createdAt", header: "Date", sortable: true },
+    { field: "tablename", header: "Table", sortable: true },
     /// { field: "TotalItemsAmount",maxWidth:140},
-    { field: "AmountPaidstatus", header: "Paid Status",sortable:true },
-    { field: "Discountperstage", header: "Discount(%)",sortable:true },
-    { field: "Totalvaue", header: "Tot. Amount",sortable:true  },
-    { field: "PaidAmount", header: "Paid Amount",sortable:true  },
-    { field: "returnAmount", header: "Return Amount",sortable:true  },
-    { field: "PendingAmount", header: "Pending",sortable:true },
-    { field: "grandtotal", header: "Grand Total",sortable:true  },
+    { field: "AmountPaidstatus", header: "Paid Status", sortable: true },
+    { field: "Discountperstage", header: "Discount(%)", sortable: true },
+    { field: "Totalvaue", header: "Tot. Amount", sortable: true },
+    { field: "PaidAmount", header: "Paid Amount", sortable: true },
+    { field: "returnAmount", header: "Return Amount", sortable: true },
+    { field: "PendingAmount", header: "Pending", sortable: true },
+    { field: "grandtotal", header: "Grand Total", sortable: true },
     //  { field: "Delete",cellRenderer:BasetypDeleteButtun},
-    { field: "Edit", cellRenderer: BasetypEditButtun,sortable:true },
+    { field: "Edit", cellRenderer: BasetypEditButtun, sortable: true },
 
   ];
   myEditForm: any;
   currentDateTime: string = "";
   //orderstatus 1 for new order 2 pending 3 running 
-  constructor(private invoice: InvoiceService, private router: Router, private formedit: FormBuilder, private datePipe: DatePipe, private GetOrderDetailsService_: GetOrderDetailsService, private ItemsService_: ItemsService, private CustomresService_: CustomresService) {
-
+  constructor(private invoice: InvoiceService, private router: Router, private formedit: FormBuilder, private datePipe: DatePipe, private GetOrderDetailsService_: GetOrderDetailsService, private ItemsService_: ItemsService, private CustomresService_: CustomresService, private store: Store<{ customerPaymentHistoryReducer_: any }>) {
+    this.CustomerPaymentHistory$ = this.store.select(state => state.customerPaymentHistoryReducer_.customerPaymentHistory.data);
     this.showPopUp = false;
     this.myEditForm = this.formedit.group({
       RecieptNumber: [""],
@@ -235,42 +238,37 @@ export class DisplayOrdersListComponent implements OnInit {
       console.log(this.ordersdata);
     });
   }
-  onRowClick(r: any) { console.log('clicked row', r);
+  onRowClick(r: any) {
+    console.log('clicked row', r);
     // console.log(this.colDefs);
     if (r[0].field == 'Delete') {
-     
+
     }
     if (r[0].field == 'Items') {
 
     }
     if (r[0].field == 'Edit') {
       this.showPopUp = true;
-
-      //alert("Items");
       this.EditOrder = r[0].row;//Invoice data
       console.log(this.EditOrder);
       this.getItems(r[0].row.RecieptNumber);
       this.getCustomersData(r[0].row);
-      // this.myEditForm = this.formedit.group({
-      //   RecieptNumber: [r[0].row.RecieptNumber],
-      //   Orderstatus : [r[0].row.Orderstatus],
-      //   AmountPaidstatus: [r[0].row.AmountPaidstatus],
-      //   PendingAmount: [r[0].row.PendingAmount],
-      //   TotalItemsAmount: [r[0].row.TotalItemsAmount],
-      //   Totalvaue: [r[0].row.Totalvaue],
-      //   Discountvalue: [r[0].row.Discountvalue],
-      //   Discountperstage: [r[0].row.Discountperstage],
-      //   grandtotal: [r[0].row.grandtotal]
 
-
-      // });
     }
-   }
- 
+  }
+
   getCustomersData(data: any) {
     this.customerdata = "";
     this.customers = "";
-    if (data.customer_id != 'undefined') {
+
+    if (data.customer_id != null && data.customer_id !== 'undefined') {
+      this.store.dispatch(CustomerPaymentHistoryActions.getCustomerPaymentHistoryByCustomerId(data.customer_id));
+      this.CustomerPaymentHistory$ = this.store.select(state => state.customerPaymentHistoryReducer_.customerPaymentHistory.data);
+      // this.CustomerPaymentHistory$.subscribe(
+      //   (data) => {
+      //     console.log(data);
+      //   }
+      // );
       this.CustomresService_.getbyid(data.customer_id).subscribe(customer => {
         if (customer) {
           // 
@@ -301,6 +299,7 @@ export class DisplayOrdersListComponent implements OnInit {
     }
     else {
       //alert("Else block");
+      this.CustomerPaymentHistory$ = of([]);
       this.customersRecord = {
         name: 'Guest',
         MobileNo: '0000',
@@ -320,7 +319,7 @@ export class DisplayOrdersListComponent implements OnInit {
     this.ItemsService_.getbyid(RecieptNumber).subscribe(Items => {
       this.EditOrderItems2 = Items;
       this.EditOrderItems = this.EditOrderItems2.data;
-      console.log("EditOrderItems",this.EditOrderItems);
+      console.log("EditOrderItems", this.EditOrderItems);
     })
   }
   closePopUpByChild(close: any) {

@@ -47,7 +47,8 @@ export class ProductpriceformComponent implements OnInit {
 subQuntities:any=[];
   categorynamedata2: any
   subQuantityTypeData2: any;
-  shortcodeStringDuplicate:any; 
+  shortcodeStringDuplicate: boolean = false;
+  shortcodeNumberDuplicate: boolean = false;
   productPrice$!: Observable<any[]>;
   loading$: Observable<boolean>;
   error$: Observable<string | null>;
@@ -176,7 +177,7 @@ subQuntities:any=[];
         this.Productname = this.Productname2.data
         this.prodata = this.Productname;
         this.loadSubQuantityTypeByQuantityTypeID(this.prodata[0].selectQtypeID);
-        alert(this.prodata[0].selectQtypeID);
+        //alert(this.prodata[0].selectQtypeID);
         this.myAddForm = this.formedit.group({
           ProductPrice: [0, Validators.required],
           SelectProductId: [this.prodata[0]._id, [Validators.required]],
@@ -400,6 +401,8 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
   }
 
   add(ProductPrice_: ProductPrice) {
+    this.shortcodeNumberDuplicate = false;
+this.shortcodeStringDuplicate = false;
     // ProductPrice_.selectcategoryID, ProductPrice_.selectQtypeID,
     try {
       this.service.getbyid(ProductPrice_.SelectProductId, ProductPrice_.selectSubQuantityTypeID, ProductPrice_.selectQtypeID, ProductPrice_.selectcategoryID)
@@ -437,21 +440,83 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
       // console.log(r);
     }
   }
-  checkDuplicateShortcode()
-  {
+  checkDuplicateShortcodeString() {
+   if(this.myAddForm.value){this.ischeckDuplicateShortcodeString(this.myAddForm.value);}
+   
+  }
+   checkDuplicateShortcodeNumber() {
+    if(this.myAddForm.value){this.ischeckDuplicateShortcodeNumber(this.myAddForm.value.ShortCodeNumber);}
     
   }
+  ischeckDuplicateShortcodeString(productPrice: ProductPrice): any {
+    const shortCodeString = productPrice.ShortCodeString?.trim().toLowerCase();
+    this.shortcodeStringDuplicate = !!shortCodeString &&
+      (this.productPriceRecord ?? []).some((record: ProductPrice) =>
+        record.ShortCodeString?.trim().toLowerCase() === shortCodeString
+      );
+    return this.shortcodeStringDuplicate;
+  }
+ 
+  ischeckDuplicateShortcodeNumber(ShortCodeNumber: number): boolean {
+   // alert(ShortCodeNumber);
+    const shortCodeNumber = Number(+ShortCodeNumber);
+    this.shortcodeNumberDuplicate = 
+     
+      (this.productPriceRecord ?? []).some((record: ProductPrice) =>
+        Number(+record.ShortCodeNumber) === +shortCodeNumber
+      );
+      console.log('data:', this.productPriceRecord );
+      console.log('shortcodeNumberDuplicate:', this.shortcodeNumberDuplicate);
+    return this.shortcodeNumberDuplicate;
+  }
+  checkDuplicateShortcodeNumberByEditForm() {
+    if(this.myEditForm.value){this.ischeckDuplicateShortcodeNumberByEditForm(this.myEditForm.value);}
+  }
+  ischeckDuplicateShortcodeNumberByEditForm(productPrice: ProductPrice): any {
+  //  alert(productPrice.ShortCodeNumber);
+    // const shortCodeNumber = Number(+productPrice.ShortCodeNumber);
+    // console.log('ShortCodeNumber:', shortCodeNumber);
+    // this.shortcodeNumberDuplicate = 
+     
+    //   (this.productPriceRecord ?? []).some((record: ProductPrice) =>
+    //     Number(+record.ShortCodeNumber) === +shortCodeNumber
+    //   );
+    //   console.log('data:', this.productPriceRecord );
+    //   console.log('shortcodeNumberDuplicate:', this.shortcodeNumberDuplicate);
+    // return this.shortcodeNumberDuplicate;
+    this.ischeckDuplicateShortcodeNumber(productPrice.ShortCodeNumber);
+  }
+  checkDuplicateShortcodeStringByEditForm() {
+    if(this.myEditForm.value){this.ischeckDuplicateShortcodeStringByEditForm(this.myEditForm.value);}
+  }
+  ischeckDuplicateShortcodeStringByEditForm(productPrice: ProductPrice): any {
+    this.ischeckDuplicateShortcodeString(productPrice);
+    // alert(productPrice.ShortCodeString);
+    //  const shortCodeString = productPrice.ShortCodeString?.trim().toLowerCase();
+    //  console.log('ShortCodeString:', shortCodeString);
+    // this.shortcodeStringDuplicate = !!shortCodeString &&
+    //   (this.productPriceRecord ?? []).some((record: ProductPrice) =>
+    //     record.ShortCodeString?.trim().toLowerCase() === shortCodeString
+    //   );
+    // return this.shortcodeStringDuplicate;
+  }
+  
   onFormSubmit() {
+     if (this.shortcodeNumberDuplicate) return;
+     if(this.shortcodeStringDuplicate) return;
     if (this.myAddForm.valid) {
       this.add(this.myAddForm.value);
     }
   }
 
   onFormUpdateSubmit() {
+     if (this.shortcodeNumberDuplicate) return;
+     if(this.shortcodeStringDuplicate) return;
     this.Update(this.myEditForm.value);
   }
 
   Update(ProductPrice_: ProductPrice) {
+    
     this.store.dispatch(updateProductPrice({ ProductPrice_ }));
     this.actions$.pipe(ofType(ProductPriceActions.updateProductPriceSuccess)).subscribe(() => {
       this.args = "Product Price Updated";
@@ -471,6 +536,8 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
       this.tablename = "prodpric";
     }
     if (r[0].field == 'Edit') {
+      this.shortcodeNumberDuplicate = false;
+this.shortcodeStringDuplicate = false;
       this.popdata2 = r[0].row;
       this.loadSubQuantityTypeByEdit(r[0].row.selectQtypeID);
       //  this.loadSubQuantityTypeByQuantityTypeID(r[0].row.selectQtypeID);
@@ -503,6 +570,8 @@ this.loadSubQuantityTypeByQuantityTypeID(this.myAddForm.value.selectQtypeID);
   show: any = false;
   showEdit: any = false;
   shows() {
+      this.shortcodeNumberDuplicate = false;
+this.shortcodeStringDuplicate = false;
     this.show = true;
     this.showEdit = false;
     this.args = "";

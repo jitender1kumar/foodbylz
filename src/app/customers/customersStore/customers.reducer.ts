@@ -58,7 +58,7 @@ export const customersReducer = createReducer(
   })),
   on(CustomersActions.addCustomerSuccess, (state, { customer }) => ({
     ...state,
-    customers: [...state.customers, customer],
+    customers: [...(Array.isArray(state.customers) ? state.customers : []), customer],
     loading: false
   })),
   on(CustomersActions.addCustomerFailure, (state, { error }) => ({

@@ -23,8 +23,9 @@
 <ng-container *ngIf="MenuName === 'home'">
   <div>
     <!-- [TokenNumber]="TokenNumber" -->
+      <!-- [runningItemsKOT$]="runningItems$" -->
     <app-home
-    [runningItemsKOT$]="runningItems$"
+   [runningItemsKOT$]="runningItems$"
       [invoiceid]="invoiceid"
       [TokenNumber]="TokenNumber"
       [paybydata]="payBy"
@@ -40,6 +41,7 @@
       (value_invoiceid_Changed)="updateinvoiceidValue($event)"
       (cancelOrder)="cancelOrder($event)"
       (RedirectToTable)="showTablePage($event)"
+    (pickUpOrder)="pickUpOrders($event)"
     ></app-home>
   </div>
 </ng-container>
@@ -87,9 +89,10 @@
       [pickupOrder]="pickup"
       [CancelOrder]="CancelOrder"
       (clearCancelOrder)="clearCancelOrders($event)"
-      (notifyManage2)="initializeDataForHome($event)"
+      (redirectToHomePage)="initializeDataForHome($event)"
       (clearPickupOrder)="clearPickupOrders($event)"
     ></app-tables>
   </div>
 </ng-container>
+<!-- [pickUpOrderFromHome]="pickUpOrderFromHome" -->
  <!-- [runningItemsKOT$]="runningItems$" -->

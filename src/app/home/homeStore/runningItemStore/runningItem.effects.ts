@@ -152,5 +152,23 @@ export class RunningItemEffects {
       )
     )
   );
+
+  updateRunningItemAddOnItems$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(RunningItemActions.updateRunningItemAddOnItems),
+      switchMap(({ invoiceid }) =>
+        this.store.select(state => state.runningItemReducer_.RunningItems_).pipe(
+          take(1),
+          map(RunningItems_ => {
+            localStorage.setItem(invoiceid, JSON.stringify(RunningItems_));
+            return RunningItemActions.updateRunningItemAddOnItemsSuccess({ RunningItems_ });
+          }),
+          catchError(error =>
+            of(RunningItemActions.updateRunningItemAddOnItemsFailure({ error }))
+          )
+        )
+      )
+    )
+  );
 }
 

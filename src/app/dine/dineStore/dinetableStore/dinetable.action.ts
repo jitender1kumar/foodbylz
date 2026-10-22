@@ -47,7 +47,8 @@ export const updateDineTableSuccess = createAction(
 export const updateDineTableFailure = createAction(
   '[DineTable] Update DineTable Failure',
   props<{ error: any }>()
-);
+);  
+
 
 // Delete Dine Table Actions
 export const deleteDineTable = createAction(

@@ -2,7 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { Floor } from '../../../core/Model/crud.model';
 
 // Load (Retrieve)
-export const loadFloors = createAction('[Floor] Load Floors');
+export const loadFloor = createAction('[Floor] Load Floors');
 export const loadFloorsSuccess = createAction('[Floor] Load Floors Success', props<{ Floor_: Floor[] }>());
 export const loadFloorsFailure = createAction('[Floor] Load Floors Failure', props<{ error: string }>());
 
