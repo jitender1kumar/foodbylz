@@ -16,6 +16,7 @@ import { ShortcodeComponent } from './partial/shortcode/shortcode.component';
 import { SplitbillComponent } from './partial/splitbill/splitbill/splitbill.component';
 import { PartpaymentComponent } from './partial/partpayment/partpayment.component';
 import { RemoveCustomerComponent } from './partial/remove-customer/remove-customer.component';
+import { PrintComponent } from './partial/print/print.component';
 
 @NgModule({
   declarations: [ HomeComponent,
@@ -30,6 +31,7 @@ import { RemoveCustomerComponent } from './partial/remove-customer/remove-custom
     SplitbillComponent,
     PartpaymentComponent,
     RemoveCustomerComponent,
+    PrintComponent,
   ],
   imports: [
     CommonModule,

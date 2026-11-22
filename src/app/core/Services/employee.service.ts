@@ -11,8 +11,8 @@ export class EmployeeService {
 
   constructor(private http: HttpClient) { }
 
-  private employee: string = environment.api+"employee";
-  private url3: string = environment.api;
+  private readonly employee: string = environment.api+"employee";
+  private readonly url3: string = environment.api;
   
 add(employee: Employee): Observable<Employee> {
     

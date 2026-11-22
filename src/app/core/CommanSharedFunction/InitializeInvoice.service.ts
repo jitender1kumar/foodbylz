@@ -1,4 +1,4 @@
-import { Invoice, IChair, ITax } from "../../core/Model/crud.model";
+import { Invoice, IChair, ITax } from "../Model/crud.model";
 import { DatePipe } from "@angular/common";
 import { Injectable } from '@angular/core';
 

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { GetOrderDetailsService } from '../../core/commanFunction/getOrderDetails.service';
+import { GetOrderDetailsService } from '../../core/CommanSharedFunction/getOrderDetails.service';
 @Component({
     selector: 'app-orders',
     templateUrl: './orders.component.html',

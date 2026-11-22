@@ -10,7 +10,7 @@ import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { ChairService } from '../../core/Services/chair.service';
 import { DineService } from '../../core/Services/dine.service';
 import { FloorService } from '../../core/Services/floor.service';
-import {  ValidationService } from '../../core/commanFunction/Validation.service';
+import {  ValidationService } from '../../core/CommanSharedFunction/Validation.service';
 import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 
 @Component({

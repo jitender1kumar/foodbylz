@@ -185,23 +185,38 @@ body {
 }
 
 .close {
-    position: absolute;
-    top: 0;
-    right: 0;
-    float: right;
-    padding: 5px;
-    color: #e95050;
-    font-size: 20px;
-    border: solid red 1px;
-    font-weight: 600;
-    background-color:red;
-  }
- 
-  .close:hover{
-    color: #b32929;
-    font-weight: 650;
-   
-  }
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 2px;
+ right: 10px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 12px;
+  background: linear-gradient(145deg, #fff5f5, #ffe4e6);
+  color: #dc2626;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.12);
+  transition: background 180ms ease, color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.close:hover {
+  
+  color: #fff;
+  background: linear-gradient(145deg, #ef4444, #dc2626);
+  box-shadow: 0 7px 18px rgba(220, 38, 38, 0.28);
+  transform: translateY(0.2px);
+}
+
+.close:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.close:focus-visible {
+  outline: 3px solid rgba(239, 68, 68, 0.35);
+  outline-offset: 3px;
+}
 .box2
 {
   width:100%;
@@ -283,7 +298,7 @@ header {
   background-color: var(--white);
   border-bottom: 1px solid var(--light-grey-4);
   box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.08); /* Shadow with specified properties */
-  position: fixed;
+  /* position: fixed; */
   width: 100%;
   top: 0;
 }

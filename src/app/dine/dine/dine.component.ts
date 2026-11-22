@@ -8,7 +8,7 @@ import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbas
 import { DineService } from '../../core/Services/dine.service';
 import { FloorService } from '../../core/Services/floor.service';
 import { ShowbuttonComponent } from '../../showbutton/showbutton.component';
-import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
+import { SweetAlert2 } from '../../core/CommanSharedFunction/sweetalert';
 import { ChairService } from '../../core/Services/chair.service';
 import { Store } from '@ngrx/store';
 import * as DineActions from '../dineStore/dinetableStore/dinetable.action';

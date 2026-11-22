@@ -66,7 +66,8 @@ export class EmployeeComponent implements OnInit {
     salary: 0,
     joiningDate: new Date(),
     isActive: false,
-    mobile: ''
+    mobile: '',
+    role_id: ''
   }
  
   employeenamedata: any;

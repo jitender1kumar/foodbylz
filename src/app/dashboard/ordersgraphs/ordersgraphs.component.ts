@@ -3,7 +3,7 @@ import { InvoiceService } from '../../core/Services/invoice.service';
 import { PaybyService } from '../../core/Services/paybymanage.service';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
-import { GetOrderDetailsService } from '../../core/commanFunction/getOrderDetails.service';
+import { GetOrderDetailsService } from '../../core/CommanSharedFunction/getOrderDetails.service';
 import  * as InvoiceActions from '../../core/store/invoiceStor/invoice.actions';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/internal/Observable';

@@ -6,7 +6,7 @@ import { ChairService } from '../../core/Services/chair.service';
 import { InvoiceService } from '../../core/Services/invoice.service';
 import { DineService } from '../../core/Services/dine.service';
 import { DatePipe } from '@angular/common';
-import { InitializeInvoice } from '../../core/commanFunction/InitializeInvoice.service';
+import { InitializeInvoice } from '../../core/CommanSharedFunction/InitializeInvoice.service';
 
 @Component({
     selector: 'app-runningorders',

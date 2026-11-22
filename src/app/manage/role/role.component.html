@@ -1,0 +1,118 @@
+<h4 class="titleh4"> Role Type Management</h4>
+
+<button class="bt1n btnbox" id="show" (click)="shows()">+Add Role</button>
+@if (popupenvironments.show$ | async) {
+  <div class="comman" >
+   
+    <div class="row box">
+        
+ <button  class="close" type="button" (click)="close()">Close</button>
+<section class="role-page">
+	<div class="role-shell">
+		<!-- <header class="page-heading">
+			<div>
+				<span class="eyebrow">TEAM &amp; ACCESS</span>
+				<h1>Role permissions</h1>
+				<p>Create a role or update the pages your team can access.</p>
+			</div>
+			<span class="heading-icon" aria-hidden="true">♙</span>
+		</header> -->
+		<div class="forms-grid">
+			
+			<form class="role-card" [formGroup]="addRoleForm" (ngSubmit)="onAddRole()">
+                
+				<div class="card-heading">
+					<span class="step">01</span>
+					<div><h2>Add a role</h2><p>Set up a new access profile.</p></div>
+				</div>
+
+				<label class="field-label" for="add-role-name">Role name <span>*</span></label>
+				<input id="add-role-name" class="role-input" type="text" formControlName="roleName" placeholder="e.g. Floor Manager" autocomplete="off">
+				<small class="field-error" *ngIf="addRoleForm.get('roleName')?.touched && addRoleForm.get('roleName')?.invalid">Please enter a role name.</small>
+
+				<div class="permissions-heading">
+					<div><h3>Page access</h3><p>Choose the areas this role can access.</p></div>
+					<div class="permissions-actions">
+						<button class="select-all-button" type="button" (click)="selectAllAddPermissions()">Select all</button>
+						<span class="access-count">{{ selectedAddCount }} selected</span>
+					</div>
+				</div>
+				<div class="permission-grid" formGroupName="permissions">
+					<label class="permission-item" *ngFor="let page of rolePages">
+						<input type="checkbox" [formControlName]="page.key">
+						<span class="checkmark" aria-hidden="true"></span><span>{{ page.label }}</span>
+					</label>
+				</div>
+				<button class="submit-button" type="submit" [disabled]="addRoleForm.invalid">Create role <span aria-hidden="true">→</span></button>
+			</form>
+</div>
+  </div>
+  
+</section>
+</div>
+  </div>
+}
+<!-- Edit role -->
+@if (popupenvironments.showEdit$ | async) {
+    
+
+<section class="role-page-edit">
+	<div class="role-shell">
+        
+		<!-- <header class="page-heading">
+			<div>
+				<span class="eyebrow">TEAM &amp; ACCESS</span>
+				<h1>Role permissions</h1>
+				<p>Create a role or update the pages your team can access.</p>
+			</div>
+			<span class="heading-icon" aria-hidden="true">♙</span>
+		</header> -->
+  <div class=" comman">
+    <div class="row box">
+			<form class="role-card" [formGroup]="editRoleForm" (ngSubmit)="onEditRole()">
+                 <button  class="close" (click)="close()">Close</button>
+				<div class="card-heading">
+					<span class="step edit-step">02</span>
+					<div><h2>Edit a role</h2><p>Update an existing access profile.</p></div>
+				</div>
+
+				<label class="field-label" for="edit-role-name">Role name <span>*</span></label>
+				<input id="edit-role-name" class="role-input" type="text" formControlName="roleName" placeholder="Enter role name" autocomplete="off">
+				<small class="field-error" *ngIf="editRoleForm.get('roleName')?.touched && editRoleForm.get('roleName')?.invalid">Please enter a role name.</small>
+
+				<div class="permissions-heading">
+					<div><h3>Page access</h3><p>Choose the areas this role can access.</p></div>
+					<div class="permissions-actions">
+						<button class="select-all-button" type="button" (click)="selectAllEditPermissions()">Select all</button>
+						<span class="access-count">{{ selectedEditCount }} selected</span>
+					</div>
+				</div>
+				<div class="permission-grid" formGroupName="permissions">
+					<label class="permission-item" *ngFor="let page of rolePages">
+						<input type="checkbox" [formControlName]="page.key">
+						<span class="checkmark" aria-hidden="true"></span><span>{{ page.label }} </span>
+					</label>
+				</div>
+				<button class="submit-button edit-button" type="submit" [disabled]="editRoleForm.invalid">Save changes <span aria-hidden="true">→</span></button>
+			</form>
+            </div>
+  </div>
+    </div>
+</section>
+
+}
+		
+ <ng-container *ngIf="Roll_Collections$ | async as Roll_Collections">
+          <app-gird-table
+          [columns]="colDefs"
+          [data]="Roll_Collections "
+          (rowClicked)="onRowClick($event)"
+          ></app-gird-table>
+          </ng-container>
+       
+        <div >
+          <app-popupmodel (deletedconfirmedclicked)="deletedConfirmed($event)" (clicked)="handleChildClick()" [style]="display" [tabname]="tablename" [data]="valueid" [modal]="modal"></app-popupmodel>
+        </div>
+<!-- <style>
+	
+</style> -->

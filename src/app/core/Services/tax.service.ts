@@ -10,7 +10,7 @@ import { Tax } from '../Model/crud.model';
 })
 export class TaxService {
 
-  private taxUrl: string = environment.api+"tax";
+  private readonly taxUrl: string = environment.api+"tax";
 
   constructor(private http: HttpClient) { }
 

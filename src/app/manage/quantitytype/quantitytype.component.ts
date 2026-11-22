@@ -3,16 +3,15 @@ import { QuantitytypeService } from '../../core/Services/quantitytype.service';
 import { Router } from '@angular/router';
 import { Quantitytype } from '../../core/Model/crud.model';
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
-import { ColDef } from 'ag-grid-community';
 import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttoncomponent';
 import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
 import { ProductPriceService } from '../../core/Services/productprice.service';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { addQuantityType, deleteQuantityType, loadQuantityType, updateQuantityType, updateQuantityTypeFailure, updateQuantityTypeSuccess } from '../ManageStore/quntityTypeStore/quntityType.actions';
-import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
+import { SweetAlert2 } from '../../core/CommanSharedFunction/sweetalert';
 import { ofType, Actions } from '@ngrx/effects';
-import {  ValidationService } from '../../core/commanFunction/Validation.service';
+import {  ValidationService } from '../../core/CommanSharedFunction/Validation.service';
 import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 @Component({
   selector: 'app-categorytypeform',
@@ -35,11 +34,7 @@ export class CategorytypeformComponent implements OnInit {
   productrecord: any;
   productrecord2: any
   quantityTypeNameResult: any;
-  onFormSubmit() {
-    if (this.myAddForm.valid) {
-      this.add(this.myAddForm.value);
-    }
-  }
+ 
   @ViewChild('f')
   quantitytypeViewchild!: NgForm;
   categorynamedata: any;
@@ -87,6 +82,11 @@ export class CategorytypeformComponent implements OnInit {
   }
   ngOnInit(): void {
     this.loadQtype();
+  }
+   onFormSubmit() {
+    if (this.myAddForm.valid) {
+      this.add(this.myAddForm.value);
+    }
   }
  add(quantityType: Quantitytype): void {
   this.service.getQuantityTypeNameByName(quantityType.name).subscribe({

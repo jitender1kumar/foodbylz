@@ -8,7 +8,7 @@ import { environment } from '../../environment/environment';
   providedIn: 'root'
 })
 export class DiscountService {
-  private discountUrl: string = environment.api + 'discount';
+  private readonly discountUrl: string = environment.api + 'discount';
 
   constructor(private http: HttpClient) {}
 

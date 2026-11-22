@@ -8,7 +8,7 @@ import { environment } from './indexService';
   providedIn: 'root'
 })
 export class KOTsUDService {
-    private KOTsUD: string = environment.api+"KOTsUPs";
+    private readonly KOTsUD: string = environment.api+"KOTsUPs";
 
   constructor(private http: HttpClient) {}
 

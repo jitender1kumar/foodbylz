@@ -6,8 +6,8 @@ import { BasetypEditButtun } from '../../commanComponent/editbutton/editbuttonco
 import { BasetypDeleteButtun } from '../../commanComponent/deletebutton/deletbasetypebutton';
 import { DineService } from '../../core/Services/dine.service';
 import { FloorService } from '../../core/Services/floor.service';
-import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
-import { ValidationService } from '../../core/commanFunction/Validation.service';
+import { SweetAlert2 } from '../../core/CommanSharedFunction/sweetalert';
+import { ValidationService } from '../../core/CommanSharedFunction/Validation.service';
 import * as FloorActions from '../dineStore/floorStore/floor.action';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/internal/Observable';

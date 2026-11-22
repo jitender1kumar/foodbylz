@@ -8,7 +8,7 @@ import { environment } from '../../environment/environment';
 })
 export class SplitBillService {
 
-    private apiUrl: string = environment.api+"splitbill";
+    private readonly apiUrl: string = environment.api+"splitbill";
   
 
   constructor(private http: HttpClient) { }

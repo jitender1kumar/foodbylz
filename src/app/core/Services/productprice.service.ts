@@ -10,10 +10,10 @@ import { ProductPrice } from '../Model/crud.model';
 })
 export class ProductPriceService {
 
-  private productPriceUrl: string = environment.api + "productPrice";
-  private productPriceByBaseTypeUrl: string = environment.api + "productPriceByBaseType";
-  private productPriceByQuantityTypeUrl: string = environment.api + "productPriceByQuantityType";
-  private productPriceByProductIdUrl: string = environment.api + "productPriceByProductId";
+  private readonly productPriceUrl: string = environment.api + "productPrice";
+  private readonly productPriceByBaseTypeUrl: string = environment.api + "productPriceByBaseType";
+  private readonly productPriceByQuantityTypeUrl: string = environment.api + "productPriceByQuantityType";
+  private readonly productPriceByProductIdUrl: string = environment.api + "productPriceByProductId";
 
   constructor(private http: HttpClient) { }
 

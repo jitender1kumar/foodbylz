@@ -16,6 +16,7 @@ import { CompanyloginComponent } from './company/companyAuth/companylogin/compan
 import { AdminComponent } from './company/companyAuth/admin/admin.component';
 import { EmployeeComponent } from './company/employee/employee.component';
 import { DiscountComponent } from './discount/discount/discount.component';
+import { RoleComponent } from './manage/role/role.component';
 const routes: Routes = [
   {path:'category',component:CategoryformComponent},
   {path:'Quantitytype',component:CategorytypeformComponent},
@@ -34,6 +35,7 @@ const routes: Routes = [
   { path: 'admin', component: AdminComponent },
   { path: 'employee', component: EmployeeComponent },
   { path: 'discount', component: DiscountComponent },
+  { path: 'role', component: RoleComponent },
 ];
 
 @NgModule({

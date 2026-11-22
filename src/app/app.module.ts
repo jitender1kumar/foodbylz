@@ -120,6 +120,8 @@ import { GenratedItemsEffects } from './home/homeStore/GentratedItemsStore/Genra
 import { loadDineTables } from './dine/dineStore/dinetableStore/dinetable.action';
 import { customerPaymentHistoryReducer } from './home/homeStore/CustomerPaymentHistoryStore/CustomerPaymentHistory.reducer';
 import { CustomerPaymentHistoryEffects } from './home/homeStore/CustomerPaymentHistoryStore/CustomerPaymentHistory.effects';
+import { roleReducer } from './manage/ManageStore/roleStore/role.reducer';
+import { RoleEffects } from './manage/ManageStore/roleStore/role.effects';
 
 // CompanyModule is already imported above, ensure it is listed under imports below
 
@@ -128,7 +130,7 @@ const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'Payby', component: PaybymanageComponent },
-  { path: 'manage', component: ManageComponent },
+  { path: 'settings', component: ManageComponent },
   { path: 'Home', component: HomeComponent },
   // Add company routes if CompanyModule is lazy loaded
   // { path: 'company', loadChildren: () => import('./company/company.module').then(m => m.CompanyModule) },
@@ -214,6 +216,7 @@ const routes: Routes = [
         runningItemReducer_:runningItemReducer,
         splitBillReducer_: splitBillReducer,
         GenratedItemsReducer_: GenratedItemsReducer,
+        RoleReducer_: roleReducer,
         customerPaymentHistoryReducer_: customerPaymentHistoryReducer as any
       },
       { metaReducers }
@@ -240,7 +243,8 @@ const routes: Routes = [
       DiscountEffects,
       RunningItemEffects,
       SplitBillEffects,
-      GenratedItemsEffects
+      GenratedItemsEffects,
+      RoleEffects
     ]),
     StoreModule.forFeature('IDine_', loadDineTables),
   ],

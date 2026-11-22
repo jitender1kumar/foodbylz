@@ -4,9 +4,9 @@ import { Observable } from 'rxjs/internal/Observable';
 import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
 import { FormBuilder } from '@angular/forms';
-import { ValidationService } from '../../core/commanFunction/Validation.service';
+import { ValidationService } from '../../core/CommanSharedFunction/Validation.service';
 import { Actions } from '@ngrx/effects';
-import { InitializeInvoice } from '../../core/commanFunction/InitializeInvoice.service';
+import { InitializeInvoice } from '../../core/CommanSharedFunction/InitializeInvoice.service';
 import { filter } from 'rxjs';
 import * as InvoiceActions from '../../core/store/invoiceStor/invoice.actions';
 import { updateRunningItemAddOnItems } from '../homeStore/runningItemStore/runningItem.action';
@@ -88,7 +88,8 @@ export class AddOnItemsComponent implements OnInit {
 
   AddOnItems: IAddOnItems = {
     _id: '',
-    numberofQuantity: 0
+    numberofQuantity: 0,
+    name: ''
   };
   AddOnItemsArray: IAddOnItems[] = [];
   selectedAddOnProduct: any;
@@ -172,6 +173,7 @@ export class AddOnItemsComponent implements OnInit {
     if (!this.alreadyExists) {
       this.AddOnItems = {
         _id: this.selectedAddOnProduct,
+        name: item?.name ?? '',
         numberofQuantity: 1
       };
       // Store-derived arrays may be frozen; create a mutable copy instead of pushing.

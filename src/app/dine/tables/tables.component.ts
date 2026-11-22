@@ -56,10 +56,10 @@ import {
 } from '../../core/Services/reserveDine.service';
 import {
   GetOrderDetailsService
-} from '../../core/commanFunction/getOrderDetails.service';
+} from '../../core/CommanSharedFunction/getOrderDetails.service';
 import {
   InitializeInvoice
-} from '../../core/commanFunction/InitializeInvoice.service';
+} from '../../core/CommanSharedFunction/InitializeInvoice.service';
 import {
   Store
 } from '@ngrx/store';

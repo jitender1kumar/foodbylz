@@ -11,8 +11,8 @@ import { loadSubQuantityType } from '../../manage/ManageStore/subQuantityTypeSto
 })
 export class subQuantityTypeService {
   subQuantityTypeData$?: Observable<any[]>;
-  private subQuanityTypeUrl: string = environment.api+"subQuantityType";
-private subQuantityTypeGetByNameUrl:string=environment.api+"subQuantityTypeName";
+  private readonly subQuanityTypeUrl: string = environment.api+"subQuantityType";
+private readonly subQuantityTypeGetByNameUrl:string=environment.api+"subQuantityTypeName";
 private subscriptions: Subscription[] = [];
   constructor(private http: HttpClient, private store: Store<{
     

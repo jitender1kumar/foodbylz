@@ -8,13 +8,13 @@ import { Floor } from '../Model/crud.model';
   providedIn: 'root'
 })
 export class FloorService {
-  public FloordataSubject$ = new BehaviorSubject<any[]>([]);
+  public readonly FloordataSubject$ = new BehaviorSubject<any[]>([]);
   //Floordata$ = this.FloordataSubject.asObservable();
 
 
   
 
-  private floorUrl: string ;
+  private readonly floorUrl: string;
   constructor(private http: HttpClient) { 
     this.floorUrl = environment.api+"floor";
   }

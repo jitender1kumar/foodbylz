@@ -9,8 +9,8 @@ import { Invoice } from '../Model/crud.model';
 })
 export class InvoiceService {
 
-  private invoiceUrl: string = environment.api+"invoice";
-  private OrderRecordurl: string = environment.api+"getOrderRecordByDate";
+  private readonly invoiceUrl: string = environment.api+"invoice";
+  private readonly OrderRecordurl: string = environment.api+"getOrderRecordByDate";
 
   constructor(private http: HttpClient) { }
 

@@ -140,7 +140,8 @@ export interface Invoice {
 }
 export interface IAddOnItems {
   _id: string,
-  numberofQuantity: number
+  numberofQuantity: number,
+  name:string
 }
 export interface GenratedItems {
   _id: string,
@@ -424,8 +425,8 @@ export interface CompanyProfile {
   logo: string,
   employee_id: string
 }
-export interface permission {
-  employee_id: string,
+export interface permissionCRUD {
+  _id: string,
   read: boolean,
   write: boolean,
   create: boolean,
@@ -518,20 +519,14 @@ export interface Employee {
   name: string;
   email?: string;
   mobile: string;
-  role: string;
+  role_id: string;
   salary: number;
   attendance?: {
     presentDays: number;
     absentDays: number;
   };
 
-  permissions?: {
-    canCreateOrder: boolean;
-    canEditOrder: boolean;
-    canDeleteOrder: boolean;
-    canViewReports: boolean;
-    canManageEmployees: boolean;
-  };
+ 
 
   joiningDate: Date;
   isActive: boolean;
@@ -549,4 +544,31 @@ export interface CustomerPaymentHistory {
   InvoiceId: string;
   EmployeeId:string;
   createdAt?: Date
+}
+
+export interface Role {
+  roleName: string;
+  permissions: permission[];
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface permission{
+  home: boolean;
+  settings: boolean;
+  table: boolean;
+  grid: boolean;
+  payment: boolean;
+  companyLogin: boolean;
+  userLogin: boolean;
+  dashboard: boolean;
+  orders: boolean;
+  menu: boolean;
+  blacklist: boolean;
+  categories: boolean;
+  foods: boolean;
+  floor: boolean;
+  inventory: boolean;
+  genral: boolean;
+  discountManagement: boolean;
 }

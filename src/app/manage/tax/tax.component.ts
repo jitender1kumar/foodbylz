@@ -9,9 +9,9 @@ import {  Observable } from 'rxjs';
 import * as TaxAction from '../ManageStore/taxStore/tax.actions';
 import { Store } from '@ngrx/store';
 import { addTax, deleteTax, loadTax } from '../ManageStore/taxStore/tax.actions';
-import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
+import { SweetAlert2 } from '../../core/CommanSharedFunction/sweetalert';
 import { ofType } from '@ngrx/effects';
-import { ValidationService } from '../../core/commanFunction/Validation.service';
+import { ValidationService } from '../../core/CommanSharedFunction/Validation.service';
 import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 @Component({
   selector: 'app-tax',

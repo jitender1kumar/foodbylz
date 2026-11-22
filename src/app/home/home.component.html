@@ -346,7 +346,7 @@
                 <i class="fa fa-check-circle"></i> Settle & Next
               </button>
               <button *ngIf="runningItems?.length && runningItems.length > 0 && ordermode != 'Pick Up'" class="btn-lux"
-                (click)="printBill()">
+                (click)="kotprint()">
                 <i class="fa fa-print"></i> KOT
               </button>
               <button class="btn-lux danger" (click)="CancelOrder()">
@@ -433,6 +433,13 @@
     [closePopUp]="closePopup" (closePopUpByChildPartPayment)="closePopUpByChildPartPayment($event)">
   </app-partpayment>
 </div>
+<app-print [showKot_PrintPop]="showKotPrintPop" [showBill_PrintPop]="showBillPrintPop"
+[printrunningItemsArr]="runningItemsArr" [KOTItemsdata]="KOTItemsdata"
+[genratedInvoice]="genratedInvoice" [invoiceid]="invoiceid"
+(closePopUpByPrint)="closePopUpByPrint()"
+></app-print>
+<!-- [invoiceid]="invoiceid" 
+[totaltax]="totaltax" [itemtotalamount]="itemtotalamount" [totalamount]="totalamount" -->
 
 <style>
   /* Responsive Design Styles - Added for all devices */

@@ -18,6 +18,7 @@ import { CategoryService } from '../core/Services/category.service';
 import { GridTableModule } from '../core/shared/dynamicTable/gird-table/gridtable.module';
 import { HomeModule } from '../home/home.module';
 import { MakemeDefaultComponent } from './makeMeDefaultPayBy/makeme-default/makeme-default.component';
+import { RoleComponent } from './role/role.component';
 
 const routes: Routes = [
   { path: 'category', component: CategoryformComponent },
@@ -44,7 +45,7 @@ const COMPONENTS = [
 ];
 
 @NgModule({
-  declarations: [...COMPONENTS],
+  declarations: [...COMPONENTS, RoleComponent],
   imports: [
     PopupmodelComponent,
     CommonModule,

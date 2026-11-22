@@ -9,10 +9,10 @@ import { Products } from '../Model/crud.model';
 })
 export class ProductService {
 
-  private productUrl: string = environment.api+"product";
+  private readonly productUrl: string = environment.api+"product";
   
-  private productbynameUrl: string = environment.api+"productByName";
-  private productByCategoryUrl: string = environment.api+"productByCategory";
+  private readonly productbynameUrl: string = environment.api+"productByName";
+  private readonly productByCategoryUrl: string = environment.api+"productByCategory";
  
   constructor(private http: HttpClient) { }
 

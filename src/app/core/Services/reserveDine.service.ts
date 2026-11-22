@@ -13,8 +13,8 @@ import { ReserveDine, ReserveDineEdit } from '../Model/crud.model';
 })
 export class ReserveDineService {
 
-  private reserveDineUrl: string = environment.api+"reserveDine";
-private getReserveDineByDateTimeUrl:string = environment.api+"getReserveDineByDateTime";
+  private readonly reserveDineUrl: string = environment.api+"reserveDine";
+private readonly getReserveDineByDateTimeUrl:string = environment.api+"getReserveDineByDateTime";
   constructor(private http: HttpClient) { }
   private reservedinedataSubject = new BehaviorSubject<any[]>([]);
   public reservedinedata$ = this.reservedinedataSubject.asObservable();

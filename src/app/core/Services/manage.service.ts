@@ -20,7 +20,7 @@ import { InventoryMainFoodService } from './inventoryMainFood.service';
 import { PaybyService } from './paybymanage.service';
 import { addAddOnProductService } from './addOnProduct.service';
 import { CustomresService } from './customers.service';
-import { InitializeInvoice } from '../commanFunction/InitializeInvoice.service';
+import { InitializeInvoice } from '../CommanSharedFunction/InitializeInvoice.service';
 import { loadCategories } from '../../manage/ManageStore/categoryStore/category.actions';
 import { loadProductPrice } from '../../manage/ManageStore/productPriceStore/productPrice.actions';
 import { loadProduct } from '../../manage/ManageStore/productStore/product.actions';
@@ -33,7 +33,7 @@ import { loadDineTables } from '../../dine/dineStore/dinetableStore/dinetable.ac
 import { loadFloor } from '../../dine/dineStore/floorStore/floor.action';
 //import * as RunningItemActions from '../../home/homeStore/runningItemKOTStore/runningItemKOT.actions';
 import * as RunningItemKOTActions from '../../home/homeStore/runningItemKOTStore/runningItemKOT.actions';
-import { GetOrderDetailsService } from '../commanFunction/getOrderDetails.service';
+import { GetOrderDetailsService } from '../CommanSharedFunction/getOrderDetails.service';
 import { RunningItems } from '../Model/RunningItemsHomeModel/RunningItem.model';
 @Injectable({
   providedIn: 'root'

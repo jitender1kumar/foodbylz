@@ -5,7 +5,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { InvoiceService } from '../../core/Services/invoice.service';
 import { DatePipe } from '@angular/common';
-import { GetOrderDetailsService } from '../../core/commanFunction/getOrderDetails.service';
+import { GetOrderDetailsService } from '../../core/CommanSharedFunction/getOrderDetails.service';
 import { Observable, of } from 'rxjs';
 import { ItemsService } from '../../core/Services/items.service';
 import { CustomresService } from '../../core/Services/customers.service';

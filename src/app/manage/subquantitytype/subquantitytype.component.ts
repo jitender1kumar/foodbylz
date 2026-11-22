@@ -19,9 +19,9 @@ import {
   updateSubQuantityTypeSuccess
 } from '../ManageStore/subQuantityTypeStore/subQuantityType.actions';
 import { loadQuantityType } from '../ManageStore/quntityTypeStore/quntityType.actions';
-import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
+import { SweetAlert2 } from '../../core/CommanSharedFunction/sweetalert';
 import { Actions, ofType } from '@ngrx/effects';
-import { ValidationService } from '../../core/commanFunction/Validation.service';
+import { ValidationService } from '../../core/CommanSharedFunction/Validation.service';
 import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 
 @Component({

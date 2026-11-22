@@ -46,7 +46,7 @@ import { DatePipe } from '@angular/common';
 import { HomeEnvironment } from '../environment/homeEnvironment';
 import * as AddOnProductActions from '../manage/ManageStore/addOnProductStore/addOnProduct.action';
 import { Actions, ofType } from '@ngrx/effects';
-import { InitializeInvoice } from '../core/commanFunction/InitializeInvoice.service';
+import { InitializeInvoice } from '../core/CommanSharedFunction/InitializeInvoice.service';
 import { subQuantityTypeService } from '../core/Services/subQuantityType.service';
 import { InvoiceService } from '../core/Services/invoice.service';
 import { CustomresService } from '../core/Services/customers.service';
@@ -105,6 +105,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   @Input() DineData$: any;
   @Output() pickUpOrder: EventEmitter<string> = new EventEmitter<string>();
   isPickUpNextOrder: boolean = false;
+  showKotPrintPop=false;showBillPrintPop=false;
   CommentKOT: string = '';
   successItems$: any;
   subscription!: Subscription;
@@ -2110,24 +2111,29 @@ console.log('Running items array:', runningItemsArr);
         this.RedirectToTable.emit('tables');
       });
   }
+  printrunningItemsArr: RunningItems[] = [];
   kotprint() {
     this.close2();
-    const invoiceCard = document.getElementById('printable-section-KOT');
-    if (invoiceCard) {
-      const clone = invoiceCard.cloneNode(true) as HTMLElement;
-      clone.querySelectorAll('button, form, .item-header').forEach(node => node.remove());
-      const printContent = clone.innerHTML;
-      const WindowPrt = window.open('', '', 'width=600,height=600');
-      if (WindowPrt && printContent) {
-        WindowPrt.document.writeln('<html><head><title>Print</title></head><body>');
-        WindowPrt.document.writeln(printContent);
-        WindowPrt.document.writeln('</body></html>');
-        WindowPrt.focus();
-        WindowPrt.document.close();
-        WindowPrt.print();
-        WindowPrt.close();
-      }
-    }
+    this.showKotPrintPop=true;
+    this.showBillPrintPop=false;
+    this.printrunningItemsArr = this.runningItemsArr;
+this.genratedInvoice = this.genrateInvoice({ Orderstatus: 'Cooking', paidstatus: false });
+    // const invoiceCard = document.getElementById('printable-section-KOT');
+    // if (invoiceCard) {
+    //   const clone = invoiceCard.cloneNode(true) as HTMLElement;
+    //   clone.querySelectorAll('button, form, .item-header').forEach(node => node.remove());
+    //   const printContent = clone.innerHTML;
+    //   const WindowPrt = window.open('', '', 'width=600,height=600');
+    //   if (WindowPrt && printContent) {
+    //     WindowPrt.document.writeln('<html><head><title>Print</title></head><body>');
+    //     WindowPrt.document.writeln(printContent);
+    //     WindowPrt.document.writeln('</body></html>');
+    //     WindowPrt.focus();
+    //     WindowPrt.document.close();
+    //     WindowPrt.print();
+    //     WindowPrt.close();
+    //   }
+    // }
   }
  
   getBillFormat() {
@@ -2136,35 +2142,45 @@ console.log('Running items array:', runningItemsArr);
 
       + "</table></div>"
   }
+  closePopUpByPrint(): void {
+    //event?.stopPropagation();
+    this.showKotPrintPop = false;
+    this.showBillPrintPop = false;
+  }
+
+  genratedInvoice:any;
   printBill(): void {
+    this.showKotPrintPop=false;
+    this.showBillPrintPop=true;
+    this.genratedInvoice = this.genrateInvoice({ Orderstatus: 'Cooking', paidstatus: false });
     // Attempt to locate the printable invoice section by its id or fallback to body
-    const invoiceCard = document.getElementById('printable-section-KOT');
-    let printContent = '';
-    if (invoiceCard) {
-      // Clone the node to avoid manipulating DOM structure directly
-      const clone = invoiceCard.cloneNode(true) as HTMLElement;
-      // Optionally, remove unwanted interactive UI elements from print
-      clone.querySelectorAll('button, form, .item-header').forEach(node => node.remove());
-      printContent = clone.innerHTML;
-    } else {
-      // Fallback: print the whole page
-      printContent = document.body.innerHTML;
-    }
-    const WindowPrt = window.open('', '', 'width=800,height=800');
-    if (WindowPrt && printContent) {
-      WindowPrt.document.writeln('<html><head><title>Print Invoice</title>');
-      // Optionally add any required styles for print here
-      WindowPrt.document.writeln('</head><body>');
-      WindowPrt.document.writeln(printContent);
-      WindowPrt.document.writeln('</body></html>');
-      WindowPrt.document.close();
-      WindowPrt.focus();
-      // Print after a minimal delay to ensure rendering
-      setTimeout(() => {
-        WindowPrt.print();
-        WindowPrt.close();
-      }, 200);
-    }
+    // const invoiceCard = document.getElementById('printable-section-KOT');
+    // let printContent = '';
+    // if (invoiceCard) {
+    //   // Clone the node to avoid manipulating DOM structure directly
+    //   const clone = invoiceCard.cloneNode(true) as HTMLElement;
+    //   // Optionally, remove unwanted interactive UI elements from print
+    //   clone.querySelectorAll('button, form, .item-header').forEach(node => node.remove());
+    //   printContent = clone.innerHTML;
+    // } else {
+    //   // Fallback: print the whole page
+    //   printContent = document.body.innerHTML;
+    // }
+    // const WindowPrt = window.open('', '', 'width=800,height=800');
+    // if (WindowPrt && printContent) {
+    //   WindowPrt.document.writeln('<html><head><title>Print Invoice</title>');
+    //   // Optionally add any required styles for print here
+    //   WindowPrt.document.writeln('</head><body>');
+    //   WindowPrt.document.writeln(printContent);
+    //   WindowPrt.document.writeln('</body></html>');
+    //   WindowPrt.document.close();
+    //   WindowPrt.focus();
+    //   // Print after a minimal delay to ensure rendering
+    //   setTimeout(() => {
+    //     WindowPrt.print();
+    //     WindowPrt.close();
+    //   }, 200);
+    // }
   }
   async removeCustomer(CustomerName: string): Promise<void> {
     try {

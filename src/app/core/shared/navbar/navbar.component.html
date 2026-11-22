@@ -23,7 +23,7 @@
 
     <ul id="main-navigation" class="nav-items enhanced-nav" [class.show]="showMobileNav" [attr.aria-hidden]="!showMobileNav">
       <ng-container *ngFor="let nav of [
-        { link: '/manage', icon: '🛠️', text: 'Manage', click: 'showmanagefun()' },
+        { link: '/settings', icon: '🛠️', text: 'Settings', click: 'showmanagefun()' },
         { link: '/dashboard', icon: '🏠', text: 'Dashboard', click: 'showdashboardfun()' },
         { link: '/tables', icon: '🍽️', text: 'Tables', click: 'showtablefun()' },
         { link: '/orders', icon: '🧾', text: 'Orders', click: 'showordersfun()' },

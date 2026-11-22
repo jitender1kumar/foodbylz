@@ -9,7 +9,7 @@ import { Paybymanage } from '../Model/crud.model';
 })
 export class PaybyService {
 
-  private payByManageUrl: string = environment.api+"payByManage";
+  private readonly payByManageUrl: string = environment.api+"payByManage";
 
   constructor(private http: HttpClient) { }
 

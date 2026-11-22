@@ -8,7 +8,7 @@ import { environment } from '../../environment/environment';
   providedIn: 'root'
 })
 export class PaymentService {
-  private paymentUrl: string = environment.api + 'payment';
+  private readonly paymentUrl: string = environment.api + 'payment';
 
   constructor(private http: HttpClient) {}
 

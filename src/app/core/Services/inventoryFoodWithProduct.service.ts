@@ -9,7 +9,7 @@ import { InventoryFoodwithProduct, InventoryFoodwithProductforEdit } from '../Mo
 })
 export class InventoryMainFoodwithProductService {
 
-  private invetoryFoodMainProductUrl: string = environment.api+"invetoryMainFoodWithProduct";
+  private readonly invetoryFoodMainProductUrl: string = environment.api+"invetoryMainFoodWithProduct";
 
   constructor(private http: HttpClient) { }
 

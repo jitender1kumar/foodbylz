@@ -11,7 +11,7 @@ import { environment, HttpClient } from './indexService';
 export class KOTrunningordersService {
  
   
-  private KOTrunningeurl: string = environment.api+'KOTrunning';//"KOTrunningorders";
+  private readonly KOTrunningeurl: string = environment.api+'KOTrunning';//"KOTrunningorders";
 
   constructor(private http: HttpClient) { }
 

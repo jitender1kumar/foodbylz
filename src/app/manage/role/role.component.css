@@ -1,0 +1,39 @@
+:host { display: block; min-height: 100%; background: #f7f8fa; color: #202a35; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+	* { box-sizing: border-box; }
+	.role-page, .role-page-edit { width: 100%; padding: clamp(16px, 4vw, 48px) clamp(12px, 3vw, 18px); }
+	.role-shell { width: min(1120px, 100%); margin: 0 auto; }
+	.page-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 27px; }
+	.eyebrow { color: #d97735; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; }
+	.page-heading h1 { margin: 7px 0 5px; font-size: clamp(25px, 4vw, 34px); letter-spacing: -1px; }
+	.page-heading p, .card-heading p, .permissions-heading p { margin: 0; color: #818a94; font-size: 13px; }
+	.heading-icon { display: grid; width: 48px; height: 48px; place-items: center; border-radius: 15px; background: #fff0e5; color: #d97735; font-size: 25px; }
+	.forms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: clamp(12px, 2vw, 20px); align-items: start; }
+	.role-card { width: 100%; min-width: 0; padding: clamp(16px, 3vw, 27px); border: 1px solid #eceef1; border-radius: 16px; background: #fff; box-shadow: 0 8px 26px rgba(34, 43, 52, .045); }
+	.card-heading { display: flex; align-items: center; gap: 13px; margin-bottom: 25px; }
+	.step { display: grid; width: 42px; height: 42px; flex: 0 0 42px; place-items: center; border-radius: 13px; background: #fff0e5; color: #d97735; font-size: 13px; font-weight: 800; }
+	.edit-step { background: #eaf3f1; color: #327c70; }
+	.card-heading h2 { margin: 0 0 4px; font-size: 18px; }
+	.field-label { display: block; margin-bottom: 8px; color: #39434d; font-size: 13px; font-weight: 700; }
+	.field-label span { color: #df634f; }
+	.role-input { width: 100%; height: 44px; padding: 0 13px; border: 1px solid #e2e5e9; border-radius: 9px; outline: none; color: #202a35; font: inherit; font-size: 14px; transition: border-color .2s, box-shadow .2s; }
+	.role-input:focus { border-color: #df894f; box-shadow: 0 0 0 3px rgba(217, 119, 53, .12); }
+	.role-input::placeholder { color: #b0b6bd; }
+	.field-error { display: block; margin-top: 6px; color: #c94d45; font-size: 12px; }
+	.permissions-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 24px 0 13px; }
+	.permissions-heading h3 { margin: 0 0 4px; font-size: 14px; }
+	.permissions-heading p { font-size: 12px; }
+	.access-count { flex: 0 0 auto; padding: 6px 9px; border-radius: 20px; background: #f5f6f7; color: #747e87; font-size: 11px; font-weight: 700; }
+	.permission-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: 9px; }
+	.permission-item { display: flex; min-height: 39px; align-items: center; gap: 9px; padding: 8px 10px; border: 1px solid #edf0f2; border-radius: 8px; color: #505b65; cursor: pointer; font-size: 12px; transition: background .18s, border-color .18s; }
+	.permission-item:hover { border-color: #f0c4a4; background: #fffaf6; }
+	.permission-item input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+	.checkmark { display: grid; width: 16px; height: 16px; flex: 0 0 16px; place-items: center; border: 1px solid #cbd1d7; border-radius: 4px; background: #fff; }
+	.permission-item input:checked + .checkmark { border-color: #d97735; background: #d97735; }
+	.permission-item input:checked + .checkmark::after { content: "✓"; color: white; font-size: 11px; font-weight: 800; }
+	.permission-item input:focus-visible + .checkmark { outline: 3px solid rgba(217, 119, 53, .25); }
+	.submit-button { display: flex; width: 100%; min-height: 45px; align-items: center; justify-content: space-between; margin-top: 22px; padding: 0 15px; border: 0; border-radius: 9px; background: #d97735; color: white; cursor: pointer; font: inherit; font-size: 13px; font-weight: 700; transition: background .2s, transform .2s; }
+	.submit-button:hover:not(:disabled) { transform: translateY(-1px); background: #c66527; }
+	.submit-button:disabled { cursor: not-allowed; opacity: .48; }
+	.edit-button { background: #327c70; }
+	.edit-button:hover:not(:disabled) { background: #28695e; }
+	@media (max-width: 380px) { .heading-icon { width: 40px; height: 40px; } }

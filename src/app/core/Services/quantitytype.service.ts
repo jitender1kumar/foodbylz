@@ -11,7 +11,7 @@ import { Quantitytype } from '../Model/crud.model';
 })
 export class QuantitytypeService {
 
-  private quantityTypeUrl: string = environment.api+'quantityType'; //"quntitytype";
+  private readonly quantityTypeUrl: string = environment.api+'quantityType'; //"quntitytype";
 
 
   constructor(private http: HttpClient) { }

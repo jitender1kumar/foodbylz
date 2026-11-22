@@ -11,10 +11,12 @@
 
 @if (popupenvironments.show$ | async) {
   <div class="comman" >
+    
     <div class="row box">
+      
       <!-- left col -->
       <form [formGroup]="myAddForm" (ngSubmit)="onFormSubmit()" #f="ngForm" class="col lbl2" >
-        <button  class="close" (click)="close()"><b>x</b></button>
+        <button  class="close" (click)="close()">close</button>
         <div class="row lbl"><h4>Insert Product Category(like chinees, south indian )</h4></div>
         <div class="row form-group">
           <div class="col"> <label class="lbl"  for="categoryname" id="categoryname" > Name :</label></div>

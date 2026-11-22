@@ -17,7 +17,7 @@ import { loadCategories } from '../ManageStore/categoryStore/category.actions';
 import { loadSubQuantityType, loadSubQuantityTypeById } from '../ManageStore/subQuantityTypeStore/subQuantityType.actions';
 import { loadQuantityType, loadQuantityTypeFailure, loadQuantityTypeSuccess } from '../ManageStore/quntityTypeStore/quntityType.actions';
 import { addProductPrice, deleteProductPrice, loadProductPrice, loadProductPriceSuccess, updateProductPrice, updateProductPriceSuccess } from '../ManageStore/productPriceStore/productPrice.actions';
-import { SweetAlert2 } from '../../core/commanFunction/sweetalert';
+import { SweetAlert2 } from '../../core/CommanSharedFunction/sweetalert';
 import { Actions, ofType } from '@ngrx/effects';
 import { ColumnDef } from '../../core/shared/dynamicTable/gird-table/gird-table.component';
 @Component({
