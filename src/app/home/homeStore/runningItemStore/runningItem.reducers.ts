@@ -113,34 +113,38 @@ const _runningItemReducer = createReducer(
     ) => {
       let RunningItems_ = Array.isArray(state.RunningItems_) ? [...state.RunningItems_] : [];
       const taxpercent = 0;
-
-      // Find the index in allppdata for the matching item
-      const itemIdxInAllPP = allppdata.findIndex(
+console.log('Adding/Updating Running Item:', allppdata);
+    
+      // Find the matching catalog item, tolerating missing or malformed action data.
+      const availableProducts: any[] = Array.isArray(allppdata) ? allppdata : [];
+      console.log('Available Products:', availableProducts);
+      const allPPItem = availableProducts.find(
         (item: any) =>
-          (item.SelectProductId ? item.SelectProductId === id : item.id === id) &&
+          item != null &&
+          (item.SelectProductId ?? item.id) === id &&
           item.SubQuantityTypeName === SubQuantityTypeName
       );
-      const allPPItem = allppdata[itemIdxInAllPP];
-
+console.log('Adding/Updating Running Item:', allPPItem);
+    
       // Find the index in RunningItems_ for the running item
       const runningItemIdx = RunningItems_.findIndex(
         (item: any) => item.SelectProductId === id && item.SubQuantityTypeName === SubQuantityTypeName
       );
 
       let val: number = Number(quntity);
-
+console.log('Adding/Updating Running Item:', allPPItem, 'Current RunningItems_:', RunningItems_);
       if (incrementType === 'inc' && allPPItem && allPPItem.SelectProductId) {
         val = Number(quntity) + 1;
 
         const newRunningItem = {
-          SelectProductId: id,
+          SelectProductId: id ,
           ProductPrice: price,
           ProductName: allPPItem.ProductName,
-          selectcategoryID: allPPItem.selectcategoryID,
-          categoryName: allPPItem.categoryName,
-          selectQtypeID: allPPItem.selectQtypeID,
-          QtypeName: allPPItem.QtypeName,
-          selectSubQuantityTypeID: allPPItem.selectSubQuantityTypeID,
+          selectcategoryID: allPPItem.selectcategoryID || '',
+          categoryName: allPPItem.categoryName || '',
+          selectQtypeID: allPPItem.selectQtypeID || '',
+          QtypeName: allPPItem.QtypeName || '',
+          selectSubQuantityTypeID: allPPItem.selectSubQuantityTypeID || '',
           SubQuantityTypeName: allPPItem.SubQuantityTypeName,
           quntityvalue: val,
           qvalue: val,

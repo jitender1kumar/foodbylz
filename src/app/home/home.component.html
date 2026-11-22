@@ -364,6 +364,23 @@
     </div>
   </div>
 
+  <div class="common-modal" *ngIf="showtypeReadyMadeItem">
+  <div class="modal-box">
+    <button class="close-btn" (click)="close()">×</button>
+    <h6 class="modal-title">Add Item: </h6>
+    <p>
+      <!-- Safely display ProductName only if ProductPrice[0] exists -->
+      {{ ProductPrice && ProductPrice.length > 0 ? ProductPrice[0].ProductName : '' }}
+    </p>
+    <form [formGroup]="myFormReadyMadeItem" (ngSubmit)="onReadyMadeItemSubmit(myFormReadyMadeItem)">
+      <input type="hidden" formControlName="SelectProductId" [ngModel]="SelectProductId" />
+          <input type="text" name="option"  placeholder="Enter Product Name" formControlName="ProductName" />
+          <input type="text" placeholder="  Quantity Type Name"  formControlName="SubQuantityTypeName" class="option-label" />
+          <input type="number" placeholder="Enter Price" min="0" max="1000000" class="option-price" formControlName="price" />
+      <button type="submit" class="submit-btn">Add Item</button>
+    </form>
+  </div>
+</div>
   <!-- Quantity Modal -->
 <div class="common-modal" *ngIf="showtype">
   <div class="modal-box">
@@ -374,6 +391,7 @@
       {{ ProductPrice && ProductPrice.length > 0 ? ProductPrice[0].ProductName : '' }}
     </p>
     <form #myForm="ngForm" (ngSubmit)="onSubmit(myForm)">
+      
       <div *ngFor="let dd of ProductPrice" class="option-row">
         <label class="radio-option">
           <input type="radio" name="option" [value]="dd.SubQuantityTypeName" ngModel />

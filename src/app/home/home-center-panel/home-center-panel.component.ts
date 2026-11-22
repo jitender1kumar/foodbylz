@@ -106,4 +106,10 @@ increment(_id:string)
 {
 this.incrementclicked.emit(_id);
 }
+
+// readyMadeItemIncrement(): void
+// {
+//   this.incrementclicked.emit('Ready Made Item');
+// }
+
 }

@@ -55,6 +55,24 @@
   <!-- PRODUCTS GRID -->
   <!-- <section *ngIf="productsByCategoryId && productsByCategoryId.length > 0; else noItems" class="products-grid-section"> -->
     <div class="product-grid">
+      <div
+          class="product-card"
+          (click)="increment('Ready Made Item')"
+        >
+          <div class="product-img-wrap"></div>
+          <div class="product-card-body">
+            <span class="product-name">Ready Made Item</span>
+            <div class="product-price-actions">
+              <button
+                class="add-btn"
+                (click)="increment('Ready Made Item'); $event.stopPropagation()"
+                title="Add to Order"
+              >
+                <span>+</span>
+              </button>
+            </div>
+          </div>
+        </div>
       <ng-container *ngFor="let product of productsByCategoryId">
         <div
           *ngIf="product"

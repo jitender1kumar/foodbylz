@@ -119,6 +119,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public showDiscountForm = false;
   public showdining = false;
   public showtype = false;
+  public showtypeReadyMadeItem = false;
   public showplaceorderPopup = false;
   public showAddonPopUp = false;
   public showSplitBillPopUp = false;
@@ -269,7 +270,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   receiveNotification: any;
 kotOrdersList: any;
    SubQuantityTypeName = "";
-  SelectProductId = "";
+  SelectProductId = new Date().getTime().toString();
   selectSubQuantityTypeID = "";
   qvalue = 0;
   Productprice = 0;
@@ -289,6 +290,7 @@ addSuccessSub: Subscription | undefined;
   AllProductWithPrice: ProductPriceDetails[] = [];
   items: any[] = [];
   dineData$: any;
+  myFormReadyMadeItem!: FormGroup;  
 
   constructor(private KOTsUDService_: KOTsUDService,
     private router: Router,
@@ -307,6 +309,13 @@ addSuccessSub: Subscription | undefined;
     private chairsrunningorderservice: ChairServiceService,
     // private pouch: RunningItemsPouchdbService
   ) {
+    this.SelectProductId = new Date().getTime().toString();
+    this.myFormReadyMadeItem = this.formedit.group({
+      SelectProductId: ['',],
+      ProductName: [''],
+      SubQuantityTypeName: [''],
+      price: ['']
+    });
     this.table_id = "";
     //  //alert("hc "+this.invoiceid);
     //  this.RecieptNumber = this.invoiceid
@@ -885,6 +894,8 @@ addSuccessSub: Subscription | undefined;
     this.showplaceorderPopup = false;
   }
 
+
+
   onSubmit(form: any): void {
     // this.AllProductWithPrice
     //  const allppdata = this.loadAllProductPriceDatabyProductId();
@@ -943,6 +954,7 @@ addSuccessSub: Subscription | undefined;
 
   close(): void {
     this.showtype = false;
+    this.showtypeReadyMadeItem = false;
   }
   // Calculate totalamount from RunningItems_$ and KOTItemsdata
   grandtotal(): void {
@@ -1146,8 +1158,43 @@ console.log('Running items array:', runningItemsArr);
    console.log('Incrementing product with data:', productpricedata);
   
   }
+  readyMadeItemIncrement(productpricedata: any) {
+   this.showtypeReadyMadeItem = true;
+   // this.showtype = false;
+  }
+  
+onReadyMadeItemSubmit(form: any): void {
+  if (!form.valid) {
+    return;
+  }
+ // this.SelectProductId = new Date().getTime().toString();
+  console.log('Ready Made Item Form Submitted:', this.SelectProductId, form.value);
+  const formValueArray = [form.value];
+  
+ // console.log('Running Items Array:', new Date().getTime().toString());
+   this.store.dispatch(
+        updateRunningItemQuantity({
+          id: this.SelectProductId, // Generate a unique ID for the ready-made item
+          action: 'inc',
+          SubQuantityTypeName: form.value.SubQuantityTypeName,
+          quntity: 0,
+          price: form.value.price,
+          RunningItemData: "",
+          invoiceid: this.invoiceid,
+          allppdata: formValueArray,
+
+        })
+      );
+
+      this.RunningItems_$ = this.store.select(
+        state => state.runningItemReducer_.RunningItems_
+      );
+}
+
   increment(_id: any): void {
+
     this.showtype = false;
+    if(_id === "Ready Made Item"){ this.readyMadeItemIncrement(_id); return; }
     this.ProductPrice = this.getAllProductQuantityTypePrice(_id);
     const runningItemsArr = Array.isArray(this.getRunningItemsValues()) ? this.getRunningItemsValues() : [];
     // Ensure only one product type is available to increment
